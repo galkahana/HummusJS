@@ -1,6 +1,6 @@
 
-var pdfWriter = require('../Hummus').createWriter("EmptyPages.pdf");
-
+var hummus = require('../Hummus');
+var pdfWriter = hummus.createWriter("EmptyPages.pdf",hummus.ePDFVersion14);
 var page = pdfWriter.createPage();
 
 page.mediaBox = [0,0,595,842];

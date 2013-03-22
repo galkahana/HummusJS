@@ -44,11 +44,22 @@ Handle<Value> PDFWriterDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
-    const unsigned argc = 1;
-    Handle<Value> argv[argc] = { args[0] };
-    Local<Object> instance = constructor->NewInstance(argc, argv);
-    
-    return scope.Close(instance);
+    if(args.Length() == 1)
+    {
+        const unsigned argc = 1;
+        Handle<Value> argv[argc] = { args[0] };
+        Local<Object> instance = constructor->NewInstance(argc, argv);
+        return scope.Close(instance);
+    }
+    else if(args.Length() == 2)
+    {
+        const unsigned argc = 2;
+        Handle<Value> argv[argc] = {args[0],args[1]};
+        Local<Object> instance = constructor->NewInstance(argc, argv);
+        return scope.Close(instance);
+    }
+    else
+        return scope.Close(Undefined());
 }
 
 
@@ -60,20 +71,37 @@ Handle<Value> PDFWriterDriver::New(const Arguments& args)
     pdfWriter->Wrap(args.This());
     
     // start a new pdf based on input parameters
-	if (args.Length() != 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file")));
+	if (args.Length() < 1 || args.Length() > 2) {
+		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and optionally another one for setting the PDF level")));
 		return scope.Close(Undefined());
 	}
     
 	if (!args[0]->IsString()) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, Provide one argument stating the location of the output file")));
+		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and optionally another one for setting the PDF level")));
 		return scope.Close(Undefined());
 	}
     
 	Local<String> stringArg = args[0]->ToString();
 	String::Utf8Value utf8Path(stringArg);
     
-    if(pdfWriter->mPDFWriter.StartPDF(*utf8Path, ePDFVersion13) != PDFHummus::eSuccess)
+    
+    EPDFVersion pdfVersion;
+    
+    if(args.Length() == 2 && args[1]->IsNumber())
+    {
+        long pdfVersionValue = args[1]->ToNumber()->Int32Value();
+        
+        if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
+        {
+            ThrowException(Exception::TypeError(String::New("Wrong argument for PDF version, please provide a valid PDF version")));
+            return scope.Close(Undefined());
+        }
+        pdfVersion = (EPDFVersion)pdfVersionValue;
+    }
+    else
+        pdfVersion = ePDFVersion13;
+    
+    if(pdfWriter->mPDFWriter.StartPDF(*utf8Path, pdfVersion) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to create PDF file, make sure that output file target is available")));
 		return scope.Close(Undefined());
