@@ -1,0 +1,13 @@
+
+var pdfWriter = require('../Hummus').createWriter("EmptyPages.pdf");
+
+var page = pdfWriter.createPage();
+
+page.mediaBox = [0,0,595,842];
+
+for(var i=0; i < 4; ++i)
+	pdfWriter.writePage(page);
+
+pdfWriter.end();
+
+console.log('done - ok');
