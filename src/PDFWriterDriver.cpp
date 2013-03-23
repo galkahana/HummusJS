@@ -19,6 +19,7 @@
  */
 #include "PDFWriterDriver.h"
 #include "PDFPageDriver.h"
+#include "PageContentContextDriver.h"
 
 using namespace v8;
 
@@ -36,6 +37,8 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("end"),FunctionTemplate::New(End)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPage"),FunctionTemplate::New(CreatePage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("writePage"),FunctionTemplate::New(WritePage)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("startPageContentContext"),FunctionTemplate::New(StartPageContentContext)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("pausePageContentContext"),FunctionTemplate::New(PausePageContentContext)->GetFunction());
     
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -150,6 +153,14 @@ v8::Handle<v8::Value> PDFWriterDriver::WritePage(const v8::Arguments& args)
 		return scope.Close(Undefined());
     }
     
+    if(pageDriver->ContentContext &&
+       (pdfWriter->mPDFWriter.EndPageContentContext(pageDriver->ContentContext) != PDFHummus::eSuccess))
+    {
+		ThrowException(Exception::TypeError(String::New("Unable to finalize page context")));
+		return scope.Close(Undefined());
+    }
+    pageDriver->ContentContext = NULL;
+    
     if(pdfWriter->mPDFWriter.WritePage(pageDriver->GetPage()) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to write page")));
@@ -158,4 +169,62 @@ v8::Handle<v8::Value> PDFWriterDriver::WritePage(const v8::Arguments& args)
     
     return scope.Close(Undefined());
     
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::StartPageContentContext(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+	if (args.Length() != 1) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		return scope.Close(Undefined());
+	}
+    
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
+    if(!pageDriver)
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		return scope.Close(Undefined());
+    }
+    
+    
+    Handle<Value> newInstance = PageContentContextDriver::NewInstance(args);
+    PageContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(newInstance->ToObject());
+    contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
+
+    // save it also at page driver, so we can end the context when the page is written
+    pageDriver->ContentContext = contentContextDriver->ContentContext;
+    
+    return scope.Close(newInstance);
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::PausePageContentContext(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+	if (args.Length() != 1) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		return scope.Close(Undefined());
+	}
+    
+    PageContentContextDriver* pageContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(args[0]->ToObject());
+    if(!pageContextDriver)
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		return scope.Close(Undefined());
+    }
+    
+    if(!pageContextDriver->ContentContext)
+    {
+		ThrowException(Exception::TypeError(String::New("paused context not initialized, please create one using pdfWriter.startPageContentContext")));
+		return scope.Close(Undefined());
+    }
+    
+    pdfWriter->mPDFWriter.PausePageContentContext(pageContextDriver->ContentContext);
+    
+    return scope.Close(Undefined());
 }

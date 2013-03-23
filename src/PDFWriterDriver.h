@@ -30,11 +30,15 @@ public:
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
 
 private:
+    PDFWriterDriver(){};
+    
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
     static v8::Handle<v8::Value> End(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePage(const v8::Arguments& args);
     static v8::Handle<v8::Value> WritePage(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartPageContentContext(const v8::Arguments& args);
+    static v8::Handle<v8::Value> PausePageContentContext(const v8::Arguments& args);
 
     
     PDFWriter mPDFWriter;

@@ -24,7 +24,10 @@ using namespace v8;
 
 Persistent<Function> PDFPageDriver::constructor;
 
-
+PDFPageDriver::PDFPageDriver()
+{
+    ContentContext = NULL;
+}
 
 void PDFPageDriver::Init()
 {

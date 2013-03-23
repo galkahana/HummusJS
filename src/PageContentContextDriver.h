@@ -1,5 +1,5 @@
 /*
- Source File : PDFPageDriver.h
+ Source File : PageContentContextDriver.h
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -21,28 +21,36 @@
 
 #include <node.h>
 
-#include "PDFPage.h"
 
 class PageContentContext;
 
-class PDFPageDriver : public node::ObjectWrap
+class PageContentContextDriver : public node::ObjectWrap
 {
 public:
+    
+    
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
-    PDFPage* GetPage(){return &mPDFPage;}
     
     PageContentContext* ContentContext;
-    
+
 private:
-    PDFPageDriver();
-    
-    
+    PageContentContextDriver();
+
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetMediaBox(v8::Local<v8::String> property,const v8::AccessorInfo &info);
-    static void SetMediaBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const v8::AccessorInfo &info);
     
-    PDFPage mPDFPage;
+    static v8::Handle<v8::Value> q(const v8::Arguments& args);
+    static v8::Handle<v8::Value> k(const v8::Arguments& args);
+    static v8::Handle<v8::Value> re(const v8::Arguments& args);
+    static v8::Handle<v8::Value> f(const v8::Arguments& args);
+    static v8::Handle<v8::Value> Q(const v8::Arguments& args);
+    static v8::Handle<v8::Value> G(const v8::Arguments& args);
+    static v8::Handle<v8::Value> w(const v8::Arguments& args);
+    static v8::Handle<v8::Value> m(const v8::Arguments& args);
+    static v8::Handle<v8::Value> l(const v8::Arguments& args);
+    static v8::Handle<v8::Value> S(const v8::Arguments& args);
+    
+     
 };
