@@ -10,6 +10,7 @@
                 './deps/PDFWriter'
             ],
            'sources': [
+                './src/AbstractContentContextDriver.cpp',
                 './src/PageContentContextDriver.cpp',
                 './src/PDFPageDriver.cpp',
                 './src/PDFWriterDriver.cpp',
