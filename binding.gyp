@@ -10,6 +10,9 @@
                 './deps/PDFWriter'
             ],
            'sources': [
+                './src/ResourcesDictionaryDriver.cpp',
+                './src/XObjectContentContextDriver.cpp',
+                './src/FormXObjectDriver.cpp',
                 './src/AbstractContentContextDriver.cpp',
                 './src/PageContentContextDriver.cpp',
                 './src/PDFPageDriver.cpp',

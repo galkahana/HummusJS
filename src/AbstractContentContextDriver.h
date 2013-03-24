@@ -23,17 +23,23 @@
 
 
 class AbstractContentContext;
+class ResourcesDictionary;
 
 class AbstractContentContextDriver : public node::ObjectWrap
 {
 public:
+    AbstractContentContextDriver();
     
     
     static void Init(v8::Handle<v8::FunctionTemplate>& ioDriverTemplate);
     
+    
+    void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
+    
 private:
     
     virtual AbstractContentContext* GetContext() = 0;
+    ResourcesDictionary* mResourcesDictionary;
         
     static v8::Handle<v8::Value> q(const v8::Arguments& args);
     static v8::Handle<v8::Value> k(const v8::Arguments& args);
@@ -45,6 +51,7 @@ private:
     static v8::Handle<v8::Value> m(const v8::Arguments& args);
     static v8::Handle<v8::Value> l(const v8::Arguments& args);
     static v8::Handle<v8::Value> S(const v8::Arguments& args);
-    
+    static v8::Handle<v8::Value> cm(const v8::Arguments& args);
+    static v8::Handle<v8::Value> doXObject(const v8::Arguments& args);
     
 };

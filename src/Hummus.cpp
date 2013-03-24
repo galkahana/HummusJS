@@ -23,6 +23,9 @@
 #include "PDFWriterDriver.h"
 #include "PDFPageDriver.h"
 #include "PageContentContextDriver.h"
+#include "FormXObjectDriver.h"
+#include "XObjectContentContextDriver.h"
+#include "ResourcesDictionaryDriver.h"
 
 using namespace v8;
 
@@ -36,6 +39,9 @@ void HummusInit(Handle<Object> exports) {
     PDFWriterDriver::Init();
     PDFPageDriver::Init();
     PageContentContextDriver::Init();
+    FormXObjectDriver::Init();
+    XObjectContentContextDriver::Init();
+    ResourcesDictionaryDriver::Init();
     
     // createWriter will create a new pdfwriter, pass a string for the target path
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());

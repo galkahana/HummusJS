@@ -17,38 +17,32 @@
  limitations under the License.
  
  */
-#include "PageContentContextDriver.h"
-#include "PageContentContext.h"
+#include "XObjectContentContextDriver.h"
+#include "XObjectContentContext.h"
 
 using namespace v8;
 
-PageContentContextDriver::~PageContentContextDriver()
-{
-    // most of the times it won't be an actual delete. only if the user forgot to write the page
-    delete ContentContext;
-}
-
-PageContentContextDriver::PageContentContextDriver()
+XObjectContentContextDriver::XObjectContentContextDriver()
 {
     // initially null, set by external pdfwriter
     ContentContext = NULL;
 }
 
-Persistent<Function> PageContentContextDriver::constructor;
+Persistent<Function> XObjectContentContextDriver::constructor;
 
-void PageContentContextDriver::Init()
+void XObjectContentContextDriver::Init()
 {
     // prepare the context driver interfrace template
     Local<FunctionTemplate> ft = FunctionTemplate::New(New);
-    ft->SetClassName(String::NewSymbol("PageContentContext"));
+    ft->SetClassName(String::NewSymbol("XObjectContentContext"));
     ft->InstanceTemplate()->SetInternalFieldCount(1);
-
+    
     AbstractContentContextDriver::Init(ft);
     
     constructor = Persistent<Function>::New(ft->GetFunction());
 }
 
-Handle<Value> PageContentContextDriver::NewInstance(const Arguments& args)
+Handle<Value> XObjectContentContextDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
@@ -60,19 +54,20 @@ Handle<Value> PageContentContextDriver::NewInstance(const Arguments& args)
 }
 
 
-Handle<Value> PageContentContextDriver::New(const Arguments& args)
+Handle<Value> XObjectContentContextDriver::New(const Arguments& args)
 {
     HandleScope scope;
     
-    PageContentContextDriver* pdfPage = new PageContentContextDriver();
-    pdfPage->Wrap(args.This());
+    XObjectContentContextDriver* form = new XObjectContentContextDriver();
+    form->Wrap(args.This());
     
     return args.This();
 }
 
-AbstractContentContext* PageContentContextDriver::GetContext()
+AbstractContentContext* XObjectContentContextDriver::GetContext()
 {
     return ContentContext;
 }
+
 
 

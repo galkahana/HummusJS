@@ -20,6 +20,7 @@
 #include "PDFWriterDriver.h"
 #include "PDFPageDriver.h"
 #include "PageContentContextDriver.h"
+#include "FormXObjectDriver.h"
 
 using namespace v8;
 
@@ -39,6 +40,8 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("writePage"),FunctionTemplate::New(WritePage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("startPageContentContext"),FunctionTemplate::New(StartPageContentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("pausePageContentContext"),FunctionTemplate::New(PausePageContentContext)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObject"),FunctionTemplate::New(CreateFormXObject)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("endFormXObject"),FunctionTemplate::New(EndFormXObject)->GetFunction());
     
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -193,6 +196,7 @@ v8::Handle<v8::Value> PDFWriterDriver::StartPageContentContext(const Arguments& 
     Handle<Value> newInstance = PageContentContextDriver::NewInstance(args);
     PageContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(newInstance->ToObject());
     contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
+    contentContextDriver->SetResourcesDictionary(&(pageDriver->GetPage()->GetResourcesDictionary()));
 
     // save it also at page driver, so we can end the context when the page is written
     pageDriver->ContentContext = contentContextDriver->ContentContext;
@@ -227,4 +231,49 @@ v8::Handle<v8::Value> PDFWriterDriver::PausePageContentContext(const Arguments& 
     pdfWriter->mPDFWriter.PausePageContentContext(pageContextDriver->ContentContext);
     
     return scope.Close(Undefined());
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObject(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[3]->IsNumber() || !args[3]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 4 coordinates of the form rectangle")));
+		return scope.Close(Undefined());
+    }
+     
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    Handle<Value> newInstance = FormXObjectDriver::NewInstance(args);
+    FormXObjectDriver* formXObjectDriver = ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject());
+    formXObjectDriver->FormXObject = pdfWriter->mPDFWriter.StartFormXObject(
+                                                                            PDFRectangle(args[0]->ToNumber()->Value(),
+                                                                                         args[1]->ToNumber()->Value(),
+                                                                                         args[2]->ToNumber()->Value(),
+                                                                                         args[3]->ToNumber()->Value()));
+    return scope.Close(newInstance);
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::EndFormXObject(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+	if (args.Length() != 1) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		return scope.Close(Undefined());
+	}
+    
+    FormXObjectDriver* formContextDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
+    if(!formContextDriver)
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		return scope.Close(Undefined());
+    }
+        
+    pdfWriter->mPDFWriter.EndFormXObject(formContextDriver->FormXObject);
+    
+    return scope.Close(Undefined());
+    
 }

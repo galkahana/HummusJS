@@ -39,6 +39,8 @@ private:
     static v8::Handle<v8::Value> WritePage(const v8::Arguments& args);
     static v8::Handle<v8::Value> StartPageContentContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> PausePageContentContext(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateFormXObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndFormXObject(const v8::Arguments& args);
 
     
     PDFWriter mPDFWriter;

@@ -19,6 +19,7 @@
  */
 #include "PDFPageDriver.h"
 #include "PDFRectangle.h"
+#include "ResourcesDictionaryDriver.h"
 
 using namespace v8;
 
@@ -31,11 +32,12 @@ PDFPageDriver::PDFPageDriver()
 
 void PDFPageDriver::Init()
 {
-    // prepare the pdfwriter interfrace template
+    // prepare the page interfrace template
     Local<FunctionTemplate> pdfPageFT = FunctionTemplate::New(New);
     pdfPageFT->SetClassName(String::NewSymbol("PDFPage"));
     pdfPageFT->InstanceTemplate()->SetInternalFieldCount(1);
     pdfPageFT->InstanceTemplate()->SetAccessor(String::NewSymbol("mediaBox"),GetMediaBox,SetMediaBox);
+    pdfPageFT->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
     
     constructor = Persistent<Function>::New(pdfPageFT->GetFunction());
 }
@@ -44,11 +46,22 @@ Handle<Value> PDFPageDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
-    const unsigned argc = 0;
-    Handle<Value> argv[argc];
-    Local<Object> instance = constructor->NewInstance(argc, argv);
+    if(args.Length() == 4)
+    {
+        const unsigned argc = 4;
+        Handle<Value> argv[argc] = {args[0],args[1],args[2],args[3]};
+        Local<Object> instance = constructor->NewInstance(argc, argv);
+        
+        return scope.Close(instance);
+    }
+    else
+    {
+        const unsigned argc = 0;
+        Handle<Value> argv[argc];
+        Local<Object> instance = constructor->NewInstance(argc, argv);
     
-    return scope.Close(instance);
+        return scope.Close(instance);
+    }
 }
 
 
@@ -58,6 +71,15 @@ Handle<Value> PDFPageDriver::New(const Arguments& args)
     
     PDFPageDriver* pdfPage = new PDFPageDriver();
     pdfPage->Wrap(args.This());
+    
+    
+    if(args.Length() == 4 && args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
+    {
+        pdfPage->mPDFPage.SetMediaBox(PDFRectangle(args[0]->ToNumber()->Value(),
+                                                   args[1]->ToNumber()->Value(),
+                                                   args[2]->ToNumber()->Value(),
+                                                   args[3]->ToNumber()->Value()));
+    }
     
     return args.This();
 }
@@ -95,6 +117,18 @@ void PDFPageDriver::SetMediaBox(Local<String> property,Local<Value> value,const 
                                                   value->ToObject()->Get(2)->ToNumber()->Value(),
                                                   value->ToObject()->Get(3)->ToNumber()->Value()));
     
+}
+
+Handle<Value> PDFPageDriver::GetResourcesDictionary(const Arguments& args)
+{
+    HandleScope scope;
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args.This());
+    
+    Handle<Value> newInstance = ResourcesDictionaryDriver::NewInstance(args);
+    ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->ToObject());
+    resourceDictionaryDriver->ResourcesDictionaryInstance = &(pageDriver->GetPage()->GetResourcesDictionary());
+    
+    return scope.Close(newInstance);
 }
 
 
