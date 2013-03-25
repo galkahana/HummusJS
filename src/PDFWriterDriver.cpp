@@ -144,7 +144,7 @@ v8::Handle<v8::Value> PDFWriterDriver::WritePage(const v8::Arguments& args)
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1) {
+	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
 		return scope.Close(Undefined());
 	}
@@ -180,7 +180,7 @@ v8::Handle<v8::Value> PDFWriterDriver::StartPageContentContext(const Arguments& 
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1) {
+	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
 		return scope.Close(Undefined());
 	}
@@ -210,15 +210,15 @@ v8::Handle<v8::Value> PDFWriterDriver::PausePageContentContext(const Arguments& 
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+	if (args.Length() != 1 || !PageContentContextDriver::HasInstance(args[0])) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page context as the single parameter")));
 		return scope.Close(Undefined());
 	}
     
     PageContentContextDriver* pageContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(args[0]->ToObject());
     if(!pageContextDriver)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page context as the single parameter")));
 		return scope.Close(Undefined());
     }
     
@@ -260,15 +260,15 @@ v8::Handle<v8::Value> PDFWriterDriver::EndFormXObject(const v8::Arguments& args)
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+	if (args.Length() != 1 || !FormXObjectDriver::HasInstance(args[0])) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a form as the single parameter")));
 		return scope.Close(Undefined());
 	}
     
     FormXObjectDriver* formContextDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
     if(!formContextDriver)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a page as the single parameter")));
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a form as the single parameter")));
 		return scope.Close(Undefined());
     }
         

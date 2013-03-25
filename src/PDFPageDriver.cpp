@@ -24,6 +24,7 @@
 using namespace v8;
 
 Persistent<Function> PDFPageDriver::constructor;
+Persistent<FunctionTemplate> PDFPageDriver::constructor_template;
 
 PDFPageDriver::PDFPageDriver()
 {
@@ -33,13 +34,14 @@ PDFPageDriver::PDFPageDriver()
 void PDFPageDriver::Init()
 {
     // prepare the page interfrace template
-    Local<FunctionTemplate> pdfPageFT = FunctionTemplate::New(New);
-    pdfPageFT->SetClassName(String::NewSymbol("PDFPage"));
-    pdfPageFT->InstanceTemplate()->SetInternalFieldCount(1);
-    pdfPageFT->InstanceTemplate()->SetAccessor(String::NewSymbol("mediaBox"),GetMediaBox,SetMediaBox);
-    pdfPageFT->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
+    Local<FunctionTemplate> t = FunctionTemplate::New(New);
+    constructor_template = Persistent<FunctionTemplate>::New(t);
+    constructor_template->SetClassName(String::NewSymbol("PDFPage"));
+    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("mediaBox"),GetMediaBox,SetMediaBox);
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
     
-    constructor = Persistent<Function>::New(pdfPageFT->GetFunction());
+    constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
 
 Handle<Value> PDFPageDriver::NewInstance(const Arguments& args)
@@ -64,6 +66,11 @@ Handle<Value> PDFPageDriver::NewInstance(const Arguments& args)
     }
 }
 
+bool PDFPageDriver::HasInstance(Handle<Value> inObject)
+{
+    return inObject->IsObject() &&
+    constructor_template->HasInstance(inObject->ToObject());
+}
 
 Handle<Value> PDFPageDriver::New(const Arguments& args)
 {

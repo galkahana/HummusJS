@@ -35,17 +35,19 @@ PageContentContextDriver::PageContentContextDriver()
 }
 
 Persistent<Function> PageContentContextDriver::constructor;
+Persistent<FunctionTemplate> PageContentContextDriver::constructor_template;
 
 void PageContentContextDriver::Init()
 {
     // prepare the context driver interfrace template
-    Local<FunctionTemplate> ft = FunctionTemplate::New(New);
-    ft->SetClassName(String::NewSymbol("PageContentContext"));
-    ft->InstanceTemplate()->SetInternalFieldCount(1);
+    Local<FunctionTemplate> t = FunctionTemplate::New(New);
+    constructor_template = Persistent<FunctionTemplate>::New(t);
+    constructor_template->SetClassName(String::NewSymbol("PageContentContext"));
+    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
 
-    AbstractContentContextDriver::Init(ft);
+    AbstractContentContextDriver::Init(constructor_template);
     
-    constructor = Persistent<Function>::New(ft->GetFunction());
+    constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
 
 Handle<Value> PageContentContextDriver::NewInstance(const Arguments& args)
@@ -57,6 +59,12 @@ Handle<Value> PageContentContextDriver::NewInstance(const Arguments& args)
     Local<Object> instance = constructor->NewInstance(argc, argv);
     
     return scope.Close(instance);
+}
+
+bool PageContentContextDriver::HasInstance(Handle<Value> inObject)
+{
+    return inObject->IsObject() &&
+    constructor_template->HasInstance(inObject->ToObject());
 }
 
 

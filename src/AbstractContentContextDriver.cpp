@@ -294,7 +294,7 @@ Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
         
         contentContext->GetContext()->Do(*utf8XObjectName);
     }
-    else
+    else if(FormXObjectDriver::HasInstance(args[0]))
     {
         // a form object
         FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
@@ -305,6 +305,11 @@ Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(formDriver->FormXObject->GetObjectID()));
+    }
+    else
+    {
+        ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary")));
+        return scope.Close(Undefined());
     }
     return scope.Close(args.This());
 }

@@ -21,6 +21,7 @@
 #include "PDFFormXObject.h"
 #include "XObjectContentContextDriver.h"
 #include "ResourcesDictionaryDriver.h"
+#include <cstring>
 
 using namespace v8;
 
@@ -32,14 +33,15 @@ FormXObjectDriver::~FormXObjectDriver()
 void FormXObjectDriver::Init()
 {
     // prepare the form xobject driver interfrace template
-    Local<FunctionTemplate> ft = FunctionTemplate::New(New);
-    ft->SetClassName(String::NewSymbol("FormXObject"));
-    ft->InstanceTemplate()->SetInternalFieldCount(1);
+    Local<FunctionTemplate> t = FunctionTemplate::New(New);
+    constructor_template = Persistent<FunctionTemplate>::New(t);
+    constructor_template->SetClassName(String::NewSymbol("FormXObject"));
+    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
     
-    ft->InstanceTemplate()->SetAccessor(String::NewSymbol("id"),GetID);
-    ft->PrototypeTemplate()->Set(String::NewSymbol("getContentContext"),FunctionTemplate::New(GetContentContext)->GetFunction());
-    ft->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
-    constructor = Persistent<Function>::New(ft->GetFunction());
+    constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("id"),GetID);
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getContentContext"),FunctionTemplate::New(GetContentContext)->GetFunction());
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
+    constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
 
 Handle<Value> FormXObjectDriver::NewInstance(const Arguments& args)
@@ -52,12 +54,19 @@ Handle<Value> FormXObjectDriver::NewInstance(const Arguments& args)
     return scope.Close(instance);
 }
 
+bool FormXObjectDriver::HasInstance(Handle<Value> inObject)
+{
+    return inObject->IsObject() &&
+        constructor_template->HasInstance(inObject->ToObject());
+}
+
 FormXObjectDriver::FormXObjectDriver()
 {
     FormXObject = NULL;
 }
 
 Persistent<Function> FormXObjectDriver::constructor;
+Persistent<FunctionTemplate> FormXObjectDriver::constructor_template;
 
 Handle<v8::Value> FormXObjectDriver::New(const Arguments& args)
 {

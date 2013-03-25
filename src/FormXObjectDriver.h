@@ -33,12 +33,15 @@ public:
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
+    static bool HasInstance(v8::Handle<v8::Value> inObject);
+    
     PDFFormXObject* FormXObject;
     
 private:
     FormXObjectDriver();
     
     static v8::Persistent<v8::Function> constructor;
+    static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetID(v8::Local<v8::String> property,const v8::AccessorInfo &info);
     static v8::Handle<v8::Value> GetContentContext(const v8::Arguments& args);
