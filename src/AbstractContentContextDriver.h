@@ -53,5 +53,11 @@ private:
     static v8::Handle<v8::Value> S(const v8::Arguments& args);
     static v8::Handle<v8::Value> cm(const v8::Arguments& args);
     static v8::Handle<v8::Value> doXObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> BT(const v8::Arguments& args);
+    static v8::Handle<v8::Value> Tf(const v8::Arguments& args);
+    static v8::Handle<v8::Value> Tm(const v8::Arguments& args);
+    static v8::Handle<v8::Value> Tj(const v8::Arguments& args);
+    static v8::Handle<v8::Value> ET(const v8::Arguments& args);
+    
     
 };

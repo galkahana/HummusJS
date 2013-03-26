@@ -21,6 +21,7 @@
 #include "PDFPageDriver.h"
 #include "PageContentContextDriver.h"
 #include "FormXObjectDriver.h"
+#include "UsedFontDriver.h"
 
 using namespace v8;
 
@@ -42,6 +43,9 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("pausePageContentContext"),FunctionTemplate::New(PausePageContentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObject"),FunctionTemplate::New(CreateFormXObject)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("endFormXObject"),FunctionTemplate::New(EndFormXObject)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createformXObjectFromJPGFile"),FunctionTemplate::New(CreateformXObjectFromJPGFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getFontForFile"),FunctionTemplate::New(GetFontForFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("attachURLLinktoCurrentPage"),FunctionTemplate::New(AttachURLLinktoCurrentPage)->GetFunction());
     
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -277,3 +281,85 @@ v8::Handle<v8::Value> PDFWriterDriver::EndFormXObject(const v8::Arguments& args)
     return scope.Close(Undefined());
     
 }
+
+
+
+v8::Handle<v8::Value> PDFWriterDriver::CreateformXObjectFromJPGFile(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 || !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFFormXObject* formXObject = pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+    if(!formXObject)
+    {
+		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing jpg file")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = FormXObjectDriver::NewInstance(args);
+    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
+    return scope.Close(newInstance);
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::GetFontForFile(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 || !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the font file")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFUsedFont* usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()));
+    if(!usedFont)
+    {
+		ThrowException(Exception::Error(String::New("unable to create font object. verify that the target is an existing and supported font type (ttf,otf,type1,dfont,ttc)")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = UsedFontDriver::NewInstance(args);
+    ObjectWrap::Unwrap<UsedFontDriver>(newInstance->ToObject())->UsedFont = usedFont;
+    return scope.Close(newInstance);
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::AttachURLLinktoCurrentPage(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 5 ||
+        !args[0]->IsString() ||
+        !args[1]->IsNumber() ||
+        !args[2]->IsNumber() ||
+        !args[3]->IsNumber() ||
+        !args[4]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a url, and 4 numbers (left,bottom,right,top) for the rectangle valid for clicking")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    EStatusCode status = pdfWriter->mPDFWriter.AttachURLLinktoCurrentPage(*String::Utf8Value(args[0]->ToString()),
+                                                                             PDFRectangle(args[1]->ToNumber()->Value(),
+                                                                             args[2]->ToNumber()->Value(),
+                                                                             args[3]->ToNumber()->Value(),
+                                                                             args[4]->ToNumber()->Value()));
+    if(status != eSuccess)
+    {
+		ThrowException(Exception::Error(String::New("unable to attach link to current page. will happen if the input URL may not be encoded to ascii7")));
+		return scope.Close(Undefined());
+    }
+    
+    return scope.Close(Undefined());
+}
+

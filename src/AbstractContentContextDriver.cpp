@@ -23,6 +23,7 @@
 #include "ResourcesDictionary.h"
 #include "PDFFormXObject.h"
 #include "FormXObjectDriver.h"
+#include "UsedFontDriver.h"
 
 using namespace v8;
 
@@ -50,7 +51,11 @@ void AbstractContentContextDriver::Init(Handle<FunctionTemplate>& ioDriverTempla
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("S"),FunctionTemplate::New(S)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("cm"),FunctionTemplate::New(cm)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("doXObject"),FunctionTemplate::New(doXObject)->GetFunction());
-
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("BT"),FunctionTemplate::New(BT)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tf"),FunctionTemplate::New(Tf)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tm"),FunctionTemplate::New(Tm)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tj"),FunctionTemplate::New(Tj)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("ET"),FunctionTemplate::New(ET)->GetFunction());
 }
 
 Handle<Value> AbstractContentContextDriver::q(const Arguments& args)
@@ -311,5 +316,110 @@ Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
         ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary")));
         return scope.Close(Undefined());
     }
+    return scope.Close(args.This());
+}
+
+Handle<Value> AbstractContentContextDriver::BT(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+    else
+        contentContext->GetContext()->BT();
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> AbstractContentContextDriver::Tf(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+    {
+        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
+        return scope.Close(Undefined());
+    }
+    
+	if (args.Length() != 2 ||
+        !UsedFontDriver::HasInstance(args[0]) ||
+        !args[1]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide a font object (create with pdfWriter.getFontForFile) and a size measure")));
+		return scope.Close(Undefined());
+	}
+    
+    contentContext->GetContext()->Tf(
+                                     ObjectWrap::Unwrap<UsedFontDriver>(args[0]->ToObject())->UsedFont,
+                                     args[1]->ToNumber()->Value());
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> AbstractContentContextDriver::Tm(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+    {
+        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        return scope.Close(Undefined());
+    }
+    
+	if (args.Length() != 6 ||
+        !args[0]->IsNumber() ||
+        !args[1]->IsNumber() ||
+        !args[2]->IsNumber() ||
+        !args[3]->IsNumber() ||
+        !args[4]->IsNumber() ||
+        !args[5]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix (for text)")));
+		return scope.Close(Undefined());
+	}
+    
+    contentContext->GetContext()->Tm(args[0]->ToNumber()->Value(),
+                                     args[1]->ToNumber()->Value(),
+                                     args[2]->ToNumber()->Value(),
+                                     args[3]->ToNumber()->Value(),
+                                     args[4]->ToNumber()->Value(),
+                                     args[5]->ToNumber()->Value());
+    return scope.Close(args.This());
+}
+
+Handle<Value> AbstractContentContextDriver::Tj(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+    {
+        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        return scope.Close(Undefined());
+    }
+    
+	if (args.Length() != 1 ||
+        !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 1 argument, the uf8 encoded text that you want to display")));
+		return scope.Close(Undefined());
+	}
+    
+    contentContext->GetContext()->Tj(*String::Utf8Value(args[0]->ToString()));
+    return scope.Close(args.This());
+}
+
+Handle<Value> AbstractContentContextDriver::ET(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+    else
+        contentContext->GetContext()->ET();
     return scope.Close(args.This());
 }

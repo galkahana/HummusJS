@@ -41,7 +41,10 @@ private:
     static v8::Handle<v8::Value> PausePageContentContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreateFormXObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> EndFormXObject(const v8::Arguments& args);
-
+    static v8::Handle<v8::Value> CreateformXObjectFromJPGFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetFontForFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AttachURLLinktoCurrentPage(const v8::Arguments& args);
+    
     
     PDFWriter mPDFWriter;
 };

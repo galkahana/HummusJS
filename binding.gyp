@@ -7,9 +7,11 @@
             ],
             'include_dirs': [
                 './src',
-                './deps/PDFWriter'
+                './deps/PDFWriter',
+                './deps/FreeType/include'
             ],
            'sources': [
+                './src/UsedFontDriver.cpp',
                 './src/ResourcesDictionaryDriver.cpp',
                 './src/XObjectContentContextDriver.cpp',
                 './src/FormXObjectDriver.cpp',
