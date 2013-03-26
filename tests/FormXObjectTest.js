@@ -20,7 +20,7 @@ xobjectForm.getContentContext().q()
                                 .k(0,100,100,0)
                                 .re(0,0,200,100)
                                 .f()
-                                .q();
+                                .Q();
 pdfWriter.endFormXObject(xobjectForm);
 
 // continue page content, and use form

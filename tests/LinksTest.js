@@ -18,12 +18,10 @@ var contentContext = pdfWriter.startPageContentContext(page).BT()
                                         .Q();
 
 // pausing page write so can create link objects
-pdfWriter.pausePageContentContext(contentContext);
-
-pdfWriter.attachURLLinktoCurrentPage('http://www.pdfhummus.com',87.75,694.56,198.76,720);
-pdfWriter.attachURLLinktoCurrentPage('http://www.soundcloud.com',90.024,200,367.524,375);
-
-pdfWriter.writePage(page);
-pdfWriter.end();
+pdfWriter.pausePageContentContext(contentContext)
+         .attachURLLinktoCurrentPage('http://www.pdfhummus.com',87.75,694.56,198.76,720)
+         .attachURLLinktoCurrentPage('http://www.soundcloud.com',90.024,200,367.524,375)
+         .writePage(page)
+         .end();
 
 console.log('done - ok');

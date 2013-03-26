@@ -29,6 +29,12 @@ public:
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
 
+    PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
+                                    EPDFVersion inPDFVersion);
+    
+    PDFHummus::EStatusCode ContinuePDF(const std::string& inOutputFilePath,
+                                    const std::string& inStateFilePath);
+    
 private:
     PDFWriterDriver(){};
     
@@ -44,6 +50,7 @@ private:
     static v8::Handle<v8::Value> CreateformXObjectFromJPGFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetFontForFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> AttachURLLinktoCurrentPage(const v8::Arguments& args);
+    static v8::Handle<v8::Value> Shutdown(const v8::Arguments& args);
     
     
     PDFWriter mPDFWriter;

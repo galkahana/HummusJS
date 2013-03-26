@@ -46,6 +46,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createformXObjectFromJPGFile"),FunctionTemplate::New(CreateformXObjectFromJPGFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getFontForFile"),FunctionTemplate::New(GetFontForFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("attachURLLinktoCurrentPage"),FunctionTemplate::New(AttachURLLinktoCurrentPage)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("shutdown"),FunctionTemplate::New(Shutdown)->GetFunction());
     
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -80,43 +81,6 @@ Handle<Value> PDFWriterDriver::New(const Arguments& args)
     PDFWriterDriver* pdfWriter = new PDFWriterDriver();
     pdfWriter->Wrap(args.This());
     
-    // start a new pdf based on input parameters
-	if (args.Length() < 1 || args.Length() > 2) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and optionally another one for setting the PDF level")));
-		return scope.Close(Undefined());
-	}
-    
-	if (!args[0]->IsString()) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and optionally another one for setting the PDF level")));
-		return scope.Close(Undefined());
-	}
-    
-	Local<String> stringArg = args[0]->ToString();
-	String::Utf8Value utf8Path(stringArg);
-    
-    
-    EPDFVersion pdfVersion;
-    
-    if(args.Length() == 2 && args[1]->IsNumber())
-    {
-        long pdfVersionValue = args[1]->ToNumber()->Int32Value();
-        
-        if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
-        {
-            ThrowException(Exception::TypeError(String::New("Wrong argument for PDF version, please provide a valid PDF version")));
-            return scope.Close(Undefined());
-        }
-        pdfVersion = (EPDFVersion)pdfVersionValue;
-    }
-    else
-        pdfVersion = ePDFVersion13;
-    
-    if(pdfWriter->mPDFWriter.StartPDF(*utf8Path, pdfVersion) != PDFHummus::eSuccess)
-    {
-		ThrowException(Exception::TypeError(String::New("Unable to create PDF file, make sure that output file target is available")));
-		return scope.Close(Undefined());
-    }
-    
     return args.This();
 }
 
@@ -132,7 +96,7 @@ Handle<Value> PDFWriterDriver::End(const Arguments& args)
 		return scope.Close(Undefined());
     }
     
-    return scope.Close(Undefined());
+    return scope.Close(args.This());
 }
 
 Handle<Value> PDFWriterDriver::CreatePage(const Arguments& args)
@@ -174,7 +138,7 @@ v8::Handle<v8::Value> PDFWriterDriver::WritePage(const v8::Arguments& args)
 		return scope.Close(Undefined());
     }
     
-    return scope.Close(Undefined());
+    return scope.Close(args.This());
     
 }
 
@@ -234,7 +198,7 @@ v8::Handle<v8::Value> PDFWriterDriver::PausePageContentContext(const Arguments& 
     
     pdfWriter->mPDFWriter.PausePageContentContext(pageContextDriver->ContentContext);
     
-    return scope.Close(Undefined());
+    return scope.Close(args.This());
 }
 
 v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObject(const v8::Arguments& args)
@@ -278,7 +242,7 @@ v8::Handle<v8::Value> PDFWriterDriver::EndFormXObject(const v8::Arguments& args)
         
     pdfWriter->mPDFWriter.EndFormXObject(formContextDriver->FormXObject);
     
-    return scope.Close(Undefined());
+    return scope.Close(args.This());
     
 }
 
@@ -360,6 +324,41 @@ v8::Handle<v8::Value> PDFWriterDriver::AttachURLLinktoCurrentPage(const v8::Argu
 		return scope.Close(Undefined());
     }
     
-    return scope.Close(Undefined());
+    return scope.Close(args.This());
 }
 
+
+v8::Handle<v8::Value> PDFWriterDriver::Shutdown(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path to save the state file to")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    EStatusCode status = pdfWriter->mPDFWriter.Shutdown(*String::Utf8Value(args[0]->ToString()));
+    if(status != eSuccess)
+    {
+		ThrowException(Exception::Error(String::New("unable to save state file. verify that path is not occupied")));
+		return scope.Close(Undefined());
+    }
+    
+    return scope.Close(args.This());
+}
+
+PDFHummus::EStatusCode PDFWriterDriver::StartPDF(const std::string& inOutputFilePath,
+                                EPDFVersion inPDFVersion)
+{
+    return mPDFWriter.StartPDF(inOutputFilePath,inPDFVersion);
+}
+
+PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputFilePath,
+                                                    const std::string& inStateFilePath)
+{
+    return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath);
+}
