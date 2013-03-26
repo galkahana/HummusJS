@@ -8,7 +8,7 @@ if you want to contribute...well talk to me...also if you want to use.
 in any case, if you want to check out how this works, then using node-gyp to compile is all good an well AFTER you've done this:
 1. clone this one
 2. create a deps folder under the root folder of where you cloned the project to
-3. clone pdf-writer project into there (more precisely i need all the component libraries - libjpeg, libtiff, freetype, zlib, pdfwriter)
+3. clone pdf-writer project into there (more precisely i need all the component libraries - libjpeg, libtiff, freetype, zlib, pdfwriter, and the TestMaterials folder (for running tests))
 4. now you can got "node-gyp configure" and then "node-gyp build"
 
 5. to test, check out the tests folder
