@@ -1,6 +1,6 @@
 
 var hummus = require('../Hummus');
-var pdfWriter = hummus.createWriter('LinksTest.PDF');
+var pdfWriter = hummus.createWriter('./output/LinksTest.PDF');
 var page = pdfWriter.createPage(0,0,595,842);
 
 var soundCloudLogo = pdfWriter.createFormXObjectFromJPGFile('../deps/TestMaterials/Images/soundcloud_logo.jpg');

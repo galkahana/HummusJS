@@ -15,7 +15,7 @@ function addPageForTiff(inPDFWriter,inTiffPath)
 
 var hummus = require('../Hummus');
 
-var pdfWriter = hummus.createWriter('TiffImageTest.PDF');
+var pdfWriter = hummus.createWriter('./output/TiffImageTest.PDF');
 
 for(var i=1;i<9;++i)
     addPageForTiff(pdfWriter,'../deps/TestMaterials/Images/tiff/CCITT_' + i + '.tif');

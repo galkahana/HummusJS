@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('BasicJPGImagesTest.PDF');
+var pdfWriter = require('../Hummus').createWriter('./output/BasicJPGImagesTest.PDF');
 
 var page = pdfWriter.createPage(0,0,595,842);
 var contentContext = pdfWriter.startPageContentContext(page).q()

@@ -3,7 +3,7 @@ var hummus = require('../Hummus');
 
 
 {
-    var pdfWriterA = hummus.createWriter('SimpleContentShutdownRestart.PDF');
+    var pdfWriterA = hummus.createWriter('./output/SimpleContentShutdownRestart.PDF');
     var page = pdfWriterA.createPage(0,0,595,842);
     var font = pdfWriterA.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
     
@@ -32,12 +32,12 @@ var hummus = require('../Hummus');
                                             .ET();
                                             
     pdfWriterA.writePage(page)
-             .shutdown('ShutDownRestartState.txt');
+             .shutdown('./output/ShutDownRestartState.txt');
 }
 
 {
-    var pdfWriterB = hummus.createWriterToContinue('SimpleContentShutdownRestart.PDF',
-                                                    'ShutDownRestartState.txt');
+    var pdfWriterB = hummus.createWriterToContinue('./output/SimpleContentShutdownRestart.PDF',
+                                                    './output/ShutDownRestartState.txt');
     var page = pdfWriterB.createPage(0,0,595,842);
     
     

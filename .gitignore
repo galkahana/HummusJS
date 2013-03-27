@@ -2,3 +2,4 @@ hummusjs
 deps
 build
 .DS_Store
+tests/output

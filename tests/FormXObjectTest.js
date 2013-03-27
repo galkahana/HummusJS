@@ -1,6 +1,6 @@
 
 var hummus = require('../Hummus');
-var pdfWriter = hummus.createWriter("XObjectContent.pdf");
+var pdfWriter = hummus.createWriter('./output/XObjectContent.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 
 var pageContent = pdfWriter.startPageContentContext(page);

@@ -294,15 +294,39 @@ v8::Handle<v8::Value> PDFWriterDriver::GetFontForFile(const v8::Arguments& args)
 {
     HandleScope scope;
     
-    if(args.Length() != 1 || !args[0]->IsString())
+    if((args.Length() < 1  && args.Length() > 3)||
+                !args[0]->IsString() ||
+                (args.Length() == 2 && !args[1]->IsString() && !args[1]->IsNumber()) ||
+                (args.Length() == 3 && !args[1]->IsString() && !args[2]->IsNumber()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the font file")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the font file, with option to a 2nd parameter for another path in case of type 1 font. another optional argument may follow with font index in case of font packages (TTC, DFont)")));
 		return scope.Close(Undefined());
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    PDFUsedFont* usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()));
+    PDFUsedFont* usedFont;
+    
+    if(args.Length() == 3)
+    {
+        usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()),
+                                                        *String::Utf8Value(args[1]->ToString()),
+                                                        args[0]->ToNumber()->Uint32Value());
+    }
+    else if(args.Length() == 2)
+    {
+        if(args[1]->IsString())
+            usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()),
+                                                            *String::Utf8Value(args[1]->ToString()));
+        else
+            usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()),
+                                                            args[1]->ToNumber()->Uint32Value());
+    }
+    else // length is 1
+    {
+        usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()));
+    }
+    
     if(!usedFont)
     {
 		ThrowException(Exception::Error(String::New("unable to create font object. verify that the target is an existing and supported font type (ttf,otf,type1,dfont,ttc)")));
