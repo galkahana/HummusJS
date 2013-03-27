@@ -51,7 +51,11 @@ private:
     static v8::Handle<v8::Value> GetFontForFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> AttachURLLinktoCurrentPage(const v8::Arguments& args);
     static v8::Handle<v8::Value> Shutdown(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateFormXObjectFromTIFFFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateImageXObjectFromJPGFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetObjectsContext(const v8::Arguments& args);
     
+    static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     
     PDFWriter mPDFWriter;
 };

@@ -10,3 +10,10 @@ module.exports.ePDFVersion14 = 14;
 module.exports.ePDFVersion15 = 15;
 module.exports.ePDFVersion16 = 16;
 module.exports.ePDFVersion17 = 17;
+
+
+module.exports.KProcsetImageB = 'ImageB';
+module.exports.KProcsetImageC = 'ImageC';
+module.exports.KProcsetImageI = 'ImageI';
+module.exports.kProcsetPDF = 'PDF';
+module.exports.kProcsetText = 'Text';

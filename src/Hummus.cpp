@@ -27,6 +27,8 @@
 #include "XObjectContentContextDriver.h"
 #include "ResourcesDictionaryDriver.h"
 #include "UsedFontDriver.h"
+#include "ImageXObjectDriver.h"
+#include "ObjectsContextDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -111,6 +113,8 @@ void HummusInit(Handle<Object> exports) {
     XObjectContentContextDriver::Init();
     ResourcesDictionaryDriver::Init();
     UsedFontDriver::Init();
+    ImageXObjectDriver::Init();
+    ObjectsContextDriver::Init();
     
     // createWriter will create a new pdfwriter, pass a string for the target path
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());

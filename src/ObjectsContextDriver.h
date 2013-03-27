@@ -1,5 +1,5 @@
 /*
- Source File : ResourcesDictionaryDriver.h
+ Source File : ObjectsContextDriver
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -21,24 +21,22 @@
 #pragma once
 #include <node.h>
 
-class ResourcesDictionary;
+class ObjectsContext;
 
-class ResourcesDictionaryDriver : public node::ObjectWrap
+class ObjectsContextDriver : public node::ObjectWrap
 {
 public:
+    
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
-
-    // set externally
-    ResourcesDictionary* ResourcesDictionaryInstance;
+    
+    ObjectsContext* ObjectsContextInstance;
     
 private:
-    ResourcesDictionaryDriver();
+    ObjectsContextDriver();
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddFormXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddImageXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddProcsetResource(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AllocateNewObjectID(const v8::Arguments& args);
 
 };

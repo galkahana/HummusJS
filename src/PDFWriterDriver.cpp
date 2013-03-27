@@ -22,6 +22,8 @@
 #include "PageContentContextDriver.h"
 #include "FormXObjectDriver.h"
 #include "UsedFontDriver.h"
+#include "ImageXObjectDriver.h"
+#include "ObjectsContextDriver.h"
 
 using namespace v8;
 
@@ -43,10 +45,14 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("pausePageContentContext"),FunctionTemplate::New(PausePageContentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObject"),FunctionTemplate::New(CreateFormXObject)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("endFormXObject"),FunctionTemplate::New(EndFormXObject)->GetFunction());
-    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createformXObjectFromJPGFile"),FunctionTemplate::New(CreateformXObjectFromJPGFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromJPGFile"),FunctionTemplate::New(CreateformXObjectFromJPGFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getFontForFile"),FunctionTemplate::New(GetFontForFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("attachURLLinktoCurrentPage"),FunctionTemplate::New(AttachURLLinktoCurrentPage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("shutdown"),FunctionTemplate::New(Shutdown)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromTIFFFile"),FunctionTemplate::New(CreateFormXObjectFromTIFFFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createImageXObjectFromJPGFile"),FunctionTemplate::New(CreateImageXObjectFromJPGFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getObjectsContext"),FunctionTemplate::New(GetObjectsContext)->GetFunction());
+    
     
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -205,16 +211,25 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObject(const v8::Arguments& ar
 {
     HandleScope scope;
     
-    if(args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[3]->IsNumber() || !args[3]->IsNumber())
+    if((args.Length() != 4  && args.Length() != 5) || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()
+        || (args.Length() == 5 && !args[4]->IsNumber()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 4 coordinates of the form rectangle")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 4 coordinates of the form rectangle and an optional 5th agument which is the forward reference ID")));
 		return scope.Close(Undefined());
     }
      
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     Handle<Value> newInstance = FormXObjectDriver::NewInstance(args);
     FormXObjectDriver* formXObjectDriver = ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject());
-    formXObjectDriver->FormXObject = pdfWriter->mPDFWriter.StartFormXObject(
+    formXObjectDriver->FormXObject =
+                        args.Length() == 5 ?
+                                            pdfWriter->mPDFWriter.StartFormXObject(
+                                                                            PDFRectangle(args[0]->ToNumber()->Value(),
+                                                                                         args[1]->ToNumber()->Value(),
+                                                                                         args[2]->ToNumber()->Value(),
+                                                                                         args[3]->ToNumber()->Value()),
+                                                                                        (ObjectIDType)args[4]->ToNumber()->Value()):
+                                            pdfWriter->mPDFWriter.StartFormXObject(
                                                                             PDFRectangle(args[0]->ToNumber()->Value(),
                                                                                          args[1]->ToNumber()->Value(),
                                                                                          args[2]->ToNumber()->Value(),
@@ -252,15 +267,18 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateformXObjectFromJPGFile(const v8::Ar
 {
     HandleScope scope;
     
-    if(args.Length() != 1 || !args[0]->IsString())
+    if((args.Length() != 1  && args.Length() != 2 ) || !args[0]->IsString() || (args.Length() == 2 && !args[1]->IsNumber()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image. Optionally pass an object ID for a forward reference image")));
 		return scope.Close(Undefined());
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    PDFFormXObject* formXObject = pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+    PDFFormXObject* formXObject =
+        args.Length() == 2 ?
+        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
     if(!formXObject)
     {
 		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing jpg file")));
@@ -362,3 +380,139 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputF
 {
     return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath);
 }
+
+v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObjectFromTIFFFile(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if((args.Length() != 1 && args.Length() != 2) || !args[0]->IsString() || (args.Length() == 2 && !args[1]->IsObject() && !args[1]->IsNumber()))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image, and optionally an options object or object ID")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    TIFFUsageParameters tiffUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters;
+    ObjectIDType objectID = 0;
+    
+    if(args.Length() == 2)
+    {
+        if(args[1]->IsObject())
+        {
+            Local<Object> anObject = args[1]->ToObject();
+            
+            // page index parameters
+            if(anObject->Has(String::New("pageIndex")) && anObject->Get(String::New("pageIndex"))->IsNumber())
+                tiffUsageParameters.PageIndex = (unsigned int)anObject->Get(String::New("pageIndex"))->ToNumber()->Value();
+            
+            if(anObject->Has(String::New("bwTreatment")) && anObject->Get(String::New("bwTreatment"))->IsObject())
+            {
+                // special black and white treatment
+                Local<Object> bwObject = anObject->Get(String::New("bwTreatment"))->ToObject();
+                if(bwObject->Has(String::New("asImageMask")) && bwObject->Get(String::New("asImageMask"))->IsBoolean())
+                    tiffUsageParameters.BWTreatment.AsImageMask = bwObject->Get(String::New("asImageMask"))->ToBoolean()->Value();
+                if(bwObject->Has(String::New("oneColor")) && bwObject->Get(String::New("oneColor"))->IsArray())
+                    tiffUsageParameters.BWTreatment.OneColor = colorFromArray(bwObject->Get(String::New("oneColor")));
+            }
+
+            if(anObject->Has(String::New("grayscaleTreatment")) && anObject->Get(String::New("grayscaleTreatment"))->IsObject())
+            {
+                // special black and white treatment
+                Local<Object> colormapObject = anObject->Get(String::New("grayscaleTreatment"))->ToObject();
+                if(colormapObject->Has(String::New("asColorMap")) && colormapObject->Get(String::New("asColorMap"))->IsBoolean())
+                    tiffUsageParameters.GrayscaleTreatment.AsColorMap = colormapObject->Get(String::New("asColorMap"))->ToBoolean()->Value();
+                if(colormapObject->Has(String::New("oneColor")) && colormapObject->Get(String::New("oneColor"))->IsArray())
+                    tiffUsageParameters.GrayscaleTreatment.OneColor = colorFromArray(colormapObject->Get(String::New("oneColor")));
+                if(colormapObject->Has(String::New("zeroColor")) && colormapObject->Get(String::New("zeroColor"))->IsArray())
+                    tiffUsageParameters.GrayscaleTreatment.ZeroColor = colorFromArray(colormapObject->Get(String::New("zeroColor")));
+            }
+        }
+        else // number
+        {
+            objectID = args[1]->ToNumber()->Int32Value();
+        }
+
+    }
+    
+    PDFFormXObject* formXObject =
+        objectID == 0 ?
+            pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),tiffUsageParameters):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),objectID);
+    if(!formXObject)
+    {
+		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing tiff file")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = FormXObjectDriver::NewInstance(args);
+    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
+    return scope.Close(newInstance);
+}
+
+CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
+{
+    if(inArray->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value() == 4)
+    {
+        // cmyk color
+        return CMYKRGBColor((unsigned char)inArray->ToObject()->Get(0)->ToNumber()->Value(),
+                            (unsigned char)inArray->ToObject()->Get(1)->ToNumber()->Value(),
+                            (unsigned char)inArray->ToObject()->Get(2)->ToNumber()->Value(),
+                            (unsigned char)inArray->ToObject()->Get(3)->ToNumber()->Value());
+        
+    }
+    else if(inArray->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value() == 3)
+    {
+        // rgb color
+        return CMYKRGBColor((unsigned char)inArray->ToObject()->Get(0)->ToNumber()->Value(),
+                            (unsigned char)inArray->ToObject()->Get(1)->ToNumber()->Value(),
+                            (unsigned char)inArray->ToObject()->Get(2)->ToNumber()->Value());
+    }
+    else
+    {
+        ThrowException(Exception::Error(String::New("wrong input for color values. should be array of either 3 or 4 colors")));
+        return CMYKRGBColor::CMYKBlack;
+    }
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::CreateImageXObjectFromJPGFile(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if((args.Length() != 1 && args.Length() != 2) || !args[0]->IsString() || (args.Length() == 2 && !args[1]->IsNumber()))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image. pass another optional argument of a forward reference object ID")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+       
+   
+    PDFImageXObject* imageXObject =
+       args.Length() == 2 ?
+       pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()) :
+       pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+    if(!imageXObject)
+    {
+		ThrowException(Exception::Error(String::New("unable to create image xobject. verify that the target is an existing jpg file")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = ImageXObjectDriver::NewInstance(args);
+    ObjectWrap::Unwrap<ImageXObjectDriver>(newInstance->ToObject())->ImageXObject = imageXObject;
+    return scope.Close(newInstance);
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::GetObjectsContext(const v8::Arguments& args)
+{
+    HandleScope scope;
+
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    Handle<Value> newInstance = ObjectsContextDriver::NewInstance(args);
+    ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(newInstance->ToObject());
+    objectsContextDriver->ObjectsContextInstance = &(pdfWriter->mPDFWriter.GetObjectsContext());
+ 
+    return scope.Close(newInstance);
+}
+

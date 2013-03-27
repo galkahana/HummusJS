@@ -21,7 +21,6 @@
 #include "PDFFormXObject.h"
 #include "XObjectContentContextDriver.h"
 #include "ResourcesDictionaryDriver.h"
-#include <cstring>
 
 using namespace v8;
 

@@ -24,6 +24,7 @@
 #include "PDFFormXObject.h"
 #include "FormXObjectDriver.h"
 #include "UsedFontDriver.h"
+#include "ImageXObjectDriver.h"
 
 using namespace v8;
 
@@ -56,6 +57,7 @@ void AbstractContentContextDriver::Init(Handle<FunctionTemplate>& ioDriverTempla
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tm"),FunctionTemplate::New(Tm)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tj"),FunctionTemplate::New(Tj)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("ET"),FunctionTemplate::New(ET)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("rg"),FunctionTemplate::New(ET)->GetFunction());
 }
 
 Handle<Value> AbstractContentContextDriver::q(const Arguments& args)
@@ -310,6 +312,17 @@ Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(formDriver->FormXObject->GetObjectID()));
+    }else if(ImageXObjectDriver::HasInstance(args[0]))
+    {
+        // an image object
+        ImageXObjectDriver* imageDriver = ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->ToObject());
+        if(!imageDriver)
+        {
+            ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary")));
+            return scope.Close(Undefined());
+        }
+        
+        contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddImageXObjectMapping(imageDriver->ImageXObject));
     }
     else
     {
@@ -421,5 +434,31 @@ Handle<Value> AbstractContentContextDriver::ET(const Arguments& args)
         ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
     else
         contentContext->GetContext()->ET();
+    return scope.Close(args.This());
+}
+
+Handle<Value> AbstractContentContextDriver::rg(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+    {
+        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        return scope.Close(Undefined());
+    }
+    
+	if (args.Length() != 3 ||
+        !args[0]->IsNumber() ||
+        !args[1]->IsNumber() ||
+        !args[2]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 3 arguments as rgb color values")));
+		return scope.Close(Undefined());
+	}
+    
+    contentContext->GetContext()->rg(args[0]->ToNumber()->Value(),
+                                     args[1]->ToNumber()->Value(),
+                                     args[2]->ToNumber()->Value());
     return scope.Close(args.This());
 }

@@ -39,7 +39,7 @@ void PDFPageDriver::Init()
     constructor_template->SetClassName(String::NewSymbol("PDFPage"));
     constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
     constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("mediaBox"),GetMediaBox,SetMediaBox);
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictionary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }

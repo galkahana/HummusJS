@@ -20,11 +20,10 @@
 
 #include "ResourcesDictionaryDriver.h"
 #include "ResourcesDictionary.h"
+#include "ImageXObjectDriver.h"
 
 using namespace v8;
 
-
-static void Init();
 
 void ResourcesDictionaryDriver::Init()
 {
@@ -34,6 +33,8 @@ void ResourcesDictionaryDriver::Init()
     ft->InstanceTemplate()->SetInternalFieldCount(1);
     
     ft->PrototypeTemplate()->Set(String::NewSymbol("addFormXObjectMapping"),FunctionTemplate::New(AddFormXObjectMapping)->GetFunction());
+    ft->PrototypeTemplate()->Set(String::NewSymbol("addImageXObjectMapping"),FunctionTemplate::New(AddImageXObjectMapping)->GetFunction());
+    ft->PrototypeTemplate()->Set(String::NewSymbol("addProcsetResource"),FunctionTemplate::New(AddProcsetResource)->GetFunction());
     constructor = Persistent<Function>::New(ft->GetFunction());
 }
 
@@ -81,6 +82,61 @@ Handle<Value> ResourcesDictionaryDriver::AddFormXObjectMapping(const Arguments& 
                                                                                                         (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
     
     return scope.Close(name);
+    
+}
+
+Handle<Value> ResourcesDictionaryDriver::AddImageXObjectMapping(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1)
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument which is the image xobject or its ID")));
+		return scope.Close(Undefined());
+    }
+    
+    ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
+    
+    if(ImageXObjectDriver::HasInstance(args[0]))
+    {
+    
+        Local<String> name = String::New(
+                                         resourcesDictionaryDriver->ResourcesDictionaryInstance->AddImageXObjectMapping(
+                                                                                ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->ToObject())->ImageXObject
+                                                                                    ).c_str());
+        
+        return scope.Close(name);
+    }
+    else if(args[0]->IsNumber())
+    {
+        Local<String> name = String::New(
+                                         resourcesDictionaryDriver->ResourcesDictionaryInstance->AddImageXObjectMapping(
+                                                                                                                       (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+        
+        return scope.Close(name);
+    }
+    else
+    {
+		ThrowException(Exception::Error(String::New("wrong arguments, pass 1 argument which is the image xobject or its ID")));
+		return scope.Close(Undefined());
+    }
+}
+
+Handle<Value> ResourcesDictionaryDriver::AddProcsetResource(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 || !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument which is the procset name")));
+		return scope.Close(Undefined());
+    }
+    
+    ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
+    
+    resourcesDictionaryDriver->ResourcesDictionaryInstance->AddProcsetResource(*String::Utf8Value(args[0]->ToString()));
+    
+     return scope.Close(Undefined());
     
 }
 

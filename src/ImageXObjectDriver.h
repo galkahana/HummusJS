@@ -1,5 +1,5 @@
 /*
- Source File : ResourcesDictionaryDriver.h
+ Source File : ImageXObjectDriver
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -21,24 +21,27 @@
 #pragma once
 #include <node.h>
 
-class ResourcesDictionary;
+#include "PDFPage.h"
 
-class ResourcesDictionaryDriver : public node::ObjectWrap
+class PDFImageXObject;
+
+class ImageXObjectDriver : public node::ObjectWrap
 {
 public:
+    virtual ~ImageXObjectDriver();
+    
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
-
-    // set externally
-    ResourcesDictionary* ResourcesDictionaryInstance;
+    
+    static bool HasInstance(v8::Handle<v8::Value> inObject);
+    
+    PDFImageXObject* ImageXObject;
     
 private:
-    ResourcesDictionaryDriver();
+    ImageXObjectDriver();
     
     static v8::Persistent<v8::Function> constructor;
+    static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddFormXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddImageXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddProcsetResource(const v8::Arguments& args);
-
+    static v8::Handle<v8::Value> GetID(v8::Local<v8::String> property,const v8::AccessorInfo &info);
 };

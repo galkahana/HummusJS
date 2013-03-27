@@ -58,6 +58,8 @@ private:
     static v8::Handle<v8::Value> Tm(const v8::Arguments& args);
     static v8::Handle<v8::Value> Tj(const v8::Arguments& args);
     static v8::Handle<v8::Value> ET(const v8::Arguments& args);
+    static v8::Handle<v8::Value> rg(const v8::Arguments& args);
+    
     
     
 };

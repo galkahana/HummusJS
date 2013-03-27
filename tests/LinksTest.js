@@ -3,7 +3,7 @@ var hummus = require('../Hummus');
 var pdfWriter = hummus.createWriter('LinksTest.PDF');
 var page = pdfWriter.createPage(0,0,595,842);
 
-var soundCloudLogo = pdfWriter.createformXObjectFromJPGFile('../deps/TestMaterials/Images/soundcloud_logo.jpg');
+var soundCloudLogo = pdfWriter.createFormXObjectFromJPGFile('../deps/TestMaterials/Images/soundcloud_logo.jpg');
 var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
 
 var contentContext = pdfWriter.startPageContentContext(page).BT()
