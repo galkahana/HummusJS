@@ -24,6 +24,8 @@
 #include "UsedFontDriver.h"
 #include "ImageXObjectDriver.h"
 #include "ObjectsContextDriver.h"
+#include "DocumentContextExtenderAdapter.h"
+#include "DocumentCopyingContextDriver.h"
 
 using namespace v8;
 
@@ -52,8 +54,10 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromTIFFFile"),FunctionTemplate::New(CreateFormXObjectFromTIFFFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createImageXObjectFromJPGFile"),FunctionTemplate::New(CreateImageXObjectFromJPGFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getObjectsContext"),FunctionTemplate::New(GetObjectsContext)->GetFunction());
-    
-    
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("appendPDFPagesFromPDF"),FunctionTemplate::New(AppendPDFPagesFromPDF)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPagesToPage"),FunctionTemplate::New(MergePDFPagesToPage)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFCopyingContext"),FunctionTemplate::New(CreatePDFCopyingContext)->GetFunction());
+
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
 
@@ -539,4 +543,182 @@ v8::Handle<v8::Value> PDFWriterDriver::GetObjectsContext(const v8::Arguments& ar
  
     return scope.Close(newInstance);
 }
+
+v8::Handle<v8::Value> PDFWriterDriver::AppendPDFPagesFromPDF(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if((args.Length() != 1  &&
+       args.Length() != 2) ||
+       !args[0]->IsString() ||
+       (args.Length() == 2 && !args[1]->IsObject()))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for fille to append pages from, and optionally a configuration object")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFPageRange pageRange;
+    
+    if(args.Length() == 2)
+        pageRange = ObjectToPageRange(args[1]->ToObject());
+    
+    EStatusCodeAndObjectIDTypeList result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
+                                                                    *String::Utf8Value(args[0]->ToString()),
+                                                                    pageRange);
+    if(result.first != eSuccess)
+    {
+		ThrowException(Exception::Error(String::New("unable to append page, make sure it's fine")));
+		return scope.Close(Undefined());
+    }
+    
+    Local<Array> resultPageIDs = Array::New((unsigned int)result.second.size());
+    unsigned int index = 0;
+    
+    ObjectIDTypeList::iterator it = result.second.begin();
+    for(; it != result.second.end();++it)
+        resultPageIDs->Set(Number::New(index++),Number::New(*it));
+    
+    return scope.Close(resultPageIDs);
+}
+
+PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
+{
+    PDFPageRange pageRange;
+        
+    if(inObject->Has(String::New("type")) && inObject->Get(String::New("type"))->IsNumber())
+    {
+        pageRange.mType = (PDFPageRange::ERangeType)(inObject->Get(String::New("type"))->ToNumber()->Uint32Value());
+    }
+
+    if(inObject->Has(String::New("specificRanges")) && inObject->Get(String::New("specificRanges"))->IsArray())
+    {
+        Local<Object> anArray = inObject->Get(String::New("specificRanges"))->ToObject();
+        unsigned int length = anArray->Get(v8::String::New("length"))->ToNumber()->Uint32Value();
+        for(unsigned int i=0; i < length; ++i)
+        {
+            if(!anArray->Get(i)->IsArray() ||
+               !anArray->Get(i)->ToObject()->Get(v8::String::New("length"))->ToNumber()->Uint32Value() == 2)
+            {
+                ThrowException(Exception::TypeError(String::New("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers")));
+                break;
+            }
+            Local<Object> item = anArray->Get(i)->ToObject();
+            if(!item->Get(0)->IsNumber() || !item->Get(1)->IsNumber())
+            {
+                ThrowException(Exception::TypeError(String::New("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers")));
+                break;
+            }
+            pageRange.mSpecificRanges.push_back(ULongAndULong(
+                                                              item->Get(0)->ToNumber()->Uint32Value(),
+                                                              item->Get(1)->ToNumber()->Uint32Value()));
+            
+        }
+    }
+    
+    return pageRange;
+}
+
+class MergeInterpageCallbackCaller : public DocumentContextExtenderAdapter
+{
+public:
+	EStatusCode OnAfterMergePageFromPage(
+                                         PDFPage* inTargetPage,
+                                         PDFDictionary* inPageObjectDictionary,
+                                         ObjectsContext* inPDFWriterObjectContext,
+                                         DocumentContext* inPDFWriterDocumentContext,
+                                         PDFDocumentHandler* inPDFDocumentHandler)
+	{
+        if(!callback.IsEmpty())
+        {
+            const unsigned argc = 0;
+            Local<Value> argv[argc];
+            callback->Call(Context::GetCurrent()->Global(), argc, argv);
+        }
+		return PDFHummus::eSuccess;
+	}
+    
+    bool IsValid(){return !callback.IsEmpty();}
+
+    Local<Function> callback;
+};
+
+v8::Handle<v8::Value> PDFWriterDriver::MergePDFPagesToPage(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    /*
+        parameters are:
+            target page
+            file path to pdf to merge pages to
+            optional 1: options object
+            optional 2: callback function to call after each page merge
+     */
+    
+    if(args.Length() < 2 ||
+       !PDFPageDriver::HasInstance(args[0]) ||
+       !args[1]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, pass a page object, a path to pages source file, and two optional: configuration object and callback function that will be called between pages merging")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    PDFPageDriver* page = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
+    
+    PDFPageRange pageRange;
+    
+    // get page range
+    if(args.Length() > 2 && args[2]->IsObject())
+        pageRange = ObjectToPageRange(args[2]->ToObject());
+    else if(args.Length() > 3 && args[3]->IsObject())
+        pageRange = ObjectToPageRange(args[3]->ToObject());
+    
+    // now see if there's a need for activating the callback. will do that using the document extensibility option of the lib
+    MergeInterpageCallbackCaller caller;
+    if((args.Length() > 2 && args[2]->IsFunction()) ||
+       (args.Length() > 3 && args[3]->IsFunction()))
+        caller.callback = Local<Function>::Cast(args[2]->IsFunction() ? args[2] : args[3]);
+    if(caller.IsValid())
+        pdfWriter->mPDFWriter.GetDocumentContext().AddDocumentContextExtender(&caller);
+    
+    EStatusCode status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
+                                                                    *String::Utf8Value(args[1]->ToString()),
+                                                                    pageRange);
+    if(caller.IsValid())
+        pdfWriter->mPDFWriter.GetDocumentContext().RemoveDocumentContextExtender(&caller);
+
+    if(status != eSuccess)
+    {
+		ThrowException(Exception::Error(String::New("unable to append to page, make sure source file exists")));
+		return scope.Close(Undefined());
+    }
+    return scope.Close(args.This());
+}
+
+Handle<Value> PDFWriterDriver::CreatePDFCopyingContext(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 || !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument. A path to a PDF file to create copying context for")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    PDFDocumentCopyingContext* copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()));
+    if(!copyingContext)
+    {
+		ThrowException(Exception::Error(String::New("unable to create copying context. verify that the target is an existing PDF file")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = DocumentCopyingContextDriver::NewInstance(args);
+    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
+    return scope.Close(newInstance);
+}
+
 

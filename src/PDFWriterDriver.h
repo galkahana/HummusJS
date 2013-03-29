@@ -22,6 +22,7 @@
 #include <node.h>
 
 #include "PDFWriter.h"
+#include "PDFEmbedParameterTypes.h"
 
 class PDFWriterDriver : public node::ObjectWrap
 {
@@ -54,8 +55,14 @@ private:
     static v8::Handle<v8::Value> CreateFormXObjectFromTIFFFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreateImageXObjectFromJPGFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetObjectsContext(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AppendPDFPagesFromPDF(const v8::Arguments& args);
+    static v8::Handle<v8::Value> MergePDFPagesToPage(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreatePDFCopyingContext(const v8::Arguments& args);
+    
+    
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
+    static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
     
     PDFWriter mPDFWriter;
 };

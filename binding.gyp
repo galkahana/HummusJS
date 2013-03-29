@@ -11,6 +11,7 @@
                 './deps/FreeType/include'
             ],
            'sources': [
+                './src/DocumentCopyingContextDriver.cpp',
                 './src/ObjectsContextDriver.cpp',
                 './src/ImageXObjectDriver.cpp',
                 './src/UsedFontDriver.cpp',

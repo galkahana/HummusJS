@@ -81,7 +81,7 @@ Handle<Value> ImageXObjectDriver::GetID(Local<String> property,const AccessorInf
     
     if(!image->ImageXObject)
     {
-		ThrowException(Exception::TypeError(String::New("image object not initialized, create using pdfWriter.CreateFormXObject")));
+		ThrowException(Exception::TypeError(String::New("image object not initialized, create using pdfWriter.createFormXObject")));
         return scope.Close(Undefined());
     }
     
