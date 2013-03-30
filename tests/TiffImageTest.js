@@ -56,4 +56,4 @@ addPageForTiff(pdfWriter,'../deps/TestMaterials/Images/tiff/flower-separated-pla
 
 pdfWriter.end();
 
-console.log('Done - ok');
+console.log('done - ok');

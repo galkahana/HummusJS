@@ -57,6 +57,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("appendPDFPagesFromPDF"),FunctionTemplate::New(AppendPDFPagesFromPDF)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPagesToPage"),FunctionTemplate::New(MergePDFPagesToPage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFCopyingContext"),FunctionTemplate::New(CreatePDFCopyingContext)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectsFromPDF"),FunctionTemplate::New(CreateFormXObjectsFromPDF)->GetFunction());
 
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -720,5 +721,47 @@ Handle<Value> PDFWriterDriver::CreatePDFCopyingContext(const Arguments& args)
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
     return scope.Close(newInstance);
 }
+
+Handle<Value> PDFWriterDriver::CreateFormXObjectsFromPDF(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if((args.Length() < 1  &&
+        args.Length() > 3) ||
+       !args[0]->IsString() ||
+       !args[1]->IsNumber() ||
+       (args.Length() == 3 && !args[2]->IsObject()))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for fille to append pages from as xobject, an enumerator to determine the forms box size, an optionally a configuration object to choose page ranges")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFPageRange pageRange;
+    
+    if(args.Length() == 3)
+        pageRange = ObjectToPageRange(args[2]->ToObject());
+    
+    EStatusCodeAndObjectIDTypeList result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
+                                                                                        *String::Utf8Value(args[0]->ToString()),
+                                                                                        pageRange,
+                                                                                        (EPDFPageBox)args[1]->ToNumber()->Uint32Value());
+    if(result.first != eSuccess)
+    {
+		ThrowException(Exception::Error(String::New("unable to create forms from file. make sure the file exists, and that the input page range is valid (well, if you provided one..m'k?")));
+		return scope.Close(Undefined());
+    }
+    
+    Local<Array> resultFormIDs = Array::New((unsigned int)result.second.size());
+    unsigned int index = 0;
+    
+    ObjectIDTypeList::iterator it = result.second.begin();
+    for(; it != result.second.end();++it)
+        resultFormIDs->Set(Number::New(index++),Number::New(*it));
+    
+    return scope.Close(resultFormIDs);
+}
+ 
 
 

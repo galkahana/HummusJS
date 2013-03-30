@@ -58,8 +58,7 @@ private:
     static v8::Handle<v8::Value> AppendPDFPagesFromPDF(const v8::Arguments& args);
     static v8::Handle<v8::Value> MergePDFPagesToPage(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePDFCopyingContext(const v8::Arguments& args);
-    
-    
+    static v8::Handle<v8::Value> CreateFormXObjectsFromPDF(const v8::Arguments& args);
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
