@@ -41,7 +41,7 @@ void DocumentCopyingContextDriver::Init()
 {
     // prepare the context driver interfrace template
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    t->SetClassName(String::NewSymbol("PageContentContext"));
+    t->SetClassName(String::NewSymbol("DocumentCopyingContext"));
     t->InstanceTemplate()->SetInternalFieldCount(1);
     
     t->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromPDFPage"),FunctionTemplate::New(CreateFormXObjectFromPDFPage)->GetFunction());

@@ -11,6 +11,21 @@
                 './deps/FreeType/include'
             ],
            'sources': [
+           
+                './src/PDFArrayDriver.cpp',
+                './src/PDFDictionaryDriver.cpp',
+                './src/PDFStreamInputDriver.cpp',
+                './src/PDFIndirectObjectReferenceDriver.cpp',
+                './src/PDFBooleanDriver.cpp',
+                './src/PDFLiteralStringDriver.cpp',
+                './src/PDFHexStringDriver.cpp',
+                './src/PDFNullDriver.cpp',
+                './src/PDFNameDriver.cpp',
+                './src/PDFIntegerDriver.cpp',
+                './src/PDFRealDriver.cpp',
+                './src/PDFSymbolDriver.cpp',
+                './src/PDFObjectDriver.cpp',
+                './src/PDFReaderDriver.cpp',
                 './src/DocumentCopyingContextDriver.cpp',
                 './src/ObjectsContextDriver.cpp',
                 './src/ImageXObjectDriver.cpp',

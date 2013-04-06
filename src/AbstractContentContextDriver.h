@@ -28,13 +28,15 @@ class ResourcesDictionary;
 class AbstractContentContextDriver : public node::ObjectWrap
 {
 public:
-    AbstractContentContextDriver();
     
     
     static void Init(v8::Handle<v8::FunctionTemplate>& ioDriverTemplate);
     
     
     void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
+
+protected:
+    AbstractContentContextDriver();
     
 private:
     
