@@ -36,6 +36,9 @@ public:
     PDFHummus::EStatusCode ContinuePDF(const std::string& inOutputFilePath,
                                     const std::string& inStateFilePath);
     
+    PDFHummus::EStatusCode ModifyPDF(const std::string& inSourceFile,
+                                     const std::string& inOptionalOtherOutputFile);
+    
 private:
     PDFWriterDriver(){};
     

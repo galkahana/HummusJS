@@ -110,9 +110,6 @@ Handle<Value> CreateWriterToContinue(const Arguments& args)
 		return scope.Close(Undefined());
 	}
     
-    Local<String> stringArg = args[0]->ToString();
-	String::Utf8Value utf8Path(stringArg);
-    
     if(driver->ContinuePDF(*String::Utf8Value(args[0]->ToString()),
                         *String::Utf8Value(args[1]->ToString())) != PDFHummus::eSuccess)
     {
@@ -121,6 +118,35 @@ Handle<Value> CreateWriterToContinue(const Arguments& args)
     }
     return scope.Close(instance);
 }
+
+
+Handle<Value> CreateWriterToModify(const Arguments& args)
+{
+    HandleScope scope;
+    Handle<Value> instance = PDFWriterDriver::NewInstance(args);
+    
+    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
+    
+	if ((args.Length() != 1 && args.Length() != 2) ||
+        !args[0]->IsString() ||
+        (args.Length() == 2 && !args[1]->IsString()))
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 1 or 2 strings. the first string is the file to modify. the modification may be in place, or that the modified PDF is written to another PDF, in the case that a 2 parameter is provide for the target folder")));
+		return scope.Close(Undefined());
+	}
+    
+    std::string targetFilePath =
+        args.Length() == 1 ? "" : *String::Utf8Value(args[1]->ToString());
+    
+    if(driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
+                           targetFilePath) != PDFHummus::eSuccess)
+    {
+		ThrowException(Exception::TypeError(String::New("Unable to modify PDF file, make sure that output file target is available and that it is not protected")));
+		return scope.Close(Undefined());
+    }
+    return scope.Close(instance);
+}
+
 
 Handle<Value> CreateReader(const Arguments& args)
 {
@@ -197,6 +223,7 @@ void HummusInit(Handle<Object> exports) {
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());
     exports->Set(String::NewSymbol("createWriterToContinue"),FunctionTemplate::New(CreateWriterToContinue)->GetFunction());
+    exports->Set(String::NewSymbol("createWriterToModify"),FunctionTemplate::New(CreateWriterToModify)->GetFunction());
     exports->Set(String::NewSymbol("createReader"),FunctionTemplate::New(CreateReader)->GetFunction());
     
     // define pdf versions enum

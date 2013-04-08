@@ -26,6 +26,8 @@
 #include "ObjectsContextDriver.h"
 #include "DocumentContextExtenderAdapter.h"
 #include "DocumentCopyingContextDriver.h"
+#include "InputFile.h"
+#include "PDFParser.h"
 
 using namespace v8;
 
@@ -409,6 +411,40 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputF
 {
     return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath);
 }
+
+PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFile,
+                                                  const std::string& inOptionalOtherOutputFile)
+{
+    // two phase, cause i don't want to bother the users with the level BS.
+    // first, parse the source file, get the level. then modify with this level
+    
+    PDFHummus::EStatusCode status;
+    
+    do
+    {
+        EPDFVersion level = ePDFVersion13;
+        {
+            // read source file level
+            PDFParser reader;
+            InputFile inputFile;
+            
+            status = inputFile.OpenFile(inSourceFile);
+            if(status != PDFHummus::eSuccess)
+                break;
+            status = reader.StartPDFParsing(inputFile.GetInputStream());
+            if(status != PDFHummus::eSuccess)
+                break;
+            level = EPDFVersion(reader.GetPDFLevel() * 10);
+        }
+        
+        // now modify
+        status = mPDFWriter.ModifyPDF(inSourceFile,level,inOptionalOtherOutputFile);
+        
+    } while (false);
+    
+    return status;
+}
+
 
 v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObjectFromTIFFFile(const v8::Arguments& args)
 {
