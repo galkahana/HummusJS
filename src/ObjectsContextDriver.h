@@ -38,5 +38,16 @@ private:
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
     static v8::Handle<v8::Value> AllocateNewObjectID(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartDictionary(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartArray(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteNumber(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndArray(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndLine(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndDictionary(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndIndirectObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteIndirectObjectReference(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartNewIndirectObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartModifiedIndirectObject(const v8::Arguments& args);
+
 
 };

@@ -33,9 +33,10 @@ public:
     
     static v8::Handle<v8::Value> CreateDriver(PDFObject* inObject);
         
+    virtual PDFObject* GetObject() = 0;
+
 private:
     
-    virtual PDFObject* GetObject() = 0;
     
     static v8::Handle<v8::Value> GetType(const v8::Arguments& args);
     static v8::Handle<v8::Value> ToPDFIndirectObjectReference(const v8::Arguments& args);

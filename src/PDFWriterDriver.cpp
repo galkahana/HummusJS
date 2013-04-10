@@ -28,6 +28,8 @@
 #include "DocumentCopyingContextDriver.h"
 #include "InputFile.h"
 #include "PDFParser.h"
+#include "PDFDateDriver.h"
+#include "PDFTextStringDriver.h"
 
 using namespace v8;
 
@@ -60,6 +62,10 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPagesToPage"),FunctionTemplate::New(MergePDFPagesToPage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFCopyingContext"),FunctionTemplate::New(CreatePDFCopyingContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectsFromPDF"),FunctionTemplate::New(CreateFormXObjectsFromPDF)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFCopyingContextForModifiedFile"),FunctionTemplate::New(CreatePDFCopyingContextForModifiedFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFTextString"),FunctionTemplate::New(CreatePDFTextString)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFDate"),FunctionTemplate::New(CreatePDFDate)->GetFunction());
+    
 
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -799,5 +805,34 @@ Handle<Value> PDFWriterDriver::CreateFormXObjectsFromPDF(const Arguments& args)
     return scope.Close(resultFormIDs);
 }
  
+Handle<Value> PDFWriterDriver::CreatePDFCopyingContextForModifiedFile(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFDocumentCopyingContext* copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContextForModifiedFile();
+    if(!copyingContext)
+    {
+		ThrowException(Exception::Error(String::New("unable to create copying context for modified file...possibly a file is not being modified by this writer...")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = DocumentCopyingContextDriver::NewInstance(args);
+    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
+    return scope.Close(newInstance);
+}
 
+Handle<Value> PDFWriterDriver::CreatePDFTextString(const Arguments& args)
+{
+    HandleScope scope;
+    return scope.Close(PDFTextStringDriver::NewInstance(args));
+    
+}
 
+Handle<Value> PDFWriterDriver::CreatePDFDate(const Arguments& args)
+{
+    HandleScope scope;
+    return scope.Close(PDFDateDriver::NewInstance(args));
+    
+}

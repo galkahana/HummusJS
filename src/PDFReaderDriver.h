@@ -28,13 +28,17 @@
 class PDFReaderDriver : public node::ObjectWrap
 {
 public:
+    virtual ~PDFReaderDriver();
+
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
+    // two methods to create parser - owned, from file, or not owned, from another pointer
     PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath);
-   
+    void SetFromOwnedParser(PDFParser* inParser);
+    
 private:
-    PDFReaderDriver(){};
+    PDFReaderDriver();
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
@@ -44,7 +48,13 @@ private:
     static v8::Handle<v8::Value> QueryArrayObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetTrailer(const v8::Arguments& args);
     static v8::Handle<v8::Value> ParseNewObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetPageObjectID(const v8::Arguments& args);
+    static v8::Handle<v8::Value> ParsePage(const v8::Arguments& args);
+	
+	
     
-    PDFParser mPDFReader;
+    
+    bool mOwnsParser;
+    PDFParser* mPDFReader;
     InputFile mPDFFile;
 };

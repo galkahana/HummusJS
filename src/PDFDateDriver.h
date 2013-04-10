@@ -1,5 +1,5 @@
 /*
- Source File : PDFNameDriver.h
+ Source File : UsedFontDriver.h
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -20,26 +20,21 @@
 #pragma once
 
 #include <node.h>
-#include "PDFObjectDriver.h"
-#include "PDFObjectCast.h"
+#include "PDFDate.h"
 
-class PDFName;
-
-class PDFNameDriver : public PDFObjectDriver
+class PDFDateDriver : public node::ObjectWrap
 {
 public:
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
+    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
-    PDFObjectCastPtr<PDFName> TheObject;
-    
-    virtual PDFObject* GetObject();
 private:
-    
+    PDFDate mDate;
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetValue(v8::Local<v8::String> property,const v8::AccessorInfo &info);
+    static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
+    static int GetIntValueFromDateFunction(v8::Handle<v8::Date> inDate, const char* inFunctionName);
+    static unsigned int GetUIntValueFromDateFunction(v8::Handle<v8::Date> inDate, const char* inFunctionName);
+
 };

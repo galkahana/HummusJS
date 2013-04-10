@@ -34,9 +34,9 @@ public:
     
     PDFObjectCastPtr<PDFBoolean> TheObject;
     
+    virtual PDFObject* GetObject();
 private:
     
-    virtual PDFObject* GetObject();
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;

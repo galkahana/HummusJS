@@ -47,6 +47,10 @@
 #include "EPDFVersion.h"
 #include "PDFEmbedParameterTypes.h"
 #include "PDFObject.h"
+#include "PDFTextStringDriver.h"
+#include "PDFDateDriver.h"
+#include "ETokenSeparator.h"
+#include "DictionaryContextDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -160,10 +164,7 @@ Handle<Value> CreateReader(const Arguments& args)
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 1 string - path to file read")));
 		return scope.Close(Undefined());
 	}
-    
-    Local<String> stringArg = args[0]->ToString();
-	String::Utf8Value utf8Path(stringArg);
-    
+        
     if(driver->StartPDFParsing(*String::Utf8Value(args[0]->ToString())) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::Error(String::New("Unable to start parsing PDF file")));
@@ -219,6 +220,9 @@ void HummusInit(Handle<Object> exports) {
     PDFIntegerDriver::Init();
     PDFRealDriver::Init();
     PDFSymbolDriver::Init();
+    PDFTextStringDriver::Init();
+    PDFDateDriver::Init();
+    DictionaryContextDriver::Init();
     
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());
@@ -269,6 +273,11 @@ void HummusInit(Handle<Object> exports) {
     exports->Set(String::NewSymbol("ePDFObjectSymbol"),Number::New(PDFObject::ePDFObjectSymbol));
     // getter for string represenation of type enum
     exports->Set(String::NewSymbol("getTypeLabel"),FunctionTemplate::New(GetTypeLabel)->GetFunction());
+    
+    // ETokenSeparator
+    exports->Set(String::NewSymbol("eTokenSeparatorSpace"),Number::New(eTokenSeparatorSpace));
+    exports->Set(String::NewSymbol("eTokenSeparatorEndLine"),Number::New(eTokenSeparatorEndLine));
+    exports->Set(String::NewSymbol("eTokenSepratorNone"),Number::New(eTokenSepratorNone));
 }
 
 NODE_MODULE(Hummus, HummusInit)

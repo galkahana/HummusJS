@@ -1,5 +1,5 @@
 /*
- Source File : PDFNameDriver.h
+ Source File : ImageXObjectDriver
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -17,29 +17,34 @@
  limitations under the License.
  
  */
+
 #pragma once
-
 #include <node.h>
-#include "PDFObjectDriver.h"
-#include "PDFObjectCast.h"
 
-class PDFName;
+class DictionaryContext;
 
-class PDFNameDriver : public PDFObjectDriver
+class DictionaryContextDriver : public node::ObjectWrap
 {
 public:
+    virtual ~DictionaryContextDriver();
+    
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
+    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
-    PDFObjectCastPtr<PDFName> TheObject;
+    DictionaryContext* DictionaryContextInstance;
     
-    virtual PDFObject* GetObject();
 private:
-    
+    DictionaryContextDriver();
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetValue(v8::Local<v8::String> property,const v8::AccessorInfo &info);
+    static v8::Handle<v8::Value> WriteKey(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteNameValue(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteRectangleValue(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteLiteralStringValue(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteBooleanValue(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteObjectReferenceValue(const v8::Arguments& args);
 };

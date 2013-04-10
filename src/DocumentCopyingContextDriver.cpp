@@ -21,6 +21,8 @@
 #include "PDFDocumentCopyingContext.h"
 #include "PDFPageDriver.h"
 #include "FormXObjectDriver.h"
+#include "PDFReaderDriver.h"
+#include "PDFObjectDriver.h"
 
 using namespace v8;
 
@@ -48,6 +50,8 @@ void DocumentCopyingContextDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPageToPage"),FunctionTemplate::New(MergePDFPageToPage)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("appendPDFPageFromPDF"),FunctionTemplate::New(AppendPDFPageFromPDF)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPageToFormXObject"),FunctionTemplate::New(MergePDFPageToFormXObject)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getSourceDocumentParser"),FunctionTemplate::New(GetSourceDocumentParser)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("copyDirectObjectAsIs"),FunctionTemplate::New(CopyDirectObjectAsIs)->GetFunction());
 
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -197,6 +201,42 @@ Handle<Value> DocumentCopyingContextDriver::MergePDFPageToFormXObject(const Argu
 		ThrowException(Exception::Error(String::New("Unable to merge page index to form. parhaps the page index is wrong")));
     return scope.Close(Undefined());
 
+}
+
+Handle<Value> DocumentCopyingContextDriver::GetSourceDocumentParser(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContext = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    Handle<Value> newInstance = PDFReaderDriver::NewInstance(args);
+    ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->ToObject())->SetFromOwnedParser(copyingContext->CopyingContext->GetSourceDocumentParser());
+    return scope.Close(newInstance);
+}
+
+Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectAsIs(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+    
+    if(!args.Length() == 1) // need to sometimes check that this is a PDFObject
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is PDFObject to copy")));
+        return scope.Close(Undefined());
+    }
+    
+    EStatusCode status = copyingContextDriver->CopyingContext->CopyDirectObjectAsIs(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->ToObject())->GetObject());
+    if(status != eSuccess)
+		ThrowException(Exception::Error(String::New("Unable to merge page index to form. parhaps the page index is wrong")));
+    return scope.Close(Undefined());
+    
 }
 
 

@@ -32,7 +32,17 @@ using namespace v8;
 
 Persistent<Function> PDFReaderDriver::constructor;
 
+PDFReaderDriver::PDFReaderDriver()
+{
+    mPDFReader = NULL;
+    mOwnsParser = false;
+}
 
+PDFReaderDriver::~PDFReaderDriver()
+{
+    if(mOwnsParser)
+        delete mPDFReader;
+}
 
 void PDFReaderDriver::Init()
 {
@@ -47,7 +57,8 @@ void PDFReaderDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("queryDictionaryObject"),FunctionTemplate::New(QueryDictionaryObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("queryArrayObject"),FunctionTemplate::New(QueryArrayObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("parseNewObject"),FunctionTemplate::New(ParseNewObject)->GetFunction());
-    
+    t->PrototypeTemplate()->Set(String::NewSymbol("getPageObjectID"),FunctionTemplate::New(GetPageObjectID)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("parsePage"),FunctionTemplate::New(ParsePage)->GetFunction());
     constructor = Persistent<Function>::New(t->GetFunction());
 }
 
@@ -64,8 +75,10 @@ Handle<Value> PDFReaderDriver::NewInstance(const Arguments& args)
     }
     else
     {
-		ThrowException(Exception::Error(String::New("to create a reader object, pass a pdf file path ")));
-        return scope.Close(Undefined());
+        const unsigned argc = 0;
+        Handle<Value> argv[0];
+        Local<Object> instance = constructor->NewInstance(argc, argv);
+        return scope.Close(instance);
     }
 }
 
@@ -82,12 +95,12 @@ Handle<Value> PDFReaderDriver::New(const Arguments& args)
 
 Handle<Value> PDFReaderDriver::GetPDFLevel(const Arguments& args)
 {
-    return Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader.GetPDFLevel());
+    return Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->GetPDFLevel());
 }
 
 Handle<Value> PDFReaderDriver::GetPagesCount(const Arguments& args)
 {
-    return Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader.GetPagesCount());
+    return Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->GetPagesCount());
 }
 
 
@@ -105,7 +118,7 @@ Handle<Value> PDFReaderDriver::QueryDictionaryObject(const Arguments& args)
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     PDFDictionaryDriver* dictionary = ObjectWrap::Unwrap<PDFDictionaryDriver>(args[0]->ToObject());
     
-    RefCountPtr<PDFObject> object = reader->mPDFReader.QueryDictionaryObject(dictionary->TheObject.GetPtr(),*String::Utf8Value(args[1]->ToString()));
+    RefCountPtr<PDFObject> object = reader->mPDFReader->QueryDictionaryObject(dictionary->TheObject.GetPtr(),*String::Utf8Value(args[1]->ToString()));
     if(!object)
         return scope.Close(Undefined());
         
@@ -126,7 +139,7 @@ Handle<Value> PDFReaderDriver::QueryArrayObject(const Arguments& args)
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     PDFArrayDriver* driver = ObjectWrap::Unwrap<PDFArrayDriver>(args[0]->ToObject());
     
-    RefCountPtr<PDFObject> object = reader->mPDFReader.QueryArrayObject(driver->TheObject.GetPtr(),args[1]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFObject> object = reader->mPDFReader->QueryArrayObject(driver->TheObject.GetPtr(),args[1]->ToNumber()->Uint32Value());
     if(!object)
         return scope.Close(Undefined());
     
@@ -139,7 +152,7 @@ Handle<Value> PDFReaderDriver::GetTrailer(const Arguments& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
  
-    PDFDictionary* trailer = reader->mPDFReader.GetTrailer();
+    PDFDictionary* trailer = reader->mPDFReader->GetTrailer();
     
     if(!trailer)
         return scope.Close(Undefined());
@@ -149,10 +162,27 @@ Handle<Value> PDFReaderDriver::GetTrailer(const Arguments& args)
 
 PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(const std::string& inParsedFilePath)
 {
-    mPDFReader.ResetParser();
+    if(!mPDFReader && !mOwnsParser)
+    {
+        mPDFReader = new PDFParser();
+        mOwnsParser = true;
+    }
+    
+    mPDFReader->ResetParser();
     if(mPDFFile.OpenFile(inParsedFilePath) != PDFHummus::eSuccess)
         return PDFHummus::eFailure;
-    return mPDFReader.StartPDFParsing(mPDFFile.GetInputStream());
+    return mPDFReader->StartPDFParsing(mPDFFile.GetInputStream());
+}
+
+void PDFReaderDriver::SetFromOwnedParser(PDFParser* inParser)
+{
+    if(mOwnsParser)
+    {
+        delete mPDFReader;
+        mOwnsParser = false;
+        mPDFFile.CloseFile();
+    }
+    mPDFReader = inParser;
 }
 
 Handle<Value> PDFReaderDriver::ParseNewObject(const Arguments& args)
@@ -168,11 +198,52 @@ Handle<Value> PDFReaderDriver::ParseNewObject(const Arguments& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     
-    RefCountPtr<PDFObject> newObject = reader->mPDFReader.ParseNewObject(args[0]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFObject> newObject = reader->mPDFReader->ParseNewObject(args[0]->ToNumber()->Uint32Value());
     
     if(!newObject)
     {
  		ThrowException(Exception::TypeError(String::New("Unable to read object. Most probably object ID is wrong (or some file read issue...but i'd first check that ID. if i were you)")));
+        return scope.Close(Undefined());
+    }
+    
+    return scope.Close(PDFObjectDriver::CreateDriver(newObject.GetPtr()));
+}
+
+Handle<Value> PDFReaderDriver::GetPageObjectID(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !args[0]->IsNumber())
+    {
+ 		ThrowException(Exception::TypeError(String::New("Wrong arguments. Provide a page index")));
+        return scope.Close(Undefined());
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    
+    return scope.Close(Number::New(reader->mPDFReader->GetPageObjectID(args[0]->ToNumber()->Uint32Value())));
+}
+
+
+Handle<Value> PDFReaderDriver::ParsePage(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !args[0]->IsNumber())
+    {
+ 		ThrowException(Exception::TypeError(String::New("Wrong arguments. Provide a page index")));
+        return scope.Close(Undefined());
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    
+    RefCountPtr<PDFDictionary> newObject = reader->mPDFReader->ParsePage(args[0]->ToNumber()->Uint32Value());
+    
+    if(!newObject)
+    {
+ 		ThrowException(Exception::TypeError(String::New("Unable to read page, parhaps page index is wrong")));
         return scope.Close(Undefined());
     }
     
