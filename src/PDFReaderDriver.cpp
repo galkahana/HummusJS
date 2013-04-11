@@ -76,8 +76,7 @@ Handle<Value> PDFReaderDriver::NewInstance(const Arguments& args)
     else
     {
         const unsigned argc = 0;
-        Handle<Value> argv[0];
-        Local<Object> instance = constructor->NewInstance(argc, argv);
+        Local<Object> instance = constructor->NewInstance(argc, NULL);
         return scope.Close(instance);
     }
 }

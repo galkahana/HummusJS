@@ -22,8 +22,8 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
+#include "PDFIndirectObjectReference.h"
 
-class PDFIndirectObjectReference;
 
 class PDFIndirectObjectReferenceDriver : public PDFObjectDriver
 {

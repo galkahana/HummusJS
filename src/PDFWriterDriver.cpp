@@ -440,7 +440,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFil
             status = reader.StartPDFParsing(inputFile.GetInputStream());
             if(status != PDFHummus::eSuccess)
                 break;
-            level = EPDFVersion(reader.GetPDFLevel() * 10);
+            level = (EPDFVersion)((unsigned long)reader.GetPDFLevel() * 10);
         }
         
         // now modify
@@ -676,8 +676,7 @@ public:
         if(!callback.IsEmpty())
         {
             const unsigned argc = 0;
-            Local<Value> argv[argc];
-            callback->Call(Context::GetCurrent()->Global(), argc, argv);
+            callback->Call(Context::GetCurrent()->Global(), argc, NULL);
         }
 		return PDFHummus::eSuccess;
 	}

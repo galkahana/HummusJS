@@ -22,8 +22,7 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
-
-class PDFHexString;
+#include "PDFHexString.h"
 
 class PDFHexStringDriver : public PDFObjectDriver
 {

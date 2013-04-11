@@ -18,7 +18,6 @@
  
  */
 #include "PDFIndirectObjectReferenceDriver.h"
-#include "PDFIndirectObjectReference.h"
 #include "RefCountPtr.h"
 
 using namespace v8;
@@ -46,8 +45,7 @@ Handle<Value> PDFIndirectObjectReferenceDriver::NewInstance()
     HandleScope scope;
     
     const unsigned argc = 0;
-    Handle<Value> argv[argc];
-    Local<Object> instance = constructor->NewInstance(argc, argv);
+    Local<Object> instance = constructor->NewInstance(argc, NULL);
     
     return scope.Close(instance);
 }

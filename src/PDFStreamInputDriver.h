@@ -22,8 +22,7 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
-
-class PDFStreamInput;
+#include "PDFStreamInput.h"
 
 class PDFStreamInputDriver : public PDFObjectDriver
 {

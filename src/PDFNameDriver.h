@@ -22,8 +22,7 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
-
-class PDFName;
+#include "PDFName.h"
 
 class PDFNameDriver : public PDFObjectDriver
 {

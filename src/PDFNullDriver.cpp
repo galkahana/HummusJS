@@ -18,7 +18,6 @@
  
  */
 #include "PDFNullDriver.h"
-#include "PDFNull.h"
 #include "RefCountPtr.h"
 
 using namespace v8;
@@ -44,8 +43,7 @@ Handle<Value> PDFNullDriver::NewInstance()
     HandleScope scope;
     
     const unsigned argc = 0;
-    Handle<Value> argv[argc];
-    Local<Object> instance = constructor->NewInstance(argc, argv);
+    Local<Object> instance = constructor->NewInstance(argc, NULL);
     
     return scope.Close(instance);
 }

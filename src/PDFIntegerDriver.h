@@ -22,8 +22,8 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
+#include "PDFInteger.h"
 
-class PDFInteger;
 
 class PDFIntegerDriver : public PDFObjectDriver
 {

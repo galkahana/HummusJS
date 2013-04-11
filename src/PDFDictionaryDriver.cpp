@@ -18,7 +18,6 @@
  
  */
 #include "PDFDictionaryDriver.h"
-#include "PDFDictionary.h"
 #include "RefCountPtr.h"
 #include <string>
 
@@ -48,8 +47,7 @@ Handle<Value> PDFDictionaryDriver::NewInstance()
     HandleScope scope;
     
     const unsigned argc = 0;
-    Handle<Value> argv[argc];
-    Local<Object> instance = constructor->NewInstance(argc, argv);
+    Local<Object> instance = constructor->NewInstance(argc, NULL);
     
     return scope.Close(instance);
 }

@@ -22,8 +22,7 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
-
-class PDFLiteralString;
+#include "PDFLiteralString.h"
 
 class PDFLiteralStringDriver : public PDFObjectDriver
 {

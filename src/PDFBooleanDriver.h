@@ -22,8 +22,7 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
-
-class PDFBoolean;
+#include "PDFBoolean.h"
 
 class PDFBooleanDriver : public PDFObjectDriver
 {

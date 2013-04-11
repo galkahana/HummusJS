@@ -22,8 +22,7 @@
 #include <node.h>
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
-
-class PDFSymbol;
+#include "PDFSymbol.h"
 
 class PDFSymbolDriver : public PDFObjectDriver
 {
