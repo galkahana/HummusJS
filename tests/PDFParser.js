@@ -3,7 +3,7 @@ var fs = require('fs');
 
 var mTabLevel = 0;
 var mIteratedObjectIDs = {};
-var outputFile = fs.openSync('./Output/parseLog.txt','w');
+var outputFile = fs.openSync('./output/parseLog.txt','w');
 
 function logToFile(inString)
 {

@@ -14,12 +14,12 @@ var pdfWriter = require('../Hummus').createWriter('./output/TiffSpecialsTest.pdf
 
 for(var i=0;i<4;++i)
 {
-    var imageForm = pdfWriter.createFormXObjectFromTIFFFile('../deps/TestMaterials/Images/tiff/multipage.tif',{pageIndex : i});
+    var imageForm = pdfWriter.createFormXObjectFromTIFFFile('../deps/TestMaterials/images/tiff/multipage.tif',{pageIndex : i});
     createPageFormImage(pdfWriter,imageForm);
 }
 
 {
-    var imagePath = '../deps/TestMaterials/Images/tiff/jim___ah.tif';
+    var imagePath = '../deps/TestMaterials/images/tiff/jim___ah.tif';
     var imageBW = pdfWriter.createFormXObjectFromTIFFFile(imagePath);
     var imageBWMask = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{bwTreatment:{asImageMask:true , oneColor:[255,128,0]}});
     var page = pdfWriter.createPage(0,0,595,842);
@@ -40,7 +40,7 @@ for(var i=0;i<4;++i)
 }
 
 {
-    var imagePath = '../deps/TestMaterials/Images/tiff/jim___cg.tif';
+    var imagePath = '../deps/TestMaterials/images/tiff/jim___cg.tif';
     
     var imageGrayScale = pdfWriter.createFormXObjectFromTIFFFile(imagePath);
     var imageGrayScaleGreen = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[0,255,0], zeroColor:[255,255,255]}});

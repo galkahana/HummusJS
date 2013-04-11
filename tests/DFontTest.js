@@ -3,10 +3,10 @@ var page = pdfWriter.createPage(0,0,595,842);
 var contentContext = pdfWriter.startPageContentContext(page);
 
 [
- pdfWriter.getFontForFile('../deps/TestMaterials/fonts/courier.dfont',0),
- pdfWriter.getFontForFile('../deps/TestMaterials/fonts/courier.dfont',1),
- pdfWriter.getFontForFile('../deps/TestMaterials/fonts/courier.dfont',2),
- pdfWriter.getFontForFile('../deps/TestMaterials/fonts/courier.dfont',3)
+ pdfWriter.getFontForFile('../deps/TestMaterials/fonts/Courier.dfont',0),
+ pdfWriter.getFontForFile('../deps/TestMaterials/fonts/Courier.dfont',1),
+ pdfWriter.getFontForFile('../deps/TestMaterials/fonts/Courier.dfont',2),
+ pdfWriter.getFontForFile('../deps/TestMaterials/fonts/Courier.dfont',3)
  ].forEach(function(element,index,array)
                  {
                  contentContext.BT()

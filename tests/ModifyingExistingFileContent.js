@@ -166,7 +166,7 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment)
 }
 
 var pdfWriter = hummus.createWriterToModify('../deps/TestMaterials/AddedPage.pdf',
-                                            './Output/ModifyingExistingFileContent.pdf');
+                                            './output/ModifyingExistingFileContent.pdf');
 testPageSizeModification(pdfWriter);
 testAddingComments(pdfWriter);
 

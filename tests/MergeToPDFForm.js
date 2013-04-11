@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus.js').createWriter('./Output/MergeToPDFForm.pdf');
+var pdfWriter = require('../Hummus.js').createWriter('./output/MergeToPDFForm.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 var copyingContext = pdfWriter.createPDFCopyingContext('../deps/TestMaterials/Linearized.pdf');
 var form = pdfWriter.createFormXObject(0,0,297.5,842);

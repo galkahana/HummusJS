@@ -35,7 +35,7 @@ function createPageFromEmptyPage(inFileName)
     var pdfWriter = hummus.createWriter('./output/CreatePageFromEmptyPage.pdf');
     
     pdfWriter.appendPDFPagesFromPDF(inFileName);
-    pdfWriter.appendPDFPagesFromPDF('../deps/TestMaterials/XObjectContent.pdf');
+    pdfWriter.appendPDFPagesFromPDF('../deps/TestMaterials/XObjectContent.PDF');
     pdfWriter.end();
 }
 

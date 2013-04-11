@@ -9,7 +9,7 @@ var contentContext = pdfWriter.startPageContentContext(page).q()
 // pause  page content placement so i can now put image data into the file
 pdfWriter.pausePageContentContext(contentContext);
 
-var imageXObject = pdfWriter.createImageXObjectFromJPGFile('../deps/TestMaterials/images/otherStage.jpg');
+var imageXObject = pdfWriter.createImageXObjectFromJPGFile('../deps/TestMaterials/images/otherStage.JPG');
 
 // now continue with page content placement
 contentContext.q()
@@ -20,7 +20,7 @@ contentContext.q()
 // now the same, but with form (which will already have the right size)
 pdfWriter.pausePageContentContext(contentContext);
 
-var formXObject = pdfWriter.createFormXObjectFromJPGFile('../deps/TestMaterials/images/otherStage.jpg');
+var formXObject = pdfWriter.createFormXObjectFromJPGFile('../deps/TestMaterials/images/otherStage.JPG');
 contentContext.q()
                 .cm(1,0,0,1,0,400)
                 .doXObject(formXObject)

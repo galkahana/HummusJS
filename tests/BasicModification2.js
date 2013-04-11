@@ -3,7 +3,7 @@ var assert = require('assert');
 
 function testBasicFileModification(inFileName)
 {
-    var pdfWriter = hummus.createWriterToModify('../deps/TestMaterials/' + inFileName + '.pdf','./Output/Modified' + inFileName + '.pdf');
+    var pdfWriter = hummus.createWriterToModify('../deps/TestMaterials/' + inFileName + '.pdf','./output/Modified' + inFileName + '.pdf');
     var page = pdfWriter.createPage(0,0,595,842);
     
     pdfWriter.startPageContentContext(page).BT()
@@ -17,7 +17,6 @@ function testBasicFileModification(inFileName)
     pdfWriter.end();
 }
 
-testBasicFileModification('BasicTIFFImagesTest');
 testBasicFileModification('Linearized');
 testBasicFileModification('MultipleChange');
 testBasicFileModification('RemovedItem');
