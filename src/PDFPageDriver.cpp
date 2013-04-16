@@ -26,9 +26,17 @@ using namespace v8;
 Persistent<Function> PDFPageDriver::constructor;
 Persistent<FunctionTemplate> PDFPageDriver::constructor_template;
 
+PDFPageDriver::~PDFPageDriver()
+{
+    if(mOwnsPage)
+        delete mPDFPage;
+}
+
 PDFPageDriver::PDFPageDriver()
 {
     ContentContext = NULL;
+    mPDFPage = NULL;
+    mOwnsPage = false;
 }
 
 void PDFPageDriver::Init()
@@ -44,25 +52,45 @@ void PDFPageDriver::Init()
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
 
+Handle<Value> PDFPageDriver::NewInstance(PDFPage* inPage)
+{
+    HandleScope scope;
+    Local<Object> instance;
+    
+    instance = constructor->NewInstance();
+    
+    // this version links to a page and does not own it!
+    
+    PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->ToObject());
+    driver->mPDFPage = inPage;
+    driver->mOwnsPage = false;
+    
+    return scope.Close(instance);    
+}
+
+
 Handle<Value> PDFPageDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
+    Local<Object> instance;
     
-    if(args.Length() == 4)
-    {
-        const unsigned argc = 4;
-        Handle<Value> argv[argc] = {args[0],args[1],args[2],args[3]};
-        Local<Object> instance = constructor->NewInstance(argc, argv);
-        
-        return scope.Close(instance);
-    }
-    else
-    {
-        const unsigned argc = 0;
-        Local<Object> instance = constructor->NewInstance(argc, NULL);
+    instance = constructor->NewInstance();
+
+    // this version creates an instance of a page, and owns it
     
-        return scope.Close(instance);
+    PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->ToObject());
+    driver->mPDFPage = new PDFPage();
+    driver->mOwnsPage = true;
+    
+    if(args.Length() == 4 && args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
+    {
+        driver->mPDFPage->SetMediaBox(PDFRectangle(args[0]->ToNumber()->Value(),
+                                                    args[1]->ToNumber()->Value(),
+                                                    args[2]->ToNumber()->Value(),
+                                                    args[3]->ToNumber()->Value()));
     }
+    
+    return scope.Close(instance);
 }
 
 bool PDFPageDriver::HasInstance(Handle<Value> inObject)
@@ -76,17 +104,8 @@ Handle<Value> PDFPageDriver::New(const Arguments& args)
     HandleScope scope;
     
     PDFPageDriver* pdfPage = new PDFPageDriver();
+    
     pdfPage->Wrap(args.This());
-    
-    
-    if(args.Length() == 4 && args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
-    {
-        pdfPage->mPDFPage.SetMediaBox(PDFRectangle(args[0]->ToNumber()->Value(),
-                                                   args[1]->ToNumber()->Value(),
-                                                   args[2]->ToNumber()->Value(),
-                                                   args[3]->ToNumber()->Value()));
-    }
-    
     return args.This();
 }
 
@@ -98,10 +117,10 @@ Handle<Value> PDFPageDriver::GetMediaBox(Local<String> property,const AccessorIn
     
     Local<Array> mediaBox = Array::New(4);
     
-    mediaBox->Set(v8::Number::New(0),v8::Number::New(pageDriver->mPDFPage.GetMediaBox().LowerLeftX));
-    mediaBox->Set(v8::Number::New(1),v8::Number::New(pageDriver->mPDFPage.GetMediaBox().LowerLeftY));
-    mediaBox->Set(v8::Number::New(2),v8::Number::New(pageDriver->mPDFPage.GetMediaBox().UpperRightX));
-    mediaBox->Set(v8::Number::New(3),v8::Number::New(pageDriver->mPDFPage.GetMediaBox().UpperRightY));
+    mediaBox->Set(v8::Number::New(0),v8::Number::New(pageDriver->mPDFPage->GetMediaBox().LowerLeftX));
+    mediaBox->Set(v8::Number::New(1),v8::Number::New(pageDriver->mPDFPage->GetMediaBox().LowerLeftY));
+    mediaBox->Set(v8::Number::New(2),v8::Number::New(pageDriver->mPDFPage->GetMediaBox().UpperRightX));
+    mediaBox->Set(v8::Number::New(3),v8::Number::New(pageDriver->mPDFPage->GetMediaBox().UpperRightY));
 
     return scope.Close(mediaBox);
 }
@@ -118,7 +137,7 @@ void PDFPageDriver::SetMediaBox(Local<String> property,Local<Value> value,const 
     if(value->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 4)
         ThrowException(Exception::TypeError(String::New("Media box is set to a value which is not a 4 numbers array")));
     
-    pageDriver->mPDFPage.SetMediaBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
+    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
                                                   value->ToObject()->Get(1)->ToNumber()->Value(),
                                                   value->ToObject()->Get(2)->ToNumber()->Value(),
                                                   value->ToObject()->Get(3)->ToNumber()->Value()));

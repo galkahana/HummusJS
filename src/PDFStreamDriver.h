@@ -1,5 +1,5 @@
 /*
- Source File : PageContentContextDriver.h
+ Source File : PDFStreamDriver.h
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -21,32 +21,22 @@
 
 #include <node.h>
 
-#include "AbstractContentContextDriver.h"
+class PDFStream;
 
-
-class PageContentContext;
-
-class PageContentContextDriver : public AbstractContentContextDriver
+class PDFStreamDriver : public node::ObjectWrap
 {
 public:
-    
-    virtual ~PageContentContextDriver();
-    
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
-    PageContentContext* ContentContext;
-
+    PDFStream* PDFStreamInstance;
+    
 private:
-    PageContentContextDriver();
-
-    virtual AbstractContentContext* GetContext();
-
+    PDFStreamDriver();
+    
+    
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCurrentPageContentStream(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetAssociatedPage(const v8::Arguments& args);
-    
 };

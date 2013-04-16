@@ -28,13 +28,18 @@ class PageContentContext;
 class PDFPageDriver : public node::ObjectWrap
 {
 public:
+    virtual ~PDFPageDriver();
+    
+    
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    static v8::Handle<v8::Value> NewInstance(PDFPage* inPage);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
-    PDFPage* GetPage(){return &mPDFPage;}
+    PDFPage* GetPage(){return mPDFPage;}
     
     PageContentContext* ContentContext;
+    
     
 private:
     PDFPageDriver();
@@ -47,5 +52,6 @@ private:
     static void SetMediaBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const v8::AccessorInfo &info);
     static v8::Handle<v8::Value> GetResourcesDictionary(const v8::Arguments& args);
     
-    PDFPage mPDFPage;
+    PDFPage* mPDFPage;
+    bool mOwnsPage;
 };

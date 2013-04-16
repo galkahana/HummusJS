@@ -121,6 +121,7 @@ Handle<Value> PDFWriterDriver::End(const Arguments& args)
 Handle<Value> PDFWriterDriver::CreatePage(const Arguments& args)
 {
     HandleScope scope;
+    
     return scope.Close(PDFPageDriver::NewInstance(args));
     
 }

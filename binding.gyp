@@ -11,6 +11,7 @@
                 './deps/FreeType/include'
             ],
            'sources': [
+                './src/PDFStreamDriver.cpp',
                 './src/DictionaryContextDriver.cpp',
                 './src/PDFTextStringDriver.cpp',
                 './src/PDFDateDriver.cpp',

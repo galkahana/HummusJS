@@ -19,6 +19,8 @@
  */
 #include "PageContentContextDriver.h"
 #include "PageContentContext.h"
+#include "PDFStreamDriver.h"
+#include "PDFPageDriver.h"
 
 using namespace v8;
 
@@ -46,6 +48,8 @@ void PageContentContextDriver::Init()
     constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
 
     AbstractContentContextDriver::Init(constructor_template);
+    t->PrototypeTemplate()->Set(String::NewSymbol("getCurrentPageContentStream"),FunctionTemplate::New(GetCurrentPageContentStream)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getAssociatedPage"),FunctionTemplate::New(GetAssociatedPage)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
@@ -82,4 +86,23 @@ AbstractContentContext* PageContentContextDriver::GetContext()
     return ContentContext;
 }
 
+Handle<Value> PageContentContextDriver::GetCurrentPageContentStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    
+    PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
+    
+    Handle<Value> newInstance = PDFStreamDriver::NewInstance(args);
+    ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject())->PDFStreamInstance = driver->ContentContext->GetCurrentPageContentStream();
+    return scope.Close(newInstance);
+}
+
+Handle<Value> PageContentContextDriver::GetAssociatedPage(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
+    return scope.Close(PDFPageDriver::NewInstance(driver->ContentContext->GetAssociatedPage()));
+}
 
