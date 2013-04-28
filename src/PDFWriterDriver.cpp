@@ -57,6 +57,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("shutdown"),FunctionTemplate::New(Shutdown)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromTIFFFile"),FunctionTemplate::New(CreateFormXObjectFromTIFFFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createImageXObjectFromJPGFile"),FunctionTemplate::New(CreateImageXObjectFromJPGFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("retrieveJPGImageInformation"),FunctionTemplate::New(RetrieveJPGImageInformation)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getObjectsContext"),FunctionTemplate::New(GetObjectsContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("appendPDFPagesFromPDF"),FunctionTemplate::New(AppendPDFPagesFromPDF)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPagesToPage"),FunctionTemplate::New(MergePDFPagesToPage)->GetFunction());
@@ -304,12 +305,61 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateformXObjectFromJPGFile(const v8::Ar
     return scope.Close(newInstance);
 }
 
+v8::Handle<v8::Value> PDFWriterDriver::RetrieveJPGImageInformation(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1  ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    BoolAndJPEGImageInformation info = pdfWriter->mPDFWriter.GetDocumentContext().GetJPEGImageHandler().RetrieveImageInformation(*String::Utf8Value(args[0]->ToString()));
+    
+    if(!info.first)
+    {
+		ThrowException(Exception::Error(String::New("unable to retrieve image information")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Object> result = Object::New();
+    
+    result->Set(String::NewSymbol("samplesWidth"),Integer::New((int)info.second.SamplesWidth));
+    result->Set(String::NewSymbol("samplesHeight"),Integer::New((int)info.second.SamplesHeight));
+    result->Set(String::NewSymbol("colorComponentsCount"),Integer::New(info.second.ColorComponentsCount));
+    result->Set(String::NewSymbol("JFIFInformationExists"),Boolean::New(info.second.JFIFInformationExists));
+    if(info.second.JFIFInformationExists)
+    {
+        result->Set(String::NewSymbol("JFIFUnit"),Integer::New(info.second.JFIFUnit));
+        result->Set(String::NewSymbol("JFIFXDensity"),Number::New(info.second.JFIFXDensity));
+        result->Set(String::NewSymbol("JFIFYDensity"),Number::New(info.second.JFIFYDensity));
+    }
+    result->Set(String::NewSymbol("ExifInformationExists"),Boolean::New(info.second.ExifInformationExists));
+    if(info.second.ExifInformationExists)
+    {
+        result->Set(String::NewSymbol("ExifUnit"),Integer::New(info.second.ExifUnit));
+        result->Set(String::NewSymbol("ExifXDensity"),Number::New(info.second.ExifXDensity));
+        result->Set(String::NewSymbol("ExifYDensity"),Number::New(info.second.ExifYDensity));
+    }
+    result->Set(String::NewSymbol("PhotoshopInformationExists"),Boolean::New(info.second.PhotoshopInformationExists));
+    if(info.second.PhotoshopInformationExists)
+    {
+        result->Set(String::NewSymbol("PhotoshopXDensity"),Number::New(info.second.PhotoshopXDensity));
+        result->Set(String::NewSymbol("PhotoshopYDensity"),Number::New(info.second.PhotoshopYDensity));
+    }
+
+    return scope.Close(result);
+}
+
 v8::Handle<v8::Value> PDFWriterDriver::GetFontForFile(const v8::Arguments& args)
 {
     HandleScope scope;
     
-    if((args.Length() < 1  && args.Length() > 3)||
-                !args[0]->IsString() ||
+    if(args.Length() < 1 ||
+        !args[0]->IsString() ||
                 (args.Length() == 2 && !args[1]->IsString() && !args[1]->IsNumber()) ||
                 (args.Length() == 3 && !args[1]->IsString() && !args[2]->IsNumber()))
     {
@@ -510,7 +560,7 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObjectFromTIFFFile(const v8::A
     PDFFormXObject* formXObject =
         objectID == 0 ?
             pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),tiffUsageParameters):
-            pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),objectID);
+            pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),objectID,tiffUsageParameters);
     if(!formXObject)
     {
 		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing tiff file")));

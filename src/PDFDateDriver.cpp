@@ -18,6 +18,7 @@
  
  */
 #include "PDFDateDriver.h"
+#include <stdlib.h>
 
 using namespace v8;
 

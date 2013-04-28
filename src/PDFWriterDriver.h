@@ -52,11 +52,12 @@ private:
     static v8::Handle<v8::Value> CreateFormXObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> EndFormXObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreateformXObjectFromJPGFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateImageXObjectFromJPGFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> RetrieveJPGImageInformation(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetFontForFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> AttachURLLinktoCurrentPage(const v8::Arguments& args);
     static v8::Handle<v8::Value> Shutdown(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreateFormXObjectFromTIFFFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateImageXObjectFromJPGFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetObjectsContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> AppendPDFPagesFromPDF(const v8::Arguments& args);
     static v8::Handle<v8::Value> MergePDFPagesToPage(const v8::Arguments& args);
@@ -65,6 +66,7 @@ private:
     static v8::Handle<v8::Value> CreatePDFCopyingContextForModifiedFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePDFTextString(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePDFDate(const v8::Arguments& args);
+    
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
