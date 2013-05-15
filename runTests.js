@@ -21,6 +21,5 @@ files.forEach(
                     var aString = element.toString();
                     if(aString.endsWith('.js'))
                         cp.spawn('node',[aString], {cwd:__dirname + '/tests', stdio: 'inherit' });
-              
               }
     );

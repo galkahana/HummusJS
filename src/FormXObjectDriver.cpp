@@ -29,6 +29,12 @@ FormXObjectDriver::~FormXObjectDriver()
     delete FormXObject;
 }
 
+FormXObjectDriver::FormXObjectDriver()
+{
+    mPDFWriterDriver = NULL;
+    FormXObject = NULL;
+}
+
 void FormXObjectDriver::Init()
 {
     // prepare the form xobject driver interfrace template
@@ -56,11 +62,6 @@ bool FormXObjectDriver::HasInstance(Handle<Value> inObject)
 {
     return inObject->IsObject() &&
         constructor_template->HasInstance(inObject->ToObject());
-}
-
-FormXObjectDriver::FormXObjectDriver()
-{
-    FormXObject = NULL;
 }
 
 Persistent<Function> FormXObjectDriver::constructor;
@@ -99,7 +100,9 @@ Handle<Value> FormXObjectDriver::GetContentContext(const Arguments& args)
     Handle<Value> newInstance = XObjectContentContextDriver::NewInstance(args);
     XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->ToObject());
     contentContextDriver->ContentContext = formDriver->FormXObject->GetContentContext();
+    contentContextDriver->FormOfContext = formDriver->FormXObject;
     contentContextDriver->SetResourcesDictionary(&(formDriver->FormXObject->GetResourcesDictionary()));
+    contentContextDriver->SetPDFWriter(formDriver->mPDFWriterDriver);
     
     return scope.Close(newInstance);
 }
@@ -115,5 +118,12 @@ Handle<Value> FormXObjectDriver::GetResourcesDictionary(const Arguments& args)
     
     return scope.Close(newInstance);
 }
+
+
+void FormXObjectDriver::SetPDFWriter(PDFWriterDriver* inPDFWriterDriver)
+{
+    mPDFWriterDriver = inPDFWriterDriver;
+}
+
 
 

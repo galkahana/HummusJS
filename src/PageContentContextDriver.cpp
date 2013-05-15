@@ -21,20 +21,28 @@
 #include "PageContentContext.h"
 #include "PDFStreamDriver.h"
 #include "PDFPageDriver.h"
+#include "IPageEndWritingTask.h"
+#include "PDFWriterDriver.h"
 
 using namespace v8;
 
 PageContentContextDriver::~PageContentContextDriver()
 {
-    // most of the times it won't be an actual delete. only if the user forgot to write the page
-    delete ContentContext;
 }
 
 PageContentContextDriver::PageContentContextDriver()
 {
     // initially null, set by external pdfwriter
     ContentContext = NULL;
+    
+    
+    mPDFWriterDriver = NULL;
 }
+
+void PageContentContextDriver::SetPDFWriter(PDFWriterDriver* inDriver)
+{
+    mPDFWriterDriver = inDriver;
+};
 
 Persistent<Function> PageContentContextDriver::constructor;
 Persistent<FunctionTemplate> PageContentContextDriver::constructor_template;
@@ -106,3 +114,39 @@ Handle<Value> PageContentContextDriver::GetAssociatedPage(const Arguments& args)
     return scope.Close(PDFPageDriver::NewInstance(driver->ContentContext->GetAssociatedPage()));
 }
 
+PDFWriterDriver* PageContentContextDriver::GetPDFWriter()
+{
+    return mPDFWriterDriver;
+}
+
+
+class PageImageWritingTask : public IPageEndWritingTask
+{
+public:
+    PageImageWritingTask(PDFWriterDriver* inDriver,const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+    {mDriver = inDriver;mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
+    
+    virtual ~PageImageWritingTask(){}
+    
+    virtual PDFHummus::EStatusCode Write(PDFPage* inPageObject,
+                                         ObjectsContext* inObjectsContext,
+                                         PDFHummus::DocumentContext* inDocumentContext)
+    {
+        return mDriver->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
+    }
+    
+private:
+    PDFWriterDriver* mDriver;
+    std::string mImagePath;
+    unsigned long mImageIndex;
+    ObjectIDType mObjectID;
+};
+
+
+void PageContentContextDriver::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+{
+    mPDFWriterDriver->GetWriter()->GetDocumentContext().RegisterPageEndWritingTask(
+                                                                                   ContentContext->GetAssociatedPage(),
+                                                                                   new PageImageWritingTask(mPDFWriterDriver,inImagePath,inImageIndex,inObjectID));
+    
+}

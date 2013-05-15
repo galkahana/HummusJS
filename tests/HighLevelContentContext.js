@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/HighOrderContentContext.pdf');
+var pdfWriter = require('../Hummus').createWriter('./output/HighLevelContentContext.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 var cxt = pdfWriter.startPageContentContext(page);
 
@@ -33,3 +33,5 @@ cxt.writeText('Paths',75,805,textOptions)
 
 pdfWriter.writePage(page);
 pdfWriter.end();
+
+console.log('done - ok')

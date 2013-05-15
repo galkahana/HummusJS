@@ -24,6 +24,7 @@
 #include "PDFPage.h"
 
 class PDFFormXObject;
+class PDFWriterDriver;
 
 class FormXObjectDriver : public node::ObjectWrap
 {
@@ -37,8 +38,13 @@ public:
     
     PDFFormXObject* FormXObject;
     
+    // pass to content context
+    void SetPDFWriter(PDFWriterDriver* inPDFWriterDriver);
+    
 private:
     FormXObjectDriver();
+    
+    PDFWriterDriver* mPDFWriterDriver;
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;

@@ -23,7 +23,7 @@
 
 #include "AbstractContentContextDriver.h"
 
-
+class PDFWriterDriver;
 class PageContentContext;
 
 class PageContentContextDriver : public AbstractContentContextDriver
@@ -36,13 +36,20 @@ public:
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
+    void SetPDFWriter(PDFWriterDriver* inDriver);
+    
     PageContentContext* ContentContext;
 
+    virtual PDFWriterDriver* GetPDFWriter();
 private:
+    PDFWriterDriver* mPDFWriterDriver;
+
+    
     PageContentContextDriver();
 
     virtual AbstractContentContext* GetContext();
-
+    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
+ 
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);

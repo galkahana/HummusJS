@@ -26,6 +26,7 @@
 #include "UsedFontDriver.h"
 #include "ImageXObjectDriver.h"
 #include "CSSColors.h"
+#include "PDFWriterDriver.h"
 
 #include <map>
 #include <string.h>
@@ -159,8 +160,7 @@ void AbstractContentContextDriver::Init(Handle<FunctionTemplate>& ioDriverTempla
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawSquare"),FunctionTemplate::New(DrawSquare)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawRectangle"),FunctionTemplate::New(DrawRectangle)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("writeText"),FunctionTemplate::New(WriteText)->GetFunction());
-    
-    
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawImage"),FunctionTemplate::New(DrawImage)->GetFunction());
 }
 
 Handle<Value> AbstractContentContextDriver::b(const Arguments& args)
@@ -1988,4 +1988,124 @@ void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeO
        UsedFontDriver::HasInstance(options->Get(String::New("font"))))
         GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(String::New("font"))->ToObject())->UsedFont,
                          options->Has(String::New("size")) ? options->Get(String::New("size"))->ToNumber()->Value():1);
+}
+
+Handle<Value> AbstractContentContextDriver::DrawImage(const Arguments& args)
+{
+    HandleScope scope;
+    
+    AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
+    if(!contentContext->GetContext())
+    {
+        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
+        return scope.Close(Undefined());
+    }
+    
+    if(args.Length() < 3 ||
+       !args[0]->IsNumber() ||
+       !args[1]->IsNumber() ||
+       !args[2]->IsString() ||
+       (args.Length() >= 4 && !args[3]->IsObject()))
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object")));
+		return scope.Close(Undefined());
+    }
+
+    /*
+     when placing the image, do the following:
+     create object id for image file + index [we can reuse], if one does not exist yet. store it in a general dictionary for the pdfwriter (need to get it from the context). register task to write the image to the file, if first
+     use object id to register the image
+     determine transformation matrix
+     if it's just a plain transform (or none), add to position
+     if it's fitting, determine the fit (consider proportional), add to position
+     gsave, apply determined transformation matrix, place image with do, grestore
+     */
+    
+    unsigned long imageIndex = 0;
+    std::string imagePath = *(String::Utf8Value(args[2]->ToString()));
+    double transformation[6] = {1,0,0,1,0,0};
+    
+    if(args.Length() >= 4)
+    {
+        Handle<Object> optionsObject = args[3]->ToObject();
+        
+        if(optionsObject->Has(String::New("index")))
+            imageIndex = optionsObject->Get(String::New("index"))->ToNumber()->Uint32Value();
+        
+        if(optionsObject->Has(String::New("transformation")))
+        {
+            Handle<Value> transformationValue = optionsObject->Get(String::New("transformation"));
+            
+            if(transformationValue->IsArray() || transformationValue->IsObject())
+            {
+                Handle<Object> transformationObject = transformationValue->ToObject();
+                
+                if(transformationValue->IsArray() && transformationObject->Get(String::New("length"))->ToNumber()->Value() == 6)
+                {
+                    for(int i=0;i<6;++i)
+                        transformation[i] = transformationObject->Get(i)->ToNumber()->Value();
+                }
+                else if(transformationValue->IsObject())
+                {
+                    // fitting object, determine transformation according to image dimensions relation to width/height
+                    double constraintWidth = transformationObject->Get(String::New("width"))->ToNumber()->Value();
+                    double constraintheight = transformationObject->Get(String::New("height"))->ToNumber()->Value();
+                    bool proportional = transformationObject->Has(String::New("proportional")) ?
+                                            transformationObject->Get(String::New("proportional"))->ToBoolean()->Value() :
+                                            false;
+                    bool fitAlways = transformationObject->Has(String::New("fit")) ?
+                                    strcmp("always",*String::Utf8Value(transformationObject->Get(String::New("fit"))->ToString())) == 0:
+                                    false;
+                    
+                    // getting the image dimensions from the pdfwriter to allow optimization on image reads
+                    DoubleAndDoublePair imageDimensions = contentContext->GetPDFWriter()->GetImageDimensions(imagePath,imageIndex);
+                    
+                    double scaleX = 1;
+                    double scaleY = 1;
+                    
+                    if(fitAlways)
+                    {
+                        scaleX = constraintWidth / imageDimensions.first;
+                        scaleY = constraintheight / imageDimensions.second;
+                        
+
+                    }
+                    else if(imageDimensions.first > constraintWidth || imageDimensions.second > constraintheight) // overflow
+                    {
+                        scaleX = imageDimensions.first > constraintWidth ? constraintWidth / imageDimensions.first : 1;
+                        scaleY = imageDimensions.second > constraintheight ? constraintheight / imageDimensions.second : 1;
+                    }
+                    
+                    if(proportional)
+                    {
+                        scaleX = std::min(scaleX,scaleY);
+                        scaleY = scaleX;
+                    }
+                    
+                    transformation[0] = scaleX;
+                    transformation[3] = scaleY;
+                }
+                
+            }
+        }
+    }
+    
+    transformation[4]+= args[0]->ToNumber()->Value();
+    transformation[5]+= args[1]->ToNumber()->Value();
+   
+    
+    // registering the images at pdfwriter to allow optimization on image writes
+    ObjectIDTypeAndBool result = contentContext->GetPDFWriter()->RegisterImageForDrawing(imagePath,imageIndex);
+    if(result.second)
+    {
+        // if first usage, write the image
+        contentContext->ScheduleImageWrite(imagePath,imageIndex,result.first);
+    }
+    
+    contentContext->GetContext()->q();
+    contentContext->GetContext()->cm(transformation[0],transformation[1],transformation[2],transformation[3],transformation[4],transformation[5]);
+    contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(result.first));
+    contentContext->GetContext()->Q();
+    
+    return scope.Close(args.This());
 }

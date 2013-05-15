@@ -23,3 +23,5 @@ testBasicFileModification('RemovedItem');
 assert.throws(function(){pdfWriter.testBasicFileModification('Protected')});
 testBasicFileModification('ObjectStreams');
 testBasicFileModification('ObjectStreamsModified');
+
+console.log('done - ok')

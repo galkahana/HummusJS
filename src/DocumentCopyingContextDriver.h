@@ -43,8 +43,13 @@ private:
     static v8::Handle<v8::Value> MergePDFPageToPage(const v8::Arguments& args);
     static v8::Handle<v8::Value> AppendPDFPageFromPDF(const v8::Arguments& args);
     static v8::Handle<v8::Value> MergePDFPageToFormXObject(const v8::Arguments& args);
-
     static v8::Handle<v8::Value> GetSourceDocumentParser(const v8::Arguments& args);
     static v8::Handle<v8::Value> CopyDirectObjectAsIs(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CopyObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CopyDirectObjectWithDeepCopy(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CopyNewObjectsForDirectObject(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetCopiedObjectID(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetCopiedObjects(const v8::Arguments& args);
+    static v8::Handle<v8::Value> ReplaceSourceObjects(const v8::Arguments& args);
     
 };

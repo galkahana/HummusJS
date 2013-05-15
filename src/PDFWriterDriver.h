@@ -20,9 +20,38 @@
 #pragma once
 
 #include <node.h>
+#include <utility>
+#include <string>
+#include <map>
 
 #include "PDFWriter.h"
 #include "PDFEmbedParameterTypes.h"
+
+
+typedef std::pair<unsigned long,unsigned long> ULongAndULongPair;
+typedef std::pair<std::string,unsigned long> StringAndULongPair;
+typedef std::pair<ObjectIDType,bool> ObjectIDTypeAndBool;
+
+
+struct HummusImageInformation
+{
+    enum EHummusImageType
+    {
+        eUndefined,
+        ePDF,
+        eJPG,
+        eTIFF
+    };
+    
+    HummusImageInformation(){writtenObjectID = 0;imageType=eUndefined;imageWidth=-1;imageHeight=-1;}
+    
+    ObjectIDType writtenObjectID;
+    EHummusImageType imageType;
+    double imageWidth;
+    double imageHeight;
+};
+
+typedef std::map<StringAndULongPair,HummusImageInformation> StringAndULongPairToHummusImageInformationMap;
 
 class PDFWriterDriver : public node::ObjectWrap
 {
@@ -39,8 +68,17 @@ public:
     PDFHummus::EStatusCode ModifyPDF(const std::string& inSourceFile,
                                      const std::string& inOptionalOtherOutputFile);
     
+    
+    // image registry services, optimization for r/w
+    DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex);
+    ObjectIDTypeAndBool RegisterImageForDrawing(const std::string& inImageFile,unsigned long inImageIndex);
+    PDFHummus::EStatusCode WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
+
+    PDFWriter* GetWriter();
+    
 private:
     PDFWriterDriver(){};
+    
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
@@ -66,10 +104,14 @@ private:
     static v8::Handle<v8::Value> CreatePDFCopyingContextForModifiedFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePDFTextString(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePDFDate(const v8::Arguments& args);
-    
+    static v8::Handle<v8::Value> SGetImageDimensions(const v8::Arguments& args);
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
+
+    HummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
+    HummusImageInformation::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
     
     PDFWriter mPDFWriter;
+    StringAndULongPairToHummusImageInformationMap mImagesInformation;
 };

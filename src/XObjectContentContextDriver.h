@@ -25,6 +25,8 @@
 
 
 class XObjectContentContext;
+class PDFWriterDriver;
+class PDFFormXObject;
 
 class XObjectContentContextDriver : public AbstractContentContextDriver
 {
@@ -34,12 +36,20 @@ public:
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
-    XObjectContentContext* ContentContext;
+    void SetPDFWriter(PDFWriterDriver* inPDFWriter);
     
+    XObjectContentContext* ContentContext;
+    PDFFormXObject* FormOfContext;
+    
+    virtual PDFWriterDriver* GetPDFWriter();
 private:
     XObjectContentContextDriver();
-    
+
+    PDFWriterDriver* mPDFWriterDriver;
+   
     virtual AbstractContentContext* GetContext();
+    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
+
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);

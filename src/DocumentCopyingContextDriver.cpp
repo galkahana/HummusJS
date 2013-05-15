@@ -23,6 +23,7 @@
 #include "FormXObjectDriver.h"
 #include "PDFReaderDriver.h"
 #include "PDFObjectDriver.h"
+#include "BoxingBase.h"
 
 using namespace v8;
 
@@ -52,6 +53,12 @@ void DocumentCopyingContextDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPageToFormXObject"),FunctionTemplate::New(MergePDFPageToFormXObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("getSourceDocumentParser"),FunctionTemplate::New(GetSourceDocumentParser)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("copyDirectObjectAsIs"),FunctionTemplate::New(CopyDirectObjectAsIs)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("copyObject"),FunctionTemplate::New(CopyObject)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("copyDirectObjectWithDeepCopy"),FunctionTemplate::New(CopyDirectObjectWithDeepCopy)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("copyNewObjectsForDirectObject"),FunctionTemplate::New(CopyNewObjectsForDirectObject)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getCopiedObjectID"),FunctionTemplate::New(GetCopiedObjectID)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getCopiedObjects"),FunctionTemplate::New(GetCopiedObjects)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("replaceSourceObjects"),FunctionTemplate::New(ReplaceSourceObjects)->GetFunction());
 
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -88,16 +95,62 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 2 ||
+    if(args.Length() < 2 ||
+       args.Length() > 3 ||
        !args[0]->IsNumber() ||
-       !args[1]->IsNumber())
+       (!args[1]->IsNumber() && !args[1]->IsArray()) ||
+       (args.Length() == 3 && !args[2]->IsArray()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 2 arugments, where the first is a 0 based page index, and the second is a EPDFPageBox enumeration value")));
+		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 2 or 3 arugments, where the first is a 0 based page index, and the second is a EPDFPageBox enumeration value or a 4 numbers array defining an box. a 3rd parameter may be provided to deisgnate the result form matrix")));
         return scope.Close(Undefined());
     }
+ 
+    double matrixBuffer[6];
+    double* transformationMatrix = NULL;
     
-    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(args[0]->ToNumber()->Uint32Value(),
-                                                                       (EPDFPageBox)args[1]->ToNumber()->Uint32Value());
+    if(args.Length() == 3)
+    {
+        Handle<Object> matrixArray = args[2]->ToObject();
+        if(matrixArray->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 6)
+        {
+            ThrowException(Exception::TypeError(String::New("matrix array should be 6 numbers long")));
+            return scope.Close(Undefined());
+        }
+        
+        for(int i=0;i<6;++i)
+            matrixBuffer[i] = matrixArray->Get(i)->ToNumber()->Value();
+        transformationMatrix = matrixBuffer;
+    }
+    
+    
+    EStatusCodeAndObjectIDType result;
+    
+    if(args[0]->IsNumber())
+    {
+        result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(args[0]->ToNumber()->Uint32Value(),
+                                                                       (EPDFPageBox)args[1]->ToNumber()->Uint32Value(),
+                                                                                    transformationMatrix);
+    }
+    else
+    {
+        Handle<Object> boxArray = args[1]->ToObject();
+        if(boxArray->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 4)
+        {
+            ThrowException(Exception::TypeError(String::New("box dimensions array should be 4 numbers long")));
+            return scope.Close(Undefined());
+        }
+        
+        PDFRectangle box(boxArray->Get(0)->ToNumber()->Value(),
+                         boxArray->Get(1)->ToNumber()->Value(),
+                         boxArray->Get(2)->ToNumber()->Value(),
+                         boxArray->Get(3)->ToNumber()->Value());
+        
+        result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(args[0]->ToNumber()->Uint32Value(),
+                                                                                    box,
+                                                                                    transformationMatrix);
+
+    }
+        
     
     if(result.first != eSuccess)
     {
@@ -238,4 +291,192 @@ Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectAsIs(const Arguments
     
 }
 
+Handle<Value> DocumentCopyingContextDriver::CopyObject(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is object ID of the object to copy")));
+        return scope.Close(Undefined());
+    }
+    
+    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->CopyObject(args[0]->ToNumber()->Uint32Value());
+ 
+     if(result.first != eSuccess)
+		ThrowException(Exception::Error(String::New("unable to copy the object. object id may be wrong")));
+     return scope.Close(Number::New(result.second));
+    
+}
+
+Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+    
+    if(!args.Length() == 1) // need to sometimes check that this is a PDFObject
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is PDFObject to copy")));
+        return scope.Close(Undefined());
+    }
+    
+    EStatusCodeAndObjectIDTypeList result = copyingContextDriver->CopyingContext->CopyDirectObjectWithDeepCopy(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->ToObject())->GetObject());
+    if(result.first != eSuccess)
+		ThrowException(Exception::Error(String::New("Unable to copy object, parhaps the object id is wrong")));
+
+    Local<Array> resultObjectIDs = Array::New((unsigned int)result.second.size());
+    unsigned int index = 0;
+    
+    ObjectIDTypeList::iterator it = result.second.begin();
+    for(; it != result.second.end();++it)
+        resultObjectIDs->Set(Number::New(index++),Number::New(*it));
+    
+    return scope.Close(resultObjectIDs);
+}
+
+
+Handle<Value> DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsArray())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is an array of object IDs")));
+        return scope.Close(Undefined());
+    }
+    
+    ObjectIDTypeList objectIDs;
+    Handle<Object> objectIDsArray = args[0]->ToObject();
+
+    unsigned int length = objectIDsArray->Get(v8::String::New("length"))->ToObject()->Uint32Value();
+    
+    for(unsigned int i=0;i <length;++i)
+        objectIDs.push_back(objectIDsArray->Get(i)->ToNumber()->Uint32Value());
+    
+    EStatusCode status = copyingContextDriver->CopyingContext->CopyNewObjectsForDirectObject(objectIDs);
+    if(status != eSuccess)
+		ThrowException(Exception::Error(String::New("Unable to copy elements")));
+    return scope.Close(Undefined());
+    
+}
+
+
+
+Handle<Value> DocumentCopyingContextDriver::GetCopiedObjectID(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, an object ID to check")));
+        return scope.Close(Undefined());
+    }
+        
+    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->GetCopiedObjectID(args[0]->ToNumber()->Uint32Value());
+    if(result.first != eSuccess)
+		ThrowException(Exception::Error(String::New("Unable to find element")));
+    return scope.Close(Number::New(result.second));
+    
+}
+
+typedef BoxingBaseWithRW<ObjectIDType> ObjectIDTypeObject;
+
+Handle<Value> DocumentCopyingContextDriver::GetCopiedObjects(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+
+    // create an object that will serve as the map
+
+    Local<Object> result = Object::New();
+    
+	MapIterator<ObjectIDTypeToObjectIDTypeMap> it = copyingContextDriver->CopyingContext->GetCopiedObjectsMappingIterator();
+    
+    while(it.MoveNext())
+        result->Set(String::New(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),Number::New(it.GetValue()));
+    
+    return scope.Close(result);
+}
+
+Handle<Value> DocumentCopyingContextDriver::ReplaceSourceObjects(const v8::Arguments& args)
+{
+    // getting a dictionary mapping source to target object, translating to the C++ map...and on we go
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+    
+    if(args.Length() != 0 ||
+       !args[0]->IsObject())
+    {
+ 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is an object mapping source object ids to map to target object IDs")));
+        return scope.Close(Undefined());
+    }
+    
+    // create an object that will serve as the map
+    ObjectIDTypeToObjectIDTypeMap resultMap;
+    
+    Handle<Object> anObject = args[0]->ToObject();
+    
+    Handle<Array> objectKeys = anObject->GetOwnPropertyNames();
+    
+    for(unsigned long i=0; i < objectKeys->Length(); ++i)
+    {
+        Handle<String> key  = objectKeys->Get(Number::New(0))->ToString();
+        Handle<Value> value = anObject->Get(key);
+        
+        resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*String::Utf8Value(key)),value->ToNumber()->Uint32Value()));
+        
+    }
+    
+    copyingContextDriver->CopyingContext->ReplaceSourceObjects(resultMap);
+    
+    return scope.Close(Undefined());
+}
 

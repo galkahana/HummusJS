@@ -22,10 +22,12 @@
 #include <node.h>
 
 #include "GlyphUnicodeMapping.h"
+#include "ObjectsBasicTypes.h"
 #include <string>
 
 class AbstractContentContext;
 class ResourcesDictionary;
+class PDFWriterDriver;
 
 struct TextPlacingOptions
 {
@@ -54,12 +56,15 @@ public:
     
     void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
 
+    virtual PDFWriterDriver* GetPDFWriter() = 0;
 protected:
     AbstractContentContextDriver();
-    
+        
 private:
     
     virtual AbstractContentContext* GetContext() = 0;
+    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID) = 0;
+
     ResourcesDictionary* mResourcesDictionary;
     
     // simple content placements
@@ -68,6 +73,7 @@ private:
     static v8::Handle<v8::Value> DrawSquare(const v8::Arguments& args);
     static v8::Handle<v8::Value> DrawRectangle(const v8::Arguments& args);
     static v8::Handle<v8::Value> WriteText(const v8::Arguments& args);
+    static v8::Handle<v8::Value> DrawImage(const v8::Arguments& args);
     
     // now for regular PDF operators implementation
     

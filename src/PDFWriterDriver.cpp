@@ -30,6 +30,13 @@
 #include "PDFParser.h"
 #include "PDFDateDriver.h"
 #include "PDFTextStringDriver.h"
+#include "PDFParser.h"
+#include "PDFPageInput.h"
+#include "PDFRectangle.h"
+#include "TIFFImageHandler.h"
+#include "IOBasicTypes.h"
+#include "PDFDocumentCopyingContext.h"
+#include "PDFFormXObject.h"
 
 using namespace v8;
 
@@ -66,6 +73,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFCopyingContextForModifiedFile"),FunctionTemplate::New(CreatePDFCopyingContextForModifiedFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFTextString"),FunctionTemplate::New(CreatePDFTextString)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFDate"),FunctionTemplate::New(CreatePDFDate)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getImageDimensions"),FunctionTemplate::New(SGetImageDimensions)->GetFunction());
     
 
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
@@ -186,6 +194,9 @@ v8::Handle<v8::Value> PDFWriterDriver::StartPageContentContext(const Arguments& 
     PageContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(newInstance->ToObject());
     contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
     contentContextDriver->SetResourcesDictionary(&(pageDriver->GetPage()->GetResourcesDictionary()));
+    
+    // set pdf driver, so context can use it for central registry of the PDF
+    contentContextDriver->SetPDFWriter(pdfWriter);
 
     // save it also at page driver, so we can end the context when the page is written
     pageDriver->ContentContext = contentContextDriver->ContentContext;
@@ -249,6 +260,8 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObject(const v8::Arguments& ar
                                                                                          args[1]->ToNumber()->Value(),
                                                                                          args[2]->ToNumber()->Value(),
                                                                                          args[3]->ToNumber()->Value()));
+    // set pdf driver, so context can use it for central registry of the PDF
+    formXObjectDriver->SetPDFWriter(pdfWriter);
     return scope.Close(newInstance);
 }
 
@@ -647,7 +660,7 @@ v8::Handle<v8::Value> PDFWriterDriver::AppendPDFPagesFromPDF(const v8::Arguments
        !args[0]->IsString() ||
        (args.Length() == 2 && !args[1]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for fille to append pages from, and optionally a configuration object")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for file to append pages from, and optionally a configuration object")));
 		return scope.Close(Undefined());
     }
     
@@ -818,13 +831,16 @@ Handle<Value> PDFWriterDriver::CreateFormXObjectsFromPDF(const Arguments& args)
 {
     HandleScope scope;
     
-    if((args.Length() < 1  &&
-        args.Length() > 3) ||
+    if(args.Length() < 1  ||
+       args.Length() > 5 ||
        !args[0]->IsString() ||
-       !args[1]->IsNumber() ||
-       (args.Length() == 3 && !args[2]->IsObject()))
+       (args.Length() >= 2 && (!args[1]->IsNumber() && !args[1]->IsArray())) ||
+       (args.Length() >= 3 && !args[2]->IsObject()) ||
+       (args.Length() >= 4 && !args[3]->IsArray()) ||
+       (args.Length() == 5 && !args[4]->IsArray())
+       )
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for fille to append pages from as xobject, an enumerator to determine the forms box size, an optionally a configuration object to choose page ranges")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path to the file, and optionals - a box enumerator or actual 4 numbers box, a range object, a matrix for the form, and array of object ids to copy in addition")));
 		return scope.Close(Undefined());
     }
     
@@ -832,13 +848,69 @@ Handle<Value> PDFWriterDriver::CreateFormXObjectsFromPDF(const Arguments& args)
     
     PDFPageRange pageRange;
     
-    if(args.Length() == 3)
+    if(args.Length() >= 3)
         pageRange = ObjectToPageRange(args[2]->ToObject());
     
-    EStatusCodeAndObjectIDTypeList result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
-                                                                                        *String::Utf8Value(args[0]->ToString()),
-                                                                                        pageRange,
-                                                                                        (EPDFPageBox)args[1]->ToNumber()->Uint32Value());
+    EStatusCodeAndObjectIDTypeList result;
+    double matrixBuffer[6];
+    double* transformationMatrix = NULL;
+    
+    if(args.Length() >= 4)
+    {
+        Handle<Object> matrixArray = args[3]->ToObject();
+        if(matrixArray->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 6)
+        {
+            ThrowException(Exception::TypeError(String::New("matrix array should be 6 numbers long")));
+            return scope.Close(Undefined());
+        }
+        
+        for(int i=0;i<6;++i)
+            matrixBuffer[i] = matrixArray->Get(i)->ToNumber()->Value();
+        transformationMatrix = matrixBuffer;
+    }
+    
+    ObjectIDTypeList extraObjectsList;
+    if(args.Length() == 5)
+    {
+        Handle<Object> objectsIDsArray = args[4]->ToObject();
+        unsigned int arrayLength = objectsIDsArray->Get(v8::String::New("length"))->ToObject()->Uint32Value();
+        for(unsigned int i=0;i<arrayLength;++i)
+            extraObjectsList.push_back((ObjectIDType)(objectsIDsArray->Get(i)->ToNumber()->Uint32Value()));
+            
+    }
+    
+    
+    if(args[1]->IsArray())
+    {
+        Handle<Object> boxArray = args[1]->ToObject();
+        if(boxArray->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 4)
+        {
+            ThrowException(Exception::TypeError(String::New("box dimensions array should be 4 numbers long")));
+            return scope.Close(Undefined());
+        }
+        
+        PDFRectangle box(boxArray->Get(0)->ToNumber()->Value(),
+                            boxArray->Get(1)->ToNumber()->Value(),
+                            boxArray->Get(2)->ToNumber()->Value(),
+                            boxArray->Get(3)->ToNumber()->Value());
+        
+        result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
+                                                                 *String::Utf8Value(args[0]->ToString()),
+                                                                 pageRange,
+                                                                 box,
+                                                                 transformationMatrix,
+                                                                 extraObjectsList);
+    }
+    else
+    {
+        result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
+                                                                *String::Utf8Value(args[0]->ToString()),
+                                                                pageRange,
+                                                                (EPDFPageBox)args[1]->ToNumber()->Uint32Value(),
+                                                                 transformationMatrix,
+                                                                 extraObjectsList);
+    }
+    
     if(result.first != eSuccess)
     {
 		ThrowException(Exception::Error(String::New("unable to create forms from file. make sure the file exists, and that the input page range is valid (well, if you provided one..m'k?")));
@@ -886,3 +958,244 @@ Handle<Value> PDFWriterDriver::CreatePDFDate(const Arguments& args)
     return scope.Close(PDFDateDriver::NewInstance(args));
     
 }
+
+HummusImageInformation& PDFWriterDriver::GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    StringAndULongPairToHummusImageInformationMap::iterator it = mImagesInformation.find(StringAndULongPair(inImageFile,inImageIndex));
+    
+    if(it == mImagesInformation.end())
+        it = mImagesInformation.insert(
+                        StringAndULongPairToHummusImageInformationMap::value_type(
+                                StringAndULongPair(inImageFile,inImageIndex),HummusImageInformation())).first;
+    
+    return it->second;
+}
+
+DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    
+    if(-1 == imageInformation.imageWidth)
+    {
+        HummusImageInformation::EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
+        
+        switch(imageType)
+        {
+            case HummusImageInformation::ePDF:
+            {
+                // get the dimensions via the PDF parser. will use the media rectangle to draw image
+                PDFParser pdfParser;
+                
+                InputFile file;
+                if(file.OpenFile(inImageFile) != eSuccess)
+                    break;
+                if(pdfParser.StartPDFParsing(file.GetInputStream()) != eSuccess)
+                    break;
+                
+                PDFPageInput helper(&pdfParser,pdfParser.ParsePage(inImageIndex));
+                
+                imageInformation.imageWidth = helper.GetMediaBox().UpperRightX - helper.GetMediaBox().LowerLeftX;
+                imageInformation.imageHeight = helper.GetMediaBox().UpperRightY - helper.GetMediaBox().LowerLeftY;
+                
+                break;
+            }
+            case HummusImageInformation::eJPG:
+            {
+                BoolAndJPEGImageInformation jpgImageInformation = mPDFWriter.GetDocumentContext().GetJPEGImageHandler().RetrieveImageInformation(inImageFile);
+                if(!jpgImageInformation.first)
+                    break;
+                
+                DoubleAndDoublePair dimensions = mPDFWriter.GetDocumentContext().GetJPEGImageHandler().GetImageDimensions(jpgImageInformation.second);
+                
+                imageInformation.imageWidth = dimensions.first;
+                imageInformation.imageHeight = dimensions.second;
+                break;
+            }
+            case HummusImageInformation::eTIFF:
+            {
+                TIFFImageHandler hummusTiffHandler;
+                
+                InputFile file;
+                if(file.OpenFile(inImageFile) != eSuccess)
+                    break;
+                
+                DoubleAndDoublePair dimensions = hummusTiffHandler.ReadImageDimensions(file.GetInputStream(),inImageIndex);
+
+                imageInformation.imageWidth = dimensions.first;
+                imageInformation.imageHeight = dimensions.second;
+                break;
+            }
+            default:
+            {
+                // just avoding uninteresting compiler warnings. meaning...if you can't get the image type or unsupported, do nothing
+            }
+        }
+    }
+    
+    return DoubleAndDoublePair(imageInformation.imageWidth,imageInformation.imageHeight);
+}
+
+static const Byte scPDFMagic[] = {0x25,0x50,0x44,0x46};
+static const Byte scMagicJPG[] = {0xFF,0xD8};
+static const Byte scMagicTIFFBigEndianTiff[] = {0x4D,0x4D,0x00,0x2A};
+static const Byte scMagicTIFFBigEndianBigTiff[] = {0x4D,0x4D,0x00,0x2B};
+static const Byte scMagicTIFFLittleEndianTiff[] = {0x49,0x49,0x2A,0x00};
+static const Byte scMagicTIFFLittleEndianBigTiff[] = {0x49,0x49,0x2B,0x00};
+
+
+HummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    
+    if(imageInformation.imageType == HummusImageInformation::eUndefined)
+    {
+        // The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF
+        // PDF is recognized by starting with "%PDF"
+        // JPG will start with "0xff,0xd8"
+        // TIFF will start with "0x49,0x49" (little endian) or "0x4D,0x4D" (big endian)
+        // then either 42 or 43 (tiff or big tiff respectively) written in 2 bytes, as either big or little endian
+        
+        // so just read the first 4 bytes and it should be enough to recognize a known format
+        
+        Byte magic[4];
+        unsigned long readLength = 4;
+        InputFile inputFile;
+        if(inputFile.OpenFile(inImageFile) == eSuccess)
+        {
+            inputFile.GetInputStream()->Read(magic,readLength);
+        
+            if(readLength >= 4 && memcmp(scPDFMagic,magic,4) == 0)
+                imageInformation.imageType =  HummusImageInformation::ePDF;
+            else if(readLength >= 2 && memcmp(scMagicJPG,magic,2) == 0)
+                imageInformation.imageType = HummusImageInformation::eJPG;
+            else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianTiff,magic,4) == 0)
+                imageInformation.imageType = HummusImageInformation::eTIFF;
+            else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianBigTiff,magic,4) == 0)
+                imageInformation.imageType = HummusImageInformation::eTIFF;
+            else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianTiff,magic,4) == 0)
+                imageInformation.imageType = HummusImageInformation::eTIFF;
+            else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianBigTiff,magic,4) == 0)
+                imageInformation.imageType = HummusImageInformation::eTIFF;
+            else
+                imageInformation.imageType = HummusImageInformation::eUndefined;
+        }
+        
+    }
+
+    
+    return imageInformation.imageType;
+}
+
+ObjectIDTypeAndBool PDFWriterDriver::RegisterImageForDrawing(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    bool firstTime;
+    
+    if(imageInformation.writtenObjectID == 0)
+    {
+        imageInformation.writtenObjectID = mPDFWriter.GetObjectsContext().GetInDirectObjectsRegistry().AllocateNewObjectID();
+        firstTime = true;
+    }
+    else
+        firstTime = false;
+    
+    return ObjectIDTypeAndBool(imageInformation.writtenObjectID,firstTime);
+}
+
+PDFWriter* PDFWriterDriver::GetWriter()
+{
+    return &mPDFWriter;
+}
+
+EStatusCode PDFWriterDriver::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+{
+    EStatusCode status;
+    HummusImageInformation::EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
+        
+    switch(imageType)
+    {
+        case HummusImageInformation::ePDF:
+        {
+            PDFDocumentCopyingContext* copyingContext = NULL;
+            PDFFormXObject* formXObject = NULL;
+            do {
+                // hmm...pdf merging doesn't have an innate method to force an object id. so i'll create a form, and merge into it
+                copyingContext = mPDFWriter.CreatePDFCopyingContext(inImagePath);
+                if(!copyingContext)
+                {
+                    status = eFailure;
+                    break;
+                }
+                
+                // PDFPageInput(PDFParser* inParser,PDFObject* inPageObject);
+                PDFPageInput pageInput(copyingContext->GetSourceDocumentParser(),
+                                       copyingContext->GetSourceDocumentParser()->ParsePage(inImageIndex));
+                
+                formXObject = mPDFWriter.StartFormXObject(pageInput.GetMediaBox(),inObjectID);
+                if(!formXObject)
+                {
+                    status = eFailure;
+                    break;
+                }
+                
+                status = copyingContext->MergePDFPageToFormXObject(formXObject,inImageIndex);
+                if(status != eSuccess)
+                    break;
+                
+                status = mPDFWriter.EndFormXObject(formXObject);
+            }while(false);
+
+            delete formXObject;
+            delete copyingContext;
+            break;
+        }
+        case HummusImageInformation::eJPG:
+        {
+            PDFFormXObject* form = mPDFWriter.CreateFormXObjectFromJPGFile(inImagePath,inObjectID);
+            status = (form ? eSuccess:eFailure);
+            delete form;
+            break;
+        }
+        case HummusImageInformation::eTIFF:
+        {
+            TIFFUsageParameters params;
+            params.PageIndex = (unsigned int)inImageIndex;
+            
+            PDFFormXObject* form = mPDFWriter.CreateFormXObjectFromTIFFFile(inImagePath,inObjectID,params);
+            status = (form ? eSuccess:eFailure);
+            delete form;
+            break;
+        }
+        default:
+        {
+            status = eFailure;
+        }
+    }
+    return status;
+}
+
+
+Handle<Value> PDFWriterDriver::SGetImageDimensions(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() < 1 || args.Length() > 2 ||
+       !args[0]->IsString() ||
+       (args.Length()==2 && !args[1]->IsNumber()))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 or 2 argument. a path to an image, and optional image index (for multi-image files)")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    DoubleAndDoublePair dimensions = pdfWriter->GetImageDimensions(
+                                  *String::Utf8Value(args[0]->ToString()),
+                                  args.Length() == 2 ? args[1]->ToNumber()->Uint32Value() : 0);
+    
+    Handle<Object> newObject = Object::New();
+    
+    newObject->Set(String::New("width"),Number::New(dimensions.first));
+    newObject->Set(String::New("height"),Number::New(dimensions.second));
+    return scope.Close(newObject);
+};
