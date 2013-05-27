@@ -49,8 +49,13 @@ private:
     static v8::Handle<v8::Value> GetTrailer(const v8::Arguments& args);
     static v8::Handle<v8::Value> ParseNewObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetPageObjectID(const v8::Arguments& args);
+    static v8::Handle<v8::Value> ParsePageDictionary(const v8::Arguments& args);
     static v8::Handle<v8::Value> ParsePage(const v8::Arguments& args);
-	
+    static v8::Handle<v8::Value> GetObjectsCount(const v8::Arguments& args);
+    static v8::Handle<v8::Value> IsEncrypted(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetXrefSize(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetXrefEntry(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetXrefPosition(const v8::Arguments& args);
 	
     
     

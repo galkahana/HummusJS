@@ -45,6 +45,7 @@
 #include "PDFReal.h"
 #include "PDFSymbolDriver.h"
 #include "PDFSymbol.h"
+#include "BoxingBase.h"
 
 using namespace v8;
 
@@ -63,6 +64,8 @@ void PDFObjectDriver::Init(Handle<FunctionTemplate>& ioDriverTemplate)
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("toPDFInteger"),FunctionTemplate::New(ToPDFInteger)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("toPDFReal"),FunctionTemplate::New(ToPDFReal)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("toPDFSymbol"),FunctionTemplate::New(ToPDFSymbol)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("toNumber"),FunctionTemplate::New(ToNumber)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("toString"),FunctionTemplate::New(ToString)->GetFunction());
 }
 
 Handle<Value> PDFObjectDriver::GetType(const Arguments& args)
@@ -311,4 +314,61 @@ Handle<Value> PDFObjectDriver::CreateDriver(PDFObject* inObject)
         }
     }
     return scope.Close(newInstance);
+}
+
+typedef BoxingBaseWithRW<long long> LongLong;
+
+Handle<Value> PDFObjectDriver::ToNumber(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
+    if(anObject->GetType() == PDFObject::ePDFObjectInteger)
+    {
+        return scope.Close(Number::New(((PDFInteger*)anObject)->GetValue()));
+    }
+    else if(anObject->GetType() == PDFObject::ePDFObjectReal)
+    {
+        return scope.Close(Number::New(((PDFReal*)anObject)->GetValue()));
+        
+    }
+    else
+        return scope.Close(Undefined());
+}
+
+Handle<Value> PDFObjectDriver::ToString(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
+    std::string result;
+    
+    switch(anObject->GetType())
+    {
+        case PDFObject::ePDFObjectName:
+            result = ((PDFName*)anObject)->GetValue();
+            break;
+        case PDFObject::ePDFObjectLiteralString:
+            result = ((PDFLiteralString*)anObject)->GetValue();
+            break;
+        case PDFObject::ePDFObjectHexString:
+            result = ((PDFHexString*)anObject)->GetValue();
+            break;
+        case PDFObject::ePDFObjectReal:
+            result = Double(((PDFReal*)anObject)->GetValue()).ToString();
+            break;
+        case PDFObject::ePDFObjectInteger:
+            result = LongLong(((PDFInteger*)anObject)->GetValue()).ToString();
+            break;
+        case PDFObject::ePDFObjectSymbol:
+            result = ((PDFSymbol*)anObject)->GetValue();
+            break;
+        case PDFObject::ePDFObjectBoolean:
+            result = ((PDFBoolean*)anObject)->GetValue() ? "true":"false";
+            break;
+        default:
+            result = PDFObject::scPDFObjectTypeLabel[anObject->GetType()];
+    }
+    return scope.Close(String::New(result.c_str()));
+
 }

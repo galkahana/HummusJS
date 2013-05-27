@@ -51,4 +51,9 @@ private:
     static v8::Handle<v8::Value> ToPDFInteger(const v8::Arguments& args);
     static v8::Handle<v8::Value> ToPDFReal(const v8::Arguments& args);
     static v8::Handle<v8::Value> ToPDFSymbol(const v8::Arguments& args);
+    // return number for pdf numbers (real and integer) and null for non numbers
+    static v8::Handle<v8::Value> ToNumber(const v8::Arguments& args);
+    // strings (relevant for: names, literal string, hex string, real, integer, symbol, boolean)
+    static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
+    
 };

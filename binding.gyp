@@ -40,6 +40,7 @@
                 './src/PageContentContextDriver.cpp',
                 './src/PDFPageDriver.cpp',
                 './src/PDFWriterDriver.cpp',
+                './src/PDFPageInputDriver.cpp',
                 './src/Hummus.cpp'
             ]
 

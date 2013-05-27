@@ -52,4 +52,5 @@ private:
     static v8::Handle<v8::Value> GetID(v8::Local<v8::String> property,const v8::AccessorInfo &info);
     static v8::Handle<v8::Value> GetContentContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetResourcesDictionary(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetContentStream(const v8::Arguments& args);
 };

@@ -21,6 +21,7 @@
 #include "PDFFormXObject.h"
 #include "XObjectContentContextDriver.h"
 #include "ResourcesDictionaryDriver.h"
+#include "PDFStreamDriver.h"
 
 using namespace v8;
 
@@ -46,6 +47,8 @@ void FormXObjectDriver::Init()
     constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("id"),GetID);
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getContentContext"),FunctionTemplate::New(GetContentContext)->GetFunction());
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictinary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getContentStream"),FunctionTemplate::New(GetContentStream)->GetFunction());
+
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
 
@@ -125,5 +128,14 @@ void FormXObjectDriver::SetPDFWriter(PDFWriterDriver* inPDFWriterDriver)
     mPDFWriterDriver = inPDFWriterDriver;
 }
 
-
-
+Handle<Value> FormXObjectDriver::GetContentStream(const Arguments& args)
+{
+    HandleScope scope;
+    FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
+    
+    Handle<Value> newInstance = PDFStreamDriver::NewInstance(args);
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
+    streamDriver->PDFStreamInstance = formDriver->FormXObject->GetContentStream();
+    
+    return scope.Close(newInstance);
+}

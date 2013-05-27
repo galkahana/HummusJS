@@ -51,6 +51,7 @@
 #include "PDFDateDriver.h"
 #include "ETokenSeparator.h"
 #include "DictionaryContextDriver.h"
+#include "PDFPageInputDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -223,6 +224,7 @@ void HummusInit(Handle<Object> exports) {
     PDFTextStringDriver::Init();
     PDFDateDriver::Init();
     DictionaryContextDriver::Init();
+    PDFPageInputDriver::Init();
     
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());
@@ -278,6 +280,12 @@ void HummusInit(Handle<Object> exports) {
     exports->Set(String::NewSymbol("eTokenSeparatorSpace"),Number::New(eTokenSeparatorSpace));
     exports->Set(String::NewSymbol("eTokenSeparatorEndLine"),Number::New(eTokenSeparatorEndLine));
     exports->Set(String::NewSymbol("eTokenSepratorNone"),Number::New(eTokenSepratorNone));
+    
+    // EXrefEntryType
+    exports->Set(String::NewSymbol("eXrefEntryExisting"),Number::New(eXrefEntryExisting));
+    exports->Set(String::NewSymbol("eXrefEntryDelete"),Number::New(eXrefEntryDelete));
+    exports->Set(String::NewSymbol("eXrefEntryStreamObject"),Number::New(eXrefEntryStreamObject));
+    exports->Set(String::NewSymbol("eXrefEntryUndefined"),Number::New(eXrefEntryUndefined));
 }
 
 NODE_MODULE(Hummus, HummusInit)

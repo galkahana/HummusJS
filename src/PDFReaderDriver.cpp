@@ -18,12 +18,14 @@
  
  */
 #include "PDFReaderDriver.h"
+#include "PDFPageInputDriver.h"
 #include "PDFDictionaryDriver.h"
 #include "PDFObjectDriver.h"
 #include "RefCountPtr.h"
 #include "PDFDictionary.h"
 #include "PDFArrayDriver.h"
 #include "PDFArray.h"
+#include "PDFPageInput.h"
 
 
 
@@ -58,7 +60,14 @@ void PDFReaderDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("queryArrayObject"),FunctionTemplate::New(QueryArrayObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("parseNewObject"),FunctionTemplate::New(ParseNewObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("getPageObjectID"),FunctionTemplate::New(GetPageObjectID)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("parsePageDictionary"),FunctionTemplate::New(ParsePageDictionary)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("parsePage"),FunctionTemplate::New(ParsePage)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getObjectsCount"),FunctionTemplate::New(GetObjectsCount)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("isEncrypted"),FunctionTemplate::New(IsEncrypted)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getXrefSize"),FunctionTemplate::New(GetXrefSize)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getXrefEntry"),FunctionTemplate::New(GetXrefEntry)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getXrefPosition"),FunctionTemplate::New(GetXrefPosition)->GetFunction());
+    
     constructor = Persistent<Function>::New(t->GetFunction());
 }
 
@@ -225,7 +234,7 @@ Handle<Value> PDFReaderDriver::GetPageObjectID(const Arguments& args)
 }
 
 
-Handle<Value> PDFReaderDriver::ParsePage(const Arguments& args)
+Handle<Value> PDFReaderDriver::ParsePageDictionary(const Arguments& args)
 {
     HandleScope scope;
     
@@ -247,4 +256,93 @@ Handle<Value> PDFReaderDriver::ParsePage(const Arguments& args)
     }
     
     return scope.Close(PDFObjectDriver::CreateDriver(newObject.GetPtr()));
+}
+
+Handle<Value> PDFReaderDriver::ParsePage(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !args[0]->IsNumber())
+    {
+ 		ThrowException(Exception::TypeError(String::New("Wrong arguments. Provide a page index")));
+        return scope.Close(Undefined());
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    
+    RefCountPtr<PDFDictionary> newObject = reader->mPDFReader->ParsePage(args[0]->ToNumber()->Uint32Value());
+    
+    if(!newObject)
+    {
+ 		ThrowException(Exception::TypeError(String::New("Unable to read page, parhaps page index is wrong")));
+        return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = PDFPageInputDriver::NewInstance();
+    ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->ToObject())->PageInput = new PDFPageInput(reader->mPDFReader,newObject);
+    ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->ToObject())->PageInputDictionary = newObject.GetPtr();
+    return scope.Close(newInstance);
+}
+
+Handle<Value> PDFReaderDriver::GetObjectsCount(const Arguments& args)
+{
+    HandleScope scope;
+    
+    
+    return scope.Close(Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->GetObjectsCount()));
+}
+
+Handle<Value> PDFReaderDriver::IsEncrypted(const Arguments& args)
+{
+    HandleScope scope;
+    
+    
+    return scope.Close(Boolean::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->IsEncrypted()));
+}
+
+Handle<Value> PDFReaderDriver::GetXrefSize(const Arguments& args)
+{
+    HandleScope scope;
+    
+    
+    return scope.Close(Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->GetXrefSize()));
+}
+
+Handle<Value> PDFReaderDriver::GetXrefEntry(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !args[0]->IsNumber())
+    {
+ 		ThrowException(Exception::TypeError(String::New("Wrong arguments. Provide an Object ID")));
+        return scope.Close(Undefined());
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    
+    XrefEntryInput* xrefEntry = reader->mPDFReader->GetXrefEntry(args[0]->ToNumber()->Uint32Value());
+    if(!xrefEntry)
+    {
+ 		ThrowException(Exception::Error(String::New("Unable to read object xref entry, parhaps page index is wrong")));
+        return scope.Close(Undefined());   
+    }
+    
+    Handle<Object> anObject = Object::New();
+    
+    anObject->Set(String::New("objectPosition"),Number::New(xrefEntry->mObjectPosition));
+    anObject->Set(String::New("revision"),Number::New(xrefEntry->mRivision));
+    anObject->Set(String::New("type"),Number::New(xrefEntry->mType));
+
+    return scope.Close(anObject);
+}
+
+
+Handle<Value> PDFReaderDriver::GetXrefPosition(const Arguments& args)
+{
+    HandleScope scope;
+    
+    
+    return scope.Close(Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->GetXrefPosition()));
 }
