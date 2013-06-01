@@ -52,6 +52,7 @@
 #include "ETokenSeparator.h"
 #include "DictionaryContextDriver.h"
 #include "PDFPageInputDriver.h"
+#include "InputFileDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -63,38 +64,43 @@ Handle<Value> CreateWriter(const Arguments& args)
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
 
-    // allow version as option, defaulting to pdf1.3
 	if (args.Length() < 1 || args.Length() > 2) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and optionally another one for setting the PDF level")));
+		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and an optional options object")));
 		return scope.Close(Undefined());
 	}
     
 	if (!args[0]->IsString()) {
-		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and optionally another one for setting the PDF level")));
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, please provide a path to a file as the first argument")));
 		return scope.Close(Undefined());
 	}
     
 	Local<String> stringArg = args[0]->ToString();
 	String::Utf8Value utf8Path(stringArg);
     
+    EPDFVersion pdfVersion = ePDFVersion13;
+    bool compressStreams = true;
     
-    EPDFVersion pdfVersion;
-    
-    if(args.Length() == 2 && args[1]->IsNumber())
+    if(args.Length() == 2 && args[1]->IsObject())
     {
-        long pdfVersionValue = args[1]->ToNumber()->Int32Value();
-        
-        if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
+        Handle<Object> anObject = args[1]->ToObject();
+        if(anObject->Has(String::New("version")) && anObject->Get(String::New("version"))->IsString())
         {
-            ThrowException(Exception::TypeError(String::New("Wrong argument for PDF version, please provide a valid PDF version")));
-            return scope.Close(Undefined());
+            long pdfVersionValue = anObject->Get(String::New("version"))->ToNumber()->Int32Value();
+            
+            if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
+            {
+                ThrowException(Exception::TypeError(String::New("Wrong argument for PDF version, please provide a valid PDF version")));
+                return scope.Close(Undefined());
+            }
+            pdfVersion = (EPDFVersion)pdfVersionValue;
         }
-        pdfVersion = (EPDFVersion)pdfVersionValue;
+            
+        if(anObject->Has(String::New("compress")) && anObject->Get(String::New("compress"))->IsBoolean())
+            compressStreams = anObject->Get(String::New("compress"))->ToBoolean()->Value();
     }
-    else
-        pdfVersion = ePDFVersion13;
     
-    if(driver->StartPDF(*utf8Path, pdfVersion) != PDFHummus::eSuccess)
+    
+    if(driver->StartPDF(*utf8Path, pdfVersion,LogConfiguration::DefaultLogConfiguration,PDFCreationSettings(compressStreams)) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to create PDF file, make sure that output file target is available")));
 		return scope.Close(Undefined());
@@ -110,13 +116,28 @@ Handle<Value> CreateWriterToContinue(const Arguments& args)
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
     
-	if (args.Length() != 2 || !args[0]->IsString() || !args[1]->IsString()) {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 2 strings - path to file to continue, and path to state file (provided to the previous shutdown call")));
+	if ((args.Length() != 2  && args.Length() !=3)||
+            !args[0]->IsString() ||
+            !args[1]->IsString() ||
+            ((args.Length() == 3) && !args[2]->IsObject())) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 2 strings - path to file to continue, and path to state file (provided to the previous shutdown call. You may also add an options object")));
 		return scope.Close(Undefined());
 	}
     
+    std::string alternativePath;
+    
+    if(args.Length() == 2 && args[1]->IsObject())
+    {
+        Handle<Object> anObject = args[1]->ToObject();
+        
+        if(anObject->Has(String::New("modifiedFilePath")) && anObject->Get(String::New("modifiedFilePath"))->IsString())
+            alternativePath = *String::Utf8Value(anObject->Get(String::New("modifiedFilePath"))->ToString());
+    }
+    
     if(driver->ContinuePDF(*String::Utf8Value(args[0]->ToString()),
-                        *String::Utf8Value(args[1]->ToString())) != PDFHummus::eSuccess)
+                           *String::Utf8Value(args[1]->ToString()),
+                           alternativePath,
+                           LogConfiguration::DefaultLogConfiguration) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to continue PDF file, make sure that output file target is available and state file exists")));
 		return scope.Close(Undefined());
@@ -132,19 +153,50 @@ Handle<Value> CreateWriterToModify(const Arguments& args)
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
     
-	if ((args.Length() != 1 && args.Length() != 2) ||
-        !args[0]->IsString() ||
-        (args.Length() == 2 && !args[1]->IsString()))
-    {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 1 or 2 strings. the first string is the file to modify. the modification may be in place, or that the modified PDF is written to another PDF, in the case that a 2 parameter is provide for the target folder")));
+	if (args.Length() < 1 || args.Length() > 2) {
+		ThrowException(Exception::TypeError(String::New("Wrong number of arguments, Provide one argument stating the location of the output file, and an optional options object")));
 		return scope.Close(Undefined());
 	}
     
-    std::string targetFilePath =
-        args.Length() == 1 ? "" : *String::Utf8Value(args[1]->ToString());
+	if (!args[0]->IsString()) {
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, please provide a path to a file as the first argument")));
+		return scope.Close(Undefined());
+	}
+    
+	Local<String> stringArg = args[0]->ToString();
+	String::Utf8Value utf8Path(stringArg);
+    
+    EPDFVersion pdfVersion = ePDFVersionExtended;
+    bool compressStreams = true;
+    std::string alternativePath;
+    
+    if(args.Length() == 2 && args[1]->IsObject())
+    {
+        Handle<Object> anObject = args[1]->ToObject();
+        if(anObject->Has(String::New("version")) && anObject->Get(String::New("version"))->IsString())
+        {
+            long pdfVersionValue = anObject->Get(String::New("version"))->ToNumber()->Int32Value();
+            
+            if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
+            {
+                ThrowException(Exception::TypeError(String::New("Wrong argument for PDF version, please provide a valid PDF version")));
+                return scope.Close(Undefined());
+            }
+            pdfVersion = (EPDFVersion)pdfVersionValue;
+        }
+        
+        if(anObject->Has(String::New("compress")) && anObject->Get(String::New("compress"))->IsBoolean())
+            compressStreams = anObject->Get(String::New("compress"))->ToBoolean()->Value();
+        
+        if(anObject->Has(String::New("modifiedFilePath")) && anObject->Get(String::New("modifiedFilePath"))->IsString())
+            alternativePath = *String::Utf8Value(anObject->Get(String::New("modifiedFilePath"))->ToString());
+    }
+    
+    
     
     if(driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
-                           targetFilePath) != PDFHummus::eSuccess)
+                           pdfVersion,alternativePath,LogConfiguration::DefaultLogConfiguration,
+                           PDFCreationSettings(compressStreams)) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to modify PDF file, make sure that output file target is available and that it is not protected")));
 		return scope.Close(Undefined());
@@ -225,6 +277,7 @@ void HummusInit(Handle<Object> exports) {
     PDFDateDriver::Init();
     DictionaryContextDriver::Init();
     PDFPageInputDriver::Init();
+    InputFileDriver::Init();
     
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());

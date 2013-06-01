@@ -3,7 +3,7 @@ var assert = require('assert');
 
 function testBasicFileModification(inFileName)
 {
-    var pdfWriter = hummus.createWriterToModify('../deps/TestMaterials/' + inFileName + '.pdf','./output/Modified' + inFileName + '.pdf');
+    var pdfWriter = hummus.createWriterToModify('../deps/TestMaterials/' + inFileName + '.pdf',{modifiedFilePath:'./output/Modified' + inFileName + '.pdf'});
     var page = pdfWriter.createPage(0,0,595,842);
     
     pdfWriter.startPageContentContext(page).BT()

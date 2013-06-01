@@ -48,6 +48,5 @@ private:
     static v8::Handle<v8::Value> WriteIndirectObjectReference(const v8::Arguments& args);
     static v8::Handle<v8::Value> StartNewIndirectObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> StartModifiedIndirectObject(const v8::Arguments& args);
-
-
+    static v8::Handle<v8::Value> DeleteObject(const v8::Arguments& args);
 };

@@ -60,13 +60,20 @@ public:
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
 
     PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
-                                    EPDFVersion inPDFVersion);
+                                    EPDFVersion inPDFVersion,
+                                    const LogConfiguration& inLogConfiguration,
+                                    const PDFCreationSettings& inCreationSettings);
     
     PDFHummus::EStatusCode ContinuePDF(const std::string& inOutputFilePath,
-                                    const std::string& inStateFilePath);
+                                       const std::string& inStateFilePath,
+                                       const std::string& inOptionalOtherOutputFile,
+                                       const LogConfiguration& inLogConfiguration);
     
     PDFHummus::EStatusCode ModifyPDF(const std::string& inSourceFile,
-                                     const std::string& inOptionalOtherOutputFile);
+                                     EPDFVersion inPDFVersion,
+                                     const std::string& inOptionalOtherOutputFile,
+                                     const LogConfiguration& inLogConfiguration,
+                                     const PDFCreationSettings& inCreationSettings);
     
     
     // image registry services, optimization for r/w
@@ -105,6 +112,8 @@ private:
     static v8::Handle<v8::Value> CreatePDFTextString(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePDFDate(const v8::Arguments& args);
     static v8::Handle<v8::Value> SGetImageDimensions(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetModifiedFileParser(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetModifiedInputFile(const v8::Arguments& args);
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);

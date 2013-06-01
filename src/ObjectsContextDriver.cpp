@@ -48,6 +48,7 @@ void ObjectsContextDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("writeIndirectObjectReference"),FunctionTemplate::New(WriteIndirectObjectReference)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("startNewIndirectObject"),FunctionTemplate::New(StartNewIndirectObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("startModifiedIndirectObject"),FunctionTemplate::New(StartModifiedIndirectObject)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("deleteObject"),FunctionTemplate::New(DeleteObject)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -90,6 +91,28 @@ Handle<Value> ObjectsContextDriver::AllocateNewObjectID(const Arguments& args)
     return scope.Close(newID);
     
 }
+
+Handle<Value> ObjectsContextDriver::DeleteObject(const Arguments& args)
+{
+ 
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsNumber())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is an object number")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
+    
+    objectsContextDriver->ObjectsContextInstance->GetInDirectObjectsRegistry().DeleteObject(args[0]->ToNumber()->Uint32Value());
+    
+    return scope.Close(args.This());
+    
+}
+
 
 Handle<Value> ObjectsContextDriver::StartDictionary(const Arguments& args)
 {

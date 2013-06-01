@@ -37,6 +37,8 @@
 #include "IOBasicTypes.h"
 #include "PDFDocumentCopyingContext.h"
 #include "PDFFormXObject.h"
+#include "PDFReaderDriver.h"
+#include "InputFileDriver.h"
 
 using namespace v8;
 
@@ -74,6 +76,10 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFTextString"),FunctionTemplate::New(CreatePDFTextString)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFDate"),FunctionTemplate::New(CreatePDFDate)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getImageDimensions"),FunctionTemplate::New(SGetImageDimensions)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getModifiedFileParser"),FunctionTemplate::New(GetModifiedFileParser)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getModifiedInputFile"),FunctionTemplate::New(GetModifiedInputFile)->GetFunction());
+    
+    
     
 
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
@@ -471,19 +477,26 @@ v8::Handle<v8::Value> PDFWriterDriver::Shutdown(const v8::Arguments& args)
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::StartPDF(const std::string& inOutputFilePath,
-                                EPDFVersion inPDFVersion)
+                                                 EPDFVersion inPDFVersion,
+                                                 const LogConfiguration& inLogConfiguration,
+                                                 const PDFCreationSettings& inCreationSettings)
 {
-    return mPDFWriter.StartPDF(inOutputFilePath,inPDFVersion);
+    return mPDFWriter.StartPDF(inOutputFilePath,inPDFVersion,inLogConfiguration,inCreationSettings);
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputFilePath,
-                                                    const std::string& inStateFilePath)
+                                                    const std::string& inStateFilePath,
+                                                    const std::string& inOptionalOtherOutputFile,
+                                                    const LogConfiguration& inLogConfiguration)
 {
-    return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath);
+    return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath,inOptionalOtherOutputFile,inLogConfiguration);
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFile,
-                                                  const std::string& inOptionalOtherOutputFile)
+                                                  EPDFVersion inPDFVersion,
+                                                  const std::string& inOptionalOtherOutputFile,
+                                                  const LogConfiguration& inLogConfiguration,
+                                                  const PDFCreationSettings& inCreationSettings)
 {
     // two phase, cause i don't want to bother the users with the level BS.
     // first, parse the source file, get the level. then modify with this level
@@ -492,7 +505,9 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFil
     
     do
     {
-        EPDFVersion level = ePDFVersion13;
+        EPDFVersion level = inPDFVersion;
+        
+        if(ePDFVersionExtended == level) // this would mean to use the same version as the file has
         {
             // read source file level
             PDFParser reader;
@@ -508,7 +523,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFil
         }
         
         // now modify
-        status = mPDFWriter.ModifyPDF(inSourceFile,level,inOptionalOtherOutputFile);
+        status = mPDFWriter.ModifyPDF(inSourceFile,level,inOptionalOtherOutputFile,inLogConfiguration,inCreationSettings);
         
     } while (false);
     
@@ -1199,3 +1214,39 @@ Handle<Value> PDFWriterDriver::SGetImageDimensions(const Arguments& args)
     newObject->Set(String::New("height"),Number::New(dimensions.second));
     return scope.Close(newObject);
 };
+
+Handle<Value> PDFWriterDriver::GetModifiedFileParser(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFParser* parser = &(pdfWriter->mPDFWriter.GetModifiedFileParser());
+    if(!parser->GetTrailer()) // checking for the trailer should be a good indication to whether this parser is relevant
+    {
+		ThrowException(Exception::Error(String::New("unable to create modified parser...possibly a file is not being modified by this writer...")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = PDFReaderDriver::NewInstance(args);
+    ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->ToObject())->SetFromOwnedParser(parser);
+    return scope.Close(newInstance);
+}
+
+Handle<Value> PDFWriterDriver::GetModifiedInputFile(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    InputFile* inputFile = &(pdfWriter->mPDFWriter.GetModifiedInputFile());
+    if(!inputFile->GetInputStream()) 
+    {
+		ThrowException(Exception::Error(String::New("unable to create modified input file...possibly a file is not being modified by this writer...")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = PDFReaderDriver::NewInstance(args);
+    ObjectWrap::Unwrap<InputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(inputFile);
+    return scope.Close(newInstance);
+}

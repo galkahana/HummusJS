@@ -6,7 +6,7 @@ function testPageSizeModification(inPDFWriter)
     var copyingContext = inPDFWriter.createPDFCopyingContextForModifiedFile();
     
     var thirdPageID = copyingContext.getSourceDocumentParser().getPageObjectID(2);
-    var thirdPageObject = copyingContext.getSourceDocumentParser().parsePage(2).toJSObject();
+    var thirdPageObject = copyingContext.getSourceDocumentParser().parsePage(2).getDictionary().toJSObject();
     var objectsContext = inPDFWriter.getObjectsContext();
     
     objectsContext.startModifiedIndirectObject(thirdPageID);
@@ -58,7 +58,7 @@ function testAddingComments(inPDFWriter)
     var copyingContext = inPDFWriter.createPDFCopyingContextForModifiedFile();
     
     var fourthPageID = copyingContext.getSourceDocumentParser().getPageObjectID(3);
-    var fourthPageObject = copyingContext.getSourceDocumentParser().parsePage(3).toJSObject();
+    var fourthPageObject = copyingContext.getSourceDocumentParser().parsePage(3).getDictionary().toJSObject();
     var objectsContext = inPDFWriter.getObjectsContext();
 
     
@@ -166,7 +166,7 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment)
 }
 
 var pdfWriter = hummus.createWriterToModify('../deps/TestMaterials/AddedPage.pdf',
-                                            './output/ModifyingExistingFileContent.pdf');
+                                            {modifiedFilePath:'./output/ModifyingExistingFileContent.pdf'});
 testPageSizeModification(pdfWriter);
 testAddingComments(pdfWriter);
 
