@@ -79,6 +79,7 @@ Handle<Value> CreateWriter(const Arguments& args)
     
     EPDFVersion pdfVersion = ePDFVersion13;
     bool compressStreams = true;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     if(args.Length() == 2 && args[1]->IsObject())
     {
@@ -97,10 +98,17 @@ Handle<Value> CreateWriter(const Arguments& args)
             
         if(anObject->Has(String::New("compress")) && anObject->Get(String::New("compress"))->IsBoolean())
             compressStreams = anObject->Get(String::New("compress"))->ToBoolean()->Value();
+
+        if(anObject->Has(String::New("log")) && anObject->Get(String::New("log"))->IsBoolean())
+        {
+            logConfig.ShouldLog = true;
+            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(String::New("log"))->ToString());
+        }
+
     }
     
     
-    if(driver->StartPDF(*utf8Path, pdfVersion,LogConfiguration::DefaultLogConfiguration,PDFCreationSettings(compressStreams)) != PDFHummus::eSuccess)
+    if(driver->StartPDF(*utf8Path, pdfVersion,logConfig,PDFCreationSettings(compressStreams)) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to create PDF file, make sure that output file target is available")));
 		return scope.Close(Undefined());
@@ -125,19 +133,26 @@ Handle<Value> CreateWriterToContinue(const Arguments& args)
 	}
     
     std::string alternativePath;
-    
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
+   
     if(args.Length() == 2 && args[1]->IsObject())
     {
         Handle<Object> anObject = args[1]->ToObject();
         
         if(anObject->Has(String::New("modifiedFilePath")) && anObject->Get(String::New("modifiedFilePath"))->IsString())
             alternativePath = *String::Utf8Value(anObject->Get(String::New("modifiedFilePath"))->ToString());
+        
+        if(anObject->Has(String::New("log")) && anObject->Get(String::New("log"))->IsBoolean())
+        {
+            logConfig.ShouldLog = true;
+            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(String::New("log"))->ToString());
+        }
     }
     
     if(driver->ContinuePDF(*String::Utf8Value(args[0]->ToString()),
                            *String::Utf8Value(args[1]->ToString()),
                            alternativePath,
-                           LogConfiguration::DefaultLogConfiguration) != PDFHummus::eSuccess)
+                           logConfig) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to continue PDF file, make sure that output file target is available and state file exists")));
 		return scope.Close(Undefined());
@@ -169,6 +184,7 @@ Handle<Value> CreateWriterToModify(const Arguments& args)
     EPDFVersion pdfVersion = ePDFVersionExtended;
     bool compressStreams = true;
     std::string alternativePath;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     if(args.Length() == 2 && args[1]->IsObject())
     {
@@ -190,12 +206,18 @@ Handle<Value> CreateWriterToModify(const Arguments& args)
         
         if(anObject->Has(String::New("modifiedFilePath")) && anObject->Get(String::New("modifiedFilePath"))->IsString())
             alternativePath = *String::Utf8Value(anObject->Get(String::New("modifiedFilePath"))->ToString());
+
+        if(anObject->Has(String::New("log")) && anObject->Get(String::New("log"))->IsBoolean())
+        {
+            logConfig.ShouldLog = true;
+            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(String::New("log"))->ToString());
+        }
     }
     
     
     
     if(driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
-                           pdfVersion,alternativePath,LogConfiguration::DefaultLogConfiguration,
+                           pdfVersion,alternativePath,logConfig,
                            PDFCreationSettings(compressStreams)) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to modify PDF file, make sure that output file target is available and that it is not protected")));
@@ -277,7 +299,7 @@ void HummusInit(Handle<Object> exports) {
     PDFDateDriver::Init();
     DictionaryContextDriver::Init();
     PDFPageInputDriver::Init();
-    InputFileDriver::Init();
+    InputFileDriver::Init(exports);
     
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());

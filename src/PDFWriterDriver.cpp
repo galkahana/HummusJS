@@ -89,22 +89,8 @@ Handle<Value> PDFWriterDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
-    if(args.Length() == 1)
-    {
-        const unsigned argc = 1;
-        Handle<Value> argv[argc] = { args[0] };
-        Local<Object> instance = constructor->NewInstance(argc, argv);
-        return scope.Close(instance);
-    }
-    else if(args.Length() == 2)
-    {
-        const unsigned argc = 2;
-        Handle<Value> argv[argc] = {args[0],args[1]};
-        Local<Object> instance = constructor->NewInstance(argc, argv);
-        return scope.Close(instance);
-    }
-    else
-        return scope.Close(Undefined());
+    Local<Object> instance = constructor->NewInstance();
+    return scope.Close(instance);
 }
 
 

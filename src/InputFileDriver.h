@@ -32,7 +32,7 @@ class InputFileDriver : public node::ObjectWrap
 public:
     virtual ~InputFileDriver();
     
-    static void Init();
+    static void Init(v8::Handle<v8::Object> inExports); // to allow instantiation from the hummus object
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     

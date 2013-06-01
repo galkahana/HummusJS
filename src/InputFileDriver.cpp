@@ -28,8 +28,8 @@ Persistent<FunctionTemplate> InputFileDriver::constructor_template;
 
 InputFileDriver::InputFileDriver()
 {
-    mInputFileInstance = NULL;
-    mOwnsInstance = false;
+    mInputFileInstance = new InputFile();
+    mOwnsInstance = true;
 }
 
 InputFileDriver::~InputFileDriver()
@@ -54,7 +54,7 @@ void InputFileDriver::SetFromOwnedFile(InputFile* inFile)
     mInputFileInstance = inFile;
 }
 
-void InputFileDriver::Init()
+void InputFileDriver::Init(Handle<Object> inExports)
 {
     // prepare the page interfrace template
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
@@ -67,6 +67,7 @@ void InputFileDriver::Init()
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getFileSize"),FunctionTemplate::New(GetFileSize)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
+    inExports->Set(String::NewSymbol("InputFile"), constructor);
 }
 
 Handle<Value> InputFileDriver::NewInstance(const Arguments& args)
@@ -89,8 +90,12 @@ Handle<Value> InputFileDriver::New(const Arguments& args)
 {
     HandleScope scope;
     
-    InputFileDriver* InputFile = new InputFileDriver();
-    InputFile->Wrap(args.This());
+    InputFileDriver* inputFile = new InputFileDriver();
+    
+    if(args.Length() == 1 || args[0]->IsString())
+        inputFile->OpenFile(*String::Utf8Value(args[0]->ToString()));
+    
+    inputFile->Wrap(args.This());
     return args.This();
 }
 
