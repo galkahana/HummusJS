@@ -39,7 +39,7 @@ PDFPageDriver::PDFPageDriver()
     mOwnsPage = false;
 }
 
-void PDFPageDriver::Init()
+void PDFPageDriver::Init(Handle<Object> inExports)
 {
     // prepare the page interfrace template
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
@@ -50,6 +50,7 @@ void PDFPageDriver::Init()
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getResourcesDictionary"),FunctionTemplate::New(GetResourcesDictionary)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
+    inExports->Set(String::NewSymbol("PDFPage"), constructor);
 }
 
 Handle<Value> PDFPageDriver::NewInstance(PDFPage* inPage)
@@ -57,7 +58,8 @@ Handle<Value> PDFPageDriver::NewInstance(PDFPage* inPage)
     HandleScope scope;
     Local<Object> instance;
     
-    instance = constructor->NewInstance();
+    Handle<Value> argv[1] = {Boolean::New(false)};
+    instance = constructor->NewInstance(1,argv);
     
     // this version links to a page and does not own it!
     
@@ -74,7 +76,8 @@ Handle<Value> PDFPageDriver::NewInstance(const Arguments& args)
     HandleScope scope;
     Local<Object> instance;
     
-    instance = constructor->NewInstance();
+    Handle<Value> argv[1] = {Boolean::New(false)};
+    instance = constructor->NewInstance(1,argv);
 
     // this version creates an instance of a page, and owns it
     
@@ -104,6 +107,20 @@ Handle<Value> PDFPageDriver::New(const Arguments& args)
     HandleScope scope;
     
     PDFPageDriver* pdfPage = new PDFPageDriver();
+    if(args.Length() != 1) // which would signify that this didn't came from one of the "newinstance" here...so from user "new"
+    {
+        pdfPage->mPDFPage = new PDFPage();
+        pdfPage->mOwnsPage = true;
+        
+        if(args.Length() == 4 && args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
+        {
+            pdfPage->mPDFPage->SetMediaBox(PDFRectangle(args[0]->ToNumber()->Value(),
+                                                       args[1]->ToNumber()->Value(),
+                                                       args[2]->ToNumber()->Value(),
+                                                       args[3]->ToNumber()->Value()));
+        }
+        
+    }
     
     pdfPage->Wrap(args.This());
     return args.This();

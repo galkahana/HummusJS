@@ -23,15 +23,18 @@ using namespace v8;
 
 Persistent<Function> PDFTextStringDriver::constructor;
 
-void PDFTextStringDriver::Init()
+void PDFTextStringDriver::Init(Handle<Object> inExports)
 {
     // prepare the page interfrace template
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
     t->SetClassName(String::NewSymbol("PDFTextString"));
     t->InstanceTemplate()->SetInternalFieldCount(1);
     t->PrototypeTemplate()->Set(String::NewSymbol("toString"),FunctionTemplate::New(ToString)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("toUTF8String"),FunctionTemplate::New(ToUTF8String)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("fromUTF8String"),FunctionTemplate::New(FromUTF8String)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
+    inExports->Set(String::NewSymbol("PDFTextString"),constructor);
 }
 
 Handle<Value> PDFTextStringDriver::NewInstance(const Arguments& args)
@@ -56,7 +59,8 @@ Handle<Value> PDFTextStringDriver::New(const Arguments& args)
     HandleScope scope;
     
     PDFTextStringDriver* element = new PDFTextStringDriver();
-    element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
+    if(args.Length() > 0 && args[0]->IsString())
+        element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
     
     element->Wrap(args.This());
     return args.This();
@@ -69,4 +73,24 @@ Handle<Value> PDFTextStringDriver::ToString(const Arguments& args)
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     
     return scope.Close(String::New(element->mTextString.ToString().c_str()));
+}
+
+Handle<Value> PDFTextStringDriver::ToUTF8String(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
+    
+    return scope.Close(String::New(element->mTextString.ToUTF8String().c_str()));
+}
+
+Handle<Value> PDFTextStringDriver::FromUTF8String(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
+    if(args.Length() > 0 && args[0]->IsString())
+        element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
+    
+    return scope.Close(args.This());
 }

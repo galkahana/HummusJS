@@ -1,7 +1,7 @@
 
 var hummus = require('../Hummus');
 var pdfWriter = hummus.createWriter('./output/SimpleContentPageTest.pdf');
-var page = pdfWriter.createPage(0,0,595,842);
+var page = new hummus.PDFPage(0,0,595,842);
 
 var pageContent = pdfWriter.startPageContentContext(page);
 

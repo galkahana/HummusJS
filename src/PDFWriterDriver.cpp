@@ -39,6 +39,8 @@
 #include "PDFFormXObject.h"
 #include "PDFReaderDriver.h"
 #include "InputFileDriver.h"
+#include "OutputFileDriver.h"
+#include "DocumentContextDriver.h"
 
 using namespace v8;
 
@@ -56,6 +58,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("end"),FunctionTemplate::New(End)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPage"),FunctionTemplate::New(CreatePage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("writePage"),FunctionTemplate::New(WritePage)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("writePageAndReturnID"),FunctionTemplate::New(WritePageAndReturnID)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("startPageContentContext"),FunctionTemplate::New(StartPageContentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("pausePageContentContext"),FunctionTemplate::New(PausePageContentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObject"),FunctionTemplate::New(CreateFormXObject)->GetFunction());
@@ -68,6 +71,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createImageXObjectFromJPGFile"),FunctionTemplate::New(CreateImageXObjectFromJPGFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("retrieveJPGImageInformation"),FunctionTemplate::New(RetrieveJPGImageInformation)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getObjectsContext"),FunctionTemplate::New(GetObjectsContext)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getDocumentContext"),FunctionTemplate::New(GetDocumentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("appendPDFPagesFromPDF"),FunctionTemplate::New(AppendPDFPagesFromPDF)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPagesToPage"),FunctionTemplate::New(MergePDFPagesToPage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createPDFCopyingContext"),FunctionTemplate::New(CreatePDFCopyingContext)->GetFunction());
@@ -78,6 +82,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getImageDimensions"),FunctionTemplate::New(SGetImageDimensions)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getModifiedFileParser"),FunctionTemplate::New(GetModifiedFileParser)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getModifiedInputFile"),FunctionTemplate::New(GetModifiedInputFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getOutputFile"),FunctionTemplate::New(GetOutputFile)->GetFunction());
     
     
     
@@ -131,6 +136,16 @@ v8::Handle<v8::Value> PDFWriterDriver::WritePage(const v8::Arguments& args)
 {
     HandleScope scope;
     
+    WritePageAndReturnID(args);
+    
+    return scope.Close(args.This());
+    
+}
+
+v8::Handle<v8::Value> PDFWriterDriver::WritePageAndReturnID(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
 	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
@@ -153,13 +168,15 @@ v8::Handle<v8::Value> PDFWriterDriver::WritePage(const v8::Arguments& args)
     }
     pageDriver->ContentContext = NULL;
     
-    if(pdfWriter->mPDFWriter.WritePage(pageDriver->GetPage()) != PDFHummus::eSuccess)
+    EStatusCodeAndObjectIDType result = pdfWriter->mPDFWriter.WritePageAndReturnPageID(pageDriver->GetPage());
+    
+    if(result.first != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to write page")));
 		return scope.Close(Undefined());
     }
     
-    return scope.Close(args.This());
+    return scope.Close(Number::New(result.second));
     
 }
 
@@ -651,6 +668,20 @@ v8::Handle<v8::Value> PDFWriterDriver::GetObjectsContext(const v8::Arguments& ar
  
     return scope.Close(newInstance);
 }
+
+v8::Handle<v8::Value> PDFWriterDriver::GetDocumentContext(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    Handle<Value> newInstance = DocumentContextDriver::NewInstance();
+    DocumentContextDriver* documentContextDriver = ObjectWrap::Unwrap<DocumentContextDriver>(newInstance->ToObject());
+    documentContextDriver->DocumentContextInstance = &(pdfWriter->mPDFWriter.GetDocumentContext());
+    
+    return scope.Close(newInstance);
+}
+
 
 v8::Handle<v8::Value> PDFWriterDriver::AppendPDFPagesFromPDF(const v8::Arguments& args)
 {
@@ -1232,7 +1263,26 @@ Handle<Value> PDFWriterDriver::GetModifiedInputFile(const Arguments& args)
 		return scope.Close(Undefined());
     }
     
-    Handle<Value> newInstance = PDFReaderDriver::NewInstance(args);
+    Handle<Value> newInstance = InputFileDriver::NewInstance(args);
     ObjectWrap::Unwrap<InputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(inputFile);
     return scope.Close(newInstance);
 }
+
+Handle<Value> PDFWriterDriver::GetOutputFile(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    OutputFile* outputFile = &(pdfWriter->mPDFWriter.GetOutputFile());
+    if(!outputFile->GetOutputStream())
+    {
+		ThrowException(Exception::Error(String::New("unable to get output file. probably pdf writing hasn't started, or the output is not to a file")));
+		return scope.Close(Undefined());
+    }
+    
+    Handle<Value> newInstance = OutputFileDriver::NewInstance(args);
+    ObjectWrap::Unwrap<OutputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(outputFile);
+    return scope.Close(newInstance);
+}
+

@@ -1,5 +1,5 @@
 /*
- Source File : PDFPageDriver.h
+ Source File : OutputFileDriver.h
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -15,43 +15,41 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- 
  */
+
 #pragma once
 
 #include <node.h>
 
-#include "PDFPage.h"
+#include "EStatusCode.h"
 
-class PageContentContext;
+#include <string>
 
-class PDFPageDriver : public node::ObjectWrap
+class OutputFile;
+
+class OutputFileDriver : public node::ObjectWrap
 {
 public:
-    virtual ~PDFPageDriver();
+    virtual ~OutputFileDriver();
     
-    
-    static void Init(v8::Handle<v8::Object> inExports);
+    static void Init(v8::Handle<v8::Object> inExports); // to allow instantiation from the hummus object
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
-    static v8::Handle<v8::Value> NewInstance(PDFPage* inPage);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
-    PDFPage* GetPage(){return mPDFPage;}
-    
-    PageContentContext* ContentContext;
-    
+    PDFHummus::EStatusCode OpenFile(const std::string& inFilePath,bool inAppend);
+    void SetFromOwnedFile(OutputFile* inFile);
     
 private:
-    PDFPageDriver();
+    OutputFileDriver();
     
+    OutputFile* mOutputFileInstance;
+    bool mOwnsInstance;
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetMediaBox(v8::Local<v8::String> property,const v8::AccessorInfo &info);
-    static void SetMediaBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const v8::AccessorInfo &info);
-    static v8::Handle<v8::Value> GetResourcesDictionary(const v8::Arguments& args);
+    static v8::Handle<v8::Value> OpenFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CloseFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetFilePath(const v8::Arguments& args);
     
-    PDFPage* mPDFPage;
-    bool mOwnsPage;
 };

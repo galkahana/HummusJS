@@ -24,15 +24,17 @@ using namespace v8;
 
 Persistent<Function> PDFDateDriver::constructor;
 
-void PDFDateDriver::Init()
+void PDFDateDriver::Init(Handle<Object> inExports)
 {
     // prepare the page interfrace template
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
     t->SetClassName(String::NewSymbol("PDFDate"));
     t->InstanceTemplate()->SetInternalFieldCount(1);
     t->PrototypeTemplate()->Set(String::NewSymbol("toString"),FunctionTemplate::New(ToString)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("setToCurrentTime"),FunctionTemplate::New(SetToCurrentTime)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
+    inExports->Set(String::NewSymbol("PDFDate"),constructor);
 }
 
 Handle<Value> PDFDateDriver::NewInstance(const Arguments& args)
@@ -81,9 +83,11 @@ Handle<Value> PDFDateDriver::New(const Arguments& args)
     HandleScope scope;
     
     PDFDateDriver* element = new PDFDateDriver();
-    Local<Date> aDate = Local<Date>::Cast(args[0]);
-    int timeZoneMinutesDifference = GetIntValueFromDateFunction(aDate,"getTimezoneOffset");
-    element->mDate.SetTime(
+    if(args.Length() == 1 && args[0]->IsDate())
+    {
+        Local<Date> aDate = Local<Date>::Cast(args[0]);
+        int timeZoneMinutesDifference = GetIntValueFromDateFunction(aDate,"getTimezoneOffset");
+        element->mDate.SetTime(
                     GetUIntValueFromDateFunction(aDate,"getFullYear"),
                     GetUIntValueFromDateFunction(aDate,"getMonth") + 1,
                     GetUIntValueFromDateFunction(aDate,"getDate"),
@@ -93,7 +97,8 @@ Handle<Value> PDFDateDriver::New(const Arguments& args)
                     timeZoneMinutesDifference < 0 ? PDFDate::eLater:PDFDate::eEarlier,
                     (int)(labs(timeZoneMinutesDifference) / 60),
                     (int)((labs(timeZoneMinutesDifference) - (labs(timeZoneMinutesDifference) / 60)*60) / 60));
-        
+    }
+    
     element->Wrap(args.This());
     return args.This();
 }
@@ -107,4 +112,13 @@ Handle<Value> PDFDateDriver::ToString(const Arguments& args)
     return scope.Close(String::New(element->mDate.ToString().c_str()));
 }
 
+Handle<Value> PDFDateDriver::SetToCurrentTime(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFDateDriver* element = ObjectWrap::Unwrap<PDFDateDriver>(args.This());
+    element->mDate.SetToCurrentTime();
+    
+    return scope.Close(args.This());
+}
 

@@ -53,6 +53,8 @@
 #include "DictionaryContextDriver.h"
 #include "PDFPageInputDriver.h"
 #include "InputFileDriver.h"
+#include "OutputFileDriver.h"
+#include "DocumentContextDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -273,7 +275,7 @@ Handle<Value> GetTypeLabel(const Arguments& args)
 void HummusInit(Handle<Object> exports) {
     
     PDFWriterDriver::Init();
-    PDFPageDriver::Init();
+    PDFPageDriver::Init(exports);
     PageContentContextDriver::Init();
     FormXObjectDriver::Init();
     XObjectContentContextDriver::Init();
@@ -281,6 +283,7 @@ void HummusInit(Handle<Object> exports) {
     UsedFontDriver::Init();
     ImageXObjectDriver::Init();
     ObjectsContextDriver::Init();
+    DocumentContextDriver::Init();
     DocumentCopyingContextDriver::Init();
     PDFReaderDriver::Init();
     PDFArrayDriver::Init();
@@ -295,11 +298,12 @@ void HummusInit(Handle<Object> exports) {
     PDFIntegerDriver::Init();
     PDFRealDriver::Init();
     PDFSymbolDriver::Init();
-    PDFTextStringDriver::Init();
-    PDFDateDriver::Init();
+    PDFTextStringDriver::Init(exports);
+    PDFDateDriver::Init(exports);
     DictionaryContextDriver::Init();
     PDFPageInputDriver::Init();
     InputFileDriver::Init(exports);
+    OutputFileDriver::Init(exports);
     
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());

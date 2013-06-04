@@ -51,8 +51,7 @@ Handle<Value> XObjectContentContextDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
-    const unsigned argc = 0;
-    Local<Object> instance = constructor->NewInstance(argc, NULL);
+    Local<Object> instance = constructor->NewInstance();
     
     return scope.Close(instance);
 }

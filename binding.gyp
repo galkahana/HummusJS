@@ -31,6 +31,7 @@
                 './src/PDFReaderDriver.cpp',
                 './src/DocumentCopyingContextDriver.cpp',
                 './src/ObjectsContextDriver.cpp',
+                './src/DocumentContextDriver.cpp',
                 './src/ImageXObjectDriver.cpp',
                 './src/UsedFontDriver.cpp',
                 './src/ResourcesDictionaryDriver.cpp',
@@ -42,6 +43,7 @@
                 './src/PDFWriterDriver.cpp',
                 './src/PDFPageInputDriver.cpp',
                 './src/InputFileDriver.cpp',
+                './src/OutputFileDriver.cpp',
                 './src/Hummus.cpp'
             ]
 

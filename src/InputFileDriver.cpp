@@ -74,8 +74,7 @@ Handle<Value> InputFileDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
-    const unsigned argc = 0;
-    Local<Object> instance = constructor->NewInstance(argc, NULL);
+    Local<Object> instance = constructor->NewInstance();
     
     return scope.Close(instance);
 }
@@ -92,7 +91,7 @@ Handle<Value> InputFileDriver::New(const Arguments& args)
     
     InputFileDriver* inputFile = new InputFileDriver();
     
-    if(args.Length() == 1 || args[0]->IsString())
+    if(args.Length() == 1 && args[0]->IsString())
         inputFile->OpenFile(*String::Utf8Value(args[0]->ToString()));
     
     inputFile->Wrap(args.This());

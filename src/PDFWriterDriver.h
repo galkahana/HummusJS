@@ -92,6 +92,7 @@ private:
     static v8::Handle<v8::Value> End(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreatePage(const v8::Arguments& args);
     static v8::Handle<v8::Value> WritePage(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WritePageAndReturnID(const v8::Arguments& args);
     static v8::Handle<v8::Value> StartPageContentContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> PausePageContentContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreateFormXObject(const v8::Arguments& args);
@@ -114,6 +115,8 @@ private:
     static v8::Handle<v8::Value> SGetImageDimensions(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetModifiedFileParser(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetModifiedInputFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetOutputFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetDocumentContext(const v8::Arguments& args);
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);

@@ -25,7 +25,7 @@
 class PDFTextStringDriver : public node::ObjectWrap
 {
 public:
-    static void Init();
+    static void Init(v8::Handle<v8::Object> inExports);
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
 private:
@@ -34,4 +34,7 @@ private:
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
     static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
+    static v8::Handle<v8::Value> ToUTF8String(const v8::Arguments& args);
+    static v8::Handle<v8::Value> FromUTF8String(const v8::Arguments& args);
+    
 };

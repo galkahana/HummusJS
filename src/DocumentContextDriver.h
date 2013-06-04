@@ -1,5 +1,5 @@
 /*
- Source File : UsedFontDriver.h
+ Source File : DocumentContextDriver
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -17,25 +17,27 @@
  limitations under the License.
  
  */
+
 #pragma once
-
 #include <node.h>
-#include "PDFDate.h"
 
-class PDFDateDriver : public node::ObjectWrap
+namespace PDFHummus
+{
+    class DocumentContext;
+};
+
+class DocumentContextDriver : public node::ObjectWrap
 {
 public:
-    static void Init(v8::Handle<v8::Object> inExports);
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    
+    static void Init();
+    static v8::Handle<v8::Value> NewInstance();
+    
+    PDFHummus::DocumentContext* DocumentContextInstance;
     
 private:
-    PDFDate mDate;
+    DocumentContextDriver();
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SetToCurrentTime(const v8::Arguments& args);
-    static int GetIntValueFromDateFunction(v8::Handle<v8::Date> inDate, const char* inFunctionName);
-    static unsigned int GetUIntValueFromDateFunction(v8::Handle<v8::Date> inDate, const char* inFunctionName);
-
 };
