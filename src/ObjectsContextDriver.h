@@ -49,4 +49,15 @@ private:
     static v8::Handle<v8::Value> StartNewIndirectObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> StartModifiedIndirectObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> DeleteObject(const v8::Arguments& args);
+
+    static v8::Handle<v8::Value> WriteName(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteLiteralString(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteHexString(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteBoolean(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteKeyword(const v8::Arguments& args);
+    static v8::Handle<v8::Value> WriteComment(const v8::Arguments& args);
+    static v8::Handle<v8::Value> SetCompressStreams(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartPDFStream(const v8::Arguments& args);
+    static v8::Handle<v8::Value> StartUnfilteredPDFStream(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndPDFStream(const v8::Arguments& args);
 };

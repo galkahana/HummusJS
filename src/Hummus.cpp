@@ -55,6 +55,7 @@
 #include "InputFileDriver.h"
 #include "OutputFileDriver.h"
 #include "DocumentContextDriver.h"
+#include "InfoDictionaryDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -304,6 +305,7 @@ void HummusInit(Handle<Object> exports) {
     PDFPageInputDriver::Init();
     InputFileDriver::Init(exports);
     OutputFileDriver::Init(exports);
+    InfoDictionaryDriver::Init();
     
     // define methods
     exports->Set(String::NewSymbol("createWriter"),FunctionTemplate::New(CreateWriter)->GetFunction());
@@ -365,6 +367,11 @@ void HummusInit(Handle<Object> exports) {
     exports->Set(String::NewSymbol("eXrefEntryDelete"),Number::New(eXrefEntryDelete));
     exports->Set(String::NewSymbol("eXrefEntryStreamObject"),Number::New(eXrefEntryStreamObject));
     exports->Set(String::NewSymbol("eXrefEntryUndefined"),Number::New(eXrefEntryUndefined));
+    
+    // EInfoTrapped
+    exports->Set(String::NewSymbol("EInfoTrappedTrue"),Number::New(EInfoTrappedTrue));
+    exports->Set(String::NewSymbol("EInfoTrappedFalse"),Number::New(EInfoTrappedFalse));
+    exports->Set(String::NewSymbol("EInfoTrappedUnknown"),Number::New(EInfoTrappedUnknown));
 }
 
 NODE_MODULE(Hummus, HummusInit)

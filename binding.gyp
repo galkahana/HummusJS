@@ -44,6 +44,7 @@
                 './src/PDFPageInputDriver.cpp',
                 './src/InputFileDriver.cpp',
                 './src/OutputFileDriver.cpp',
+                './src/InfoDictionaryDriver.cpp',
                 './src/Hummus.cpp'
             ]
 

@@ -19,6 +19,7 @@
  */
 #include "DocumentContextDriver.h"
 #include "DocumentContext.h"
+#include "InfoDictionaryDriver.h"
 
 
 using namespace v8;
@@ -31,6 +32,8 @@ void DocumentContextDriver::Init()
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
     t->SetClassName(String::NewSymbol("DocumentContext"));
     t->InstanceTemplate()->SetInternalFieldCount(1);
+    
+    t->PrototypeTemplate()->Set(String::NewSymbol("getInfoDictionary"),FunctionTemplate::New(GetInfoDictionary)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -50,7 +53,7 @@ DocumentContextDriver::DocumentContextDriver()
 
 Persistent<Function> DocumentContextDriver::constructor;
 
-Handle<v8::Value> DocumentContextDriver::New(const Arguments& args)
+Handle<Value> DocumentContextDriver::New(const Arguments& args)
 {
     HandleScope scope;
     
@@ -59,3 +62,23 @@ Handle<v8::Value> DocumentContextDriver::New(const Arguments& args)
     
     return args.This();
 }
+
+Handle<Value> DocumentContextDriver::GetInfoDictionary(const Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentContextDriver* driver = ObjectWrap::Unwrap<DocumentContextDriver>(args.This());
+    if(!driver->DocumentContextInstance)
+    {
+		ThrowException(Exception::Error(String::New("document context driver not initialized. use the pdfwriter to get the current document context")));
+        return scope.Close(Undefined());
+    }
+    
+    Handle<Value> infoDictionaryDriverObject = InfoDictionaryDriver::NewInstance();
+    InfoDictionaryDriver* infoDictDriver = ObjectWrap::Unwrap<InfoDictionaryDriver>(infoDictionaryDriverObject->ToObject());
+    infoDictDriver->InfoDictionaryInstance = &(driver->DocumentContextInstance->GetTrailerInformation().GetInfo());
+    
+    return scope.Close(infoDictionaryDriverObject);
+}
+
+

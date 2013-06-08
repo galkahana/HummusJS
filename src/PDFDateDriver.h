@@ -28,6 +28,8 @@ public:
     static void Init(v8::Handle<v8::Object> inExports);
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
+    PDFDate* getInstance();
+    
 private:
     PDFDate mDate;
     

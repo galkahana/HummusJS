@@ -122,3 +122,7 @@ Handle<Value> PDFDateDriver::SetToCurrentTime(const Arguments& args)
     return scope.Close(args.This());
 }
 
+PDFDate* PDFDateDriver::getInstance()
+{
+    return &mDate;
+}

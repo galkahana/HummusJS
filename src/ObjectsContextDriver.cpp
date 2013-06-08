@@ -24,6 +24,7 @@
 #include "DictionaryContext.h"
 #include "ETokenSeparator.h"
 #include "EStatusCode.h"
+#include "PDFStreamDriver.h"
 
 
 using namespace v8;
@@ -49,6 +50,16 @@ void ObjectsContextDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("startNewIndirectObject"),FunctionTemplate::New(StartNewIndirectObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("startModifiedIndirectObject"),FunctionTemplate::New(StartModifiedIndirectObject)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("deleteObject"),FunctionTemplate::New(DeleteObject)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("writeName"),FunctionTemplate::New(WriteName)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("writeLiteralString"),FunctionTemplate::New(WriteLiteralString)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("writeHexString"),FunctionTemplate::New(WriteHexString)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("writeBoolean"),FunctionTemplate::New(WriteBoolean)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("writeKeyword"),FunctionTemplate::New(WriteKeyword)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("writeComment"),FunctionTemplate::New(WriteComment)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("setCompressStreams"),FunctionTemplate::New(SetCompressStreams)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("startPDFStream"),FunctionTemplate::New(StartPDFStream)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("startUnfilteredPDFStream"),FunctionTemplate::New(StartUnfilteredPDFStream)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("endPDFStream"),FunctionTemplate::New(EndPDFStream)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -278,6 +289,200 @@ Handle<Value> ObjectsContextDriver::StartModifiedIndirectObject(const Arguments&
     }
     
     ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartModifiedIndirectObject(args[0]->ToUint32()->Uint32Value());
+    
+    return scope.Close(args.This());
+}
+
+Handle<Value> ObjectsContextDriver::WriteName(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a name (string)")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteName(*String::Utf8Value(args[0]->ToString()));
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::WriteLiteralString(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string)")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(*String::Utf8Value(args[0]->ToString()));
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::WriteHexString(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string)")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(*String::Utf8Value(args[0]->ToString()));
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::WriteBoolean(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsBoolean())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a boolean")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteBoolean(args[0]->ToBoolean()->Value());
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::WriteKeyword(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a keyword (string)")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteKeyword(*String::Utf8Value(args[0]->ToString()));
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::WriteComment(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsString())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a comment (string)")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteComment(*String::Utf8Value(args[0]->ToString()));
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::SetCompressStreams(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(!args.Length() == 1 ||
+       !args[0]->IsBoolean())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a boolean, determining whether streams are to be compressed")));
+		return scope.Close(Undefined());
+        
+    }
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->SetCompressStreams(args[0]->ToBoolean()->Value());
+    
+    return scope.Close(args.This());
+    
+}
+
+Handle<Value> ObjectsContextDriver::EndPDFStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !PDFStreamDriver::HasInstance(args[0]))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, provide a stream to end")));
+		return scope.Close(Undefined());
+    }
+    
+    PDFStreamDriver* driver = ObjectWrap::Unwrap<PDFStreamDriver>(args[0]->ToObject());
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndPDFStream(driver->PDFStreamInstance);
+    
+    return scope.Close(args.This());
+    
+}
+
+
+Handle<Value> ObjectsContextDriver::StartPDFStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if((args.Length() != 0 && args.Length() != 1) ||
+       (args.Length() == 1 && !DictionaryContextDriver::HasInstance(args[0])))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, please provide no arguments or an optional stream dictionary")));
+		return scope.Close(Undefined());
+    }
+    
+    if(args.Length() == 1)
+    {
+        DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream(driver->DictionaryContextInstance);
+    }
+    else
+    {
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream();
+    }
+    
+    return scope.Close(args.This());
+}
+
+Handle<Value> ObjectsContextDriver::StartUnfilteredPDFStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if((args.Length() != 0 && args.Length() != 1) ||
+       (args.Length() == 1 && !DictionaryContextDriver::HasInstance(args[0])))
+    {
+		ThrowException(Exception::TypeError(String::New("wrong arguments, please provide no arguments or an optional stream dictionary")));
+		return scope.Close(Undefined());
+    }
+    
+    if(args.Length() == 1)
+    {
+        DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream(driver->DictionaryContextInstance);
+    }
+    else
+    {
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream();
+    }
     
     return scope.Close(args.This());
 }
