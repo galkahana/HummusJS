@@ -498,7 +498,7 @@ Handle<Value> ObjectsContextDriver::StartFreeContext(const Arguments& args)
     
     Handle<Value> result = ByteWriterWithPositionDriver::NewInstance(args);
     
-    ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result)->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
+    ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->ToObject())->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
     
     return scope.Close(result);
 }
