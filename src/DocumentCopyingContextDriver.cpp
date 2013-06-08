@@ -24,6 +24,7 @@
 #include "PDFReaderDriver.h"
 #include "PDFObjectDriver.h"
 #include "BoxingBase.h"
+#include "ByteReaderWithPositionDriver.h"
 
 using namespace v8;
 
@@ -59,6 +60,8 @@ void DocumentCopyingContextDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("getCopiedObjectID"),FunctionTemplate::New(GetCopiedObjectID)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("getCopiedObjects"),FunctionTemplate::New(GetCopiedObjects)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("replaceSourceObjects"),FunctionTemplate::New(ReplaceSourceObjects)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getSourceDocumentStream"),FunctionTemplate::New(GetSourceDocumentStream)->GetFunction());
+    
 
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -478,4 +481,26 @@ Handle<Value> DocumentCopyingContextDriver::ReplaceSourceObjects(const v8::Argum
     
     return scope.Close(Undefined());
 }
+
+Handle<Value> DocumentCopyingContextDriver::GetSourceDocumentStream(const v8::Arguments& args)
+{
+    HandleScope scope;
+    
+    DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
+    
+    if(!copyingContextDriver->CopyingContext)
+    {
+		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
+        return scope.Close(Undefined());
+    }
+
+    Handle<Value> resultDriver = ByteReaderWithPositionDriver::NewInstance(args);
+    
+    ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(resultDriver->ToObject())->SetStream(
+        copyingContextDriver->CopyingContext->GetSourceDocumentStream(),
+        false);
+    
+    return scope.Close(resultDriver);
+}
+
 

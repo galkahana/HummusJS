@@ -60,4 +60,8 @@ private:
     static v8::Handle<v8::Value> StartPDFStream(const v8::Arguments& args);
     static v8::Handle<v8::Value> StartUnfilteredPDFStream(const v8::Arguments& args);
     static v8::Handle<v8::Value> EndPDFStream(const v8::Arguments& args);
+    
+    static v8::Handle<v8::Value> StartFreeContext(const v8::Arguments& args);
+    static v8::Handle<v8::Value> EndFreeContext(const v8::Arguments& args);
+    
 };

@@ -19,6 +19,7 @@
  */
 #include "OutputFileDriver.h"
 #include "OutputFile.h"
+#include "ByteWriterWithPositionDriver.h"
 
 
 using namespace v8;
@@ -64,6 +65,7 @@ void OutputFileDriver::Init(Handle<Object> inExports)
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("openFile"),FunctionTemplate::New(OpenFile)->GetFunction());
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("closeFile"),FunctionTemplate::New(CloseFile)->GetFunction());
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getFilePath"),FunctionTemplate::New(GetFilePath)->GetFunction());
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getOutputStream"),FunctionTemplate::New(GetOutputStream)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
     inExports->Set(String::NewSymbol("OutputFile"), constructor);
@@ -172,4 +174,28 @@ Handle<Value> OutputFileDriver::GetFilePath(const Arguments& args)
         return scope.Close(Undefined());
 }
 
+Handle<Value> OutputFileDriver::GetOutputStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    OutputFileDriver* driver = ObjectWrap::Unwrap<OutputFileDriver>(args.This());
+    
+    if(!driver)
+    {
+		ThrowException(Exception::Error(String::New("no driver created...please create one through Hummus")));
+        return scope.Close(Undefined());
+        
+    }
+    
+    if(driver->mOutputFileInstance && driver->mOutputFileInstance->GetOutputStream())
+    {
+        Handle<Value> result = ByteWriterWithPositionDriver::NewInstance(args);
+        
+        ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->ToObject())->SetStream(driver->mOutputFileInstance->GetOutputStream(),false);
+        
+        return scope.Close(result);
+    }
+    else
+        return scope.Close(Undefined());
+}
 

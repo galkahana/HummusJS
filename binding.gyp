@@ -45,6 +45,14 @@
                 './src/InputFileDriver.cpp',
                 './src/OutputFileDriver.cpp',
                 './src/InfoDictionaryDriver.cpp',
+                './src/ByteReaderDriver.cpp',
+                './src/ByteReaderWithPositionDriver.cpp',
+                './src/ByteWriterDriver.cpp',
+                './src/ByteWriterWithPositionDriver.cpp',
+                './src/ObjectByteReader.cpp',
+                './src/ObjectByteReaderWithPosition.cpp',
+                './src/ObjectByteWriter.cpp',
+                './src/ObjectByteWriterWithPosition.cpp',
                 './src/Hummus.cpp'
             ]
 

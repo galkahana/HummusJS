@@ -54,5 +54,6 @@ private:
     static v8::Handle<v8::Value> CloseFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetFilePath(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetFileSize(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetInputStream(const v8::Arguments& args);
 
 };

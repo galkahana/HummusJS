@@ -1,5 +1,5 @@
 /*
- Source File : PDFStreamDriver.h
+ Source File : ObjectByteWriterWithPosition.h
  
  
  Copyright 2013 Gal Kahana HummusJS
@@ -20,26 +20,19 @@
 #pragma once
 
 #include <node.h>
+#include "IByteWriterWithPosition.h"
 
-class PDFStream;
 
-class PDFStreamDriver : public node::ObjectWrap
+class ObjectByteWriterWithPosition : public IByteWriterWithPosition
 {
 public:
-    static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
     
+    ObjectByteWriterWithPosition(v8::Handle<v8::Object> inObject);
     
-    
-    PDFStream* PDFStreamInstance;
+    // IByteWriterWithPosition implementation
+	virtual IOBasicTypes::LongBufferSizeType Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize);
+	virtual IOBasicTypes::LongFilePositionType GetCurrentPosition();
     
 private:
-    PDFStreamDriver();
-    
-    
-    static v8::Persistent<v8::Function> constructor;
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetWriteStream(const v8::Arguments& args);
+    v8::Handle<v8::Object> mObject;
 };

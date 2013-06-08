@@ -56,8 +56,9 @@ private:
     static v8::Handle<v8::Value> GetXrefSize(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetXrefEntry(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetXrefPosition(const v8::Arguments& args);
-	
-    
+    static v8::Handle<v8::Value> StartReadingFromStream(const v8::Arguments& args);
+    static v8::Handle<v8::Value>  GetParserStream(const v8::Arguments& args);
+
     
     bool mOwnsParser;
     PDFParser* mPDFReader;

@@ -19,6 +19,7 @@
  */
 #include "InputFileDriver.h"
 #include "InputFile.h"
+#include "ByteReaderWithPositionDriver.h"
 
 
 using namespace v8;
@@ -65,6 +66,7 @@ void InputFileDriver::Init(Handle<Object> inExports)
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("closeFile"),FunctionTemplate::New(CloseFile)->GetFunction());
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getFilePath"),FunctionTemplate::New(GetFilePath)->GetFunction());
     constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getFileSize"),FunctionTemplate::New(GetFileSize)->GetFunction());
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getInputStream"),FunctionTemplate::New(GetInputStream)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
     inExports->Set(String::NewSymbol("InputFile"), constructor);
@@ -183,5 +185,31 @@ Handle<Value> InputFileDriver::GetFileSize(const Arguments& args)
     else
         return scope.Close(Undefined());
 
+}
+
+Handle<Value> InputFileDriver::GetInputStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    InputFileDriver* driver = ObjectWrap::Unwrap<InputFileDriver>(args.This());
+    
+    if(!driver)
+    {
+		ThrowException(Exception::Error(String::New("no driver created...please create one through Hummus")));
+        return scope.Close(Undefined());
+        
+    }
+    
+    if(driver->mInputFileInstance && driver->mInputFileInstance->GetInputStream())
+    {
+        Handle<Value> result = ByteReaderWithPositionDriver::NewInstance(args);
+        
+        ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(result->ToObject())->SetStream(driver->mInputFileInstance->GetInputStream(), false);
+        
+        return scope.Close(result);
+    }
+    else
+        return scope.Close(Undefined());
+    
 }
 

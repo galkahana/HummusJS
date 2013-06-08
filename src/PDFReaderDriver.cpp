@@ -26,8 +26,9 @@
 #include "PDFArrayDriver.h"
 #include "PDFArray.h"
 #include "PDFPageInput.h"
-
-
+#include "PDFStreamInputDriver.h"
+#include "ByteReaderDriver.h"
+#include "ByteReaderWithPositionDriver.h"
 
 
 using namespace v8;
@@ -67,7 +68,9 @@ void PDFReaderDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("getXrefSize"),FunctionTemplate::New(GetXrefSize)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("getXrefEntry"),FunctionTemplate::New(GetXrefEntry)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("getXrefPosition"),FunctionTemplate::New(GetXrefPosition)->GetFunction());
-    
+    t->PrototypeTemplate()->Set(String::NewSymbol("startReadingFromStream"),FunctionTemplate::New(StartReadingFromStream)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("getParserStream"),FunctionTemplate::New(GetParserStream)->GetFunction());
+
     constructor = Persistent<Function>::New(t->GetFunction());
 }
 
@@ -344,4 +347,38 @@ Handle<Value> PDFReaderDriver::GetXrefPosition(const Arguments& args)
     
     
     return scope.Close(Number::New(ObjectWrap::Unwrap<PDFReaderDriver>(args.This())->mPDFReader->GetXrefPosition()));
+}
+
+Handle<Value> PDFReaderDriver::StartReadingFromStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    if(args.Length() != 1 ||
+       !PDFStreamInputDriver::HasInstance(args[0]))
+    {
+ 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide a PDF stream input")));
+        return scope.Close(Undefined());
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    PDFStreamInputDriver* streamInput = ObjectWrap::Unwrap<PDFStreamInputDriver>(args[0]->ToObject());
+    
+    IByteReader* byteReader = reader->mPDFReader->StartReadingFromStream(streamInput->TheObject.GetPtr());
+    
+    Handle<Value> driver = ByteReaderDriver::NewInstance(args);
+    ObjectWrap::Unwrap<ByteReaderDriver>(driver->ToObject())->SetStream(byteReader,true);
+    
+    return scope.Close(driver);
+}
+
+Handle<Value> PDFReaderDriver::GetParserStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+
+    Handle<Value> driver = ByteReaderWithPositionDriver::NewInstance(args);
+    ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(driver->ToObject())->SetStream(reader->mPDFReader->GetParserStream(),false);
+    
+    return scope.Close(driver);
 }

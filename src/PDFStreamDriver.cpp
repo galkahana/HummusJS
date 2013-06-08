@@ -19,6 +19,7 @@
  */
 #include "PDFStreamDriver.h"
 #include "PDFStream.h"
+#include "ByteWriterDriver.h"
 
 using namespace v8;
 
@@ -37,6 +38,7 @@ void PDFStreamDriver::Init()
     constructor_template = Persistent<FunctionTemplate>::New(t);
     constructor_template->SetClassName(String::NewSymbol("PDFStream"));
     constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getWriteStream"),FunctionTemplate::New(GetWriteStream)->GetFunction());
     
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
 }
@@ -64,3 +66,14 @@ Handle<Value> PDFStreamDriver::New(const Arguments& args)
     return args.This();
 }
 
+Handle<Value> PDFStreamDriver::GetWriteStream(const Arguments& args)
+{
+    HandleScope scope;
+    
+    Handle<Value> result = ByteWriterDriver::NewInstance(args);
+    
+    ObjectWrap::Unwrap<ByteWriterDriver>(result->ToObject())->SetStream(
+                                                                        ObjectWrap::Unwrap<PDFStreamDriver>(args.This())->PDFStreamInstance->GetWriteStream(), false);
+    
+    return scope.Close(result);
+}

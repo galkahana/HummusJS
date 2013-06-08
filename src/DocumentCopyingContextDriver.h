@@ -51,5 +51,6 @@ private:
     static v8::Handle<v8::Value> GetCopiedObjectID(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetCopiedObjects(const v8::Arguments& args);
     static v8::Handle<v8::Value> ReplaceSourceObjects(const v8::Arguments& args);
+    static v8::Handle<v8::Value> GetSourceDocumentStream(const v8::Arguments& args);
     
 };

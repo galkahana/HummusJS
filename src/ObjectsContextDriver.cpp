@@ -25,7 +25,7 @@
 #include "ETokenSeparator.h"
 #include "EStatusCode.h"
 #include "PDFStreamDriver.h"
-
+#include "ByteWriterWithPositionDriver.h"
 
 using namespace v8;
 
@@ -60,6 +60,8 @@ void ObjectsContextDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("startPDFStream"),FunctionTemplate::New(StartPDFStream)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("startUnfilteredPDFStream"),FunctionTemplate::New(StartUnfilteredPDFStream)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("endPDFStream"),FunctionTemplate::New(EndPDFStream)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("startFreeContext"),FunctionTemplate::New(StartFreeContext)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("endFreeContext"),FunctionTemplate::New(EndFreeContext)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
 }
@@ -483,6 +485,29 @@ Handle<Value> ObjectsContextDriver::StartUnfilteredPDFStream(const Arguments& ar
     {
         ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream();
     }
+    
+    return scope.Close(args.This());
+}
+
+
+Handle<Value> ObjectsContextDriver::StartFreeContext(const Arguments& args)
+{
+    HandleScope scope;
+    
+    ObjectsContextDriver* driver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
+    
+    Handle<Value> result = ByteWriterWithPositionDriver::NewInstance(args);
+    
+    ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result)->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
+    
+    return scope.Close(result);
+}
+
+Handle<Value> ObjectsContextDriver::EndFreeContext(const Arguments& args)
+{
+    HandleScope scope;
+    
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndFreeContext();
     
     return scope.Close(args.This());
 }
