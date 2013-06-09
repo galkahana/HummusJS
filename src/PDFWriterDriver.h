@@ -26,6 +26,8 @@
 
 #include "PDFWriter.h"
 #include "PDFEmbedParameterTypes.h"
+#include "ObjectByteWriterWithPosition.h"
+#include "ObjectByteReaderWithPosition.h"
 
 
 typedef std::pair<unsigned long,unsigned long> ULongAndULongPair;
@@ -53,13 +55,21 @@ struct HummusImageInformation
 
 typedef std::map<StringAndULongPair,HummusImageInformation> StringAndULongPairToHummusImageInformationMap;
 
+class IByteWriterWithPosition;
+
 class PDFWriterDriver : public node::ObjectWrap
 {
 public:
+    virtual ~PDFWriterDriver();
+    
     static void Init();
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
 
     PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
+                                    EPDFVersion inPDFVersion,
+                                    const LogConfiguration& inLogConfiguration,
+                                    const PDFCreationSettings& inCreationSettings);
+    PDFHummus::EStatusCode StartPDF(v8::Handle<v8::Object> inStreamObject,
                                     EPDFVersion inPDFVersion,
                                     const LogConfiguration& inLogConfiguration,
                                     const PDFCreationSettings& inCreationSettings);
@@ -68,12 +78,25 @@ public:
                                        const std::string& inStateFilePath,
                                        const std::string& inOptionalOtherOutputFile,
                                        const LogConfiguration& inLogConfiguration);
+
+    PDFHummus::EStatusCode ContinuePDF(v8::Handle<v8::Object>  inOutputStream,
+                                       const std::string& inStateFilePath,
+                                       v8::Handle<v8::Object>  inModifiedSourceStream,
+                                       const LogConfiguration& inLogConfiguration);
+    
     
     PDFHummus::EStatusCode ModifyPDF(const std::string& inSourceFile,
                                      EPDFVersion inPDFVersion,
                                      const std::string& inOptionalOtherOutputFile,
                                      const LogConfiguration& inLogConfiguration,
                                      const PDFCreationSettings& inCreationSettings);
+
+    PDFHummus::EStatusCode ModifyPDF(v8::Handle<v8::Object>  inSourceStream,
+                                     v8::Handle<v8::Object>  inDestinationStream,
+                                     EPDFVersion inPDFVersion,
+                                     const LogConfiguration& inLogConfiguration,
+                                     const PDFCreationSettings& inCreationSettings);
+    
     
     
     // image registry services, optimization for r/w
@@ -84,7 +107,7 @@ public:
     PDFWriter* GetWriter();
     
 private:
-    PDFWriterDriver(){};
+    PDFWriterDriver();
     
     
     static v8::Persistent<v8::Function> constructor;
@@ -97,13 +120,13 @@ private:
     static v8::Handle<v8::Value> PausePageContentContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> CreateFormXObject(const v8::Arguments& args);
     static v8::Handle<v8::Value> EndFormXObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateformXObjectFromJPGFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateImageXObjectFromJPGFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateformXObjectFromJPG(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateImageXObjectFromJPG(const v8::Arguments& args);
     static v8::Handle<v8::Value> RetrieveJPGImageInformation(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetFontForFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> AttachURLLinktoCurrentPage(const v8::Arguments& args);
     static v8::Handle<v8::Value> Shutdown(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateFormXObjectFromTIFFFile(const v8::Arguments& args);
+    static v8::Handle<v8::Value> CreateFormXObjectFromTIFF(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetObjectsContext(const v8::Arguments& args);
     static v8::Handle<v8::Value> AppendPDFPagesFromPDF(const v8::Arguments& args);
     static v8::Handle<v8::Value> MergePDFPagesToPage(const v8::Arguments& args);
@@ -124,6 +147,9 @@ private:
     HummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
     HummusImageInformation::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
     
+    bool mStartedWithStream;
     PDFWriter mPDFWriter;
     StringAndULongPairToHummusImageInformationMap mImagesInformation;
+    ObjectByteWriterWithPosition* mWriteStreamProxy;
+    ObjectByteReaderWithPosition* mReadStreamProxy;
 };

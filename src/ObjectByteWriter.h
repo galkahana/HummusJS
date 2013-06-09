@@ -28,10 +28,11 @@ class ObjectByteWriter : public IByteWriter
 public:
     
     ObjectByteWriter(v8::Handle<v8::Object> inObject);
+    virtual ~ObjectByteWriter();
     
     // IByteWriter implementation
-	virtual IOBasicTypes::LongBufferSizeType Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inSize) = 0;
+	virtual IOBasicTypes::LongBufferSizeType Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inSize);
     
 private:
-    v8::Handle<v8::Object> mObject;
+    v8::Persistent<v8::Object> mObject;
 };

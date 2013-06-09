@@ -28,11 +28,12 @@ class ObjectByteWriterWithPosition : public IByteWriterWithPosition
 public:
     
     ObjectByteWriterWithPosition(v8::Handle<v8::Object> inObject);
+    virtual ~ObjectByteWriterWithPosition();
     
     // IByteWriterWithPosition implementation
 	virtual IOBasicTypes::LongBufferSizeType Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize);
 	virtual IOBasicTypes::LongFilePositionType GetCurrentPosition();
     
 private:
-    v8::Handle<v8::Object> mObject;
+    v8::Persistent<v8::Object> mObject;
 };

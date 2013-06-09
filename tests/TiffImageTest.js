@@ -1,7 +1,7 @@
 function addPageForTiff(inPDFWriter,inTiffPath)
 {
     var page = inPDFWriter.createPage(0,0,595,842);
-    var tiffForm = inPDFWriter.createFormXObjectFromTIFFFile(inTiffPath);
+    var tiffForm = inPDFWriter.createFormXObjectFromTIFF(inTiffPath);
     
     inPDFWriter.startPageContentContext(page).q()
                                             .cm(1,0,0,1,0,0)

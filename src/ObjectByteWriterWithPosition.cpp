@@ -23,7 +23,12 @@ using namespace v8;
 
 ObjectByteWriterWithPosition::ObjectByteWriterWithPosition(Handle<Object> inObject)
 {
-    mObject = inObject;
+    mObject = Persistent<Object>::New(inObject);
+}
+
+ObjectByteWriterWithPosition::~ObjectByteWriterWithPosition()
+{
+    mObject.Dispose();
 }
 
 IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize)
@@ -35,15 +40,31 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
         anArray->Set(Number::New(i),Number::New(inBuffer[i]));
     
     Handle<Value> value = mObject->Get(String::New("write"));
-    if(value->IsUndefined())
+    if(value->IsUndefined() || !value->IsFunction())
+    {
+		ThrowException(Exception::TypeError(String::New("write is not a function, it should be you know...")));
         return 0;
+    }
     Handle<Function> func = Handle<Function>::Cast(value);
-    Handle<Value> result;
     
     Handle<Value> args[1];
     args[0] = anArray;
     
-    return (func->Call(mObject, 1, args)->ToNumber()->Uint32Value());
+    Handle<Value> result = func->Call(mObject, 1, args);
+    if(result.IsEmpty())
+    {
+		ThrowException(Exception::TypeError(String::New("wrong return value. it's empty. return the number of written characters")));
+		return 0;
+    }
+    else if(result->IsNumber())
+    {
+        return result->ToNumber()->Uint32Value();
+    }
+    else
+    {
+		ThrowException(Exception::TypeError(String::New("wrong return value. write should return the number of written characters")));
+		return 0;
+    }
 }
 
 IOBasicTypes::LongFilePositionType ObjectByteWriterWithPosition::GetCurrentPosition()

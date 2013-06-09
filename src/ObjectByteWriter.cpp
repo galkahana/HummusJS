@@ -23,7 +23,12 @@ using namespace v8;
 
 ObjectByteWriter::ObjectByteWriter(Handle<Object> inObject)
 {
-    mObject = inObject;
+    mObject = Persistent<Object>::New(inObject);
+}
+
+ObjectByteWriter::~ObjectByteWriter()
+{
+    mObject.Dispose();
 }
 
 IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize)

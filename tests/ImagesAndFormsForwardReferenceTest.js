@@ -37,9 +37,9 @@ pdfWriter.writePage(page);
 
 // now create all the xobjects
 
-pdfWriter.createImageXObjectFromJPGFile('../deps/TestMaterials/images/otherStage.JPG',imageXObjectID);
-pdfWriter.createFormXObjectFromJPGFile('../deps/TestMaterials/images/otherStage.JPG',formXObjectID);
-pdfWriter.createFormXObjectFromTIFFFile('../deps/TestMaterials/images/tiff/jim___ah.tif',tiffFormXObjectID);
+pdfWriter.createImageXObjectFromJPG('../deps/TestMaterials/images/otherStage.JPG',imageXObjectID);
+pdfWriter.createFormXObjectFromJPG('../deps/TestMaterials/images/otherStage.JPG',formXObjectID);
+pdfWriter.createFormXObjectFromTIFF('../deps/TestMaterials/images/tiff/jim___ah.tif',tiffFormXObjectID);
 
 var xobjectForm = pdfWriter.createFormXObject(0,0,200,100,simpleFormXObjectID);
 xobjectForm.getContentContext().q()

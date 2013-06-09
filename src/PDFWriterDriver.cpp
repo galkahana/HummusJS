@@ -41,12 +41,24 @@
 #include "InputFileDriver.h"
 #include "OutputFileDriver.h"
 #include "DocumentContextDriver.h"
+#include "ObjectByteReaderWithPosition.h"
 
 using namespace v8;
 
 Persistent<Function> PDFWriterDriver::constructor;
 
+PDFWriterDriver::PDFWriterDriver()
+{
+    mWriteStreamProxy = NULL;
+    mReadStreamProxy = NULL;
+    
+}
 
+PDFWriterDriver::~PDFWriterDriver()
+{
+    delete mWriteStreamProxy;
+    delete mReadStreamProxy;
+}
 
 void PDFWriterDriver::Init()
 {
@@ -63,12 +75,12 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("pausePageContentContext"),FunctionTemplate::New(PausePageContentContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObject"),FunctionTemplate::New(CreateFormXObject)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("endFormXObject"),FunctionTemplate::New(EndFormXObject)->GetFunction());
-    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromJPGFile"),FunctionTemplate::New(CreateformXObjectFromJPGFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromJPG"),FunctionTemplate::New(CreateformXObjectFromJPG)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getFontForFile"),FunctionTemplate::New(GetFontForFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("attachURLLinktoCurrentPage"),FunctionTemplate::New(AttachURLLinktoCurrentPage)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("shutdown"),FunctionTemplate::New(Shutdown)->GetFunction());
-    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromTIFFFile"),FunctionTemplate::New(CreateFormXObjectFromTIFFFile)->GetFunction());
-    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createImageXObjectFromJPGFile"),FunctionTemplate::New(CreateImageXObjectFromJPGFile)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromTIFF"),FunctionTemplate::New(CreateFormXObjectFromTIFF)->GetFunction());
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("createImageXObjectFromJPG"),FunctionTemplate::New(CreateImageXObjectFromJPG)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("retrieveJPGImageInformation"),FunctionTemplate::New(RetrieveJPGImageInformation)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getObjectsContext"),FunctionTemplate::New(GetObjectsContext)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getDocumentContext"),FunctionTemplate::New(GetDocumentContext)->GetFunction());
@@ -115,10 +127,29 @@ Handle<Value> PDFWriterDriver::End(const Arguments& args)
    
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    if(pdfWriter->mPDFWriter.EndPDF() != PDFHummus::eSuccess)
+    EStatusCode status;
+    
+    if(pdfWriter->mStartedWithStream)
+        status = pdfWriter->mPDFWriter.EndPDFForStream();
+    else
+        status = pdfWriter->mPDFWriter.EndPDF();
+    
+    if(status != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::TypeError(String::New("Unable to end PDF")));
 		return scope.Close(Undefined());
+    }
+    
+    if(pdfWriter->mWriteStreamProxy)
+    {
+        delete pdfWriter->mWriteStreamProxy;
+        pdfWriter->mWriteStreamProxy = NULL;
+    }
+    
+    if(pdfWriter->mReadStreamProxy)
+    {
+        delete pdfWriter->mReadStreamProxy;
+        pdfWriter->mReadStreamProxy = NULL;
     }
     
     return scope.Close(args.This());
@@ -300,11 +331,11 @@ v8::Handle<v8::Value> PDFWriterDriver::EndFormXObject(const v8::Arguments& args)
 
 
 
-v8::Handle<v8::Value> PDFWriterDriver::CreateformXObjectFromJPGFile(const v8::Arguments& args)
+v8::Handle<v8::Value> PDFWriterDriver::CreateformXObjectFromJPG(const v8::Arguments& args)
 {
     HandleScope scope;
     
-    if((args.Length() != 1  && args.Length() != 2 ) || !args[0]->IsString() || (args.Length() == 2 && !args[1]->IsNumber()))
+    if((args.Length() != 1  && args.Length() != 2 ) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image. Optionally pass an object ID for a forward reference image")));
 		return scope.Close(Undefined());
@@ -312,13 +343,28 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateformXObjectFromJPGFile(const v8::Ar
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    PDFFormXObject* formXObject =
+    PDFFormXObject* formXObject;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        
+        formXObject =
         args.Length() == 2 ?
-        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()):
-        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy,(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy);
+        
+    }
+    else
+    {
+        formXObject =
+            args.Length() == 2 ?
+            pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+    }
     if(!formXObject)
     {
-		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing jpg file")));
+		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing jpg file/stream")));
 		return scope.Close(Undefined());
     }
     
@@ -484,8 +530,23 @@ PDFHummus::EStatusCode PDFWriterDriver::StartPDF(const std::string& inOutputFile
                                                  const LogConfiguration& inLogConfiguration,
                                                  const PDFCreationSettings& inCreationSettings)
 {
+    mStartedWithStream = false;
+    
     return mPDFWriter.StartPDF(inOutputFilePath,inPDFVersion,inLogConfiguration,inCreationSettings);
 }
+
+PDFHummus::EStatusCode PDFWriterDriver::StartPDF(Handle<Object> inWriteStream,
+                                                 EPDFVersion inPDFVersion,
+                                                 const LogConfiguration& inLogConfiguration,
+                                                 const PDFCreationSettings& inCreationSettings)
+{
+
+    mWriteStreamProxy = new ObjectByteWriterWithPosition(inWriteStream);
+    mStartedWithStream = true;
+    return mPDFWriter.StartPDFForStream(mWriteStreamProxy,inPDFVersion,inLogConfiguration,inCreationSettings);
+}
+
+
 
 PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputFilePath,
                                                     const std::string& inStateFilePath,
@@ -494,6 +555,20 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputF
 {
     return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath,inOptionalOtherOutputFile,inLogConfiguration);
 }
+
+PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(Handle<Object> inOutputStream,
+                                                    const std::string& inStateFilePath,
+                                                    Handle<Object> inModifiedSourceStream,
+                                                    const LogConfiguration& inLogConfiguration)
+{
+    mWriteStreamProxy = new ObjectByteWriterWithPosition(inOutputStream);
+    if(!inModifiedSourceStream.IsEmpty())
+        mReadStreamProxy = new ObjectByteReaderWithPosition(inModifiedSourceStream);
+    
+    
+    return mPDFWriter.ContinuePDFForStream(mWriteStreamProxy,inStateFilePath,inModifiedSourceStream.IsEmpty() ? NULL : mReadStreamProxy,inLogConfiguration);
+}
+
 
 PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFile,
                                                   EPDFVersion inPDFVersion,
@@ -506,39 +581,33 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFil
     
     PDFHummus::EStatusCode status;
     
-    do
-    {
-        EPDFVersion level = inPDFVersion;
-        
-        if(ePDFVersionExtended == level) // this would mean to use the same version as the file has
-        {
-            // read source file level
-            PDFParser reader;
-            InputFile inputFile;
-            
-            status = inputFile.OpenFile(inSourceFile);
-            if(status != PDFHummus::eSuccess)
-                break;
-            status = reader.StartPDFParsing(inputFile.GetInputStream());
-            if(status != PDFHummus::eSuccess)
-                break;
-            level = (EPDFVersion)((unsigned long)reader.GetPDFLevel() * 10);
-        }
-        
-        // now modify
-        status = mPDFWriter.ModifyPDF(inSourceFile,level,inOptionalOtherOutputFile,inLogConfiguration,inCreationSettings);
-        
-    } while (false);
+    status = mPDFWriter.ModifyPDF(inSourceFile,inPDFVersion,inOptionalOtherOutputFile,inLogConfiguration,inCreationSettings);
     
     return status;
 }
 
+PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(Handle<Object> inSourceStream,
+                                                  Handle<Object> inDestinationStream,
+                                                  EPDFVersion inPDFVersion,
+                                                  const LogConfiguration& inLogConfiguration,
+                                                  const PDFCreationSettings& inCreationSettings)
+{
+    PDFHummus::EStatusCode status;
+   
+    mWriteStreamProxy = new ObjectByteWriterWithPosition(inDestinationStream);
+    mReadStreamProxy = new ObjectByteReaderWithPosition(inSourceStream);
+    
+    // use minimal leve ePDFVersion10 to use the modified file level (cause i don't care
+    status = mPDFWriter.ModifyPDFForStream(mReadStreamProxy,mWriteStreamProxy,inPDFVersion,inLogConfiguration,inCreationSettings);
+    
+    return status;
+}
 
-v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObjectFromTIFFFile(const v8::Arguments& args)
+v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObjectFromTIFF(const v8::Arguments& args)
 {
     HandleScope scope;
     
-    if((args.Length() != 1 && args.Length() != 2) || !args[0]->IsString() || (args.Length() == 2 && !args[1]->IsObject() && !args[1]->IsNumber()))
+    if((args.Length() != 1 && args.Length() != 2) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsObject() && !args[1]->IsNumber()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image, and optionally an options object or object ID")));
 		return scope.Close(Undefined());
@@ -588,10 +657,25 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateFormXObjectFromTIFFFile(const v8::A
 
     }
     
-    PDFFormXObject* formXObject =
-        objectID == 0 ?
-            pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),tiffUsageParameters):
-            pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),objectID,tiffUsageParameters);
+    PDFFormXObject* formXObject;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        
+        formXObject =
+            objectID == 0 ?
+                pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFStream(&proxy,tiffUsageParameters):
+                pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFStream(&proxy,objectID,tiffUsageParameters);
+        
+    }
+    else
+    {
+        formXObject =
+            objectID == 0 ?
+                pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),tiffUsageParameters):
+                pdfWriter->mPDFWriter.CreateFormXObjectFromTIFFFile(*String::Utf8Value(args[0]->ToString()),objectID,tiffUsageParameters);
+    }
     if(!formXObject)
     {
 		ThrowException(Exception::Error(String::New("unable to create form xobject. verify that the target is an existing tiff file")));
@@ -628,11 +712,11 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
     }
 }
 
-v8::Handle<v8::Value> PDFWriterDriver::CreateImageXObjectFromJPGFile(const v8::Arguments& args)
+v8::Handle<v8::Value> PDFWriterDriver::CreateImageXObjectFromJPG(const v8::Arguments& args)
 {
     HandleScope scope;
     
-    if((args.Length() != 1 && args.Length() != 2) || !args[0]->IsString() || (args.Length() == 2 && !args[1]->IsNumber()))
+    if((args.Length() != 1 && args.Length() != 2) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is the path to the image. pass another optional argument of a forward reference object ID")));
 		return scope.Close(Undefined());
@@ -641,10 +725,24 @@ v8::Handle<v8::Value> PDFWriterDriver::CreateImageXObjectFromJPGFile(const v8::A
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
        
    
-    PDFImageXObject* imageXObject =
-       args.Length() == 2 ?
-       pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()) :
-       pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+    PDFImageXObject* imageXObject;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        
+        imageXObject =
+            args.Length() == 2 ?
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy,(ObjectIDType)args[1]->ToNumber()->Int32Value()) :
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy);
+    }
+    else
+    {
+        imageXObject =
+            args.Length() == 2 ?
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()) :
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
+    }
     if(!imageXObject)
     {
 		ThrowException(Exception::Error(String::New("unable to create image xobject. verify that the target is an existing jpg file")));
@@ -689,10 +787,10 @@ v8::Handle<v8::Value> PDFWriterDriver::AppendPDFPagesFromPDF(const v8::Arguments
     
     if((args.Length() != 1  &&
        args.Length() != 2) ||
-       !args[0]->IsString() ||
+       (!args[0]->IsString() && !args[0]->IsObject())||
        (args.Length() == 2 && !args[1]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for file to append pages from, and optionally a configuration object")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass a path for file to append pages from or a stream object, and optionally a configuration object")));
 		return scope.Close(Undefined());
     }
     
@@ -703,9 +801,22 @@ v8::Handle<v8::Value> PDFWriterDriver::AppendPDFPagesFromPDF(const v8::Arguments
     if(args.Length() == 2)
         pageRange = ObjectToPageRange(args[1]->ToObject());
     
-    EStatusCodeAndObjectIDTypeList result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
-                                                                    *String::Utf8Value(args[0]->ToString()),
-                                                                    pageRange);
+    EStatusCodeAndObjectIDTypeList result;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
+                                                             &proxy,
+                                                             pageRange);
+    }
+    else
+    {
+        result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
+                                                        *String::Utf8Value(args[0]->ToString()),
+                                                        pageRange);
+    }
+    
     if(result.first != eSuccess)
     {
 		ThrowException(Exception::Error(String::New("unable to append page, make sure it's fine")));
@@ -839,15 +950,24 @@ Handle<Value> PDFWriterDriver::CreatePDFCopyingContext(const Arguments& args)
 {
     HandleScope scope;
     
-    if(args.Length() != 1 || !args[0]->IsString())
+    if(args.Length() != 1 || (!args[0]->IsString() && !args[0]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument. A path to a PDF file to create copying context for")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument. A path to a PDF file to create copying context for or a stream object")));
 		return scope.Close(Undefined());
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
 
-    PDFDocumentCopyingContext* copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()));
+    PDFDocumentCopyingContext* copyingContext;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(&proxy);
+    }
+    else
+        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()));
+    
     if(!copyingContext)
     {
 		ThrowException(Exception::Error(String::New("unable to create copying context. verify that the target is an existing PDF file")));

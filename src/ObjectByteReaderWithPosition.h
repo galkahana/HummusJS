@@ -28,6 +28,8 @@ class ObjectByteReaderWithPosition : public IByteReaderWithPosition
 public:
     
     ObjectByteReaderWithPosition(v8::Handle<v8::Object> inObject);
+    virtual ~ObjectByteReaderWithPosition();
+    
     
     // IByteReaderWithPosition implementation
 	virtual IOBasicTypes::LongBufferSizeType Read(IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize);
@@ -39,5 +41,5 @@ public:
 
     
 private:
-    v8::Handle<v8::Object> mObject;
+    v8::Persistent<v8::Object> mObject;
 };

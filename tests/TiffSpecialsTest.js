@@ -14,14 +14,14 @@ var pdfWriter = require('../Hummus').createWriter('./output/TiffSpecialsTest.pdf
 
 for(var i=0;i<4;++i)
 {
-    var imageForm = pdfWriter.createFormXObjectFromTIFFFile('../deps/TestMaterials/images/tiff/multipage.tif',{pageIndex : i});
+    var imageForm = pdfWriter.createFormXObjectFromTIFF('../deps/TestMaterials/images/tiff/multipage.tif',{pageIndex : i});
     createPageFormImage(pdfWriter,imageForm);
 }
 
 {
     var imagePath = '../deps/TestMaterials/images/tiff/jim___ah.tif';
-    var imageBW = pdfWriter.createFormXObjectFromTIFFFile(imagePath);
-    var imageBWMask = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{bwTreatment:{asImageMask:true , oneColor:[255,128,0]}});
+    var imageBW = pdfWriter.createFormXObjectFromTIFF(imagePath);
+    var imageBWMask = pdfWriter.createFormXObjectFromTIFF(imagePath,{bwTreatment:{asImageMask:true , oneColor:[255,128,0]}});
     var page = pdfWriter.createPage(0,0,595,842);
 
     pdfWriter.startPageContentContext(page).q()
@@ -42,11 +42,11 @@ for(var i=0;i<4;++i)
 {
     var imagePath = '../deps/TestMaterials/images/tiff/jim___cg.tif';
     
-    var imageGrayScale = pdfWriter.createFormXObjectFromTIFFFile(imagePath);
-    var imageGrayScaleGreen = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[0,255,0], zeroColor:[255,255,255]}});
-    var imageGrayScaleCyanMagenta = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[255,255,0,0], zeroColor:[0,0,0,0]}});
-    var imageGrayScaleGreenVSRed = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[0,255,0], zeroColor:[255,0,0]}});
-    var imageGrayScaleCyanVSMagenta = pdfWriter.createFormXObjectFromTIFFFile(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[255,0,0,0], zeroColor:[0,255,0,0]}});
+    var imageGrayScale = pdfWriter.createFormXObjectFromTIFF(imagePath);
+    var imageGrayScaleGreen = pdfWriter.createFormXObjectFromTIFF(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[0,255,0], zeroColor:[255,255,255]}});
+    var imageGrayScaleCyanMagenta = pdfWriter.createFormXObjectFromTIFF(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[255,255,0,0], zeroColor:[0,0,0,0]}});
+    var imageGrayScaleGreenVSRed = pdfWriter.createFormXObjectFromTIFF(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[0,255,0], zeroColor:[255,0,0]}});
+    var imageGrayScaleCyanVSMagenta = pdfWriter.createFormXObjectFromTIFF(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[255,0,0,0], zeroColor:[0,255,0,0]}});
 
     var page = pdfWriter.createPage(0,0,595,842);
     
