@@ -12,7 +12,7 @@ app.get('/', function(req, res){
         pdfWriter.startPageContentContext(page).writeText('Hello ' + (req.query.id ? req.query.id : 'World'),
                                                           0,400,
                                                           {
-                                                            font:pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf'),
+                                                            font:pdfWriter.getFontForFile('../tests/TestMaterials/fonts/arial.ttf'),
                                                             size:50,
                                                             colorspace:'gray',
                                                             color:0x00
