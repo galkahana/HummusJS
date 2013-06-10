@@ -2,7 +2,7 @@ var pdfWriter = require('../hummus').createWriter('./output/HighLevelContentCont
 var page = pdfWriter.createPage(0,0,595,842);
 var cxt = pdfWriter.startPageContentContext(page);
 
-var textOptions = {font:pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf'),
+var textOptions = {font:pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf'),
                    size:14,
                    colorspace:'gray',
                    color:0x00};

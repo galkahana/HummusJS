@@ -74,7 +74,7 @@ function iterateObjectTypes(inObject,inReader)
 }
 
 
-var pdfReader = hummus.createReader('../deps/TestMaterials/XObjectContent.PDF');
+var pdfReader = hummus.createReader('./TestMaterials/XObjectContent.PDF');
 if(pdfReader.getPDFLevel() != 1.3)
     console.log('expecting level 1.3, got ' + pdfReader.getPDFLevel());
 if(pdfReader.getPagesCount() != 2)

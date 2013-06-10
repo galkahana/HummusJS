@@ -14,12 +14,12 @@ var pdfWriter = require('../hummus').createWriter('./output/TiffSpecialsTest.pdf
 
 for(var i=0;i<4;++i)
 {
-    var imageForm = pdfWriter.createFormXObjectFromTIFF('../deps/TestMaterials/images/tiff/multipage.tif',{pageIndex : i});
+    var imageForm = pdfWriter.createFormXObjectFromTIFF('./TestMaterials/images/tiff/multipage.tif',{pageIndex : i});
     createPageFormImage(pdfWriter,imageForm);
 }
 
 {
-    var imagePath = '../deps/TestMaterials/images/tiff/jim___ah.tif';
+    var imagePath = './TestMaterials/images/tiff/jim___ah.tif';
     var imageBW = pdfWriter.createFormXObjectFromTIFF(imagePath);
     var imageBWMask = pdfWriter.createFormXObjectFromTIFF(imagePath,{bwTreatment:{asImageMask:true , oneColor:[255,128,0]}});
     var page = pdfWriter.createPage(0,0,595,842);
@@ -40,7 +40,7 @@ for(var i=0;i<4;++i)
 }
 
 {
-    var imagePath = '../deps/TestMaterials/images/tiff/jim___cg.tif';
+    var imagePath = './TestMaterials/images/tiff/jim___cg.tif';
     
     var imageGrayScale = pdfWriter.createFormXObjectFromTIFF(imagePath);
     var imageGrayScaleGreen = pdfWriter.createFormXObjectFromTIFF(imagePath,{grayscaleTreatment : {asColorMap:true, oneColor:[0,255,0], zeroColor:[255,255,255]}});

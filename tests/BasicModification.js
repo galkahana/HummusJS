@@ -6,7 +6,7 @@ function testInPlaceFileModification(inFileName)
     var fs = require('fs');
     
     var ws = fs.createWriteStream('./output/InPlaceModified' + inFileName + '.pdf');
-    var rs = fs.createReadStream('../deps/TestMaterials/' + inFileName + '.pdf');
+    var rs = fs.createReadStream('./TestMaterials/' + inFileName + '.pdf');
     ws.on('close', function()
            {
             var pdfWriter = hummus.createWriterToModify('./output/InPlaceModified' + inFileName + '.pdf');
@@ -14,7 +14,7 @@ function testInPlaceFileModification(inFileName)
            
             pdfWriter.startPageContentContext(page).BT()
                                                     .k(0,0,0,1)
-                                                    .Tf(pdfWriter.getFontForFile('../deps/TestMaterials/fonts/Courier.dfont',0),1)
+                                                    .Tf(pdfWriter.getFontForFile('./TestMaterials/fonts/Courier.dfont',0),1)
                                                     .Tm(30,0,0,30,78.4252,662.8997)
                                                     .Tj('about')
                                                     .ET();

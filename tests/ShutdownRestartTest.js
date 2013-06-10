@@ -5,7 +5,7 @@ var hummus = require('../hummus');
 {
     var pdfWriterA = hummus.createWriter('./output/SimpleContentShutdownRestart.PDF');
     var page = pdfWriterA.createPage(0,0,595,842);
-    var font = pdfWriterA.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
+    var font = pdfWriterA.getFontForFile('./TestMaterials/fonts/arial.ttf');
     
     pdfWriterA.startPageContentContext(page).q()
                                             .k(100,0,0,0)

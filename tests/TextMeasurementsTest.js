@@ -1,7 +1,7 @@
 var pdfWriter = require('../hummus').createWriter('./output/TextMeasurementsTest.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 var cxt = pdfWriter.startPageContentContext(page);
-var arialFont = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
+var arialFont = pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf');
 var pathStrokeOptions = {color:'DarkMagenta', width:4};
 
 var textOptions = {font:arialFont,size:14,colorspace:'gray',color:0x00};

@@ -1,5 +1,5 @@
 hummusjs
-deps
 build
 .DS_Store
 tests/output
+samples/node_modules

@@ -35,7 +35,7 @@ function createPageFromEmptyPage(inFileName)
     var pdfWriter = hummus.createWriter('./output/CreatePageFromEmptyPage.pdf');
     
     pdfWriter.appendPDFPagesFromPDF(inFileName);
-    pdfWriter.appendPDFPagesFromPDF('../deps/TestMaterials/XObjectContent.PDF');
+    pdfWriter.appendPDFPagesFromPDF('./TestMaterials/XObjectContent.PDF');
     pdfWriter.end();
 }
 
@@ -44,7 +44,7 @@ function mergeEmptyPagetoPage(inFileName)
     var pdfWriter = hummus.createWriter('./output/MergeEmptyPageToPage.pdf');
     var page = pdfWriter.createPage(0,0,595,842);
     
-    var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
+    var font = pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf');
     
     var contentContext = pdfWriter.startPageContentContext(page).BT()
                                                                 .k(0,0,0,1)

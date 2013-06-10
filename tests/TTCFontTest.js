@@ -1,8 +1,8 @@
 var pdfWriter = require('../hummus').createWriter('./output/TTCTestLucidaGrande.PDF');
 var page = pdfWriter.createPage(0,0,595,842);
 
-var fontLucidaGrande0 = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/LucidaGrande.ttc',0);
-var fontLucidaGrande1 = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/LucidaGrande.ttc',1);
+var fontLucidaGrande0 = pdfWriter.getFontForFile('./TestMaterials/fonts/LucidaGrande.ttc',0);
+var fontLucidaGrande1 = pdfWriter.getFontForFile('./TestMaterials/fonts/LucidaGrande.ttc',1);
 
 pdfWriter.startPageContentContext(page).BT()
                                 .k(0,0,0,1)

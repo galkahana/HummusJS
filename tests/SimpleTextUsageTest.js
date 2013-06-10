@@ -5,8 +5,8 @@ var hummus = require('../hummus');
 
     var page = pdfWriter.createPage(0,0,595,842);
 
-    var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/BrushScriptStd.otf');
-    var fontK = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/KozGoPro-Regular.otf');
+    var font = pdfWriter.getFontForFile('./TestMaterials/fonts/BrushScriptStd.otf');
+    var fontK = pdfWriter.getFontForFile('./TestMaterials/fonts/KozGoPro-Regular.otf');
     pdfWriter.startPageContentContext(page).BT()
                                         .k(0,0,0,1)
                                         .Tf(font,1)
@@ -28,7 +28,7 @@ var hummus = require('../hummus');
     
     var page = pdfWriter.createPage(0,0,595,842);
     
-    var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
+    var font = pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf');
     pdfWriter.startPageContentContext(page).BT()
                                         .k(0,0,0,1)
                                         .Tf(font,1)
@@ -44,8 +44,8 @@ var hummus = require('../hummus');
     
     var page = pdfWriter.createPage(0,0,595,842);
     
-    var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/HLB_____.PFB',
-                                        '../deps/TestMaterials/fonts/HLB_____.PFM');
+    var font = pdfWriter.getFontForFile('./TestMaterials/fonts/HLB_____.PFB',
+                                        './TestMaterials/fonts/HLB_____.PFM');
     pdfWriter.startPageContentContext(page).BT()
                                         .k(0,0,0,1)
                                         .Tf(font,1)
@@ -63,8 +63,8 @@ var hummus = require('../hummus');
     
     var page = pdfWriter.createPage(0,0,595,842);
     
-    var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/HLB_____.PFB',
-                                        '../deps/TestMaterials/fonts/HLB_____.PFM');
+    var font = pdfWriter.getFontForFile('./TestMaterials/fonts/HLB_____.PFB',
+                                        './TestMaterials/fonts/HLB_____.PFM');
     pdfWriter.startPageContentContext(page).BT()
                                         .k(0,0,0,1)
                                         .Tf(font,1)

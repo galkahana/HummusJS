@@ -6,7 +6,7 @@ function testOnlyMerge()
     var page = pdfWriter.createPage(0,0,595,842);
     
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[0,0]]})
     
     pdfWriter.writePage(page)
@@ -20,13 +20,13 @@ function testPrefixGraphicsMerge()
     
     pdfWriter.startPageContentContext(page).BT()
                                             .k(0,0,0,1)
-                                            .Tf(pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf'),30)
+                                            .Tf(pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf'),30)
                                             .Tm(1,0,0,1,10,600)
                                             .Tj('Testing file merge')
                                             .ET()
                                             .cm(0.5,0,0,0.5,0,0);
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[0,0]]});
     
     pdfWriter.writePage(page)
@@ -40,11 +40,11 @@ function testSuffixGraphicsMerge()
     var page = pdfWriter.createPage(0,0,595,842);
     
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[0,0]]});
     pdfWriter.startPageContentContext(page).BT()
         .k(0,0,0,1)
-        .Tf(pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf'),30)
+        .Tf(pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf'),30)
         .Tm(1,0,0,1,10,600)
         .Tj('Testing file merge')
         .ET()
@@ -61,14 +61,14 @@ function testBothGraphicsMerge()
     
     var contentContext = pdfWriter.startPageContentContext(page).BT()
                                             .k(0,0,0,1)
-                                            .Tf(pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf'),30)
+                                            .Tf(pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf'),30)
                                             .Tm(1,0,0,1,10,600)
                                             .Tj('Testing file merge')
                                             .ET()
                                             .q()
                                             .cm(0.5,0,0,0.5,0,0);
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[0,0]]});
     
     contentContext.Q()
@@ -91,7 +91,7 @@ function mergeTwoPageInSeparatePhases()
                                                                 .cm(0.5,0,0,0.5,0,0);
     
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[0,0]]});
 
     contentContext.Q()
@@ -99,7 +99,7 @@ function mergeTwoPageInSeparatePhases()
                     .cm(0.5,0,0,0.5,0,421);
     
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[1,1]]});
     contentContext.Q();
     
@@ -117,7 +117,7 @@ function mergeTwoPageWithCallback()
     
     var pageIndex = 0;
     pdfWriter.mergePDFPagesToPage(page,
-                                  '../deps/TestMaterials/BasicTIFFImagesTest.PDF',
+                                  './TestMaterials/BasicTIFFImagesTest.PDF',
                                   {type:hummus.eRangeTypeSpecific,specificRanges:[[0,1]]},
                                   function()
                                   {
@@ -140,7 +140,7 @@ function mergeTwoPageWithCallback()
 function mergePagesUsingCopyingContext()
 {
     var pdfWriter = hummus.createWriter('./output/MergePagesUsingCopyingContext.pdf');
-    var copyingContext = pdfWriter.createPDFCopyingContext('../deps/TestMaterials/BasicTIFFImagesTest.PDF');
+    var copyingContext = pdfWriter.createPDFCopyingContext('./TestMaterials/BasicTIFFImagesTest.PDF');
 
     var formObjectId = copyingContext.createFormXObjectFromPDFPage(0,hummus.ePDFPageBoxMediaBox);
     

@@ -3,8 +3,8 @@ var hummus = require('../hummus');
 var pdfWriter = hummus.createWriter('./output/LinksTest.PDF');
 var page = pdfWriter.createPage(0,0,595,842);
 
-var soundCloudLogo = pdfWriter.createFormXObjectFromJPG('../deps/TestMaterials/images/soundcloud_logo.jpg');
-var font = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');
+var soundCloudLogo = pdfWriter.createFormXObjectFromJPG('./TestMaterials/images/soundcloud_logo.jpg');
+var font = pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf');
 
 var contentContext = pdfWriter.startPageContentContext(page).BT()
                                         .k(0,0,0,1)
