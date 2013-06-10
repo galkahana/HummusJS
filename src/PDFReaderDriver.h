@@ -24,6 +24,7 @@
 #include "PDFParser.h"
 #include "InputFile.h"
 
+class ObjectByteReaderWithPosition;
 
 class PDFReaderDriver : public node::ObjectWrap
 {
@@ -35,6 +36,7 @@ public:
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
     PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath);
+    PDFHummus::EStatusCode StartPDFParsing(v8::Handle<v8::Object> inStreamObject);
     void SetFromOwnedParser(PDFParser* inParser);
     
 private:
@@ -60,6 +62,8 @@ private:
     static v8::Handle<v8::Value>  GetParserStream(const v8::Arguments& args);
 
     
+    bool mStartedWithStream;
+    ObjectByteReaderWithPosition* mReadStreamProxy;
     bool mOwnsParser;
     PDFParser* mPDFReader;
     InputFile mPDFFile;

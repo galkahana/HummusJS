@@ -48,9 +48,6 @@ IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBu
     if(!result->IsArray())
         return 0;
     
-    if(value->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 4)
-        ThrowException(Exception::TypeError(String::New("Media box is set to a value which is not a 4 numbers array")));
-    
     IOBasicTypes::LongBufferSizeType bufferLength = result->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
         inBuffer[i] = (IOBasicTypes::Byte)(value->ToObject()->Get((uint32_t)i)->ToNumber()->Uint32Value());

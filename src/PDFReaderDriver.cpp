@@ -29,7 +29,7 @@
 #include "PDFStreamInputDriver.h"
 #include "ByteReaderDriver.h"
 #include "ByteReaderWithPositionDriver.h"
-
+#include "ObjectByteReaderWithPosition.h"
 
 using namespace v8;
 
@@ -37,7 +37,9 @@ Persistent<Function> PDFReaderDriver::constructor;
 
 PDFReaderDriver::PDFReaderDriver()
 {
+    mStartedWithStream = false;
     mPDFReader = NULL;
+    mReadStreamProxy = NULL;
     mOwnsParser = false;
 }
 
@@ -170,6 +172,25 @@ Handle<Value> PDFReaderDriver::GetTrailer(const Arguments& args)
     return scope.Close(PDFObjectDriver::CreateDriver(trailer));
 }
 
+PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(v8::Handle<v8::Object> inStreamObject)
+{
+    if(!mPDFReader && !mOwnsParser)
+    {
+        mPDFReader = new PDFParser();
+        mOwnsParser = true;
+    }
+    if(mReadStreamProxy)
+    {
+        delete mReadStreamProxy;
+        mReadStreamProxy = NULL;
+    }
+    
+    mStartedWithStream = true;
+    mReadStreamProxy = new ObjectByteReaderWithPosition(inStreamObject);
+    mPDFReader->ResetParser();
+    return mPDFReader->StartPDFParsing(mReadStreamProxy);
+}
+
 PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(const std::string& inParsedFilePath)
 {
     if(!mPDFReader && !mOwnsParser)
@@ -177,7 +198,14 @@ PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(const std::string& inPar
         mPDFReader = new PDFParser();
         mOwnsParser = true;
     }
+    if(mReadStreamProxy)
+    {
+        delete mReadStreamProxy;
+        mReadStreamProxy = NULL;
+    }
     
+    
+    mStartedWithStream = false;
     mPDFReader->ResetParser();
     if(mPDFFile.OpenFile(inParsedFilePath) != PDFHummus::eSuccess)
         return PDFHummus::eFailure;
@@ -190,6 +218,8 @@ void PDFReaderDriver::SetFromOwnedParser(PDFParser* inParser)
     {
         delete mPDFReader;
         mOwnsParser = false;
+        delete mReadStreamProxy;
+        mStartedWithStream = false;
         mPDFFile.CloseFile();
     }
     mPDFReader = inParser;

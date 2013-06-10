@@ -292,13 +292,20 @@ Handle<Value> CreateReader(const Arguments& args)
     
     PDFReaderDriver* driver = ObjectWrap::Unwrap<PDFReaderDriver>(instance->ToObject());
     
-	if (args.Length() != 1 || !args[0]->IsString())
+	if (args.Length() != 1 || (!args[0]->IsString() && !args[0]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 1 string - path to file read")));
+		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide 1 string - path to file read, or a read stream object")));
 		return scope.Close(Undefined());
 	}
         
-    if(driver->StartPDFParsing(*String::Utf8Value(args[0]->ToString())) != PDFHummus::eSuccess)
+    PDFHummus::EStatusCode status;
+        
+    if(args[0]->IsObject())
+        status = driver->StartPDFParsing(args[0]->ToObject());
+    else
+        status = driver->StartPDFParsing(*String::Utf8Value(args[0]->ToString()));
+        
+    if(status != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::Error(String::New("Unable to start parsing PDF file")));
 		return scope.Close(Undefined());
