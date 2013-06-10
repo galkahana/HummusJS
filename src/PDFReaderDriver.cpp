@@ -45,6 +45,7 @@ PDFReaderDriver::PDFReaderDriver()
 
 PDFReaderDriver::~PDFReaderDriver()
 {
+    delete mReadStreamProxy;
     if(mOwnsParser)
         delete mPDFReader;
 }
