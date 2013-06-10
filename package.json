@@ -1,0 +1,23 @@
+{
+  "name": "hummus",
+  "version": "1.0.3",
+  "description": "Create, read and modify PDF files and streams",
+  "main": "hummus",
+  "scripts": {
+    "install": "node-gyp rebuild"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/galkahana/HummusJS.git"
+  },
+  "keywords": [
+    "pdf",
+    "pdfhummus"
+  ],
+  "homepage": "pdfhummus.com",
+  "author": "Gal Kahana <gal.kahana@hotmail.com>",
+  "license": "Apache 2.0",
+  "gypfile": true,
+  "readmeFilename": "readme",
+  "gitHead": "c9aeb5d2fec332e89a0b309f93bc16d77419c3f8"
+}
