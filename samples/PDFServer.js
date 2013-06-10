@@ -5,7 +5,7 @@ var app = express();
 app.get('/', function(req, res){
         res.writeHead(200, {'Content-Type': 'application/pdf'});
         
-        var hummus = require('../hummus');
+        var hummus = require('hummus');
         
         var pdfWriter = hummus.createWriter(new hummus.PDFStreamForResponse(res));
         var page = pdfWriter.createPage(0,0,595,842);

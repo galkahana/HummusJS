@@ -3,12 +3,12 @@
     {
             'target_name': 'hummus',
             'dependencies': [
-               './deps/PDFWriter/binding.gyp:pdfwriter'
+               './src/deps/PDFWriter/binding.gyp:pdfwriter'
             ],
             'include_dirs': [
                 './src',
-                './deps/PDFWriter',
-                './deps/FreeType/include'
+                './src/deps/PDFWriter',
+                './src/deps/FreeType/include'
             ],
            'sources': [
                 './src/PDFStreamDriver.cpp',
