@@ -1,4 +1,4 @@
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var pdfWriter = hummus.createWriter('./output/PDFEmbedTest.pdf');
 
 var formIDs = pdfWriter.createFormXObjectsFromPDF('../deps/TestMaterials/XObjectContent.PDF',hummus.ePDFPageBoxMediaBox);

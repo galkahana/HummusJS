@@ -1,4 +1,4 @@
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var inputFile = new hummus.InputFile('../deps/TestMaterials/fonts/LucidaGrande.ttc');
 
 if(inputFile.getFilePath() != '../deps/TestMaterials/fonts/LucidaGrande.ttc')

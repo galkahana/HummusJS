@@ -10,7 +10,7 @@ function createPageFormImage(inPDFWriter,inImageForm)
 }
 
 
-var pdfWriter = require('../Hummus').createWriter('./output/TiffSpecialsTest.pdf');
+var pdfWriter = require('../hummus').createWriter('./output/TiffSpecialsTest.pdf');
 
 for(var i=0;i<4;++i)
 {

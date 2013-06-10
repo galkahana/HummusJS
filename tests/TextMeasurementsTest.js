@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/TextMeasurementsTest.pdf');
+var pdfWriter = require('../hummus').createWriter('./output/TextMeasurementsTest.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 var cxt = pdfWriter.startPageContentContext(page);
 var arialFont = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf');

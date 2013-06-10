@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/HighLevelContentContext.pdf');
+var pdfWriter = require('../hummus').createWriter('./output/HighLevelContentContext.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 var cxt = pdfWriter.startPageContentContext(page);
 

@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/AppendPagesTest.pdf');
+var pdfWriter = require('../hummus').createWriter('./output/AppendPagesTest.pdf');
 
 pdfWriter.appendPDFPagesFromPDF('../deps/TestMaterials/Original.pdf');
 pdfWriter.appendPDFPagesFromPDF('../deps/TestMaterials/XObjectContent.PDF');

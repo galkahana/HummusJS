@@ -1,7 +1,7 @@
 {
     'targets': [
     {
-            'target_name': 'Hummus',
+            'target_name': 'hummus',
             'dependencies': [
                './deps/PDFWriter/binding.gyp:pdfwriter'
             ],

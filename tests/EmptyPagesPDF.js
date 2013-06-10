@@ -1,5 +1,5 @@
 
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var pdfWriter = hummus.createWriter('./output/EmptyPages.pdf',{version:hummus.ePDFVersion14});
 var page = pdfWriter.createPage();
 

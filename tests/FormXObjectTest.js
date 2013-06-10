@@ -1,5 +1,5 @@
 
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var pdfWriter = hummus.createWriter('./output/XObjectContent.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 

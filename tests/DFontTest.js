@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/DFontTest.pdf');
+var pdfWriter = require('../hummus').createWriter('./output/DFontTest.pdf');
 var page = pdfWriter.createPage(0,0,595,842);
 var contentContext = pdfWriter.startPageContentContext(page);
 

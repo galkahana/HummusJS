@@ -1,4 +1,4 @@
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var assert = require('assert');
 
 function testBasicFileModification(inFileName)

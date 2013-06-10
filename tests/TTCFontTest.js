@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/TTCTestLucidaGrande.PDF');
+var pdfWriter = require('../hummus').createWriter('./output/TTCTestLucidaGrande.PDF');
 var page = pdfWriter.createPage(0,0,595,842);
 
 var fontLucidaGrande0 = pdfWriter.getFontForFile('../deps/TestMaterials/fonts/LucidaGrande.ttc',0);

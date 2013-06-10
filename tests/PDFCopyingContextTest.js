@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/PDFCopyingContextTest.PDF');
+var pdfWriter = require('../hummus').createWriter('./output/PDFCopyingContextTest.PDF');
 
 var copyingContext = pdfWriter.createPDFCopyingContext('../deps/TestMaterials/BasicTIFFImagesTest.PDF');
 copyingContext.appendPDFPageFromPDF(1);

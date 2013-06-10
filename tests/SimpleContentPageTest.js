@@ -1,5 +1,5 @@
 
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var pdfWriter = hummus.createWriter('./output/SimpleContentPageTest.pdf');
 var page = new hummus.PDFPage(0,0,595,842);
 

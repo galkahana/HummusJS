@@ -1,4 +1,4 @@
-var pdfWriter = require('../Hummus').createWriter('./output/AppendSpecialPagesTest.pdf');
+var pdfWriter = require('../hummus').createWriter('./output/AppendSpecialPagesTest.pdf');
 var assert = require('assert');
 
 assert.throws(function(){pdfWriter.appendPDFPagesFromPDF('../deps/TestMaterials/Protected.pdf')});

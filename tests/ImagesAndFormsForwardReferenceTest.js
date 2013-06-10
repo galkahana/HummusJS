@@ -1,4 +1,4 @@
-var hummus = require('../Hummus');
+var hummus = require('../hummus');
 var pdfWriter = hummus.createWriter('./output/ImagesAndFormsForwardReferenceTest.PDF');
 var page = pdfWriter.createPage(0,0,595,840);
 var pageContentContext = pdfWriter.startPageContentContext(page);

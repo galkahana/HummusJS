@@ -5,11 +5,11 @@ var app = express();
 app.get('/', function(req, res){
         res.writeHead(200, {'Content-Type': 'application/pdf'});
         
-        var hummus = require('../Hummus');
+        var hummus = require('../hummus');
         
         var pdfWriter = hummus.createWriter(new hummus.PDFStreamForResponse(res));
         var page = pdfWriter.createPage(0,0,595,842);
-        pdfWriter.startPageContentContext(page).writeText('Hello ' + req.query.id ? req.query.id : anonymus,
+        pdfWriter.startPageContentContext(page).writeText('Hello ' + (req.query.id ? req.query.id : 'World'),
                                                           0,400,
                                                           {
                                                             font:pdfWriter.getFontForFile('../deps/TestMaterials/fonts/arial.ttf'),
