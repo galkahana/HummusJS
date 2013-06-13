@@ -95,9 +95,7 @@ void PDFWriterDriver::Init()
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getModifiedFileParser"),FunctionTemplate::New(GetModifiedFileParser)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getModifiedInputFile"),FunctionTemplate::New(GetModifiedInputFile)->GetFunction());
     pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("getOutputFile"),FunctionTemplate::New(GetOutputFile)->GetFunction());
-    
-    
-    
+    pdfWriterFT->PrototypeTemplate()->Set(String::NewSymbol("registerAnnotationReferenceForNextPageWrite"),FunctionTemplate::New(RegisterAnnotationReferenceForNextPageWrite)->GetFunction());
 
     constructor = Persistent<Function>::New(pdfWriterFT->GetFunction());
 }
@@ -1406,3 +1404,20 @@ Handle<Value> PDFWriterDriver::GetOutputFile(const Arguments& args)
     return scope.Close(newInstance);
 }
 
+Handle<Value> PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(const Arguments& args)
+{
+    HandleScope scope;
+
+    if(args.Length() != 1 ||
+       !args[0]->IsNumber())
+    {
+        ThrowException(Exception::TypeError(String::New("wrong arguments,  pass an object ID for an annotation to register")));
+        return scope.Close(Undefined());
+    }
+
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(args[0]->ToNumber()->Uint32Value());
+
+    return scope.Close(args.This());
+}

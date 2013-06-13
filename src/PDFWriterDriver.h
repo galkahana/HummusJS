@@ -140,6 +140,7 @@ private:
     static v8::Handle<v8::Value> GetModifiedInputFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetOutputFile(const v8::Arguments& args);
     static v8::Handle<v8::Value> GetDocumentContext(const v8::Arguments& args);
+    static v8::Handle<v8::Value> RegisterAnnotationReferenceForNextPageWrite(const v8::Arguments& args);
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);

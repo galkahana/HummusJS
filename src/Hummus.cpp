@@ -88,7 +88,7 @@ Handle<Value> CreateWriter(const Arguments& args)
     if(args.Length() == 2 && args[1]->IsObject())
     {
         Handle<Object> anObject = args[1]->ToObject();
-        if(anObject->Has(String::New("version")) && anObject->Get(String::New("version"))->IsString())
+        if(anObject->Has(String::New("version")) && anObject->Get(String::New("version"))->IsNumber())
         {
             long pdfVersionValue = anObject->Get(String::New("version"))->ToNumber()->Int32Value();
             
