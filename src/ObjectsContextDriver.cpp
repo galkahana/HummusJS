@@ -452,17 +452,24 @@ Handle<Value> ObjectsContextDriver::StartPDFStream(const Arguments& args)
 		return scope.Close(Undefined());
     }
     
+    PDFStream* aStream;
+    
     if(args.Length() == 1)
     {
         DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject());
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream(driver->DictionaryContextInstance);
+        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream(driver->DictionaryContextInstance);
     }
     else
     {
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream();
+        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream();
     }
     
-    return scope.Close(args.This());
+    Handle<Value> newInstance = PDFStreamDriver::NewInstance(args);
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
+    streamDriver->PDFStreamInstance = aStream;
+
+    
+    return scope.Close(newInstance);
 }
 
 Handle<Value> ObjectsContextDriver::StartUnfilteredPDFStream(const Arguments& args)
@@ -476,17 +483,24 @@ Handle<Value> ObjectsContextDriver::StartUnfilteredPDFStream(const Arguments& ar
 		return scope.Close(Undefined());
     }
     
+    PDFStream* aStream;
+    
     if(args.Length() == 1)
     {
         DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject());
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream(driver->DictionaryContextInstance);
+        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream(driver->DictionaryContextInstance);
     }
     else
     {
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream();
+        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream();
     }
     
-    return scope.Close(args.This());
+    Handle<Value> newInstance = PDFStreamDriver::NewInstance(args);
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
+    streamDriver->PDFStreamInstance = aStream;
+
+    
+    return scope.Close(newInstance);
 }
 
 
