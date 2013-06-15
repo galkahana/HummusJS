@@ -53,7 +53,7 @@
                 './src/ObjectByteReaderWithPosition.cpp',
                 './src/ObjectByteWriter.cpp',
                 './src/ObjectByteWriterWithPosition.cpp',
-                './src/Hummus.cpp'
+                './src/hummus.cpp'
             ]
 
 	}

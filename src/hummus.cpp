@@ -438,4 +438,4 @@ void HummusInit(Handle<Object> exports) {
     exports->Set(String::NewSymbol("EInfoTrappedUnknown"),Number::New(EInfoTrappedUnknown));
 }
 
-NODE_MODULE(Hummus, HummusInit)
+NODE_MODULE(hummus, HummusInit)
