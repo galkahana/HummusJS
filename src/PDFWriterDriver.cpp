@@ -51,6 +51,7 @@ PDFWriterDriver::PDFWriterDriver()
 {
     mWriteStreamProxy = NULL;
     mReadStreamProxy = NULL;
+    mStartedWithStream = false;
     
 }
 
@@ -551,7 +552,8 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputF
                                                     const std::string& inOptionalOtherOutputFile,
                                                     const LogConfiguration& inLogConfiguration)
 {
-    return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath,inOptionalOtherOutputFile,inLogConfiguration);
+    mStartedWithStream = false;
+   return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath,inOptionalOtherOutputFile,inLogConfiguration);
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(Handle<Object> inOutputStream,
@@ -559,7 +561,8 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(Handle<Object> inOutputStrea
                                                     Handle<Object> inModifiedSourceStream,
                                                     const LogConfiguration& inLogConfiguration)
 {
-    mWriteStreamProxy = new ObjectByteWriterWithPosition(inOutputStream);
+   mStartedWithStream = true;
+   mWriteStreamProxy = new ObjectByteWriterWithPosition(inOutputStream);
     if(!inModifiedSourceStream.IsEmpty())
         mReadStreamProxy = new ObjectByteReaderWithPosition(inModifiedSourceStream);
     
@@ -578,6 +581,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFil
     // first, parse the source file, get the level. then modify with this level
     
     PDFHummus::EStatusCode status;
+    mStartedWithStream = false;
     
     status = mPDFWriter.ModifyPDF(inSourceFile,inPDFVersion,inOptionalOtherOutputFile,inLogConfiguration,inCreationSettings);
     
@@ -591,6 +595,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(Handle<Object> inSourceStream,
                                                   const PDFCreationSettings& inCreationSettings)
 {
     PDFHummus::EStatusCode status;
+    mStartedWithStream = true;
    
     mWriteStreamProxy = new ObjectByteWriterWithPosition(inDestinationStream);
     mReadStreamProxy = new ObjectByteReaderWithPosition(inSourceStream);
