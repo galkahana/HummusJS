@@ -1329,6 +1329,7 @@ void PDFDocumentHandler::StopCopyingContext()
             delete mParser;
         }
         mParser = NULL;
+        mParserOwned = NULL;
     }
 
 }

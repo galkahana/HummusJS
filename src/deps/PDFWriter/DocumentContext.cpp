@@ -1326,7 +1326,7 @@ void DocumentContext::WriteDateState(ObjectsContext* inStateWriter,const PDFDate
 
 void DocumentContext::WriteCatalogInformationState(ObjectsContext* inStateWriter,ObjectIDType inObjectID)
 {
-	ObjectIDType rootNodeID;
+	ObjectIDType rootNodeID = 0;
 	if(mCatalogInformation.GetCurrentPageTreeNode())
 	{
 		rootNodeID = inStateWriter->GetInDirectObjectsRegistry().AllocateNewObjectID();
@@ -1800,6 +1800,9 @@ void DocumentContext::Cleanup()
 	mOutputFilePath.clear();
 	mExtenders.clear();
 	mAnnotations.clear();
+    PDFDocumentCopyingContextSet::iterator it = mCopyingContexts.begin();
+	for(; it != mCopyingContexts.end(); ++it)
+		(*it)->ReleaseDocumentContextReference();
 	mCopyingContexts.clear();
     mModifiedDocumentIDExists = false;
     

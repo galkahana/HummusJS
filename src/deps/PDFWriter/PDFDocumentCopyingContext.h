@@ -126,6 +126,10 @@ public:
     PDFHummus::EStatusCode CopyDirectObjectAsIs(PDFObject* inObject);
     
     
+    // internal, release document context reference, to avoid re-releasing in destruction
+    void ReleaseDocumentContextReference();
+    
+    
 private:
 
 	PDFHummus::DocumentContext* mDocumentContext;

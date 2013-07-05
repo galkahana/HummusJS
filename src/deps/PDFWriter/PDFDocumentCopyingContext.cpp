@@ -25,6 +25,7 @@ using namespace PDFHummus;
 
 PDFDocumentCopyingContext::PDFDocumentCopyingContext(void)
 {
+    mDocumentContext = NULL;
 }
 
 PDFDocumentCopyingContext::~PDFDocumentCopyingContext(void)
@@ -128,7 +129,16 @@ EStatusCode PDFDocumentCopyingContext::MergePDFPageToFormXObject(
 void PDFDocumentCopyingContext::End()
 {
 	mDocumentHandler.StopCopyingContext();
-	mDocumentContext->UnRegisterCopyingContext(this);
+    if(mDocumentContext)
+    {
+        mDocumentContext->UnRegisterCopyingContext(this);
+        mDocumentContext = NULL;
+    }
+}
+
+void PDFDocumentCopyingContext::ReleaseDocumentContextReference()
+{
+    mDocumentContext = NULL;
 }
 
 EStatusCodeAndObjectIDTypeList PDFDocumentCopyingContext::CopyDirectObjectWithDeepCopy(PDFObject* inObject)

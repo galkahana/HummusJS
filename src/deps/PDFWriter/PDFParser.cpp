@@ -1511,7 +1511,7 @@ PDFObject* PDFParser::ParseExistingInDirectStreamObject(ObjectIDType inObjectId)
 
 	InputStreamSkipperStream skipperStream;
 	ObjectIDType objectStreamID;
-	PDFObject* anObject;
+	PDFObject* anObject = NULL;
 
 	do
 	{

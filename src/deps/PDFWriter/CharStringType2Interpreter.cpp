@@ -986,7 +986,7 @@ Byte* CharStringType2Interpreter::InterpretRandom(Byte* inProgramCounter)
 	CharStringOperand newOperand;
 
 	newOperand.IsInteger = false;
-	newOperand.RealValue = ((double)rand() + 1) / (RAND_MAX + 1);
+	newOperand.RealValue = ((double)rand() + 1) / ((double)RAND_MAX + 1);
 
 	mOperandStack.push_back(newOperand);
 	return inProgramCounter;
