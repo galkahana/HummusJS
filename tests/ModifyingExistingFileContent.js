@@ -133,7 +133,7 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment)
                      .writeKey('Rect')
                      .writeRectangleValue(inComment.position) // when implementing allow also 4 numbers input
                      .writeKey('Contents')
-                     .writeLiteralStringValue(this.pdfWriter.createPDFTextString(inComment.text).toString())
+                     .writeLiteralStringValue(this.pdfWriter.createPDFTextString(inComment.text).toBytesArray())
                      .writeKey('C');
     objectsContext.startArray();
     inComment.color.forEach(function(element,index,array){objectsContext.writeNumber(element/255);});
@@ -141,7 +141,7 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment)
      
   
     dictionaryContext.writeKey('T')
-                     .writeLiteralStringValue(this.pdfWriter.createPDFTextString(inComment.commentator).toString())
+                     .writeLiteralStringValue(this.pdfWriter.createPDFTextString(inComment.commentator).toBytesArray())
                      .writeKey('M')
                      .writeLiteralStringValue(this.pdfWriter.createPDFDate(inComment.time).toString());
     if(inComment.replyTo)

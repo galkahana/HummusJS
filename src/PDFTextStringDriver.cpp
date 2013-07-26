@@ -18,6 +18,7 @@
  
  */
 #include "PDFTextStringDriver.h"
+#include <string>
 
 using namespace v8;
 
@@ -29,9 +30,9 @@ void PDFTextStringDriver::Init(Handle<Object> inExports)
     Local<FunctionTemplate> t = FunctionTemplate::New(New);
     t->SetClassName(String::NewSymbol("PDFTextString"));
     t->InstanceTemplate()->SetInternalFieldCount(1);
+    t->PrototypeTemplate()->Set(String::NewSymbol("toBytesArray"),FunctionTemplate::New(ToBytesArray)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("toString"),FunctionTemplate::New(ToString)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("toUTF8String"),FunctionTemplate::New(ToUTF8String)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("fromUTF8String"),FunctionTemplate::New(FromUTF8String)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("fromString"),FunctionTemplate::New(FromString)->GetFunction());
     
     constructor = Persistent<Function>::New(t->GetFunction());
     inExports->Set(String::NewSymbol("PDFTextString"),constructor);
@@ -66,16 +67,23 @@ Handle<Value> PDFTextStringDriver::New(const Arguments& args)
     return args.This();
 }
 
-Handle<Value> PDFTextStringDriver::ToString(const Arguments& args)
+Handle<Value> PDFTextStringDriver::ToBytesArray(const Arguments& args)
 {
     HandleScope scope;
     
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     
-    return scope.Close(String::New(element->mTextString.ToString().c_str()));
+	std::string aString = element->mTextString.ToString();
+
+	Local<Array> result = Array::New(aString.length());
+
+	for(std::string::size_type i=0;i<aString.length();++i)
+		result->Set(v8::Number::New(i),v8::Number::New(aString[i]));
+
+	return scope.Close(result);
 }
 
-Handle<Value> PDFTextStringDriver::ToUTF8String(const Arguments& args)
+Handle<Value> PDFTextStringDriver::ToString(const Arguments& args)
 {
     HandleScope scope;
     
@@ -84,7 +92,7 @@ Handle<Value> PDFTextStringDriver::ToUTF8String(const Arguments& args)
     return scope.Close(String::New(element->mTextString.ToUTF8String().c_str()));
 }
 
-Handle<Value> PDFTextStringDriver::FromUTF8String(const Arguments& args)
+Handle<Value> PDFTextStringDriver::FromString(const Arguments& args)
 {
     HandleScope scope;
     

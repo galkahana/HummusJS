@@ -26,6 +26,7 @@
 #include "EStatusCode.h"
 #include "PDFStreamDriver.h"
 #include "ByteWriterWithPositionDriver.h"
+#include <string>
 
 using namespace v8;
 
@@ -318,14 +319,25 @@ Handle<Value> ObjectsContextDriver::WriteLiteralString(const Arguments& args)
     HandleScope scope;
     
     if(!args.Length() == 1 ||
-       !args[0]->IsString())
+       (!args[0]->IsString() && !args[0]->IsArray()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string)")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string) or an array")));
 		return scope.Close(Undefined());
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(*String::Utf8Value(args[0]->ToString()));
+	if(args[0]->IsArray())
+	{
+		std::string string;
+		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::String::New("length")))->ToObject()->Uint32Value();
+		for(unsigned long i=0;i<arrayLength;++i)
+			string.push_back((unsigned char)args[0]->ToObject()->Get(i)->ToNumber()->Value());
+		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(string);
+	}
+	else
+    {
+		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(*String::Utf8Value(args[0]->ToString()));
+	}
     
     return scope.Close(args.This());
     
@@ -336,14 +348,25 @@ Handle<Value> ObjectsContextDriver::WriteHexString(const Arguments& args)
     HandleScope scope;
     
     if(!args.Length() == 1 ||
-       !args[0]->IsString())
+       (!args[0]->IsString() && !args[0]->IsArray()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string)")));
+		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string) or an array")));
 		return scope.Close(Undefined());
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(*String::Utf8Value(args[0]->ToString()));
+	if(args[0]->IsArray())
+	{
+		std::string string;
+		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::String::New("length")))->ToObject()->Uint32Value();
+		for(unsigned long i=0;i<arrayLength;++i)
+			string.push_back((unsigned char)args[0]->ToObject()->Get(i)->ToNumber()->Value());
+		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(string);
+	}
+	else
+    {
+		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(*String::Utf8Value(args[0]->ToString()));
+	}
     
     return scope.Close(args.This());
     

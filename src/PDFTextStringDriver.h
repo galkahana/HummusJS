@@ -33,8 +33,8 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Handle<v8::Value> New(const v8::Arguments& args);
+    static v8::Handle<v8::Value> ToBytesArray(const v8::Arguments& args);
     static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToUTF8String(const v8::Arguments& args);
-    static v8::Handle<v8::Value> FromUTF8String(const v8::Arguments& args);
+    static v8::Handle<v8::Value> FromString(const v8::Arguments& args);
     
 };
