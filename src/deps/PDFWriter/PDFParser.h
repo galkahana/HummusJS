@@ -180,6 +180,7 @@ private:
 	unsigned long mPagesCount;
 	ObjectIDType* mPagesObjectIDs;
 	IPDFParserExtender* mParserExtender;
+    bool mAllowExtendingSegments;
 
 	PDFHummus::EStatusCode ParseHeaderLine();
 	PDFHummus::EStatusCode ParseEOFLine();
@@ -188,19 +189,32 @@ private:
 	PDFHummus::EStatusCode BuildXrefTableFromTable();
 	PDFHummus::EStatusCode DetermineXrefSize();
 	PDFHummus::EStatusCode InitializeXref();
-	PDFHummus::EStatusCode ParseXrefFromXrefTable(XrefEntryInput* inXrefTable,ObjectIDType inXrefSize,LongFilePositionType inXrefPosition);
+	PDFHummus::EStatusCode ParseXrefFromXrefTable(XrefEntryInput* inXrefTable,
+                                                  ObjectIDType inXrefSize,
+                                                  LongFilePositionType inXrefPosition,
+                                                  XrefEntryInput** outExtendedTable,
+                                                  ObjectIDType* outExtendedTableSize);
+    XrefEntryInput* ExtendXrefTableToSize(XrefEntryInput* inXrefTable,ObjectIDType inOldSize,ObjectIDType inNewSize);
 	PDFObject*  ParseExistingInDirectObject(ObjectIDType inObjectID);
 	PDFHummus::EStatusCode ParsePagesObjectIDs();
 	PDFHummus::EStatusCode ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID);
 	PDFHummus::EStatusCode ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID,unsigned long& ioCurrentPageIndex);
 	PDFHummus::EStatusCode ParsePreviousXrefs(PDFDictionary* inTrailer);
-	void MergeXrefWithMainXref(XrefEntryInput* inTableToMerge);
+	void MergeXrefWithMainXref(XrefEntryInput* inTableToMerge,ObjectIDType inMergedTableSize);
 	PDFHummus::EStatusCode ParseFileDirectory();
 	PDFHummus::EStatusCode BuildXrefTableAndTrailerFromXrefStream(long long inXrefStreamObjectID);
 	// an overload for cases where the xref stream object is already parsed
-	PDFHummus::EStatusCode ParseXrefFromXrefStream(XrefEntryInput* inXrefTable,ObjectIDType inXrefSize,PDFStreamInput* inXrefStream);
+	PDFHummus::EStatusCode ParseXrefFromXrefStream(XrefEntryInput* inXrefTable,
+                                                   ObjectIDType inXrefSize,
+                                                   PDFStreamInput* inXrefStream,
+                                                   XrefEntryInput** outExtendedTable,
+                                                   ObjectIDType* outExtendedTableSize);
 	// an overload for cases where the position should hold a stream object, and it should be parsed
-	PDFHummus::EStatusCode ParseXrefFromXrefStream(XrefEntryInput* inXrefTable,ObjectIDType inXrefSize,LongFilePositionType inXrefPosition);
+	PDFHummus::EStatusCode ParseXrefFromXrefStream(XrefEntryInput* inXrefTable,
+                                                   ObjectIDType inXrefSize,
+                                                   LongFilePositionType inXrefPosition,
+                                                   XrefEntryInput** outExtendedTable,
+                                                   ObjectIDType* outExtendedTableSize);
 	PDFHummus::EStatusCode ReadXrefStreamSegment(XrefEntryInput* inXrefTable,
 									 ObjectIDType inSegmentStartObject,
 									 ObjectIDType inSegmentCount,
@@ -209,7 +223,12 @@ private:
 									 unsigned long inEntryWidthsSize);
 	PDFHummus::EStatusCode ReadXrefSegmentValue(IByteReader* inSource,int inEntrySize,long long& outValue);
 	PDFHummus::EStatusCode ReadXrefSegmentValue(IByteReader* inSource,int inEntrySize,ObjectIDType& outValue);
-	PDFHummus::EStatusCode ParseDirectory(LongFilePositionType inXrefPosition,XrefEntryInput* inXrefTable,ObjectIDType inXrefSize,PDFDictionary** outTrailer);
+	PDFHummus::EStatusCode ParseDirectory(LongFilePositionType inXrefPosition,
+                                          XrefEntryInput* inXrefTable,
+                                          ObjectIDType inXrefSize,
+                                          PDFDictionary** outTrailer,
+                                          XrefEntryInput** outExtendedTable,
+                                          ObjectIDType* outExtendedTableSize);
 	PDFObject* ParseExistingInDirectStreamObject(ObjectIDType inObjectId);
 	PDFHummus::EStatusCode ParseObjectStreamHeader(ObjectStreamHeaderEntry* inHeaderInfo,ObjectIDType inObjectsCount);
 	void MovePositionInStream(LongFilePositionType inPosition);
