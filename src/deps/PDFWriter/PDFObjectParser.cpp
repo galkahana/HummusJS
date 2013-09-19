@@ -613,9 +613,9 @@ BoolAndByte PDFObjectParser::GetHexValue(Byte inValue)
 	if('0' <= inValue && inValue <='9')
 		return BoolAndByte(true,inValue - '0');
 	else if('A' <= inValue && inValue <= 'F')
-		return BoolAndByte(true,inValue - 'A');
+		return BoolAndByte(true,inValue - 'A' + 10);
 	else if('a' <= inValue && inValue <= 'f')
-		return BoolAndByte(true,inValue - 'a');
+		return BoolAndByte(true,inValue - 'a' + 10);
 	else
 	{
 		TRACE_LOG1("PDFObjectParser::GetHexValue, unrecongnized hex value - %c",inValue);

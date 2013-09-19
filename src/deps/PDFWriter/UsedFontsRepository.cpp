@@ -109,9 +109,11 @@ EStatusCode UsedFontsRepository::WriteUsedFontsDefinitions()
 	EStatusCode status = PDFHummus::eSuccess;
 
 	for(; it != mUsedFonts.end() && PDFHummus::eSuccess == status; ++it)
-		status = it->second->WriteFontDefinition();
+		status = it->second ?
+                    it->second->WriteFontDefinition():
+                    eFailure;
 
-	return status;	
+	return status;
 }
 
 PDFUsedFont* UsedFontsRepository::GetFontForFile(const std::string& inFontFilePath,long inFontIndex)

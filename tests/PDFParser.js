@@ -78,7 +78,7 @@ var pdfReader = hummus.createReader('./TestMaterials/XObjectContent.PDF');
 if(pdfReader.getPDFLevel() != 1.3)
     console.log('expecting level 1.3, got ' + pdfReader.getPDFLevel());
 if(pdfReader.getPagesCount() != 2)
-    console.log('expecting 2 pages, got ' + parser.getPagesCount());
+    console.log('expecting 2 pages, got ' + pdfReader.getPagesCount());
 var catalog = pdfReader.queryDictionaryObject(pdfReader.getTrailer(),'Root');
 iterateObjectTypes(catalog,pdfReader);
 
