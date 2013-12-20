@@ -214,6 +214,8 @@ function writeModifiedResourcesDict(inSourceDirect,inObjCxt,inCpyCxt,inNewXObjec
     // now write a new xobject entry.
     dict.writeKey('XObject');
     var xobjectDict = inObjCxt.startDictionary();
+    var imageObjectName;
+
     if(sourceObject['XObject']) // original exists, copy its keys
     {
         // i'm having a very sophisticated algo here to create a new unique name. 
@@ -229,6 +231,8 @@ function writeModifiedResourcesDict(inSourceDirect,inObjCxt,inCpyCxt,inNewXObjec
                                                     });     
         inObjCxt.endLine();
     }
+    else
+        imageObjectName = 'fm';
 
 
     inNewXObjects.forEach(function(inElement,inIndex)
