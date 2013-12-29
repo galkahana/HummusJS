@@ -6,7 +6,6 @@ module.exports = require('./build/Release/hummus');
     Using this stream frees the user from having to create a PDF file on disk when generating on-demand PDFs
 */
 
-
 function PDFStreamForResponse(inResponse)
 {
     this.response = inResponse;
