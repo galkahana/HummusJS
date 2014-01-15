@@ -21,6 +21,7 @@
 #include "FreeTypeOpenTypeWrapper.h"
 #include "Trace.h"
 
+#include <algorithm>
 #include <math.h>
 
 
