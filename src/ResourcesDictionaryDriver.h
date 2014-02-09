@@ -40,5 +40,19 @@ private:
     static v8::Handle<v8::Value> AddFormXObjectMapping(const v8::Arguments& args);
     static v8::Handle<v8::Value> AddImageXObjectMapping(const v8::Arguments& args);
     static v8::Handle<v8::Value> AddProcsetResource(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddExtGStateMapping(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddFontMapping(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddColorSpaceMapping(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddPatternMapping(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddPropertyMapping(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddXObjectMapping(const v8::Arguments& args);
+    static v8::Handle<v8::Value> AddShadingMapping(const v8::Arguments& args);
+
+    
+    
+    
+    
+    
+    
 
 };

@@ -852,7 +852,7 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
         for(unsigned int i=0; i < length; ++i)
         {
             if(!anArray->Get(i)->IsArray() ||
-               !anArray->Get(i)->ToObject()->Get(v8::String::New("length"))->ToNumber()->Uint32Value() == 2)
+               anArray->Get(i)->ToObject()->Get(v8::String::New("length"))->ToNumber()->Uint32Value() != 2)
             {
                 ThrowException(Exception::TypeError(String::New("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers")));
                 break;

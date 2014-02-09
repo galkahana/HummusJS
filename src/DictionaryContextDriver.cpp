@@ -106,7 +106,7 @@ Handle<Value> DictionaryContextDriver::WriteRectangleValue(const Arguments& args
     HandleScope scope;
     
     // can accept array or four numbers
-    if( (!args.Length() == 1 && !args.Length() == 4) ||
+    if( (args.Length() != 1 && args.Length() != 4) ||
        (args.Length() == 1 && !args[0]->IsArray()) ||
        (args.Length() == 4 && (!args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber())))
     {

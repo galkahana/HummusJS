@@ -232,7 +232,7 @@ Handle<Value> ObjectsContextDriver::WriteIndirectObjectReference(const Arguments
 {
     HandleScope scope;
     
-    if( (!args.Length() == 1 &&  !args.Length() == 2) ||
+    if( (args.Length() != 1 &&  args.Length() != 2) ||
         !args[0]->IsNumber() ||
         (args.Length() == 2 && !args[1]->IsNumber())
        )

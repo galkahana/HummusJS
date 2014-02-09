@@ -177,7 +177,7 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::MergePDFPageToPage(const v8:
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 2 ||
+    if(args.Length() != 2 ||
        !PDFPageDriver::HasInstance(args[0]) ||
        !args[1]->IsNumber())
     {
@@ -239,7 +239,7 @@ Handle<Value> DocumentCopyingContextDriver::MergePDFPageToFormXObject(const Argu
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 2 ||
+    if(args.Length() != 2 ||
        !FormXObjectDriver::HasInstance(args[0]) ||
        !args[1]->IsNumber())
     {
