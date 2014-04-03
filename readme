@@ -1,8 +1,9 @@
-Hummus JS is a node driver for PDFHummus pdf reader/write.
+Hummus JS is a PDF generation and parsing module. 
+It is implemented as a NodeJS driver to the PDFHummus library
 
-check out the wiki pages for slowly but surely written documentation.
+Check out the wiki pages for documentation.
 
-visit the HummusJS and PDFHummus blog at http://pdfhummus.com
+For announcements and examples, visit the HummusJS and PDFHummus blog at http://pdfhummus.com
 
 visit the Hummus JS git project in https://github.com/galkahana/HummusJS
 visit the PDFHummus git project in https://github.com/galkahana/pdf-writer
