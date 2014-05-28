@@ -25,7 +25,8 @@ using namespace v8;
 
 DictionaryContextDriver::~DictionaryContextDriver()
 {
-    delete DictionaryContextInstance;
+    // Do not, under any circumstance, be tempted to delete the dictionary context. it will be deleted by "EndContext" of the owner - the objects context
+    // there was a delete here which causes a bug to happen for a year. until today. 28/5/2014
 }
 
 void DictionaryContextDriver::Init()
