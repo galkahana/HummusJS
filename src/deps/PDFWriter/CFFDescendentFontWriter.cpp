@@ -48,7 +48,8 @@ EStatusCode CFFDescendentFontWriter::WriteFont(	ObjectIDType inDecendentObjectID
 														const std::string& inFontName,
 														FreeTypeFaceWrapper& inFontInfo,
 														const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
-														ObjectsContext* inObjectsContext)
+														ObjectsContext* inObjectsContext,
+														bool inEmbedFont)
 {
 	// reset embedded font object ID (and flag...to whether it was actually embedded or not, which may 
 	// happen due to font embedding restrictions)
@@ -65,29 +66,32 @@ EStatusCode CFFDescendentFontWriter::WriteFont(	ObjectIDType inDecendentObjectID
 		return PDFHummus::eFailure;
 	}
 
-	CFFEmbeddedFontWriter embeddedFontWriter;
-	UIntAndGlyphEncodingInfoVector encodedGlyphs = inEncodedGlyphs;
-	UIntVector orderedGlyphs;
-	UShortVector cidMapping;
-	
-	sort(encodedGlyphs.begin(),encodedGlyphs.end(),sEncodedGlypsSort);	
-
-	for(UIntAndGlyphEncodingInfoVector::const_iterator it = encodedGlyphs.begin(); 
-		it != encodedGlyphs.end(); 
-		++it)
+	if (inEmbedFont)
 	{
-		orderedGlyphs.push_back(it->first);
-		cidMapping.push_back(it->second.mEncodedCharacter);
+		CFFEmbeddedFontWriter embeddedFontWriter;
+		UIntAndGlyphEncodingInfoVector encodedGlyphs = inEncodedGlyphs;
+		UIntVector orderedGlyphs;
+		UShortVector cidMapping;
+
+		sort(encodedGlyphs.begin(), encodedGlyphs.end(), sEncodedGlypsSort);
+
+		for (UIntAndGlyphEncodingInfoVector::const_iterator it = encodedGlyphs.begin();
+			it != encodedGlyphs.end();
+			++it)
+		{
+			orderedGlyphs.push_back(it->first);
+			cidMapping.push_back(it->second.mEncodedCharacter);
+		}
+		EStatusCode status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,
+			orderedGlyphs,
+			scCIDFontType0C,
+			inFontName,
+			inObjectsContext,
+			&cidMapping,
+			mEmbeddedFontFileObjectID);
+		if (status != PDFHummus::eSuccess)
+			return status;
 	}
-	EStatusCode status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,
-												orderedGlyphs,
-												scCIDFontType0C,
-												inFontName,
-												inObjectsContext,
-												&cidMapping,
-												mEmbeddedFontFileObjectID);
-	if(status != PDFHummus::eSuccess)
-		return status;
 
 	DescendentFontWriter descendentFontWriter;
 

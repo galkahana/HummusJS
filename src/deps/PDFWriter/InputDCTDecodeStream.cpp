@@ -209,6 +209,7 @@ EStatusCode InputDCTDecodeStream::StartRead()
         mCurrentSampleRow = 0;
         mTotalSampleRows = 0;
         mIndexInRow = 0;
+        
         mIsHeaderRead = true;
     }
     catch(HummusJPGException)

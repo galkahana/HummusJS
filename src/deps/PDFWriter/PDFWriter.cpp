@@ -33,12 +33,13 @@
 #include "OutputStreamTraits.h"
 #include "PDFBoolean.h"
 #include "PDFInteger.h"
+#include "PDFPageInput.h"
 
 using namespace PDFHummus;
 
 const LogConfiguration LogConfiguration::DefaultLogConfiguration(false,false,"PDFWriterLog.txt");
 
-const PDFCreationSettings PDFCreationSettings::DefaultPDFCreationSettings(true);
+const PDFCreationSettings PDFCreationSettings::DefaultPDFCreationSettings(true,true);
 
 PDFWriter::PDFWriter(void)
 {
@@ -47,6 +48,7 @@ PDFWriter::PDFWriter(void)
 	// the first decision (level) about the PDF can be the result of parsing
 	mDocumentContext.SetObjectsContext(&mObjectsContext);
     mIsModified = false;
+	mEmbedFonts = true;
 }
 
 PDFWriter::~PDFWriter(void)
@@ -61,6 +63,8 @@ EStatusCode PDFWriter::StartPDF(
 {
 	SetupLog(inLogConfiguration);
 	SetupObjectsContext(inPDFCreationSettings);
+	mEmbedFonts = inPDFCreationSettings.EmbedFonts;
+
 	EStatusCode status = mOutputFile.OpenFile(inOutputFilePath);
 	if(status != eSuccess)
 		return status;
@@ -80,9 +84,9 @@ EStatusCode PDFWriter::EndPDF()
 	do
 	{
         if(mIsModified)
-            status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion);
+            status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion,mEmbedFonts);
         else    
-            status = mDocumentContext.FinalizeNewPDF();
+            status = mDocumentContext.FinalizeNewPDF(mEmbedFonts);
 		if(status != eSuccess)
 		{
 			TRACE_LOG("PDFWriter::EndPDF, Could not end PDF");
@@ -114,7 +118,7 @@ void PDFWriter::Cleanup()
 {
 	mObjectsContext.Cleanup();
 	mDocumentContext.Cleanup();
-	ReleaseLog();
+	//ReleaseLog();
 }
 
 void PDFWriter::Reset()
@@ -149,9 +153,9 @@ EStatusCode PDFWriter::WritePageAndRelease(PDFPage* inPage)
 void PDFWriter::SetupLog(const LogConfiguration& inLogConfiguration)
 {
 	if(inLogConfiguration.LogStream)
-		Singleton<Trace>::GetInstance()->SetLogSettings(inLogConfiguration.LogStream,inLogConfiguration.ShouldLog);
+		Trace::DefaultTrace.SetLogSettings(inLogConfiguration.LogStream,inLogConfiguration.ShouldLog);
 	else
-		Singleton<Trace>::GetInstance()->SetLogSettings(inLogConfiguration.LogFileLocation,inLogConfiguration.ShouldLog,inLogConfiguration.StartWithBOM);
+		Trace::DefaultTrace.SetLogSettings(inLogConfiguration.LogFileLocation,inLogConfiguration.ShouldLog,inLogConfiguration.StartWithBOM);
 }
 
 void PDFWriter::SetupObjectsContext(const PDFCreationSettings& inPDFCreationSettings)
@@ -161,7 +165,7 @@ void PDFWriter::SetupObjectsContext(const PDFCreationSettings& inPDFCreationSett
 
 void PDFWriter::ReleaseLog()
 {
-	Singleton<Trace>::Reset();
+	//Singleton<Trace>::Reset();
 }
 
 DocumentContext& PDFWriter::GetDocumentContext()
@@ -338,7 +342,10 @@ EStatusCode PDFWriter::Shutdown(const std::string& inStateFilePath)
 
         pdfWriterDictionary->WriteKey("mIsModified");
         pdfWriterDictionary->WriteBooleanValue(mIsModified);
-        
+
+		pdfWriterDictionary->WriteKey("mEmbedFonts");
+		pdfWriterDictionary->WriteBooleanValue(mEmbedFonts);
+
         if(mIsModified)
         {
             pdfWriterDictionary->WriteKey("mModifiedFileVersion");
@@ -373,7 +380,7 @@ EStatusCode PDFWriter::Shutdown(const std::string& inStateFilePath)
 	}
 	else
 		status = mOutputFile.CloseFile();
-	ReleaseLog();
+	//ReleaseLog();
 	return status;
 }
 
@@ -434,7 +441,11 @@ EStatusCode PDFWriter::SetupState(const std::string& inStateFilePath)
             PDFObjectCastPtr<PDFInteger> isModifiedFileVersionObject(pdfWriterDictionary->QueryDirectObject("mModifiedFileVersion"));
             mModifiedFileVersion = (EPDFVersion)(isModifiedFileVersionObject->GetValue());
         }
-        
+
+		PDFObjectCastPtr<PDFBoolean> embedFontsObject(pdfWriterDictionary->QueryDirectObject("mEmbedFonts"));
+		mEmbedFonts = embedFontsObject->GetValue();
+
+
 		PDFObjectCastPtr<PDFIndirectObjectReference> objectsContextObject(pdfWriterDictionary->QueryDirectObject("mObjectsContext"));
 		status = mObjectsContext.ReadState(reader.GetObjectsReader(),objectsContextObject->mObjectID);
 		if(status!= eSuccess)
@@ -511,9 +522,9 @@ EStatusCode PDFWriter::EndPDFForStream()
     EStatusCode status;
     
     if(mIsModified)
-        status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion);
+        status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion,mEmbedFonts);
     else    
-        status = mDocumentContext.FinalizeNewPDF();
+        status = mDocumentContext.FinalizeNewPDF(mEmbedFonts);
     mModifiedFileParser.ResetParser();
 	Cleanup();
 	return status;
@@ -700,4 +711,14 @@ InputFile& PDFWriter::GetModifiedInputFile()
 PDFDocumentCopyingContext* PDFWriter::CreatePDFCopyingContextForModifiedFile()
 {
 	return mDocumentContext.CreatePDFCopyingContext(&mModifiedFileParser);    
+}
+
+DoubleAndDoublePair PDFWriter::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex)
+{
+	return mDocumentContext.GetImageDimensions(inImageFile,inImageIndex);
+}
+
+PDFHummus::EHummusImageType PDFWriter::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
+{
+	return mDocumentContext.GetImageType(inImageFile,inImageIndex);
 }

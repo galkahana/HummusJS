@@ -51,7 +51,8 @@ static const char* scCFF = "CFF";
 static const std::string scPlus = "+";
 EStatusCode CFFANSIFontWriter::WriteFont(	FreeTypeFaceWrapper& inFontInfo,
 											WrittenFontRepresentation* inFontOccurrence,
-											ObjectsContext* inObjectsContext)
+											ObjectsContext* inObjectsContext,
+											bool inEmbedFont)
 {
 	const char* postscriptFontName = FT_Get_Postscript_Name(inFontInfo);
 	if(!postscriptFontName)
@@ -59,49 +60,55 @@ EStatusCode CFFANSIFontWriter::WriteFont(	FreeTypeFaceWrapper& inFontInfo,
 		TRACE_LOG("CFFANSIFontWriter::WriteFont, unexpected failure. no postscript font name for font");
 		return PDFHummus::eFailure;
 	}
-	std::string subsetFontName = inObjectsContext->GenerateSubsetFontPrefix() + scPlus + postscriptFontName;
+	std::string fontName;
 	
-	const char* fontType = inFontInfo.GetTypeString();
-
 	// reset embedded font object ID (and flag...to whether it was actually embedded or not, which may 
 	// happen due to font embedding restrictions)
 	mEmbeddedFontFileObjectID = 0;
 
-	EStatusCode status;
-	if(strcmp(scType1Type,fontType) == 0)
+	if (inEmbedFont)
 	{
-		Type1ToCFFEmbeddedFontWriter embeddedFontWriter;
+		fontName = inObjectsContext->GenerateSubsetFontPrefix() + scPlus + postscriptFontName;
+		const char* fontType = inFontInfo.GetTypeString();
 
-		status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,
-													inFontOccurrence->GetGlyphIDsAsOrderedVector(),
-													scType1C,
-													subsetFontName, 
-													inObjectsContext,
-													mEmbeddedFontFileObjectID);
-	}
-	else if(strcmp(scCFF,fontType) == 0)
-	{
-		CFFEmbeddedFontWriter embeddedFontWriter;
+		EStatusCode status;
+		if (strcmp(scType1Type, fontType) == 0)
+		{
+			Type1ToCFFEmbeddedFontWriter embeddedFontWriter;
 
-		status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,
-													inFontOccurrence->GetGlyphIDsAsOrderedVector(),
-													scType1C,
-													subsetFontName, 
-													inObjectsContext,
-													mEmbeddedFontFileObjectID);
+			status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,
+				inFontOccurrence->GetGlyphIDsAsOrderedVector(),
+				scType1C,
+				fontName,
+				inObjectsContext,
+				mEmbeddedFontFileObjectID);
+		}
+		else if (strcmp(scCFF, fontType) == 0)
+		{
+			CFFEmbeddedFontWriter embeddedFontWriter;
+
+			status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,
+				inFontOccurrence->GetGlyphIDsAsOrderedVector(),
+				scType1C,
+				fontName,
+				inObjectsContext,
+				mEmbeddedFontFileObjectID);
+		}
+		else
+		{
+
+			TRACE_LOG("CFFANSIFontWriter::WriteFont, Exception, unfamilar font type for embedding representation");
+			status = PDFHummus::eFailure;
+		}
+		if (status != PDFHummus::eSuccess)
+			return status;
 	}
 	else
-	{
-
-		TRACE_LOG("CFFANSIFontWriter::WriteFont, Exception, unfamilar font type for embedding representation");
-		status = PDFHummus::eFailure;
-	}
-	if(status != PDFHummus::eSuccess)
-		return status;
+		fontName = postscriptFontName;
 
 	ANSIFontWriter fontWriter;
 
-	return fontWriter.WriteFont(inFontInfo,inFontOccurrence,inObjectsContext,this,subsetFontName);
+	return fontWriter.WriteFont(inFontInfo, inFontOccurrence, inObjectsContext, this, fontName);
 }
 
 static const char* scType1 = "Type1";

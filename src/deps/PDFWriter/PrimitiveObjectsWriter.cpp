@@ -55,6 +55,7 @@ void PrimitiveObjectsWriter::WriteKeyword(const std::string& inKeyword)
 }
 
 static const IOBasicTypes::Byte scSlash[1] = {'/'};
+static const std::string scSpecialChars("()<>[]{}/%#");
 void PrimitiveObjectsWriter::WriteName(const std::string& inName,ETokenSeparator inSeparate)
 {
 /*
@@ -71,7 +72,7 @@ it is recommended but not required for characters whose codes are outside the ra
 	{
 		Byte aValue = *it;
 
-		if(aValue < 33 || aValue > 126)
+		if(aValue < 33 || aValue > 126 || scSpecialChars.find(aValue) != scSpecialChars.npos)
 		{
 			SAFE_SPRINTF_1((char*)buffer,5,"#%02x",aValue); 
 			mStreamForWriting->Write(buffer,strlen((char*)buffer));		

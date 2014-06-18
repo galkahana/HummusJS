@@ -45,7 +45,8 @@ public:
 									const std::string& inFontName,
 									FreeTypeFaceWrapper& inFontInfo,
 									const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
-									ObjectsContext* inObjectsContext) = 0;
+									ObjectsContext* inObjectsContext,
+									bool inEmbedFont) = 0;
 
 	virtual void WriteSubTypeValue(DictionaryContext* inDescendentFontContext) = 0;
 

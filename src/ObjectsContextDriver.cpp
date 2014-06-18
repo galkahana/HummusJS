@@ -110,7 +110,7 @@ Handle<Value> ObjectsContextDriver::DeleteObject(const Arguments& args)
  
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is an object number")));
@@ -152,7 +152,7 @@ Handle<Value> ObjectsContextDriver::WriteNumber(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a number")));
@@ -174,7 +174,7 @@ Handle<Value> ObjectsContextDriver::EndArray(const Arguments& args)
 {
     HandleScope scope;
     
-    if((!args.Length() == 0 && !args.Length() == 1) ||
+    if((args.Length() != 0 && args.Length() != 1) ||
         (args.Length() == 1 && !args[0]->IsNumber()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 optional argument that defiened the array ending")));
@@ -202,7 +202,7 @@ Handle<Value> ObjectsContextDriver::EndDictionary(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !DictionaryContextDriver::HasInstance(args[0]))
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. Please provide a dictionary to end")));
@@ -254,7 +254,7 @@ Handle<Value> ObjectsContextDriver::StartNewIndirectObject(const Arguments& args
 {
     HandleScope scope;
     
-    if((!args.Length() == 0 && !args.Length() == 1) ||
+    if((args.Length() != 0 && args.Length() != 1) ||
        (args.Length() == 1 && !args[0]->IsNumber()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass no arguments, or pass 1 argument that is an object ID")));
@@ -283,7 +283,7 @@ Handle<Value> ObjectsContextDriver::StartModifiedIndirectObject(const Arguments&
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is an object ID")));
@@ -300,7 +300,7 @@ Handle<Value> ObjectsContextDriver::WriteName(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsString())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a name (string)")));
@@ -318,7 +318,7 @@ Handle<Value> ObjectsContextDriver::WriteLiteralString(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        (!args[0]->IsString() && !args[0]->IsArray()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string) or an array")));
@@ -347,7 +347,7 @@ Handle<Value> ObjectsContextDriver::WriteHexString(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        (!args[0]->IsString() && !args[0]->IsArray()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string) or an array")));
@@ -376,7 +376,7 @@ Handle<Value> ObjectsContextDriver::WriteBoolean(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsBoolean())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a boolean")));
@@ -394,7 +394,7 @@ Handle<Value> ObjectsContextDriver::WriteKeyword(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsString())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a keyword (string)")));
@@ -412,7 +412,7 @@ Handle<Value> ObjectsContextDriver::WriteComment(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsString())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a comment (string)")));
@@ -430,7 +430,7 @@ Handle<Value> ObjectsContextDriver::SetCompressStreams(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsBoolean())
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a boolean, determining whether streams are to be compressed")));

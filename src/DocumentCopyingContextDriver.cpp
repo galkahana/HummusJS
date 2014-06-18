@@ -207,7 +207,7 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::AppendPDFPageFromPDF(const v
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide a page index to append")));
@@ -280,7 +280,7 @@ Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectAsIs(const Arguments
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 1) // need to sometimes check that this is a PDFObject
+    if(args.Length() != 1) // need to sometimes check that this is a PDFObject
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is PDFObject to copy")));
         return scope.Close(Undefined());
@@ -305,7 +305,7 @@ Handle<Value> DocumentCopyingContextDriver::CopyObject(const Arguments& args)
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is object ID of the object to copy")));
@@ -332,7 +332,7 @@ Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(const A
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 1) // need to sometimes check that this is a PDFObject
+    if(args.Length() != 1) // need to sometimes check that this is a PDFObject
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is PDFObject to copy")));
         return scope.Close(Undefined());
@@ -365,7 +365,7 @@ Handle<Value> DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(const 
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsArray())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is an array of object IDs")));
@@ -401,7 +401,7 @@ Handle<Value> DocumentCopyingContextDriver::GetCopiedObjectID(const Arguments& a
         return scope.Close(Undefined());
     }
     
-    if(!args.Length() == 1 ||
+    if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, an object ID to check")));

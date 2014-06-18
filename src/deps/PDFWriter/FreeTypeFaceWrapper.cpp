@@ -27,8 +27,11 @@
 #include "WrittenFontCFF.h"
 #include "WrittenFontTrueType.h"
 
+#include <math.h>
+
 #include FT_XFREE86_H 
 #include FT_CID_H 
+#include FT_OUTLINE_H
 
 
 using namespace PDFHummus;
@@ -40,7 +43,7 @@ FreeTypeFaceWrapper::FreeTypeFaceWrapper(FT_Face inFace,const std::string& inFon
 	mFontIndex = inFontIndex;
     SetupFormatSpecificExtender(inFontFilePath,"");
 	mDoesOwn = inDoOwn;
-    SetupNotDefGlyph();
+	mGlyphIsLoaded = false;
 }
 
 FreeTypeFaceWrapper::FreeTypeFaceWrapper(FT_Face inFace,const std::string& inFontFilePath,const std::string& inPFMFilePath,long inFontIndex, bool inDoOwn)
@@ -54,28 +57,31 @@ FreeTypeFaceWrapper::FreeTypeFaceWrapper(FT_Face inFace,const std::string& inFon
 	else
 		SetupFormatSpecificExtender(inFontFilePath,"");
 	mDoesOwn = inDoOwn;
-    SetupNotDefGlyph();
+	mGlyphIsLoaded = false;
 }
 
-void FreeTypeFaceWrapper::SetupNotDefGlyph()
+std::string FreeTypeFaceWrapper::NotDefGlyphName()
 {
     // for special case of fonts that have glyph names, but don't define .notdef, use one of the existing chars (found a custom type 1 with that)
     
-    if(FT_HAS_GLYPH_NAMES(mFace))
-    {
-        char* aString = (char*)".notdef";
-      if(FT_Get_Name_Index(mFace,aString) == 0) {
-        FT_ULong  charcode;
-        FT_UInt   gindex;
-        charcode = FT_Get_First_Char( mFace, &gindex ); 
-        mNotDefGlyphName = GetGlyphName(gindex);
-        // WARNING: it can happen that (mNotDefGlyphName == "")
-      }
-        else
-            mNotDefGlyphName = ".notdef";
-    }
+    if (mNotDefGlyphName.length() == 0) {
+		if(FT_HAS_GLYPH_NAMES(mFace))
+		{
+			char* aString = (char*)".notdef";
+			if(FT_Get_Name_Index(mFace,aString) == 0) {
+				FT_ULong  charcode;
+				FT_UInt   gindex;
+				charcode = FT_Get_First_Char( mFace, &gindex ); 
+				mNotDefGlyphName = GetGlyphName(gindex);
+				// WARNING: it can happen that (mNotDefGlyphName == "")
+			}
+			else
+				mNotDefGlyphName = ".notdef";
+		}
   
-    if (mNotDefGlyphName == "")  mNotDefGlyphName = ".notdef";
+		if (mNotDefGlyphName == "")  mNotDefGlyphName = ".notdef";
+	}
+	return mNotDefGlyphName;
 }
 
 std::string FreeTypeFaceWrapper::GetExtension(const std::string& inFilePath)
@@ -231,7 +237,8 @@ BoolAndFTShort FreeTypeFaceWrapper::GetYBearingForUnicodeChar(unsigned short uni
 {
 	if(mFace)
 	{
-		if(FT_Load_Char(mFace,unicodeCharCode, FT_LOAD_NO_SCALE) != 0)
+		mGlyphIsLoaded = false;
+		if (FT_Load_Char(mFace, unicodeCharCode, FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_SCALE) != 0)
 		{
 			TRACE_LOG1("FreeTypeFaceWrapper::XHeightFromLowerXHeight, unable to load glyph for char code = 0x%x",unicodeCharCode);
 			return BoolAndFTShort(false,0);
@@ -521,7 +528,7 @@ std::string FreeTypeFaceWrapper::GetGlyphName(unsigned int inGlyphIndex)
     {
         std::string glyphName = mFormatParticularWrapper->GetPrivateGlyphName(inGlyphIndex);
         if(glyphName == ".notdef")
-            return mNotDefGlyphName; // handling fonts that don't have notdef
+            return NotDefGlyphName(); // handling fonts that don't have notdef
         else
             return glyphName;
     }
@@ -534,7 +541,7 @@ std::string FreeTypeFaceWrapper::GetGlyphName(unsigned int inGlyphIndex)
             return std::string(buffer);
         }
         else
-            return mNotDefGlyphName; // normally this will be .notdef (in am allowing edge/illegal cases where there's a font with no .notdef)
+            return NotDefGlyphName(); // normally this will be .notdef (in am allowing edge/illegal cases where there's a font with no .notdef)
     }
 }
 
@@ -672,11 +679,10 @@ FT_Pos FreeTypeFaceWrapper::GetInPDFMeasurements(FT_Pos inFontMeasurement)
 
 FT_Pos FreeTypeFaceWrapper::GetGlyphWidth(unsigned int inGlyphIndex)
 {
-    if(mFormatParticularWrapper && mFormatParticularWrapper->HasPrivateEncoding())
-        FT_Load_Glyph(mFace,mFormatParticularWrapper->GetFreeTypeGlyphIndexFromEncodingGlyphIndex(inGlyphIndex),FT_LOAD_NO_SCALE);
-    else
-        FT_Load_Glyph(mFace,inGlyphIndex,FT_LOAD_NO_SCALE);
-    return GetInPDFMeasurements(mFace->glyph->metrics.horiAdvance);
+	if (LoadGlyph(inGlyphIndex))
+		return 0;
+	else
+		return GetInPDFMeasurements(mFace->glyph->metrics.horiAdvance);
 }
 
 unsigned int FreeTypeFaceWrapper::GetGlyphIndexInFreeTypeIndexes(unsigned int inGlyphIndex)
@@ -685,5 +691,120 @@ unsigned int FreeTypeFaceWrapper::GetGlyphIndexInFreeTypeIndexes(unsigned int in
         return mFormatParticularWrapper->GetFreeTypeGlyphIndexFromEncodingGlyphIndex(inGlyphIndex);
     else
         return inGlyphIndex;
-    
+}
+
+bool FreeTypeFaceWrapper::GetGlyphOutline(unsigned int inGlyphIndex, FreeTypeFaceWrapper::IOutlineEnumerator& inEnumerator)
+{
+	bool status = false;
+	if ( mFace->glyph->format == FT_GLYPH_FORMAT_OUTLINE && !(mFace->face_flags & FT_FACE_FLAG_TRICKY) ) //scaled-font implementation would be needed for 'tricky' fonts
+	{
+		if (!LoadGlyph(inGlyphIndex)) {
+			FT_Outline_Funcs callbacks = { IOutlineEnumerator::outline_moveto,
+			                               IOutlineEnumerator::outline_lineto,
+										   IOutlineEnumerator::outline_conicto,
+										   IOutlineEnumerator::outline_cubicto,
+										   0, 0 }; //0 shift & delta
+			inEnumerator.FTBegin(mFace->units_per_EM);
+			status = ( 0 == FT_Outline_Decompose(&mFace->glyph->outline, &callbacks, &inEnumerator) );
+			inEnumerator.FTEnd();
+			status = true;
+		}
+	}
+	return status;
+}
+
+FT_Error FreeTypeFaceWrapper::LoadGlyph(FT_UInt inGlyphIndex, FT_Int32 inFlags)
+{
+	FT_Error status = 0; //assume success
+	if (!mGlyphIsLoaded || inGlyphIndex != mCurrentGlyph) {
+		if (mFormatParticularWrapper && mFormatParticularWrapper->HasPrivateEncoding())
+			status = FT_Load_Glyph(mFace,
+			                       mFormatParticularWrapper->GetFreeTypeGlyphIndexFromEncodingGlyphIndex(inGlyphIndex),
+								   inFlags | FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_SCALE);
+		else
+			status = FT_Load_Glyph(mFace,inGlyphIndex, inFlags | FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_SCALE);
+
+		mGlyphIsLoaded = true;
+		mCurrentGlyph = inGlyphIndex;
+	}
+	return status;
+}
+
+//////////////// IOutlineEnumerator /////////////////////////////
+
+int FreeTypeFaceWrapper::IOutlineEnumerator::outline_moveto(const FT_Vector* to, void *closure) //static
+{
+	return ( (FreeTypeFaceWrapper::IOutlineEnumerator *)closure )->FTMoveto(to) ? 0 : 1;
+}
+
+int FreeTypeFaceWrapper::IOutlineEnumerator::outline_lineto(const FT_Vector* to, void *closure) //static
+{
+	return ( (FreeTypeFaceWrapper::IOutlineEnumerator *)closure )->FTLineto(to) ? 0 : 1;
+}
+
+int FreeTypeFaceWrapper::IOutlineEnumerator::outline_conicto(const FT_Vector *control, const FT_Vector *to, void *closure) //static
+{
+	return ( (FreeTypeFaceWrapper::IOutlineEnumerator *)closure )->FTConicto(control, to) ? 0 : 1;
+}
+
+int FreeTypeFaceWrapper::IOutlineEnumerator::outline_cubicto(const FT_Vector *control1, const FT_Vector *control2, const FT_Vector *to, void *closure) //static
+{
+	return ( (FreeTypeFaceWrapper::IOutlineEnumerator *)closure )->FTCubicto(control1, control2, to) ? 0 : 1;
+}
+
+void FreeTypeFaceWrapper::IOutlineEnumerator::FTBegin(FT_UShort upm)
+{
+	mUPM = upm;
+	mToLastValid = false;
+}
+
+bool FreeTypeFaceWrapper::IOutlineEnumerator::FTMoveto(const FT_Vector* to)
+{
+	bool stat = true;
+	if (mToLastValid)
+		stat = Close(); //some font types skip doing closepaths
+	if (stat)
+		stat = Moveto( FT_Short(to->x), FT_Short(to->y) ); //OK to truncate FT_Pos when fonts are unscaled
+	mToLast = *to;
+	mToLastValid = true;
+	return stat;
+}
+
+bool FreeTypeFaceWrapper::IOutlineEnumerator::FTLineto(const FT_Vector* to)
+{
+	mToLast = *to;
+	mToLastValid = true;
+	return Lineto( FT_Short(to->x), FT_Short(to->y) );
+}
+
+static inline FT_Pos ftround(double x)
+{
+	return FT_Pos(x >= 0 ? floor(x + 0.5) : ceil(x - .5));
+}
+
+bool FreeTypeFaceWrapper::IOutlineEnumerator::FTConicto(const FT_Vector *control, const FT_Vector *to)
+{
+	FT_Vector from = mToLast;
+	mToLast = *to;
+	return Curveto( FT_Short(from.x + ftround(2.0/3.0 * (control->x - from.x))),
+	                FT_Short(from.y + ftround(2.0/3.0 * (control->y - from.y))),
+	                FT_Short(to->x + ftround(2.0/3.0 * (control->x - to->x))),
+	                FT_Short(to->y + ftround(2.0/3.0 * (control->y - to->y))),
+			        FT_Short(to->x),
+	                FT_Short(to->y) );
+}
+
+bool FreeTypeFaceWrapper::IOutlineEnumerator::FTCubicto(const FT_Vector *control1, const FT_Vector *control2, const FT_Vector *to)
+{
+	mToLast = *to;
+	return Curveto( FT_Short(control1->x), FT_Short(control1->y),
+	                FT_Short(control2->x), FT_Short(control2->y),
+			        FT_Short(to->x), FT_Short(to->y) );
+}
+
+void FreeTypeFaceWrapper::IOutlineEnumerator::FTEnd()
+{
+	if (mToLastValid)
+		Close();
+	mToLastValid = false;
 }

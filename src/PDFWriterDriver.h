@@ -35,7 +35,7 @@ typedef std::pair<std::string,unsigned long> StringAndULongPair;
 typedef std::pair<ObjectIDType,bool> ObjectIDTypeAndBool;
 
 
-struct HummusImageInformation
+struct CachedHummusImageInformation
 {
     enum EHummusImageType
     {
@@ -45,7 +45,7 @@ struct HummusImageInformation
         eTIFF
     };
     
-    HummusImageInformation(){writtenObjectID = 0;imageType=eUndefined;imageWidth=-1;imageHeight=-1;}
+    CachedHummusImageInformation(){writtenObjectID = 0;imageType=eUndefined;imageWidth=-1;imageHeight=-1;}
     
     ObjectIDType writtenObjectID;
     EHummusImageType imageType;
@@ -53,7 +53,7 @@ struct HummusImageInformation
     double imageHeight;
 };
 
-typedef std::map<StringAndULongPair,HummusImageInformation> StringAndULongPairToHummusImageInformationMap;
+typedef std::map<StringAndULongPair,CachedHummusImageInformation> StringAndULongPairToCachedHummusImageInformationMap;
 
 class IByteWriterWithPosition;
 
@@ -145,12 +145,12 @@ private:
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
 
-    HummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
-    HummusImageInformation::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+    CachedHummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
+    CachedHummusImageInformation::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
     
     bool mStartedWithStream;
     PDFWriter mPDFWriter;
-    StringAndULongPairToHummusImageInformationMap mImagesInformation;
+    StringAndULongPairToCachedHummusImageInformationMap mImagesInformation;
     ObjectByteWriterWithPosition* mWriteStreamProxy;
     ObjectByteReaderWithPosition* mReadStreamProxy;
 };

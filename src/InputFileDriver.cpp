@@ -120,7 +120,7 @@ Handle<Value> InputFileDriver::OpenFile(const Arguments& args)
         
     }
     
-    if(!driver->OpenFile(*String::Utf8Value(args[0]->ToString())) != PDFHummus::eSuccess)
+    if(driver->OpenFile(*String::Utf8Value(args[0]->ToString())) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::Error(String::New("can't open file. make sure path exists")));
         return scope.Close(Undefined());

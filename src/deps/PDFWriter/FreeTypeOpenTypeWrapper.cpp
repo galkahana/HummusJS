@@ -137,7 +137,7 @@ FT_UShort FreeTypeOpenTypeWrapper::GetStemV()
 
 BoolAndFTUShort FreeTypeOpenTypeWrapper::StemVFromLowerLWidth()
 {
-	if(FT_Load_Char(mFace,0x6C, FT_LOAD_NO_SCALE) != 0)
+	if (FT_Load_Char(mFace, 0x6C, FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_SCALE) != 0)
 	{
 		TRACE_LOG("FreeTypeOpenTypeWrapper::StemVFromLowerLWidth, unable to load glyph for lower l");
 		return BoolAndFTUShort(false,0);

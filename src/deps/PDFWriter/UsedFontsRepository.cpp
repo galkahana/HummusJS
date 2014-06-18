@@ -103,14 +103,14 @@ PDFUsedFont* UsedFontsRepository::GetFontForFile(const std::string& inFontFilePa
 	return it->second;
 }
 
-EStatusCode UsedFontsRepository::WriteUsedFontsDefinitions()
+EStatusCode UsedFontsRepository::WriteUsedFontsDefinitions(bool inEmbedFonts)
 {
 	StringAndLongToPDFUsedFontMap::iterator it = mUsedFonts.begin();
 	EStatusCode status = PDFHummus::eSuccess;
 
 	for(; it != mUsedFonts.end() && PDFHummus::eSuccess == status; ++it)
 		status = it->second ?
-                    it->second->WriteFontDefinition():
+                    it->second->WriteFontDefinition(inEmbedFonts):
                     eFailure;
 
 	return status;

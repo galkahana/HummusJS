@@ -38,7 +38,8 @@ public:
 
 	PDFHummus::EStatusCode WriteFont(	FreeTypeFaceWrapper& inFontInfo,
 							WrittenFontRepresentation* inFontOccurrence,
-							ObjectsContext* inObjectsContext);
+							ObjectsContext* inObjectsContext,
+							bool inEmbedFont);
 
 	// IANSIFontWriterHelper implementation
 	virtual void WriteSubTypeValue(DictionaryContext* inDictionary);

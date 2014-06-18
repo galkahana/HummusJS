@@ -82,7 +82,7 @@ Handle<Value> DictionaryContextDriver::WriteKey(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(!(args.Length() == 1) ||
        !args[0]->IsString())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a string to write")));
@@ -158,7 +158,7 @@ Handle<Value> DictionaryContextDriver::WriteNameValue(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(!(args.Length() == 1) ||
        !args[0]->IsString())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a string to write")));
@@ -183,7 +183,7 @@ Handle<Value> DictionaryContextDriver::WriteLiteralStringValue(const Arguments& 
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(!(args.Length() == 1) ||
        (!args[0]->IsString() && !args[0]->IsArray()))
     {
 		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string) or an array")));
@@ -218,7 +218,7 @@ Handle<Value> DictionaryContextDriver::WriteBooleanValue(const Arguments& args)
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(!(args.Length() == 1) ||
        !args[0]->IsBoolean())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a boolean to write")));
@@ -242,7 +242,7 @@ Handle<Value> DictionaryContextDriver::WriteObjectReferenceValue(const Arguments
 {
     HandleScope scope;
     
-    if(!args.Length() == 1 ||
+    if(!(args.Length() == 1) ||
        !args[0]->IsNumber())
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an object id to write")));

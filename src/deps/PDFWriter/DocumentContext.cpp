@@ -32,6 +32,7 @@
 #include "IDocumentContextExtender.h"
 #include "PageContentContext.h"
 #include "PDFFormXObject.h"
+#include "PDFTiledPattern.h"
 #include "PDFParser.h"
 #include "PDFObjectCast.h"
 #include "PDFDictionary.h"
@@ -47,6 +48,8 @@
 #include "IResourceWritingTask.h"
 #include "IFormEndWritingTask.h"
 #include "IPageEndWritingTask.h"
+#include "ITiledPatternEndWritingTask.h"
+#include "PDFPageInput.h"
 
 
 using namespace PDFHummus;
@@ -169,7 +172,7 @@ void DocumentContext::Write4BinaryBytes()
 	mObjectsContext->EndFreeContext();
 }
 
-EStatusCode	DocumentContext::FinalizeNewPDF()
+EStatusCode	DocumentContext::FinalizeNewPDF(bool inEmbedFonts)
 {
 	EStatusCode status;
 	LongFilePositionType xrefTablePosition;
@@ -178,7 +181,7 @@ EStatusCode	DocumentContext::FinalizeNewPDF()
 	// this will finalize writing all renments of the file, like xref, trailer and whatever objects still accumulating
 	do
 	{
-		status = WriteUsedFontsDefinitions();
+		status = WriteUsedFontsDefinitions(inEmbedFonts);
 		if(status != 0)
 			break;
 
@@ -747,7 +750,7 @@ PageContentContext* DocumentContext::StartPageContentContext(PDFPage* inPage)
 {
 	if(!inPage->GetAssociatedContentContext())
 	{
-		inPage->AssociateContentContext(new PageContentContext(inPage,mObjectsContext));
+		inPage->AssociateContentContext(new PageContentContext(this,inPage,mObjectsContext));
 	}
 	return inPage->GetAssociatedContentContext();
 }
@@ -765,12 +768,107 @@ EStatusCode DocumentContext::EndPageContentContext(PageContentContext* inPageCon
 	return status;
 }
 
+static const std::string scPattern = "Pattern";
+static const std::string scPatternType = "PatternType";
+static const std::string scPaintType = "PaintType";
+static const std::string scTilingType = "TilingType";
+static const std::string scXStep = "XStep";
+static const std::string scYStep = "YStep";
+static const std::string scBBox = "BBox";
+static const std::string scMatrix = "Matrix";
+
+
+PDFTiledPattern* DocumentContext::StartTiledPattern(
+	int inPaintType,
+	int inTilingType,
+	const PDFRectangle& inBoundingBox,
+	double inXStep,
+	double inYStep,
+	ObjectIDType inObjectID,
+	const double* inMatrix)
+{
+	PDFTiledPattern* aPatternObject = NULL;
+	do
+	{
+		mObjectsContext->StartNewIndirectObject(inObjectID);
+		DictionaryContext* context = mObjectsContext->StartDictionary();
+
+		// type
+		context->WriteKey(scType);
+		context->WriteNameValue(scPattern);
+
+		// pattern type
+		context->WriteKey(scPatternType);
+		context->WriteIntegerValue(1);
+
+		// paint type
+		context->WriteKey(scPaintType);
+		context->WriteIntegerValue(inPaintType);
+
+		// tiling type
+		context->WriteKey(scTilingType);
+		context->WriteIntegerValue(inTilingType);
+
+		// x step
+		context->WriteKey(scXStep);
+		context->WriteDoubleValue(inXStep);
+
+		// y step
+		context->WriteKey(scYStep);
+		context->WriteDoubleValue(inYStep);
+
+		// bbox
+		context->WriteKey(scBBox);
+		context->WriteRectangleValue(inBoundingBox);
+
+		// matrix
+		if (inMatrix && !IsIdentityMatrix(inMatrix))
+		{
+			context->WriteKey(scMatrix);
+			mObjectsContext->StartArray();
+			for (int i = 0; i<6; ++i)
+				mObjectsContext->WriteDouble(inMatrix[i]);
+			mObjectsContext->EndArray(eTokenSeparatorEndLine);
+		}
+
+		// Resource dict 
+		context->WriteKey(scResources);
+		// put a resources dictionary place holder
+		ObjectIDType resourcesDictionaryID = mObjectsContext->GetInDirectObjectsRegistry().AllocateNewObjectID();
+		context->WriteNewObjectReferenceValue(resourcesDictionaryID);
+
+		// Now start the stream and the form XObject state
+		aPatternObject = new PDFTiledPattern(this, inObjectID, mObjectsContext->StartPDFStream(context), resourcesDictionaryID);
+	} while (false);
+
+	return aPatternObject;
+
+
+}
+
+
+PDFTiledPattern* DocumentContext::StartTiledPattern(int inPaintType,
+	int inTilingType,
+	const PDFRectangle& inBoundingBox,
+	double inXStep,
+	double inYStep,
+	const double* inMatrix)
+{
+	ObjectIDType objectID = mObjectsContext->GetInDirectObjectsRegistry().AllocateNewObjectID();
+	return StartTiledPattern(inPaintType,
+							 inTilingType,
+							 inBoundingBox,
+							 inXStep,
+							 inYStep,
+							 objectID, 
+							 inMatrix);
+
+}
+
 static const std::string scXObject = "XObject";
 static const std::string scSubType = "Subtype";
 static const std::string scForm = "Form";
-static const std::string scBBox = "BBox";
 static const std::string scFormType = "FormType";
-static const std::string scMatrix = "Matrix";
 PDFFormXObject* DocumentContext::StartFormXObject(const PDFRectangle& inBoundingBox,ObjectIDType inFormXObjectID,const double* inMatrix)
 {
 	PDFFormXObject* aFormXObject = NULL;
@@ -826,7 +924,7 @@ PDFFormXObject* DocumentContext::StartFormXObject(const PDFRectangle& inBounding
 			break;
 
 		// Now start the stream and the form XObject state
-		aFormXObject =  new PDFFormXObject(inFormXObjectID,mObjectsContext->StartPDFStream(xobjectContext),formXObjectResourcesDictionaryID);
+		aFormXObject =  new PDFFormXObject(this,inFormXObjectID,mObjectsContext->StartPDFStream(xobjectContext),formXObjectResourcesDictionaryID);
 	} while(false);
 
 	return aFormXObject;	
@@ -868,11 +966,49 @@ EStatusCode DocumentContext::EndFormXObjectNoRelease(PDFFormXObject* inFormXObje
 	return status;
 }
 
+EStatusCode DocumentContext::EndTiledPattern(PDFTiledPattern* inTiledPattern)
+{
+	mObjectsContext->EndPDFStream(inTiledPattern->GetContentStream());
+
+	// now write the resources dictionary, full of all the goodness that got accumulated over the stream write
+	mObjectsContext->StartNewIndirectObject(inTiledPattern->GetResourcesDictionaryObjectID());
+	WriteResourcesDictionary(inTiledPattern->GetResourcesDictionary());
+	mObjectsContext->EndIndirectObject();
+
+	// now write writing tasks
+	PDFTiledPatternToITiledPatternEndWritingTaskListMap::iterator it = mTiledPatternEndTasks.find(inTiledPattern);
+
+	EStatusCode status = eSuccess;
+	if (it != mTiledPatternEndTasks.end())
+	{
+		ITiledPatternEndWritingTaskList::iterator itTasks = it->second.begin();
+
+		for (; itTasks != it->second.end() && eSuccess == status; ++itTasks)
+			status = (*itTasks)->Write(inTiledPattern, mObjectsContext, this);
+
+		// one time, so delete
+		for (itTasks = it->second.begin(); itTasks != it->second.end(); ++itTasks)
+			delete (*itTasks);
+		mTiledPatternEndTasks.erase(it);
+	}
+
+	return status;
+}
+
+EStatusCode DocumentContext::EndTiledPatternAndRelease(PDFTiledPattern* inTiledPattern)
+{
+	EStatusCode status = EndTiledPattern(inTiledPattern);
+	delete inTiledPattern; 
+
+	return status;
+
+}
+
+
 EStatusCode DocumentContext::EndFormXObject(PDFFormXObject* inFormXObject)
 {
 	return EndFormXObjectNoRelease(inFormXObject);
 }
-
 
 EStatusCode DocumentContext::EndFormXObjectAndRelease(PDFFormXObject* inFormXObject)
 {
@@ -1058,6 +1194,12 @@ JPEGImageHandler& DocumentContext::GetJPEGImageHandler()
 }
 
 #ifndef PDFHUMMUS_NO_TIFF
+TIFFImageHandler& DocumentContext::GetTIFFImageHandler()
+{
+	return mTIFFImageHandler;
+}
+
+
 PDFFormXObject* DocumentContext::CreateFormXObjectFromTIFFFile(	const std::string& inTIFFFilePath,
 																const TIFFUsageParameters& inTIFFUsageParameters)
 {
@@ -1106,9 +1248,9 @@ PDFUsedFont* DocumentContext::GetFontForFile(const std::string& inFontFilePath,l
 	return mUsedFontsRepository.GetFontForFile(inFontFilePath,inFontIndex);
 }
 
-EStatusCode DocumentContext::WriteUsedFontsDefinitions()
+EStatusCode DocumentContext::WriteUsedFontsDefinitions(bool inEmbedFonts)
 {
-	return mUsedFontsRepository.WriteUsedFontsDefinitions();
+	return mUsedFontsRepository.WriteUsedFontsDefinitions(inEmbedFonts);
 }
 
 PDFUsedFont* DocumentContext::GetFontForFile(const std::string& inFontFilePath,const std::string& inAdditionalMeticsFilePath,long inFontIndex)
@@ -1839,6 +1981,17 @@ void DocumentContext::Cleanup()
     }
     mPageEndTasks.clear();
 
+
+	PDFTiledPatternToITiledPatternEndWritingTaskListMap::iterator itPatternEnd = mTiledPatternEndTasks.begin();
+
+	for (; itPatternEnd != mTiledPatternEndTasks.end(); ++itPatternEnd)
+	{
+		ITiledPatternEndWritingTaskList::iterator itTiledPatternEndWritingTasks = itPatternEnd->second.begin();
+		for (; itTiledPatternEndWritingTasks != itPatternEnd->second.end(); ++itTiledPatternEndWritingTasks)
+			delete *itTiledPatternEndWritingTasks;
+
+	}
+	mTiledPatternEndTasks.clear();
 }
 
 void DocumentContext::SetParserExtender(IPDFParserExtender* inParserExtender)
@@ -1915,14 +2068,14 @@ private:
     EPDFVersion mPDFVersion;
 };
 
-EStatusCode	DocumentContext::FinalizeModifiedPDF(PDFParser* inModifiedFileParser,EPDFVersion inModifiedPDFVersion)
+EStatusCode	DocumentContext::FinalizeModifiedPDF(PDFParser* inModifiedFileParser, EPDFVersion inModifiedPDFVersion,bool inEmbedFonts)
 {
 	EStatusCode status;
 	LongFilePositionType xrefTablePosition;
     
 	do
 	{
-		status = WriteUsedFontsDefinitions();
+		status = WriteUsedFontsDefinitions(inEmbedFonts);
 		if(status != eSuccess)
 			break;
         
@@ -2269,6 +2422,13 @@ std::string DocumentContext::AddExtendedResourceMapping(PDFPage* inPage,
     return AddExtendedResourceMapping(&inPage->GetResourcesDictionary(),inResourceCategoryName,inWritingTask);
 }
 
+std::string DocumentContext::AddExtendedResourceMapping(PDFTiledPattern* inPattern,
+	const std::string& inResourceCategoryName,
+	IResourceWritingTask* inWritingTask)
+{
+	return AddExtendedResourceMapping(&inPattern->GetResourcesDictionary(), inResourceCategoryName, inWritingTask);
+}
+
 std::string DocumentContext::AddExtendedResourceMapping(ResourcesDictionary* inResourceDictionary,
                                   const std::string& inResourceCategoryName,
                                   IResourceWritingTask* inWritingTask)
@@ -2342,4 +2502,241 @@ void DocumentContext::RegisterPageEndWritingTask(PDFPage* inPage,IPageEndWriting
     }
     
     it->second.push_back(inWritingTask);
+}
+
+void DocumentContext::RegisterTiledPatternEndWritingTask(PDFTiledPattern* inPattern, ITiledPatternEndWritingTask* inWritingTask)
+{
+	PDFTiledPatternToITiledPatternEndWritingTaskListMap::iterator it =
+		mTiledPatternEndTasks.find(inPattern);
+
+	if (it == mTiledPatternEndTasks.end())
+	{
+		it = mTiledPatternEndTasks.insert(PDFTiledPatternToITiledPatternEndWritingTaskListMap::value_type(inPattern, ITiledPatternEndWritingTaskList())).first;
+	}
+
+	it->second.push_back(inWritingTask);
+}
+
+DoubleAndDoublePair DocumentContext::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+
+	if(imageInformation.imageHeight == -1 || imageInformation.imageWidth == -1)
+	{
+
+		double imageWidth = 0.0;
+		double imageHeight = 0.0;
+    
+		EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
+        
+		switch(imageType)
+		{
+			case ePDF:
+			{
+				// get the dimensions via the PDF parser. will use the media rectangle to draw image
+				PDFParser pdfParser;
+                
+				InputFile file;
+				if(file.OpenFile(inImageFile) != eSuccess)
+					break;
+				if(pdfParser.StartPDFParsing(file.GetInputStream()) != eSuccess)
+					break;
+                
+				PDFPageInput helper(&pdfParser,pdfParser.ParsePage(inImageIndex));
+                
+				imageWidth = helper.GetMediaBox().UpperRightX - helper.GetMediaBox().LowerLeftX;
+				imageHeight = helper.GetMediaBox().UpperRightY - helper.GetMediaBox().LowerLeftY;
+                
+				break;
+			}
+			case eJPG:
+			{
+				BoolAndJPEGImageInformation jpgImageInformation = GetJPEGImageHandler().RetrieveImageInformation(inImageFile);
+				if(!jpgImageInformation.first)
+					break;
+                
+				DoubleAndDoublePair dimensions = GetJPEGImageHandler().GetImageDimensions(jpgImageInformation.second);
+                
+				imageWidth = dimensions.first;
+				imageHeight = dimensions.second;
+				break;
+			}
+			case eTIFF:
+			{
+				TIFFImageHandler hummusTiffHandler;
+                
+				InputFile file;
+				if(file.OpenFile(inImageFile) != eSuccess)
+				{
+					break;
+				}
+                
+				DoubleAndDoublePair dimensions = hummusTiffHandler.ReadImageDimensions(file.GetInputStream(),inImageIndex);
+
+				imageWidth = dimensions.first;
+				imageHeight = dimensions.second;
+				break;
+			}
+			default:
+			{
+				// just avoding uninteresting compiler warnings. meaning...if you can't get the image type or unsupported, do nothing
+			}
+		}
+
+		imageInformation.imageHeight = imageHeight;
+		imageInformation.imageWidth = imageWidth;
+	}
+    
+    return DoubleAndDoublePair(imageInformation.imageWidth,imageInformation.imageHeight);
+}
+
+static const Byte scPDFMagic[] = {0x25,0x50,0x44,0x46};
+static const Byte scMagicJPG[] = {0xFF,0xD8};
+static const Byte scMagicTIFFBigEndianTiff[] = {0x4D,0x4D,0x00,0x2A};
+static const Byte scMagicTIFFBigEndianBigTiff[] = {0x4D,0x4D,0x00,0x2B};
+static const Byte scMagicTIFFLittleEndianTiff[] = {0x49,0x49,0x2A,0x00};
+static const Byte scMagicTIFFLittleEndianBigTiff[] = {0x49,0x49,0x2B,0x00};
+
+
+PDFHummus::EHummusImageType DocumentContext::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
+{
+
+    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+
+	if(imageInformation.imageType == eUndefined)
+	{
+
+		// The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF
+		// PDF is recognized by starting with "%PDF"
+		// JPG will start with "0xff,0xd8"
+		// TIFF will start with "0x49,0x49" (little endian) or "0x4D,0x4D" (big endian)
+		// then either 42 or 43 (tiff or big tiff respectively) written in 2 bytes, as either big or little endian
+        
+		// so just read the first 4 bytes and it should be enough to recognize a known format
+        
+		Byte magic[4];
+		unsigned long readLength = 4;
+		InputFile inputFile;
+		PDFHummus::EHummusImageType imageType;
+		if(inputFile.OpenFile(inImageFile) == eSuccess)
+		{
+			inputFile.GetInputStream()->Read(magic,readLength);
+        
+			if(readLength >= 4 && memcmp(scPDFMagic,magic,4) == 0)
+				imageType =  PDFHummus::ePDF;
+			else if(readLength >= 2 && memcmp(scMagicJPG,magic,2) == 0)
+				imageType = PDFHummus::eJPG;
+			else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianTiff,magic,4) == 0)
+				imageType = PDFHummus::eTIFF;
+			else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianBigTiff,magic,4) == 0)
+				imageType = PDFHummus::eTIFF;
+			else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianTiff,magic,4) == 0)
+				imageType = PDFHummus::eTIFF;
+			else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianBigTiff,magic,4) == 0)
+				imageType = PDFHummus::eTIFF;
+			else
+				imageType = PDFHummus::eUndefined;
+		}
+		else
+			imageType = PDFHummus::eUndefined;
+
+		imageInformation.imageType = imageType;
+	}
+    
+    return imageInformation.imageType;
+}
+
+EStatusCode DocumentContext::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+{
+    EStatusCode status;
+    EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
+        
+    switch(imageType)
+    {
+        case ePDF:
+        {
+            PDFDocumentCopyingContext* copyingContext = NULL;
+            PDFFormXObject* formXObject = NULL;
+            do {
+                // hmm...pdf merging doesn't have an innate method to force an object id. so i'll create a form, and merge into it
+                copyingContext = CreatePDFCopyingContext(inImagePath);
+                if(!copyingContext)
+                {
+                    status = eFailure;
+                    break;
+                }
+                
+                PDFPageInput pageInput(copyingContext->GetSourceDocumentParser(),
+                                       copyingContext->GetSourceDocumentParser()->ParsePage(inImageIndex));
+                
+                formXObject = StartFormXObject(pageInput.GetMediaBox(),inObjectID);
+                if(!formXObject)
+                {
+                    status = eFailure;
+                    break;
+                }
+                
+                status = copyingContext->MergePDFPageToFormXObject(formXObject,inImageIndex);
+                if(status != eSuccess)
+                    break;
+                
+                status = EndFormXObject(formXObject);
+            }while(false);
+
+            delete formXObject;
+            delete copyingContext;
+            break;
+        }
+        case eJPG:
+        {
+            PDFFormXObject* form = CreateFormXObjectFromJPGFile(inImagePath,inObjectID);
+            status = (form ? eSuccess:eFailure);
+            delete form;
+            break;
+        }
+        case eTIFF:
+        {
+            TIFFUsageParameters params;
+            params.PageIndex = (unsigned int)inImageIndex;
+            
+            PDFFormXObject* form = CreateFormXObjectFromTIFFFile(inImagePath,inObjectID,params);
+            status = (form ? eSuccess:eFailure);
+            delete form;
+            break;
+        }
+        default:
+        {
+            status = eFailure;
+        }
+    }
+    return status;
+}
+
+HummusImageInformation& DocumentContext::GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    StringAndULongPairToHummusImageInformationMap::iterator it = mImagesInformation.find(StringAndULongPair(inImageFile,inImageIndex));
+    
+    if(it == mImagesInformation.end())
+        it = mImagesInformation.insert(
+                        StringAndULongPairToHummusImageInformationMap::value_type(
+                                StringAndULongPair(inImageFile,inImageIndex),HummusImageInformation())).first;
+    
+    return it->second;
+}
+
+
+ObjectIDTypeAndBool DocumentContext::RegisterImageForDrawing(const std::string& inImageFile,unsigned long inImageIndex)
+{
+    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    bool firstTime;
+    
+    if(imageInformation.writtenObjectID == 0)
+    {
+        imageInformation.writtenObjectID = mObjectsContext->GetInDirectObjectsRegistry().AllocateNewObjectID();
+        firstTime = true;
+    }
+    else
+        firstTime = false;
+    
+    return ObjectIDTypeAndBool(imageInformation.writtenObjectID,firstTime);
 }

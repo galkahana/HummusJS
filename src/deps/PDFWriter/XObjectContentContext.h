@@ -26,13 +26,14 @@ class PDFFormXObject;
 class XObjectContentContext : public AbstractContentContext
 {
 public:
-	XObjectContentContext(PDFFormXObject* inFormXObject);
+	XObjectContentContext(PDFHummus::DocumentContext* inDocumentContext,PDFFormXObject* inFormXObject);
 	virtual ~XObjectContentContext(void);
 
 private:
 
 	// AbstractContentContext implementation
 	virtual ResourcesDictionary* GetResourcesDictionary();
+	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
 
 	PDFFormXObject* mPDFFormXObjectOfContext;
 };

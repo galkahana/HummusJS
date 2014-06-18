@@ -1114,29 +1114,29 @@ Handle<Value> PDFWriterDriver::CreatePDFDate(const Arguments& args)
     
 }
 
-HummusImageInformation& PDFWriterDriver::GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex)
+CachedHummusImageInformation& PDFWriterDriver::GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex)
 {
-    StringAndULongPairToHummusImageInformationMap::iterator it = mImagesInformation.find(StringAndULongPair(inImageFile,inImageIndex));
+    StringAndULongPairToCachedHummusImageInformationMap::iterator it = mImagesInformation.find(StringAndULongPair(inImageFile,inImageIndex));
     
     if(it == mImagesInformation.end())
         it = mImagesInformation.insert(
-                        StringAndULongPairToHummusImageInformationMap::value_type(
-                                StringAndULongPair(inImageFile,inImageIndex),HummusImageInformation())).first;
+                        StringAndULongPairToCachedHummusImageInformationMap::value_type(
+                                StringAndULongPair(inImageFile,inImageIndex),CachedHummusImageInformation())).first;
     
     return it->second;
 }
 
 DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex)
 {
-    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
     
     if(-1 == imageInformation.imageWidth)
     {
-        HummusImageInformation::EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
+        CachedHummusImageInformation::EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
         
         switch(imageType)
         {
-            case HummusImageInformation::ePDF:
+            case CachedHummusImageInformation::ePDF:
             {
                 // get the dimensions via the PDF parser. will use the media rectangle to draw image
                 PDFParser pdfParser;
@@ -1154,7 +1154,7 @@ DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inIma
                 
                 break;
             }
-            case HummusImageInformation::eJPG:
+            case CachedHummusImageInformation::eJPG:
             {
                 BoolAndJPEGImageInformation jpgImageInformation = mPDFWriter.GetDocumentContext().GetJPEGImageHandler().RetrieveImageInformation(inImageFile);
                 if(!jpgImageInformation.first)
@@ -1166,7 +1166,7 @@ DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inIma
                 imageInformation.imageHeight = dimensions.second;
                 break;
             }
-            case HummusImageInformation::eTIFF:
+            case CachedHummusImageInformation::eTIFF:
             {
                 TIFFImageHandler hummusTiffHandler;
                 
@@ -1198,11 +1198,11 @@ static const Byte scMagicTIFFLittleEndianTiff[] = {0x49,0x49,0x2A,0x00};
 static const Byte scMagicTIFFLittleEndianBigTiff[] = {0x49,0x49,0x2B,0x00};
 
 
-HummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
+CachedHummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
 {
-    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
     
-    if(imageInformation.imageType == HummusImageInformation::eUndefined)
+    if(imageInformation.imageType == CachedHummusImageInformation::eUndefined)
     {
         // The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF
         // PDF is recognized by starting with "%PDF"
@@ -1220,19 +1220,19 @@ HummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(const std
             inputFile.GetInputStream()->Read(magic,readLength);
         
             if(readLength >= 4 && memcmp(scPDFMagic,magic,4) == 0)
-                imageInformation.imageType =  HummusImageInformation::ePDF;
+                imageInformation.imageType =  CachedHummusImageInformation::ePDF;
             else if(readLength >= 2 && memcmp(scMagicJPG,magic,2) == 0)
-                imageInformation.imageType = HummusImageInformation::eJPG;
+                imageInformation.imageType = CachedHummusImageInformation::eJPG;
             else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianTiff,magic,4) == 0)
-                imageInformation.imageType = HummusImageInformation::eTIFF;
+                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
             else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianBigTiff,magic,4) == 0)
-                imageInformation.imageType = HummusImageInformation::eTIFF;
+                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
             else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianTiff,magic,4) == 0)
-                imageInformation.imageType = HummusImageInformation::eTIFF;
+                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
             else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianBigTiff,magic,4) == 0)
-                imageInformation.imageType = HummusImageInformation::eTIFF;
+                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
             else
-                imageInformation.imageType = HummusImageInformation::eUndefined;
+                imageInformation.imageType = CachedHummusImageInformation::eUndefined;
         }
         
     }
@@ -1243,7 +1243,7 @@ HummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(const std
 
 ObjectIDTypeAndBool PDFWriterDriver::RegisterImageForDrawing(const std::string& inImageFile,unsigned long inImageIndex)
 {
-    HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
+    CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
     bool firstTime;
     
     if(imageInformation.writtenObjectID == 0)
@@ -1265,11 +1265,11 @@ PDFWriter* PDFWriterDriver::GetWriter()
 EStatusCode PDFWriterDriver::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
 {
     EStatusCode status;
-    HummusImageInformation::EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
+    CachedHummusImageInformation::EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
         
     switch(imageType)
     {
-        case HummusImageInformation::ePDF:
+        case CachedHummusImageInformation::ePDF:
         {
             PDFDocumentCopyingContext* copyingContext = NULL;
             PDFFormXObject* formXObject = NULL;
@@ -1304,14 +1304,14 @@ EStatusCode PDFWriterDriver::WriteFormForImage(const std::string& inImagePath,un
             delete copyingContext;
             break;
         }
-        case HummusImageInformation::eJPG:
+        case CachedHummusImageInformation::eJPG:
         {
             PDFFormXObject* form = mPDFWriter.CreateFormXObjectFromJPGFile(inImagePath,inObjectID);
             status = (form ? eSuccess:eFailure);
             delete form;
             break;
         }
-        case HummusImageInformation::eTIFF:
+        case CachedHummusImageInformation::eTIFF:
         {
             TIFFUsageParameters params;
             params.PageIndex = (unsigned int)inImageIndex;

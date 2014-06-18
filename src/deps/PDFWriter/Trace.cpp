@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+Trace Trace::DefaultTrace;
 
 Trace::Trace(void)
 {
@@ -48,8 +49,8 @@ void Trace::SetLogSettings(const std::string& inLogFilePath,bool inShouldLog,boo
 	{
 		delete mLog;
 		mLog = NULL;
-		if(mShouldLog)
-			mLog = new Log(mLogFilePath,inPlaceUTF8Bom);
+		//if(mShouldLog)
+		//	mLog = new Log(mLogFilePath,inPlaceUTF8Bom);
 	}
 }
 

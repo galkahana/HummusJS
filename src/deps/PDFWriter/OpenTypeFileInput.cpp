@@ -551,7 +551,7 @@ EStatusCode OpenTypeFileInput::ReadOS2()
         return eSuccess;
 	}
     
-    mOS2Exists = false;
+    mOS2Exists = true;
 
 	mPrimitivesReader.SetOffset(it->second.Offset);
 

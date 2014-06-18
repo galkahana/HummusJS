@@ -49,17 +49,21 @@ EStatusCode TrueTypeDescendentFontWriter::WriteFont(	ObjectIDType inDecendentObj
 														const std::string& inFontName,
 														FreeTypeFaceWrapper& inFontInfo,
 														const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
-														ObjectsContext* inObjectsContext)
+														ObjectsContext* inObjectsContext,
+														bool inEmbedFont)
 {
 	// reset embedded font object ID (and flag...to whether it was actually embedded or not, which may 
 	// happen due to font embedding restrictions)
 	mEmbeddedFontFileObjectID = 0;
 
-	TrueTypeEmbeddedFontWriter embeddedFontWriter;
-	EStatusCode status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo,GetOrderedKeys(inEncodedGlyphs),inObjectsContext,mEmbeddedFontFileObjectID);
+	if (inEmbedFont)
+	{
+		TrueTypeEmbeddedFontWriter embeddedFontWriter;
+		EStatusCode status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo, GetOrderedKeys(inEncodedGlyphs), inObjectsContext, mEmbeddedFontFileObjectID);
 
-	if(PDFHummus::eFailure == status)
-		return status;
+		if (PDFHummus::eFailure == status)
+			return status;
+	}
 
 	DescendentFontWriter descendentFontWriter;
 	return descendentFontWriter.WriteFont(inDecendentObjectID,inFontName,inFontInfo,inEncodedGlyphs,inObjectsContext,this);

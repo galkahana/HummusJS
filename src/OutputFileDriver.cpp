@@ -127,7 +127,7 @@ Handle<Value> OutputFileDriver::OpenFile(const Arguments& args)
         
     }
     
-    if(!driver->OpenFile(*String::Utf8Value(args[0]->ToString()),args.Length() == 2 ? args[1]->ToBoolean()->Value() : false) != PDFHummus::eSuccess)
+    if(driver->OpenFile(*String::Utf8Value(args[0]->ToString()),args.Length() == 2 ? args[1]->ToBoolean()->Value() : false) != PDFHummus::eSuccess)
     {
 		ThrowException(Exception::Error(String::New("can't open file. make sure path is not busy")));
         return scope.Close(Undefined());

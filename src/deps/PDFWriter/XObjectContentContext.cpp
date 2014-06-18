@@ -20,8 +20,12 @@
 */
 #include "XObjectContentContext.h"
 #include "PDFFormXObject.h"
+#include "IFormEndWritingTask.h"
+#include "DocumentContext.h"
 
-XObjectContentContext::XObjectContentContext(PDFFormXObject* inFormXObject)
+using namespace PDFHummus;
+
+XObjectContentContext::XObjectContentContext(PDFHummus::DocumentContext* inDocumentContext,PDFFormXObject* inFormXObject):AbstractContentContext(inDocumentContext)
 {
 	mPDFFormXObjectOfContext = inFormXObject;
 	SetPDFStreamForWrite(inFormXObject->GetContentStream());
@@ -34,4 +38,33 @@ XObjectContentContext::~XObjectContentContext(void)
 ResourcesDictionary* XObjectContentContext::GetResourcesDictionary()
 {
 	return &(mPDFFormXObjectOfContext->GetResourcesDictionary());
+}
+
+class FormImageWritingTask : public IFormEndWritingTask
+ {
+ public:
+ FormImageWritingTask(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+ {mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
+ 
+ virtual ~FormImageWritingTask(){}
+ 
+     virtual PDFHummus::EStatusCode Write(PDFFormXObject* inFormXObject,
+                                        ObjectsContext* inObjectsContext,
+                                        PDFHummus::DocumentContext* inDocumentContext)
+     {
+         return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
+     }
+ 
+ private:
+     std::string mImagePath;
+     unsigned long mImageIndex;
+     ObjectIDType mObjectID;
+ };
+
+void XObjectContentContext::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+{
+    mDocumentContext->RegisterFormEndWritingTask(
+                                                   mPDFFormXObjectOfContext,
+                                                   new FormImageWritingTask(inImagePath,inImageIndex,inObjectID));
+
 }

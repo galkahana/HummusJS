@@ -29,7 +29,7 @@ class PDFStream;
 class PageContentContext : public AbstractContentContext
 {
 public:
-	PageContentContext(PDFPage* inPageOfContext,ObjectsContext* inObjectsContext);
+	PageContentContext(PDFHummus::DocumentContext* inDocumentContext,PDFPage* inPageOfContext,ObjectsContext* inObjectsContext);
 	virtual ~PageContentContext(void);
 
 	// Finish writing a current stream, if exists and flush to the main PDF stream
@@ -55,5 +55,6 @@ private:
 	// AbstractContentContext implementation
 	virtual ResourcesDictionary* GetResourcesDictionary();
 	virtual void RenewStreamConnection();
+	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
 
 };

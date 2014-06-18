@@ -23,12 +23,12 @@
 #include "XObjectContentContext.h"
 #include "ObjectsContext.h"
 
-PDFFormXObject::PDFFormXObject(ObjectIDType inFormXObjectID,PDFStream* inXObjectStream,ObjectIDType inFormXObjectResourcesDictionaryID)
+PDFFormXObject::PDFFormXObject(PDFHummus::DocumentContext* inDocumentContext,ObjectIDType inFormXObjectID,PDFStream* inXObjectStream,ObjectIDType inFormXObjectResourcesDictionaryID)
 {
 	mXObjectID = inFormXObjectID;
 	mResourcesDictionaryID = inFormXObjectResourcesDictionaryID;
 	mContentStream = inXObjectStream;
-	mContentContext = new XObjectContentContext(this);	
+	mContentContext = new XObjectContentContext(inDocumentContext,this);	
 }
 
 PDFFormXObject::~PDFFormXObject(void)

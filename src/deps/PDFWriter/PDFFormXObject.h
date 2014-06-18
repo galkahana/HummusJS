@@ -23,6 +23,12 @@
 #include "ObjectsBasicTypes.h"
 #include "ResourcesDictionary.h"
 
+
+namespace PDFHummus
+{
+	class DocumentContext;
+};
+
 class PDFStream;
 class XObjectContentContext;
 class ObjectsContext;
@@ -31,7 +37,7 @@ class PDFFormXObject
 {
 public:
 
-	PDFFormXObject(ObjectIDType inFormXObjectID,PDFStream* inXObjectStream,ObjectIDType inFormXObjectResourcesDictionaryID);
+	PDFFormXObject(PDFHummus::DocumentContext* inDocumentContext,ObjectIDType inFormXObjectID,PDFStream* inXObjectStream,ObjectIDType inFormXObjectResourcesDictionaryID);
 	~PDFFormXObject(void);
 
 	ObjectIDType GetObjectID();

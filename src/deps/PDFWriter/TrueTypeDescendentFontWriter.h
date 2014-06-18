@@ -33,7 +33,8 @@ public:
 									const std::string& inFontName,
 									FreeTypeFaceWrapper& inFontInfo,
 									const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
-									ObjectsContext* inObjectsContext);
+									ObjectsContext* inObjectsContext,
+									bool inEmbedFont);
 	virtual void WriteSubTypeValue(DictionaryContext* inDescendentFontContext);
 	virtual void WriteAdditionalKeys(DictionaryContext* inDescendentFontContext);
 	virtual void WriteFontFileReference(DictionaryContext* inDescriptorContext,

@@ -36,12 +36,17 @@
 #include "PrimitiveObjectsWriter.h"
 #include "GraphicStateStack.h"
 #include "GlyphUnicodeMapping.h"
+#include "ObjectsBasicTypes.h"
 #include <string>
 #include <list>
 #include <set>
+#include <utility>
 
 
-
+namespace PDFHummus
+{
+    class DocumentContext;  
+};
 class ObjectsContext;
 class PDFStream;
 class ResourcesDictionary;
@@ -69,13 +74,121 @@ typedef std::list<StringOrDouble> StringOrDoubleList;
 typedef std::list<GlyphUnicodeMappingListOrDouble> GlyphUnicodeMappingListOrDoubleList;
 
 typedef std::set<IContentContextListener*> IContentContextListenerSet;
-
+typedef std::pair<double,double> DoubleAndDoublePair;
+typedef std::list<DoubleAndDoublePair> DoubleAndDoublePairList;
 
 class AbstractContentContext
 {
 public:
-	AbstractContentContext(void);
+	// graphic options struct for high level methods
+	enum EDrawingType
+	{
+		eStroke,
+		eFill,
+		eClip
+	};
+
+	enum EColorSpace
+	{
+		eRGB,
+		eCMYK,
+		eGray
+	};
+
+
+	struct GraphicOptions
+	{
+		EDrawingType drawingType;
+		EColorSpace colorSpace;
+		unsigned long colorValue;
+		double strokeWidth;
+		bool close;
+
+		GraphicOptions(EDrawingType inDrawingType = eStroke,
+						EColorSpace inColorSpace = eRGB,
+						unsigned long inColorValue = 0,
+						double inStrokeWidth = 1.0,
+						bool inClose = false)
+		{
+			drawingType = inDrawingType;
+			colorSpace = inColorSpace;
+			colorValue = inColorValue;
+			strokeWidth = inStrokeWidth;
+			close = inClose;
+		}
+
+	};
+
+	struct TextOptions
+	{
+		EColorSpace colorSpace;
+		unsigned long colorValue;
+		double fontSize;
+		PDFUsedFont* font;
+
+		TextOptions(PDFUsedFont* inFont,
+					double inFontSize = 1,
+					EColorSpace inColorSpace = eRGB,
+					unsigned long inColorValue = 0)
+		{
+			fontSize = inFontSize;
+			colorSpace = inColorSpace;
+			colorValue = inColorValue;
+			font = inFont;
+		}
+	};
+	
+
+	enum EImageTransformation
+	{
+		eNone,
+		eMatrix,
+		eFit
+	};
+
+	enum EFitPolicy
+	{
+		eAlways,
+		eOverflow
+	};
+
+	struct ImageOptions
+	{
+		EImageTransformation transformationMethod;
+		unsigned long imageIndex;
+		double matrix[6];
+		double boundingBoxWidth;
+		double boundingBoxHeight;
+		bool fitProportional;
+		EFitPolicy fitPolicy;
+
+
+		ImageOptions()
+		{
+			transformationMethod = eNone;
+			imageIndex = 0;
+			matrix[0] = matrix[3] = 1;
+			matrix[1] = matrix[2] = matrix[4] = matrix[5] = 0;
+			boundingBoxWidth = 100;
+			boundingBoxHeight = 100;
+			fitProportional = false;
+			fitPolicy = eOverflow;
+		}
+
+	};
+
+	AbstractContentContext(PDFHummus::DocumentContext* inDocumentContext);
 	virtual ~AbstractContentContext(void);
+
+	// High level methods
+	void DrawRectangle(double inLeft,double inBottom,double inWidth,double inHeight,const GraphicOptions& inOptions=GraphicOptions());
+	void DrawSquare(double inLeft,double inBottom,double inEdge,const GraphicOptions& inOptions=GraphicOptions());
+	void DrawCircle(double inCenterX,double inCenterY,double inRadius,const GraphicOptions& inOptions=GraphicOptions());
+	void DrawPath(const DoubleAndDoublePairList& inPathPoints,const GraphicOptions& inOptions=GraphicOptions());
+	void WriteText(double inX,double inY,const std::string& inText,const TextOptions& inOptions);
+	static unsigned long ColorValueForName(const std::string& inColorName);
+	void DrawImage(double inX,double inY,const std::string& inImagePath,const ImageOptions& inOptions=ImageOptions());
+
 
 	// PDF Operators. For explanations on the meanings of each operator read Appendix A "Operator Summary" of the PDF Reference Manual (1.7)
 	
@@ -112,7 +225,7 @@ public:
 	void J(int inLineCapStyle);
 	void j(int inLineJoinStyle);
 	void M(double inMiterLimit);
-	void d(int* inDashArray, int inDashArrayLength,int inDashPhase);
+	void d(double* inDashArray, int inDashArrayLength, double inDashPhase);
 	void ri(const std::string& inRenderingIntentName);
 	void i(int inFlatness);
 	void gs(const std::string& inGraphicStateName);
@@ -226,8 +339,10 @@ public:
     void AddContentContextListener(IContentContextListener* inExtender);
     void RemoveContentContextListener(IContentContextListener* inExtender);
 
-    
+	PrimitiveObjectsWriter& GetPrimitiveWriter() {return mPrimitiveWriter;}
 protected:
+
+	PDFHummus::DocumentContext* mDocumentContext;
 
 	// Derived classes should use this method to update the stream for writing
 	void SetPDFStreamForWrite(PDFStream* inStream);
@@ -237,7 +352,8 @@ private:
 	virtual ResourcesDictionary* GetResourcesDictionary() = 0;
 	// Derived classes should optionally use this method if the stream needs updating (use calls to SetPDFStreamForWrite for this purpose)
 	virtual void RenewStreamConnection() {};
-
+	// Derived classes should implement this method for registering image writes
+	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID) = 0;
 	PrimitiveObjectsWriter mPrimitiveWriter;
 
 	// graphic stack to monitor high-level graphic usage (now - fonts)
@@ -250,4 +366,10 @@ private:
 
 	PDFHummus::EStatusCode WriteTextCommandWithEncoding(const std::string& inUnicodeText,ITextCommand* inTextCommand);
 	PDFHummus::EStatusCode WriteTextCommandWithDirectGlyphSelection(const GlyphUnicodeMappingList& inText,ITextCommand* inTextCommand);
+
+
+	void SetupColor(const GraphicOptions& inOptions);
+	void SetupColor(const TextOptions& inOptions);
+	void SetupColor(EDrawingType inDrawingType,unsigned long inColorValue,EColorSpace inColorSpace);
+	void FinishPath(const GraphicOptions& inOptions);
 };

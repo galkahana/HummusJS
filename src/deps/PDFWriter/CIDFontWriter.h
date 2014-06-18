@@ -47,7 +47,8 @@ public:
 	PDFHummus::EStatusCode WriteFont(	FreeTypeFaceWrapper& inFontInfo,
 							WrittenFontRepresentation* inFontOccurrence,
 							ObjectsContext* inObjectsContext,
-							IDescendentFontWriter* inDescendentFontWriter);
+							IDescendentFontWriter* inDescendentFontWriter,
+							bool inEmbedFont);
 
 private:
 

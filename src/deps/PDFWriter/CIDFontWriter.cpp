@@ -58,7 +58,8 @@ static const std::string scToUnicode = "ToUnicode";
 EStatusCode CIDFontWriter::WriteFont(FreeTypeFaceWrapper& inFontInfo,
 										WrittenFontRepresentation* inFontOccurrence,
 										ObjectsContext* inObjectsContext,
-										IDescendentFontWriter* inDescendentFontWriter)
+										IDescendentFontWriter* inDescendentFontWriter,
+										bool inEmbedFont)
 {
 
 	EStatusCode status = PDFHummus::eSuccess;
@@ -89,8 +90,8 @@ EStatusCode CIDFontWriter::WriteFont(FreeTypeFaceWrapper& inFontInfo,
 			status = PDFHummus::eFailure;
 			break;
 		}
-		std::string subsetFontName = inObjectsContext->GenerateSubsetFontPrefix() + scPlus + postscriptFontName;
-		fontContext->WriteNameValue(subsetFontName);
+		std::string fontName = inEmbedFont ? (inObjectsContext->GenerateSubsetFontPrefix() + scPlus + postscriptFontName) : postscriptFontName;
+		fontContext->WriteNameValue(fontName);
 
 		WriteEncoding(fontContext);
 
@@ -119,7 +120,7 @@ EStatusCode CIDFontWriter::WriteFont(FreeTypeFaceWrapper& inFontInfo,
 		WriteToUnicodeMap(toUnicodeMapObjectID);
 
 		// Write the descendant font
-		status = inDescendentFontWriter->WriteFont(descendantFontID,subsetFontName,*mFontInfo,mCharactersVector,mObjectsContext);
+		status = inDescendentFontWriter->WriteFont(descendantFontID, fontName, *mFontInfo, mCharactersVector, mObjectsContext, inEmbedFont);
 
 	} while(false);
 

@@ -50,7 +50,7 @@ public:
 	// second overload is for type 1, when an additional metrics file is available
 	PDFUsedFont* GetFontForFile(const std::string& inFontFilePath,const std::string& inOptionalMetricsFile,long inFontIndex);
 
-	PDFHummus::EStatusCode WriteUsedFontsDefinitions();
+	PDFHummus::EStatusCode WriteUsedFontsDefinitions(bool inEmbedFonts);
 
 	PDFHummus::EStatusCode WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectID);
 	PDFHummus::EStatusCode ReadState(PDFParser* inStateReader,ObjectIDType inObjectID);

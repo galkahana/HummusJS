@@ -38,10 +38,10 @@ using namespace v8;
 
 typedef std::map<std::string,unsigned long> StringToULongMap;
 
-class CSSColorMap
+class ColorMap
 {
 public:
-    CSSColorMap();
+    ColorMap();
     
     unsigned long GetRGBForColorName(const std::string& inColorName);
     
@@ -51,17 +51,17 @@ private:
     
 };
 
-CSSColorMap::CSSColorMap()
+ColorMap::ColorMap()
 {
     unsigned long i;
 
-    for(i=0;strlen(kCSSColors[i].name) != 0; ++i)
-        mColorMap.insert(StringToULongMap::value_type(kCSSColors[i].name,kCSSColors[i].rgbValue));
+    for(i=0;strlen(kCSSColorsArray[i].name) != 0; ++i)
+        mColorMap.insert(StringToULongMap::value_type(kCSSColorsArray[i].name,kCSSColorsArray[i].rgbValue));
     
 }
 
 
-unsigned long CSSColorMap::GetRGBForColorName(const std::string& inColorName)
+unsigned long ColorMap::GetRGBForColorName(const std::string& inColorName)
 {
     std::string key = inColorName;
     
@@ -78,7 +78,7 @@ unsigned long CSSColorMap::GetRGBForColorName(const std::string& inColorName)
 
 
 // single instance of color map
-static CSSColorMap sColorMap;
+static ColorMap sColorMap;
 
 AbstractContentContextDriver::AbstractContentContextDriver()
 {
@@ -625,7 +625,7 @@ Handle<Value> AbstractContentContextDriver::d(const Arguments& args)
 	}
 
     int dashArrayLength = args[0]->ToObject()->Get(v8::String::New("length"))->ToNumber()->Int32Value();
-    int* dashArray = new int[dashArrayLength];
+    double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
         dashArray[i] = args[0]->ToObject()->Get(i)->ToNumber()->Int32Value();
     

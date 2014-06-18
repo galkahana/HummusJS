@@ -40,7 +40,7 @@ OutputFlateEncodeStream::~OutputFlateEncodeStream(void)
 		FinalizeEncoding();
 	if(mTargetStream)
 		delete mTargetStream;
-	delete mBuffer;
+	delete[] mBuffer;
 	delete mZLibState;
 }
 

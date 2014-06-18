@@ -40,7 +40,10 @@ WrittenFontCFF::WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID):Ab
 	mFreeList.push_back(UCharAndUChar(1,255)); 
 	// 1st place is reserved for .notdef/0 glyph index. we'll use 0s in the array in all other places as indication for avialability
 	for(int i=0;i<256;++i) 
+	{
 		mAssignedPositions[i] = 0;
+		mAssignedPositionsAvailable[i] = true;
+	}
 	mIsCID = inIsCID;
 }
 
@@ -81,7 +84,12 @@ unsigned short WrittenFontCFF::EncodeGlyph(unsigned int inGlyph,const ULongVecto
 {
 	// for the first time, add also 0,0 mapping
 	if(mANSIRepresentation->mGlyphIDToEncodedChar.size() == 0)
+	{
 		mANSIRepresentation->mGlyphIDToEncodedChar.insert(UIntToGlyphEncodingInfoMap::value_type(0,GlyphEncodingInfo(0,0)));
+		RemoveFromFreeList(0);
+		mAssignedPositions[0] = 0;
+		mAssignedPositionsAvailable[0] = false;
+	}
 
 	UIntToGlyphEncodingInfoMap::iterator it = mANSIRepresentation->mGlyphIDToEncodedChar.find(inGlyph);
 
@@ -93,11 +101,12 @@ unsigned short WrittenFontCFF::EncodeGlyph(unsigned int inGlyph,const ULongVecto
 			encoding = (unsigned char)(inCharacters.back() & 0xff);
 		else
 			encoding = (unsigned char)(inGlyph & 0xff);
-		if(mAssignedPositions[encoding] == 0)
+		if(mAssignedPositionsAvailable[encoding])
 			RemoveFromFreeList(encoding);
 		else
 			encoding = AllocateFromFreeList(inGlyph);
 		mAssignedPositions[encoding] = inGlyph;
+		mAssignedPositionsAvailable[encoding] = false;
 		it = mANSIRepresentation->mGlyphIDToEncodedChar.insert(
 				UIntToGlyphEncodingInfoMap::value_type(inGlyph,GlyphEncodingInfo(encoding,inCharacters))).first;			
 		--mAvailablePositionsCount;
@@ -151,7 +160,7 @@ unsigned char WrittenFontCFF::AllocateFromFreeList(unsigned int inGlyph)
 	return result;
 }
 
-EStatusCode WrittenFontCFF::WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo)
+EStatusCode WrittenFontCFF::WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo,bool inEmbedFont)
 {
 	EStatusCode status = PDFHummus::eSuccess;
 	do
@@ -160,7 +169,7 @@ EStatusCode WrittenFontCFF::WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo)
 		{
 			CFFANSIFontWriter fontWriter;
 
-			status = fontWriter.WriteFont(inFontInfo,mANSIRepresentation,mObjectsContext);
+			status = fontWriter.WriteFont(inFontInfo, mANSIRepresentation, mObjectsContext, inEmbedFont);
 			if(status != PDFHummus::eSuccess)
 			{
 				TRACE_LOG("WrittenFontCFF::WriteFontDefinition, Failed to write Ansi font definition");
@@ -174,7 +183,7 @@ EStatusCode WrittenFontCFF::WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo)
 			CIDFontWriter fontWriter;
 			CFFDescendentFontWriter descendentFontWriter;
 
-			status = fontWriter.WriteFont(inFontInfo,mCIDRepresentation,mObjectsContext,&descendentFontWriter);
+			status = fontWriter.WriteFont(inFontInfo, mCIDRepresentation, mObjectsContext, &descendentFontWriter, inEmbedFont);
 			if(status != PDFHummus::eSuccess)
 			{
 				TRACE_LOG("WrittenFontCFF::WriteFontDefinition, Failed to write CID font definition");
@@ -258,6 +267,13 @@ EStatusCode WrittenFontCFF::WriteState(ObjectsContext* inStateWriter,ObjectIDTyp
 		inStateWriter->WriteInteger(mAssignedPositions[i]);
 	inStateWriter->EndArray(eTokenSeparatorEndLine);
 
+	writtenFontDictionary->WriteKey("mAssignedPositionsAvailable");
+	inStateWriter->StartArray();
+	for(int i=0;i<256;++i)
+		inStateWriter->WriteBoolean(mAssignedPositionsAvailable[i]);
+	inStateWriter->EndArray(eTokenSeparatorEndLine);
+
+
 	writtenFontDictionary->WriteKey("mIsCID");
 	writtenFontDictionary->WriteBooleanValue(mIsCID);
 
@@ -308,6 +324,19 @@ EStatusCode WrittenFontCFF::ReadState(PDFParser* inStateReader,ObjectIDType inOb
 		mAssignedPositions[i] = (unsigned int)assignedPositionItem->GetValue();
 		++i;
 	}
+
+	PDFObjectCastPtr<PDFArray> assignedPositionsAvailableState(writtenFontState->QueryDirectObject("mAssignedPositionsAvailable"));
+	it =  assignedPositionsAvailableState->GetIterator();
+	i=0;
+	
+	PDFObjectCastPtr<PDFBoolean> assignedPositionAvailableItem;
+	while(it.MoveNext())
+	{
+		assignedPositionAvailableItem = it.GetItem();
+		mAssignedPositionsAvailable[i] = assignedPositionAvailableItem->GetValue();
+		++i;
+	}
+
 
 	PDFObjectCastPtr<PDFBoolean> isCIDState(writtenFontState->QueryDirectObject("mIsCID"));
 

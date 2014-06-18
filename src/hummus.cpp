@@ -116,11 +116,11 @@ Handle<Value> CreateWriter(const Arguments& args)
     
     if(args[0]->IsObject())
     {
-        status = driver->StartPDF(args[0]->ToObject(), pdfVersion,logConfig,PDFCreationSettings(compressStreams));
+        status = driver->StartPDF(args[0]->ToObject(), pdfVersion,logConfig,PDFCreationSettings(compressStreams,true));
     }
     else
     {
-        status = driver->StartPDF(*String::Utf8Value(args[0]->ToString()), pdfVersion,logConfig,PDFCreationSettings(compressStreams));
+        status = driver->StartPDF(*String::Utf8Value(args[0]->ToString()), pdfVersion,logConfig,PDFCreationSettings(compressStreams,true));
     }
     
     if(status != PDFHummus::eSuccess)
@@ -268,13 +268,13 @@ Handle<Value> CreateWriterToModify(const Arguments& args)
                                    args[1]->ToObject(),
                                    pdfVersion,
                                    logConfig,
-                                   PDFCreationSettings(compressStreams));
+                                   PDFCreationSettings(compressStreams,true));
     }
     else
     {
         status = driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
                                pdfVersion,alternativePath,logConfig,
-                               PDFCreationSettings(compressStreams));
+                               PDFCreationSettings(compressStreams,true));
     }
     
     if(status != PDFHummus::eSuccess)

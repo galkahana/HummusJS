@@ -1,12 +1,12 @@
 #pragma once
 
-struct CSSColor
+struct CSSColorStruct
 {
     const char* name;
     unsigned long rgbValue;
 };
 
-CSSColor kCSSColors[] =
+CSSColorStruct kCSSColorsArray[] =
 {
     {"aliceblue",0xF0F8FF},
     {"antiquewhite",0xFAEBD7},

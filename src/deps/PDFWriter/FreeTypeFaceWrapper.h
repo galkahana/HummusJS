@@ -47,6 +47,8 @@ typedef std::list<ULongList> ULongListList;
 class FreeTypeFaceWrapper
 {
 public:
+	class IOutlineEnumerator;
+
 	// first overload - all but type ones. the file path is just given for storage (later queries may want it)
 	FreeTypeFaceWrapper(FT_Face inFace,const std::string& inFontFilePath,long inFontIndex,bool inDoOwn = true);
 
@@ -80,6 +82,7 @@ public:
 	const char* GetTypeString();
     std::string GetGlyphName(unsigned int inGlyphIndex);
     FT_Pos GetGlyphWidth(unsigned int inGlyphIndex);
+	bool GetGlyphOutline(unsigned int inGlyphIndex, IOutlineEnumerator& inEnumerator);
 
 	// Create the written font object, matching to write this font in the best way.
 	IWrittenFont* CreateWrittenFontObject(ObjectsContext* inObjectsContext);
@@ -110,6 +113,11 @@ public:
     // according to hummus
     unsigned int GetGlyphIndexInFreeTypeIndexes(unsigned int inGlyphIndex);
 
+	// load glyph, use the freetype load glyph, but add some extra flags that are common to 
+	// Hummus requirements, which is SPEED SPEED. as i don't normally need rendering
+	// hinting and scaling is always removed. inFlags are added on top of the default flags
+	FT_Error LoadGlyph(FT_UInt inGlyphIndex, FT_Int32 inFlags = 0);
+
 private:
 
 	FT_Face mFace;
@@ -118,6 +126,8 @@ private:
 	std::string mFontFilePath;
     long mFontIndex;
     std::string mNotDefGlyphName;
+	bool mGlyphIsLoaded;
+	unsigned int mCurrentGlyph;
 	bool mDoesOwn;
 
 	BoolAndFTShort GetCapHeightInternal(); 
@@ -134,6 +144,40 @@ private:
 	FT_UShort WeightFromName();
 	bool IsSymbolic();
 	bool IsDefiningCharsNotInAdobeStandardLatin();
-    void SetupNotDefGlyph();
+	std::string NotDefGlyphName();
+
+public:
+	class IOutlineEnumerator {
+	public:
+		IOutlineEnumerator(){ mUPM = 0; }
+		virtual ~IOutlineEnumerator(){};
+
+		inline FT_Short UPM() const { return mUPM; } //typically 1000 or 2048
+
+	protected:
+		//in font em units relative to UPM
+		virtual bool Moveto(FT_Short x, FT_Short y) =0; //ret false to abort
+		virtual bool Lineto(FT_Short x, FT_Short y) =0;
+		virtual bool Curveto(FT_Short x1, FT_Short y1, FT_Short x2, FT_Short y2, FT_Short x3, FT_Short y3) =0;
+		virtual bool Close() =0;
+
+	private:
+		friend bool FreeTypeFaceWrapper::GetGlyphOutline(unsigned int inGlyphIndex, IOutlineEnumerator& inEnumerator);
+		static int outline_moveto(const FT_Vector* to, void *closure);
+		static int outline_lineto(const FT_Vector* to, void *closure);
+		static int outline_conicto(const FT_Vector *control, const FT_Vector *to, void *closure);
+		static int outline_cubicto(const FT_Vector *control1, const FT_Vector *control2, const FT_Vector *to, void *closure);
+
+		void FTBegin(FT_UShort upm);
+		inline bool FTMoveto(const FT_Vector *to); //rets true if ok
+		inline bool FTLineto(const FT_Vector *to);
+		inline bool FTConicto(const FT_Vector *control, const FT_Vector *to);
+		inline bool FTCubicto(const FT_Vector *control1, const FT_Vector *control2, const FT_Vector *to);
+		void FTEnd();
+
+		FT_UShort mUPM; //units per EM
+		bool mToLastValid;
+		FT_Vector mToLast;
+	};
 };
 
