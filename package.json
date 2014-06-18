@@ -1,6 +1,6 @@
 {
   "name": "hummus",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "description": "Create, read and modify PDF files and streams",
   "main": "hummus",
   "scripts": {
