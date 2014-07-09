@@ -1661,6 +1661,8 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
         mapping.mGlyphCode = arrayObject->Get(i)->ToObject()->Get(0)->ToNumber()->Uint32Value();
         for(int j=1; j < itemLength;++j)
             mapping.mUnicodeValues.push_back(arrayObject->Get(i)->ToObject()->Get(j)->ToNumber()->Uint32Value());
+			
+		glyphList.push_back(mapping);
     }
    
     return glyphList;
