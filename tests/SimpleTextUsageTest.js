@@ -73,5 +73,22 @@ var hummus = require('../hummus');
     pdfWriter.writePage(page)
             .end();
 }
+// this one adds text using the GlyphIds
+{
+    var pdfWriter = hummus.createWriter('./output/SimpleTextUsageGlyphs.pdf');
+    
+    var page = pdfWriter.createPage(0,0,595,842);
+    
+    var font = pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf');
+    pdfWriter.startPageContentContext(page).BT()
+                                        .k(0,0,0,1)
+                                        .Tf(font,1)
+                                        .Tm(30,0,0,30,78.4252,662.8997)
+                                        .Tj([[68,97],[69,98],[70,99],[71,100]])
+                                        .ET();
+    pdfWriter.writePage(page)
+            .end();
+}
+
 
 console.log('done - ok');
