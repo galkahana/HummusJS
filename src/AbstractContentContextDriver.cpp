@@ -130,7 +130,7 @@ void AbstractContentContextDriver::Init(Handle<FunctionTemplate>& ioDriverTempla
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("G"),FunctionTemplate::New(G)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("g"),FunctionTemplate::New(g)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("RG"),FunctionTemplate::New(RG)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("rg"),FunctionTemplate::New(RG)->GetFunction());
+    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("rg"),FunctionTemplate::New(rg)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("K"),FunctionTemplate::New(K)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("k"),FunctionTemplate::New(k)->GetFunction());
     ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("W"),FunctionTemplate::New(W)->GetFunction());
