@@ -103,6 +103,7 @@ public:
     PDFHummus::EStatusCode ModifyPDFForStream(
                                     IByteReaderWithPosition* inModifiedSourceStream,
                                     IByteWriterWithPosition* inModifiedDestinationStream,
+                                    bool inAppendOnly,
                                     EPDFVersion inPDFVersion,
                                     const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
                                     const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings                                 

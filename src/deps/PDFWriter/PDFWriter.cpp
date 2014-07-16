@@ -642,12 +642,23 @@ EStatusCode PDFWriter::ModifyPDF(const std::string& inModifiedFile,
 EStatusCode PDFWriter::ModifyPDFForStream(
                                       IByteReaderWithPosition* inModifiedSourceStream,
                                       IByteWriterWithPosition* inModifiedDestinationStream,
+                                      bool inAppendOnly,
                                       EPDFVersion inPDFVersion,
                                       const LogConfiguration& inLogConfiguration,
                                       const PDFCreationSettings& inPDFCreationSettings)
 {    
     SetupLog(inLogConfiguration);
 	SetupObjectsContext(inPDFCreationSettings);
+    
+    if(!inAppendOnly)
+    {
+        // copy original to new output stream
+        OutputStreamTraits traits(inModifiedDestinationStream);
+        EStatusCode status = traits.CopyToOutputStream(inModifiedSourceStream);
+        if(status != eSuccess)
+            return status;
+        inModifiedSourceStream->SetPosition(0);
+    }
 	
     mObjectsContext.SetOutputStream(inModifiedDestinationStream);
         
