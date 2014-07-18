@@ -601,7 +601,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(Handle<Object> inSourceStream,
     mReadStreamProxy = new ObjectByteReaderWithPosition(inSourceStream);
     
     // use minimal leve ePDFVersion10 to use the modified file level (cause i don't care
-    status = mPDFWriter.ModifyPDFForStream(mReadStreamProxy,mWriteStreamProxy,inPDFVersion,inLogConfiguration,inCreationSettings);
+    status = mPDFWriter.ModifyPDFForStream(mReadStreamProxy,mWriteStreamProxy,false,inPDFVersion,inLogConfiguration,inCreationSettings);
     
     return status;
 }
