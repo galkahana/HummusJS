@@ -1,5 +1,6 @@
 // start with binary objects
 module.exports = require('./build/Release/hummus');
+var fs = require('fs');
 
 /*
     PDFStreamForResponse is an implementation of a write stream that writes directly to an HTTP response.
@@ -32,6 +33,113 @@ PDFStreamForResponse.prototype.getCurrentPosition = function()
 
 module.exports.PDFStreamForResponse = PDFStreamForResponse;
 
+
+/*
+	PDFWStreamForFile is an implementation of a write stream using the supplied file path.
+*/
+
+function PDFWStreamForFile(inPath)
+{
+    this.ws = fs.createWriteStream(inPath);
+    this.position = 0;
+    this.path = inPath;
+}
+ 
+PDFWStreamForFile.prototype.write = function(inBytesArray)
+{
+    if(inBytesArray.length > 0)
+    {
+        this.ws.write(new Buffer(inBytesArray));
+        this.position+=inBytesArray.length;
+        return inBytesArray.length;
+    }
+    else
+        return 0;
+};
+ 
+PDFWStreamForFile.prototype.getCurrentPosition = function()
+{
+    return this.position;
+};
+ 
+PDFWStreamForFile.prototype.close = function(inCallback)
+{
+    if(this.ws)
+    {
+        var self = this;
+ 
+        this.ws.end(function()
+        {
+            self.ws = null;
+            if(inCallback)
+                inCallback();
+        })
+    }
+    else
+    {
+        if(inCallback)
+            inCallback();
+    }
+};
+ 
+ module.exports.PDFWStreamForFile = PDFWStreamForFile;
+ 
+/*
+	PDFRStreamForFile is an implementation of a read stream using the supplied file path.
+*/
+
+function PDFRStreamForFile(inPath)
+{
+    this.rs = fs.openSync(inPath,'r');
+    this.path = inPath;
+    this.rposition = 0;
+    this.fileSize = fs.statSync(inPath)["size"]; 
+}
+ 
+PDFRStreamForFile.prototype.read = function(inAmount)
+{
+    var buffer = new Buffer(inAmount*2);
+    var bytesRead = fs.readSync(this.rs, buffer, 0, inAmount,this.rposition);
+    var arr = [];
+ 
+    for(var i=0;i<bytesRead;++i)
+        arr.push(buffer[i]);
+    this.rposition+=bytesRead;
+    return arr;
+}
+ 
+PDFRStreamForFile.prototype.notEnded = function()
+{
+    return this.rposition < this.fileSize;
+}
+ 
+PDFRStreamForFile.prototype.setPosition = function(inPosition)
+{
+    this.rposition = inPosition;
+}
+ 
+PDFRStreamForFile.prototype.setPositionFromEnd = function(inPosition)
+{
+    this.rposition = this.fileSize-inPosition;
+}
+ 
+PDFRStreamForFile.prototype.skip = function(inAmount)
+{
+    this.rposition += inAmount;
+}
+ 
+PDFRStreamForFile.prototype.getCurrentPosition = function(inAmount)
+{
+    return this.rposition;
+}
+ 
+PDFRStreamForFile.prototype.close = function(inCallback)
+{
+    fs.close(this.rs,inCallback);
+};
+
+module.exports.PDFRStreamForFile = PDFRStreamForFile;
+ 
 /*
     PDFPageModifier is a helper class providing a content context for existing pages, when in a file modification scenarios.
     Using PDFPageModifier simplifies the process of adding content to existing pages, making it as simple to do as if it were
