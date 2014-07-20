@@ -19,6 +19,7 @@
  */
 #include "PDFLiteralStringDriver.h"
 #include "RefCountPtr.h"
+#include "PDFTextString.h"
 
 using namespace v8;
 
@@ -32,7 +33,8 @@ void PDFLiteralStringDriver::Init()
     constructor_template->SetClassName(String::NewSymbol("PDFLiteralString"));
     constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
     constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("value"),GetValue);
- 
+    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("toText"),FunctionTemplate::New(ToText)->GetFunction());
+
     PDFObjectDriver::Init(constructor_template);
 
     constructor = Persistent<Function>::New(constructor_template->GetFunction());
@@ -71,8 +73,21 @@ Handle<Value> PDFLiteralStringDriver::GetValue(Local<String> property,const Acce
 {
     HandleScope scope;
     
+    
     Handle<String> result = String::New(ObjectWrap::Unwrap<PDFLiteralStringDriver>(info.Holder())->TheObject->GetValue().c_str());
     return scope.Close(result);
 }
+
+
+Handle<Value> PDFLiteralStringDriver::ToText(const Arguments& args)
+{
+    HandleScope scope;
+    PDFLiteralStringDriver* driver = ObjectWrap::Unwrap<PDFLiteralStringDriver>(args.This());
+
+    
+    Handle<String> result = String::New(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
+    return scope.Close(result);
+}
+
 
 

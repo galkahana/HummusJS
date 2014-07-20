@@ -44,7 +44,7 @@ void InfoDictionaryDriver::Init()
     t->PrototypeTemplate()->Set(String::NewSymbol("getAdditionalInfoEntry"),FunctionTemplate::New(GetAdditionalInfoEntry)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("getAdditionalInfoEntries"),FunctionTemplate::New(GetAdditionalInfoEntries)->GetFunction());
     t->PrototypeTemplate()->Set(String::NewSymbol("setCreationDate"),FunctionTemplate::New(SetCreationDate)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("setModeDate"),FunctionTemplate::New(SetModDate)->GetFunction());
+    t->PrototypeTemplate()->Set(String::NewSymbol("setModDate"),FunctionTemplate::New(SetModDate)->GetFunction());
     t->InstanceTemplate()->SetAccessor(String::NewSymbol("title"),GetTitle,SetTitle);
     t->InstanceTemplate()->SetAccessor(String::NewSymbol("author"),GetAuthor,SetAuthor);
     t->InstanceTemplate()->SetAccessor(String::NewSymbol("subject"),GetSubject,SetSubject);

@@ -9,7 +9,8 @@ infoDictionary.author = 'Gal Kahana';
 infoDictionary.title = 'PDFHummus explained';
 infoDictionary.subject = 'On the wonders of one-pass PDF file generation, and how it can save the world';
 infoDictionary.creator = 'PDFHummus';
-infoDictionary.setCreationDate(new Date());
+infoDictionary.setCreationDate("D:20140720204655+03'00'"); // two options to set dates: 1. PDF encoded string (like what comes from the parser)
+infoDictionary.setModDate(new Date()); // 2. javascript date
 infoDictionary.addAdditionalInfoEntry('words of praise','amazing');
 
 // create empty page

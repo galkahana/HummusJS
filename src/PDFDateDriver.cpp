@@ -41,7 +41,7 @@ Handle<Value> PDFDateDriver::NewInstance(const Arguments& args)
 {
     HandleScope scope;
     
-    if(args.Length() != 1 || !args[0]->IsDate())
+    if(args.Length() != 1 || (!args[0]->IsDate() && !args[0]->IsString()))
     {
 		ThrowException(Exception::TypeError(String::New("Wrong arguments. Provide 1 argument which is a date")));
         return scope.Close(Undefined());
@@ -83,20 +83,27 @@ Handle<Value> PDFDateDriver::New(const Arguments& args)
     HandleScope scope;
     
     PDFDateDriver* element = new PDFDateDriver();
-    if(args.Length() == 1 && args[0]->IsDate())
+    if(args.Length() == 1)
     {
-        Local<Date> aDate = Local<Date>::Cast(args[0]);
-        int timeZoneMinutesDifference = GetIntValueFromDateFunction(aDate,"getTimezoneOffset");
-        element->mDate.SetTime(
-                    GetUIntValueFromDateFunction(aDate,"getFullYear"),
-                    GetUIntValueFromDateFunction(aDate,"getMonth") + 1,
-                    GetUIntValueFromDateFunction(aDate,"getDate"),
-                    GetUIntValueFromDateFunction(aDate,"getHours"),
-                    GetUIntValueFromDateFunction(aDate,"getMinutes"),
-                    GetUIntValueFromDateFunction(aDate,"getSeconds"),
-                    timeZoneMinutesDifference < 0 ? PDFDate::eLater:PDFDate::eEarlier,
-                    (int)(labs(timeZoneMinutesDifference) / 60),
-                    (int)((labs(timeZoneMinutesDifference) - (labs(timeZoneMinutesDifference) / 60)*60) / 60));
+        if(args[0]->IsDate())
+        {
+            Local<Date> aDate = Local<Date>::Cast(args[0]);
+            int timeZoneMinutesDifference = GetIntValueFromDateFunction(aDate,"getTimezoneOffset");
+            element->mDate.SetTime(
+                        GetUIntValueFromDateFunction(aDate,"getFullYear"),
+                        GetUIntValueFromDateFunction(aDate,"getMonth") + 1,
+                        GetUIntValueFromDateFunction(aDate,"getDate"),
+                        GetUIntValueFromDateFunction(aDate,"getHours"),
+                        GetUIntValueFromDateFunction(aDate,"getMinutes"),
+                        GetUIntValueFromDateFunction(aDate,"getSeconds"),
+                        timeZoneMinutesDifference < 0 ? PDFDate::eLater:PDFDate::eEarlier,
+                        (int)(labs(timeZoneMinutesDifference) / 60),
+                        (int)((labs(timeZoneMinutesDifference) - (labs(timeZoneMinutesDifference) / 60)*60) / 60));
+        }
+        else if(args[0]->IsString())
+        {
+            element->mDate.ParseString(*String::Utf8Value(args[0]->ToString()));
+        }
     }
     
     element->Wrap(args.This());

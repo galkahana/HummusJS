@@ -52,7 +52,8 @@ public:
 
 	bool IsNull(); // null is signified by having -1 as the year.
 	std::string ToString(); // writes only non-null values
-
+    void ParseString(std::string inValue); // sets date from input string
+    
 	// set PDF Date to the current time
 	void SetToCurrentTime();
 

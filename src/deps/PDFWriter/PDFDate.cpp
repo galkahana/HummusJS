@@ -21,6 +21,7 @@
 #include "PDFDate.h"
 #include "SafeBufferMacrosDefs.h"
 #include "Trace.h"
+#include "BoxingBase.h"
 #if defined (__MWERKS__)
 	// MAC OSX methods for providing UTC difference
 	#include <CoreFoundation/CFDate.h>
@@ -196,7 +197,7 @@ void PDFDate::SetToCurrentTime()
 	// if unsuccesful or method unknown don't provide UTC info (currently only knows for WIN32 and OSX
 #if defined (__MWERKS__) || defined (__GNUC__) || defined(WIN32)
 	int status;
-#if defined(WIN32) // (using MS methods)
+#if defined(WIN32) && !defined(__MINGW32__) // (using MS methods)
 	status = _get_timezone(&timeZoneSecondsDifference);
 #elif defined (__GNUC__)
 	struct tm *gmTime;
@@ -249,4 +250,71 @@ void PDFDate::SetToCurrentTime()
 #else
 	UTC = eUndefined;
 #endif
+}
+
+void PDFDate::ParseString(std::string inValue)
+{
+    if(inValue.length() < 2 || inValue[0] != 'D' || inValue[1] != ':')
+    {
+        Year = -1;
+        return;
+    }
+    
+    Year = Int(inValue.substr(2,4));
+    Month = -1;
+    Day = -1;
+    Hour = -1;
+    Minute = -1;
+    Second = -1;
+    UTC = eUndefined;
+    HourFromUTC = -1;
+    MinuteFromUTC = -1;
+    
+    if(inValue.length() < 7)
+        return;
+    
+    Month = Int(inValue.substr(6,2));
+
+    if(inValue.length() < 9)
+        return;
+    
+    Day = Int(inValue.substr(8,2));
+    
+    if(inValue.length() < 11)
+        return;
+    
+    Hour = Int(inValue.substr(10,2));
+    
+    if(inValue.length() < 13)
+        return;
+    
+    Minute = Int(inValue.substr(12,2));
+    
+    if(inValue.length() < 15)
+        return;
+    
+    Second = Int(inValue.substr(14,2));
+
+    if(inValue.length() < 17)
+        return;
+    
+    if(inValue[16] == 'Z')
+    {
+        UTC = eSame;
+    }
+    else if(inValue[16] == '-' || inValue[16] == '+')
+    {
+        UTC = (inValue[16] == '-') ? eEarlier:eLater;
+        
+        if(inValue.length() < 18)
+            return;
+        
+        HourFromUTC = Int(inValue.substr(17,2));
+        
+        if(inValue.length() < 21) // skipping '
+            return;
+        
+        MinuteFromUTC = Int(inValue.substr(20,2));
+    }
+    
 }
