@@ -25,18 +25,21 @@
 #include "PDFObjectDriver.h"
 #include "BoxingBase.h"
 #include "ByteReaderWithPositionDriver.h"
+#include "IByteReaderWithPosition.h"
 
 using namespace v8;
 
 DocumentCopyingContextDriver::~DocumentCopyingContextDriver()
 {
     delete CopyingContext;
+    delete ReadStreamProxy;
 }
 
 DocumentCopyingContextDriver::DocumentCopyingContextDriver()
 {
     // initially null, set by external pdfwriter
     CopyingContext = NULL;
+    ReadStreamProxy = NULL;
 }
 
 Persistent<Function> DocumentCopyingContextDriver::constructor;

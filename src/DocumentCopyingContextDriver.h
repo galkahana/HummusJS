@@ -22,6 +22,7 @@
 #include <node.h>
 
 class PDFDocumentCopyingContext;
+class IByteReaderWithPosition;
 
 class DocumentCopyingContextDriver : public node::ObjectWrap
 {
@@ -33,6 +34,8 @@ public:
     static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
     
     PDFDocumentCopyingContext* CopyingContext;
+    // member holding an optional stream pointer, held by copying context for the sake of final release
+    IByteReaderWithPosition* ReadStreamProxy;
     
 private:
     DocumentCopyingContextDriver();

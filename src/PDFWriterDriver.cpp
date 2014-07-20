@@ -962,11 +962,14 @@ Handle<Value> PDFWriterDriver::CreatePDFCopyingContext(const Arguments& args)
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
 
     PDFDocumentCopyingContext* copyingContext;
+
+    ObjectByteReaderWithPosition* proxy = NULL;
+
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
-        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(&proxy);
+        proxy = new ObjectByteReaderWithPosition(args[0]->ToObject());
+        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(proxy);
     }
     else
         copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()));
@@ -979,6 +982,7 @@ Handle<Value> PDFWriterDriver::CreatePDFCopyingContext(const Arguments& args)
     
     Handle<Value> newInstance = DocumentCopyingContextDriver::NewInstance(args);
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
+    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->ReadStreamProxy = proxy;
     return scope.Close(newInstance);
 }
 
