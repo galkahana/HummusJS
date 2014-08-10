@@ -5,7 +5,8 @@ var cxt = pdfWriter.startPageContentContext(page);
 var textOptions = {font:pdfWriter.getFontForFile('./TestMaterials/fonts/arial.ttf'),
                    size:14,
                    colorspace:'gray',
-                   color:0x00};
+                   color:0x00,
+                  underline:true};
 var pathFillOptions = {color:0xFF000000, colorspace:'cmyk', type:'fill'};
 var pathStrokeOptions = {color:'DarkMagenta', width:4};
 

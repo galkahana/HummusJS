@@ -27,6 +27,8 @@
 #include "ImageXObjectDriver.h"
 #include "CSSColors.h"
 #include "PDFWriterDriver.h"
+#include "PDFUsedFont.h"
+#include "FreeTypeFaceWrapper.h"
 
 #include <map>
 #include <string.h>
@@ -1758,7 +1760,7 @@ void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,
         else
         {
             // should be number
-            unsigned long colorvalue = options->Get(String::New("color"))->ToInteger()->Value();
+            unsigned long colorvalue = (unsigned long)(options->Get(String::New("color"))->ToInteger()->Value());
             std::string colorspace = options->Has(String::New("colorspace")) ?
             *String::Utf8Value(options->Get(String::New("colorspace")->ToString())) :
             "rgb";
@@ -1951,7 +1953,36 @@ Handle<Value> AbstractContentContextDriver::DrawRectangle(const Arguments& args)
     return scope.Close(args.This());
 }
 
-/* context.writeText(text,x,y,[{font:fontObject, size:fontSize ,color:#FF00FF}])
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_TRUETYPE_TABLES_H 
+
+
+double sGetUnderlineThicknessFactor(FreeTypeFaceWrapper* inFTWrapper)
+{
+	void* tableInfo = FT_Get_Sfnt_Table(*inFTWrapper,ft_sfnt_post);
+	if(tableInfo)
+	{
+		TT_Postscript* theTable = (TT_Postscript*)tableInfo;
+		return theTable->underlineThickness*1.0/(*inFTWrapper)->units_per_EM;
+	}
+	else
+		return 0.05;
+}
+
+double sGetUnderlinePositionFactor(FreeTypeFaceWrapper* inFTWrapper)
+{
+	void* tableInfo = FT_Get_Sfnt_Table(*inFTWrapper,ft_sfnt_post);
+	if(tableInfo)
+	{
+		TT_Postscript* theTable = (TT_Postscript*)tableInfo;
+		return theTable->underlinePosition*1.0/(*inFTWrapper)->units_per_EM;
+	}
+	else
+		return -0.15;
+}
+
+/* context.writeText(text,x,y,[{font:fontObject, size:fontSize ,color:#FF00FF,underline:boolean}])
  */
 Handle<Value> AbstractContentContextDriver::WriteText(const Arguments& args)
 {
@@ -1971,11 +2002,44 @@ Handle<Value> AbstractContentContextDriver::WriteText(const Arguments& args)
     }
     
     contentContext->GetContext()->BT();
-    contentContext->SetColor(args[args.Length()-1],false);
-    contentContext->SetFont(args[args.Length()-1]);
-    contentContext->GetContext()->Tm(1,0,0,1,args[1]->ToNumber()->Value(),args[2]->ToNumber()->Value());
-    contentContext->GetContext()->Tj(*String::Utf8Value(args[0]->ToString()));
+	if(args.Length() >= 4)
+	{
+		contentContext->SetColor(args[3],false);
+		contentContext->SetFont(args[3]);
+	}
+
+	std::string text = *String::Utf8Value(args[0]->ToString());
+	double xPos = args[1]->ToNumber()->Value();
+	double yPos = args[2]->ToNumber()->Value();
+
+    contentContext->GetContext()->Tm(1,0,0,1,xPos,yPos);
+    contentContext->GetContext()->Tj(text);
     contentContext->GetContext()->ET();
+
+
+	// underline
+	if(args.Length() >= 4 && args[3]->IsObject())
+	{
+		Handle<Object> options = args[3]->ToObject();
+		if(options->Has(String::New("underline")) && 
+				options->Get(String::New("underline"))->ToBoolean()->Value() &&
+				UsedFontDriver::HasInstance(options->Get(String::New("font"))))
+		{
+			// draw underline. use font data for position and thickness
+			double fontSize = options->Has(String::New("size")) ? options->Get(String::New("size"))->ToNumber()->Value():1;
+
+			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(String::New("font"))->ToObject())->UsedFont;
+			FreeTypeFaceWrapper*  ftWrapper = font->GetFreeTypeFont();
+
+			contentContext->SetColor(args[3],true);
+			contentContext->GetContext()->w(sGetUnderlineThicknessFactor(ftWrapper)*fontSize);
+			double startLine = yPos+sGetUnderlinePositionFactor(ftWrapper)*fontSize;
+			contentContext->GetContext()->m(xPos,startLine);
+			contentContext->GetContext()->l(xPos + font->CalculateTextAdvance(text,fontSize),startLine);
+			contentContext->GetContext()->S();
+		}
+	}
+
     return scope.Close(args.This());
 }
 
