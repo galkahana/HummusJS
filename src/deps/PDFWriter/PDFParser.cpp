@@ -1076,7 +1076,7 @@ EStatusCode PDFParser::ParseDirectory(LongFilePositionType inXrefPosition,
 				break;
 			}
             
-            if(outExtendedTable)
+            if(*outExtendedTable)
             {
                 inXrefTable = *outExtendedTable;
                 inXrefSize = *outExtendedTableSize;
