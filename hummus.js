@@ -35,7 +35,7 @@ module.exports.PDFStreamForResponse = PDFStreamForResponse;
 
 
 /*
-	PDFWStreamForFile is an implementation of a write stream using the supplied file path.
+    PDFWStreamForFile is an implementation of a write stream using the supplied file path.
 */
 
 function PDFWStreamForFile(inPath)
@@ -85,7 +85,7 @@ PDFWStreamForFile.prototype.close = function(inCallback)
  module.exports.PDFWStreamForFile = PDFWStreamForFile;
  
 /*
-	PDFRStreamForFile is an implementation of a read stream using the supplied file path.
+    PDFRStreamForFile is an implementation of a read stream using the supplied file path.
 */
 
 function PDFRStreamForFile(inPath)
@@ -149,6 +149,8 @@ module.exports.PDFRStreamForFile = PDFRStreamForFile;
 function PDFPageModifier(inModifiedFileWriter,inPageIndex)
 {
     this.writer = inModifiedFileWriter;
+    if(this.writer.modifiedResourcesDictionary === undefined)
+        this.writer.modifiedResourcesDictionary = {}; // dictionary used to store resource dictinaries already modified
     this.pageIndex = inPageIndex;
     this.contexts = [];
 }
@@ -235,6 +237,7 @@ PDFPageModifier.prototype.writePage = function()
     // Write a new resource entry. copy all but the "XObject" entry, which needs to be modified. Just for kicks i'm keeping the original 
     // form (either direct dictionary, or indirect object)
     var resourcesIndirect = null;
+    var newResourcesIndirect = null;
     var formResourcesNames = [];
     modifiedPageObject.writeKey('Resources');
     if(!pageDictionaryObject['Resources'])
@@ -261,7 +264,20 @@ PDFPageModifier.prototype.writePage = function()
         if(isResorucesIndirect)
         {
             resourcesIndirect = pageDictionaryObject['Resources'].toPDFIndirectObjectReference().getObjectID();
-            modifiedPageObject.writeObjectReferenceValue(resourcesIndirect);
+            if(this.writer.modifiedResourcesDictionary[resourcesIndirect])
+            {
+                // already modified resources dictionary. this means that
+                // the resources dictionary is shared. the simplest solution for this is to 
+                // create a new resources dictionary
+                newResourcesIndirect = objCxt.allocateNewObjectID();
+                modifiedPageObject.writeObjectReferenceValue(newResourcesIndirect);
+            }
+            else
+            {
+                this.writer.modifiedResourcesDictionary[resourcesIndirect] = true; // register resource dict as modified for a possible next time
+                modifiedPageObject.writeObjectReferenceValue(resourcesIndirect);
+            }
+
         }
         else
             formResourcesNames = writeModifiedResourcesDict(pageDictionaryObject['Resources'],objCxt,cpyCxt,this.contexts);
@@ -274,7 +290,10 @@ PDFPageModifier.prototype.writePage = function()
     // if necessary, create now the resource dictionary
     if(resourcesIndirect)
     {
-        objCxt.startModifiedIndirectObject(resourcesIndirect);
+        if(newResourcesIndirect) // if already written modified resources dict in the past, create a new one with the added form to differ from the previous
+            objCxt.startNewIndirectObject(newResourcesIndirect);
+        else
+            objCxt.startModifiedIndirectObject(resourcesIndirect);
         formResourcesNames = writeModifiedResourcesDict(cpyCxt.getSourceDocumentParser().parseNewObject(resourcesIndirect),objCxt,cpyCxt,this.contexts);
         objCxt.endIndirectObject();
     }
