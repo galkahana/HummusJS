@@ -153,6 +153,7 @@ function PDFPageModifier(inModifiedFileWriter,inPageIndex)
         this.writer.modifiedResourcesDictionary = {}; // dictionary used to store resource dictinaries already modified
     this.pageIndex = inPageIndex;
     this.contexts = [];
+    this.annotations = [];
 }
 
 PDFPageModifier.prototype.startContext = function()
@@ -179,6 +180,60 @@ PDFPageModifier.prototype.endContext = function()
     return this;
 };
 
+PDFPageModifier.prototype.attachURLLinktoCurrentPage = function(inURL,l,b,r,t)
+{
+    // create link annotation object
+    var objCxt = this.writer.getObjectsContext();
+
+    var annotationObjectID = objCxt.startNewIndirectObject();
+    var annotationDict = objCxt.startDictionary();
+
+    annotationDict.writeKey('Type');
+    annotationDict.writeNameValue('Annot');
+
+    annotationDict.writeKey('Subtype');
+    annotationDict.writeNameValue('Link');
+
+    annotationDict.writeKey('Rect');
+    annotationDict.writeRectangleValue(l,b,r,t);
+
+    annotationDict.writeKey('F');
+    objCxt.writeNumber(4);
+
+    annotationDict.writeKey('BS');
+    var borderStyleDict = objCxt.startDictionary();
+    borderStyleDict.writeKey('W');
+    objCxt.writeNumber(0);
+    objCxt.endDictionary(borderStyleDict);
+
+    annotationDict.writeKey('A');
+    var actionDict = objCxt.startDictionary();
+
+    actionDict.writeKey('Type');
+    actionDict.writeNameValue('Action');
+
+    actionDict.writeKey('S');
+    actionDict.writeNameValue('URI');
+
+    actionDict.writeKey('URI');
+    // encode to ascii 7...in other words drop anything which is not, and write as byte array
+    var encoded = [];
+    for(var i=0;i<inURL.length;++i)
+    {
+        if(inURL.charCodeAt(i) <= 127)
+            encoded.push(inURL.charCodeAt(i));
+    }
+    actionDict.writeLiteralStringValue(encoded);
+
+    objCxt.endDictionary(actionDict);
+    objCxt.endDictionary(annotationDict);
+
+    objCxt.endIndirectObject();
+
+    this.annotations.push(annotationObjectID);
+
+};
+
 PDFPageModifier.prototype.writePage = function()
 {
     // allocate an object ID for the new contents stream (for placing the form)
@@ -195,19 +250,46 @@ PDFPageModifier.prototype.writePage = function()
     var pageDictionaryObject = cpyCxt.getSourceDocumentParser().parsePage(this.pageIndex).getDictionary().toJSObject();
 
 
+
     // create modified page object
     objCxt.startModifiedIndirectObject(pageObjectID);
     var modifiedPageObject = objCxt.startDictionary();
 
-    // copy all elements of the page to the new page object, but the "Contents" and "Resources" elements
+    // copy all elements of the page to the new page object, but the "Contents" and "Resources" elements, and  "Annots"
      Object.getOwnPropertyNames(pageDictionaryObject).forEach(function(element,index,array)
                                                         {
-                                                            if(element != 'Resources' && element != 'Contents')
+                                                            if(element != 'Resources' && element != 'Contents' && element != 'Annots')
                                                             {
                                                                 modifiedPageObject.writeKey(element);
                                                                 cpyCxt.copyDirectObjectAsIs(pageDictionaryObject[element]);
                                                             }
                                                         });
+     // Write new annotations entry, joining existing annotations, and new ones (from links)
+     if(pageDictionaryObject['Annots'] || this.annotations.length > 0)
+     {
+        modifiedPageObject.writeKey('Annots');
+        objCxt.startArray();
+
+        // write old annots, if any exist
+        if(pageDictionaryObject['Annots'])
+        {
+            pageDictionaryObject['Annots'].toPDFArray().toJSArray().forEach(function(inElement)
+            {
+                objCxt.writeIndirectObjectReference(inElement.toPDFIndirectObjectReference().getObjectID());
+            });
+        }
+
+        // write new annots from links
+        if(this.annotations.length > 0)
+        {
+            this.annotations.forEach(function(inElement)
+            {
+                objCxt.writeIndirectObjectReference(inElement);
+            });
+        }
+        objCxt.endArray();
+     }
+
 
     // Write new contents entry, joining the existing contents with the new one. take care of various scenarios of the existing Contents
     modifiedPageObject.writeKey('Contents');
