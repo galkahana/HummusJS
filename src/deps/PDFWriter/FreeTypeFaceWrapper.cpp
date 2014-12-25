@@ -522,6 +522,27 @@ bool FreeTypeFaceWrapper::IsForceBold()
 	return mFormatParticularWrapper ? mFormatParticularWrapper->IsForceBold() : false;
 }
 
+std::string FreeTypeFaceWrapper::GetPostscriptName()
+{
+	std::string name;
+
+	const char* postscriptFontName = FT_Get_Postscript_Name(mFace);
+	if(postscriptFontName)
+	{
+		name.assign(postscriptFontName);
+	}
+	else
+	{
+		// some fonts have the postscript name data, but in a non standard way, try to retrieve
+		if(mFormatParticularWrapper)
+			name = mFormatParticularWrapper->GetPostscriptNameNonStandard();
+		if(name.length() == 0)
+			TRACE_LOG("FreeTypeFaceWrapper::GetPostscriptName, unexpected failure. no postscript font name for font");
+	}
+
+	return name;
+}
+
 std::string FreeTypeFaceWrapper::GetGlyphName(unsigned int inGlyphIndex)
 {
     if(mFormatParticularWrapper && mFormatParticularWrapper->HasPrivateEncoding())

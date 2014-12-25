@@ -54,8 +54,8 @@ EStatusCode CFFANSIFontWriter::WriteFont(	FreeTypeFaceWrapper& inFontInfo,
 											ObjectsContext* inObjectsContext,
 											bool inEmbedFont)
 {
-	const char* postscriptFontName = FT_Get_Postscript_Name(inFontInfo);
-	if(!postscriptFontName)
+	std::string postscriptFontName = inFontInfo.GetPostscriptName();
+	if(postscriptFontName.length() == 0)
 	{
 		TRACE_LOG("CFFANSIFontWriter::WriteFont, unexpected failure. no postscript font name for font");
 		return PDFHummus::eFailure;

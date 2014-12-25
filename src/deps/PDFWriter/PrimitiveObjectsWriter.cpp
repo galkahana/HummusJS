@@ -142,7 +142,7 @@ void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator in
 {
 	char buffer[512];
 
-	SAFE_SPRINTF_1(buffer,512,"%lf",inDoubleToken);
+	SAFE_SPRINTF_1(buffer,512,"%f",inDoubleToken);
 
 	LongBufferSizeType sizeToWrite = DetermineDoubleTrimmedLength(buffer);
 

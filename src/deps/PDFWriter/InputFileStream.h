@@ -25,8 +25,9 @@
 
 #include <string>
 #include <stdio.h>
-
-
+#ifdef __MINGW32__
+#include <share.h>
+#endif
 
 
 class InputFileStream : public IByteReaderWithPosition

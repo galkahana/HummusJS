@@ -357,6 +357,11 @@ void PDFParserTokenizer::SaveTokenBuffer(Byte inToSave)
 	--mStreamPositionTracker; // decreasing position trakcer, because it is as if the byte is put back in the stream
 }
 
+IOBasicTypes::LongFilePositionType PDFParserTokenizer::GetReadBufferSize()
+{
+	return mHasTokenBuffer ? 1 : 0;
+}
+
 static const Byte scEntityBreakers[] = {'(',')','<','>',']','[','{','}','/','%'};
 bool PDFParserTokenizer::IsPDFEntityBreaker(Byte inCharacter)
 {

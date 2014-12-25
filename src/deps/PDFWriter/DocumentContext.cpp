@@ -546,6 +546,7 @@ int DocumentContext::WritePageTree(PageTree* inPageTreeToWrite)
 static const std::string scResources = "Resources";
 static const std::string scPage = "Page";
 static const std::string scMediaBox = "MediaBox";
+static const std::string scRotate = "Rotate";
 static const std::string scCropBox = "CropBox";
 static const std::string scBleedBox = "BleedBox";
 static const std::string scTrimBox = "TrimBox";
@@ -572,6 +573,13 @@ EStatusCodeAndObjectIDType DocumentContext::WritePage(PDFPage* inPage)
 	// Media Box
 	pageContext->WriteKey(scMediaBox);
 	pageContext->WriteRectangleValue(inPage->GetMediaBox());
+
+    // Rotate
+    if(inPage->GetRotate().first)
+    {
+        pageContext->WriteKey(scRotate);
+        pageContext->WriteIntegerValue(inPage->GetRotate().second);
+    }
 
     // Crop Box
     PDFRectangle cropBox;

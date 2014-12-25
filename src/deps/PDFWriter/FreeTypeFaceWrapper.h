@@ -71,6 +71,7 @@ public:
 	PDFHummus::EStatusCode GetGlyphsForUnicodeText(const ULongList& inUnicodeCharacters,UIntList& outGlyphs);
 	PDFHummus::EStatusCode GetGlyphsForUnicodeText(const ULongListList& inUnicodeCharacters,UIntListList& outGlyphs);
 
+	std::string GetPostscriptName();
 	double GetItalicAngle();
 	BoolAndFTShort GetCapHeight(); // aligned to pdf metrics
 	BoolAndFTShort GetxHeight(); // aligned to pdf metrics

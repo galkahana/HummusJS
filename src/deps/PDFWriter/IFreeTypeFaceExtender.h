@@ -75,6 +75,10 @@ public:
     // for queries to freetype, in the case of HasPrivateEncoding is true, get the freetype glyph index for a given font glyph index
     // (this will be different in case the 0 glyph index is not .notdef)
     virtual unsigned int GetFreeTypeGlyphIndexFromEncodingGlyphIndex(unsigned int inGlyphIndex) = 0;
+
+	// implement query of postscript font name which is not the standard free type method.
+	// return zero length for no name
+	virtual std::string GetPostscriptNameNonStandard()=0;
     
     
 };

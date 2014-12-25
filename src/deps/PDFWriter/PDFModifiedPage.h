@@ -30,6 +30,7 @@ class PDFDictionary;
 class PDFDocumentCopyingContext;
 class ObjectsContext;
 class ResourcesDictionary;
+class PDFParser;
 
 typedef std::vector<PDFFormXObject*> PDFFormXObjectVector;
 
@@ -58,7 +59,7 @@ private:
 	PDFFormXObject* mCurrentContext;
 	PDFFormXObjectVector mContenxts;
 
-	std::vector<std::string> WriteModifiedResourcesDict(PDFDictionary* inResourcesDictionary,ObjectsContext& inObjectContext,PDFDocumentCopyingContext* inCopyingContext);
+	std::vector<std::string> WriteModifiedResourcesDict(PDFParser* inParser,PDFDictionary* inResourcesDictionary,ObjectsContext& inObjectContext,PDFDocumentCopyingContext* inCopyingContext);
 	unsigned char GetDifferentChar(unsigned char);
 
 };

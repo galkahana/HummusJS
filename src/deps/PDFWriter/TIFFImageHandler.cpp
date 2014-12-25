@@ -2597,17 +2597,17 @@ void TIFFImageHandler::SamplePlanarSeparateToContig(unsigned char* inBuffer,
 tsize_t TIFFImageHandler::SampleRGBAToRGB(tdata_t inData, uint32 inSampleCount)
 {
 	uint32 i = 0;
-	uint32 sample = 0;
 	uint8 alpha = 0;
+    uint8* theData = (uint8*)inData;
 	
 	for (i = 0; i < inSampleCount; i++) 
 	{
-		sample=((uint32*)inData)[i];
-		alpha=(uint8)((255 - (sample & 0xff)));
-		((uint8 *)inData)[i * 3] = (uint8) ((sample >> 24) & 0xff) + alpha;
-		((uint8 *)inData)[i * 3 + 1] = (uint8) ((sample >> 16) & 0xff) + alpha;
-		((uint8 *)inData)[i * 3 + 2] = (uint8) ((sample >> 8) & 0xff) + alpha;
-		
+        alpha = 255 - theData[i*4+3];
+        
+        theData[i*3] = theData[i*4] + alpha;
+        theData[i*3+1] = theData[i*4+1] + alpha;
+        theData[i*3+2] = theData[i*4+2] + alpha;
+        
 	}
 
 	return (i * 3);

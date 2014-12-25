@@ -285,7 +285,7 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
     // mac resource fork header parsing
     // see: https://developer.apple.com/legacy/mac/library/documentation/mac/pdf/MoreMacintoshToolbox.pdf
 
-    unsigned long rdata_pos, map_pos, rdata_len, map_len, map_offset;
+    unsigned long rdata_pos, map_pos, rdata_len, map_offset;
 
     // verify that the header is composed as expected
     {
@@ -299,7 +299,6 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
         rdata_pos = ( head[0] << 24 )  | ( head[1] << 16 )  | ( head[2] <<  8 )  | head[3] ;
         map_pos   = ( head[4] << 24 )  | ( head[5] << 16 )  | ( head[6] <<  8 )  | head[7] ;
         rdata_len = ( head[8] << 24 )  | ( head[9] << 16 )  | ( head[10] <<  8 ) | head[11] ;
-        map_len   = ( head[12] << 24 ) | ( head[13] << 16 ) | ( head[14] <<  8 ) | head[15] ;
         
         if ( rdata_pos + rdata_len != map_pos || map_pos == 0 ) {
             return PDFHummus::eFailure;

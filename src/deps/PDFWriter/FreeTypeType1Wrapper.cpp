@@ -149,3 +149,8 @@ unsigned int FreeTypeType1Wrapper::GetFreeTypeGlyphIndexFromEncodingGlyphIndex(u
     return FT_Get_Name_Index(mFace,(FT_String*)(GetPrivateGlyphName(inGlyphIndex).c_str()));
 }
 
+std::string FreeTypeType1Wrapper::GetPostscriptNameNonStandard()
+{
+	// only way to go for type1 is standard...so return empty
+	return std::string();
+}

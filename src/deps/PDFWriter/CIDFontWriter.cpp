@@ -83,8 +83,8 @@ EStatusCode CIDFontWriter::WriteFont(FreeTypeFaceWrapper& inFontInfo,
 
 		// BaseFont
 		fontContext->WriteKey(scBaseFont);
-		const char* postscriptFontName = FT_Get_Postscript_Name(inFontInfo);
-		if(!postscriptFontName)
+		std::string postscriptFontName = inFontInfo.GetPostscriptName();
+		if(postscriptFontName.length() == 0)
 		{
 			TRACE_LOG("CIDFontWriter::WriteFont, unexpected failure. no postscript font name for font");
 			status = PDFHummus::eFailure;

@@ -68,22 +68,7 @@ struct ObjectStreamHeaderEntry
 	LongFilePositionType mObjectOffset;
 };
 
-class ReadPositionProviderForStreamWithPosition : public IReadPositionProvider
-{
-public:
-	void Assign(IByteReaderWithPosition* inStream)
-	{
-		mStream = inStream;
-	}
 
-	virtual LongFilePositionType GetCurrentPosition()
-	{
-		return mStream->GetCurrentPosition();
-	}
-private:
-	IByteReaderWithPosition* mStream;
-	
-};
 
 typedef std::map<ObjectIDType,ObjectStreamHeaderEntry*> ObjectIDTypeToObjectStreamHeaderEntryMap;
 

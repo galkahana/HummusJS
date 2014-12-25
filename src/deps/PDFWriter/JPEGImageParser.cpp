@@ -416,7 +416,19 @@ EStatusCode JPEGImageParser::ReadExifData(JPEGImageInformation& outImageInformat
 		else
 			outImageInformation.ExifUnit = 2;
 
-		unsigned long currentOffset = ifdOffset + ifdDirectorySize * 12 + 2;
+
+		unsigned long currentOffset = 0;																					
+		if(ifdOffset > 8) 																							
+		{																													
+			// that would be the case where the IFD data appears before thee ifd header. avoid issues with negative skip values by placing
+			// the position before the table
+			mImageStream->SetPosition(mImageStream->GetCurrentPosition() - (ifdOffset + ifdDirectorySize * 12 + 2));		
+			toSkip+=(ifdOffset + ifdDirectorySize * 12 + 2);																
+		}																													
+		else																												
+		{																													
+			currentOffset = ifdOffset + ifdDirectorySize * 12 + 2;
+		}																													
 		unsigned long tempOffset = currentOffset;
 		status = GetResolutionFromExif(outImageInformation, xResolutionOffset, yResolutionOffset, tempOffset, !isBigEndian);
 		if (status != PDFHummus::eSuccess)

@@ -19,10 +19,12 @@
    
 */
 #include "PDFPage.h"
+#include "Trace.h"
 
 PDFPage::PDFPage(void)
 {
 	mContentContext = NULL;
+	mRotate.first = false;
     mTrimBox.first = false;
     mArtBox.first = false;
     mCropBox.first = false;
@@ -42,6 +44,22 @@ void PDFPage::SetMediaBox(const PDFRectangle& inMediaBox)
 const PDFRectangle& PDFPage::GetMediaBox() const
 {
 	return mMediaBox;
+}
+
+void PDFPage::SetRotate( unsigned int inRotate )
+{
+	if ( inRotate % 90 )
+	{ 
+        TRACE_LOG("PDFPage::SetRotate, Exception, the value must be a multiple of 90. defaulting to 0");
+        inRotate = 0;
+	}
+	mRotate.first = true;
+	mRotate.second = inRotate;
+}
+
+const BoolAndUnsignedInt& PDFPage::GetRotate() const
+{
+	return mRotate;
 }
 
 void PDFPage::AddContentStreamReference(ObjectIDType inStreamReference)

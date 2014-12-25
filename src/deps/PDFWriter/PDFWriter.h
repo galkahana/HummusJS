@@ -276,7 +276,7 @@ private:
     bool mIsModified;
 
 	void SetupLog(const LogConfiguration& inLogConfiguration);
-	void SetupObjectsContext(const PDFCreationSettings& inPDFCreationSettings);
+	void SetupCreationSettings(const PDFCreationSettings& inPDFCreationSettings);
 	void ReleaseLog();
 	PDFHummus::EStatusCode SetupState(const std::string& inStateFilePath);
 	void Cleanup();

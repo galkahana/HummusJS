@@ -362,21 +362,21 @@ PDFPageModifier.prototype.writePage = function()
 
         }
         else
-            formResourcesNames = writeModifiedResourcesDict(pageDictionaryObject['Resources'],objCxt,cpyCxt,this.contexts);
+            formResourcesNames = writeModifiedResourcesDict(cpyCxt.getSourceDocumentParser(),pageDictionaryObject['Resources'],objCxt,cpyCxt,this.contexts);
     }
 
     // end page object and writing
     objCxt.endDictionary(modifiedPageObject).
             endIndirectObject();
 
-    // if necessary, create now the resource dictionary
+    // if necessary [resource dictionary existed and was indirect], create now the resource dictionary
     if(resourcesIndirect)
     {
         if(newResourcesIndirect) // if already written modified resources dict in the past, create a new one with the added form to differ from the previous
             objCxt.startNewIndirectObject(newResourcesIndirect);
         else
             objCxt.startModifiedIndirectObject(resourcesIndirect);
-        formResourcesNames = writeModifiedResourcesDict(cpyCxt.getSourceDocumentParser().parseNewObject(resourcesIndirect),objCxt,cpyCxt,this.contexts);
+        formResourcesNames = writeModifiedResourcesDict(cpyCxt.getSourceDocumentParser(),cpyCxt.getSourceDocumentParser().parseNewObject(resourcesIndirect),objCxt,cpyCxt,this.contexts);
         objCxt.endIndirectObject();
     }
 
@@ -406,7 +406,7 @@ PDFPageModifier.prototype.writePage = function()
 };
 
 
-function writeModifiedResourcesDict(inSourceDirect,inObjCxt,inCpyCxt,inNewXObjects)
+function writeModifiedResourcesDict(inParser,inSourceDirect,inObjCxt,inCpyCxt,inNewXObjects)
 {
     var formResourcesNames = [];
     var sourceObject = inSourceDirect.toPDFDictionary().toJSObject();
@@ -430,7 +430,9 @@ function writeModifiedResourcesDict(inSourceDirect,inObjCxt,inCpyCxt,inNewXObjec
         // i'm having a very sophisticated algo here to create a new unique name. 
         // i'm making sure it's different in one letter from any name, using a well known discrete math proof method
         imageObjectName = '';
-        var jsDict = sourceObject['XObject'].toPDFDictionary().toJSObject();
+        // getting the dict via inParser, cause it could be an indirect reference, or direct object and i don't want to know
+        var jsDict = inParser.queryDictionaryObject(inSourceDirect.toPDFDictionary(),'XObject').toPDFDictionary().toJSObject();
+        
         Object.getOwnPropertyNames(jsDict).forEach(function(element,index,array)
                                                     {
                                                             xobjectDict.writeKey(element);

@@ -75,6 +75,30 @@ bool PDFPageInput::operator!()
     return !mPageObject;
 }
 
+unsigned int PDFPageInput::GetRotate()
+{
+	unsigned int result = 0;
+    RefCountPtr<PDFObject> rotation(QueryInheritedValue(mPageObject.GetPtr(),"Rotate"));
+	if (!rotation)
+		return result;
+
+	ParsedPrimitiveHelper helper(rotation.GetPtr());
+	if (!helper.IsNumber())
+	{
+        TRACE_LOG("PDFPageInput::GetRotate, Exception, pdf page rotation must be numeric value. defaulting to 0");
+	}
+	else
+	{
+		result = static_cast<unsigned int>(helper.GetAsInteger());
+		if (result % 90)
+		{
+			TRACE_LOG("PDFPageInput::GetRotate, Exception, pdf page rotation must be a multiple of 90. defaulting to 0");
+			result = 0;
+		}
+	}
+	return result;
+}
+
 PDFRectangle PDFPageInput::GetMediaBox()
 {
     PDFRectangle result;

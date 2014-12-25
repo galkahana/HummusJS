@@ -965,7 +965,6 @@ EStatusCodeAndObjectIDType PDFDocumentHandler::CreatePDFPageForPage(unsigned lon
 	EStatusCodeAndObjectIDType result;
 	result.first = PDFHummus::eFailure;
 	result.second = 0;
-	PDFPage* newPage = NULL;
 
 	if(!pageObject)
 	{
@@ -985,36 +984,30 @@ EStatusCodeAndObjectIDType PDFDocumentHandler::CreatePDFPageForPage(unsigned lon
 	if(status != PDFHummus::eSuccess)
 		return result;
 
+	// Create a new form XObject
+	PDFPage newPage;
+
 	do
 	{
 		if(CopyResourcesIndirectObjects(pageObject.GetPtr()) != PDFHummus::eSuccess)
 			break;
-
-		// Create a new form XObject
-		newPage = new PDFPage();
  
-		newPage->SetMediaBox(PDFPageInput(mParser,pageObject).GetMediaBox());
+		PDFPageInput pageInput(mParser,pageObject);
+		newPage.SetMediaBox(pageInput.GetMediaBox());
+		newPage.SetRotate(pageInput.GetRotate());
 
 		// copy the page content to the target page content
-		if(CopyPageContentToTargetPage(newPage,pageObject.GetPtr()) != PDFHummus::eSuccess)
-		{
-			delete newPage;
-			newPage = NULL;
+		if(CopyPageContentToTargetPage(&newPage,pageObject.GetPtr()) != PDFHummus::eSuccess)
 			break;
-		}
 
 		// resources dictionary is gonna be empty at this point...so we can use our own code to write the dictionary, by extending.
 		// which will be a simple loop. note that at this point all indirect objects should have been copied, and have mapping
 		mDocumentContext->AddDocumentContextExtender(this);
 		mWrittenPage = pageObject.GetPtr();
 
-		result = mDocumentContext->WritePage(newPage);
+		result = mDocumentContext->WritePage(&newPage);
 		if(result.first != PDFHummus::eSuccess)
-		{
-			delete newPage;
-			newPage = NULL;
 			break;
-		}
 
 	}while(false);
 
@@ -1026,13 +1019,11 @@ EStatusCodeAndObjectIDType PDFDocumentHandler::CreatePDFPageForPage(unsigned lon
 		it = mExtenders.begin();
 		for(; it != mExtenders.end() && PDFHummus::eSuccess == result.first; ++it)
 		{
-			result.first = (*it)->OnAfterCreatePageFromPage(newPage,pageObject.GetPtr(),mObjectsContext,mDocumentContext,this);
+			result.first = (*it)->OnAfterCreatePageFromPage(&newPage,pageObject.GetPtr(),mObjectsContext,mDocumentContext,this);
 			if(result.first != PDFHummus::eSuccess)
 				TRACE_LOG("DocumentContext::CreatePDFFormXObjectForPage, unexpected failure. extender declared failure after writing page.");
 		}
 	}
-
-	delete newPage;
 
 	return result;	
 }

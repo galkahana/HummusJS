@@ -194,8 +194,8 @@ PDFObject* PDFObjectParser::ParseNewObject(IPDFParserExtender* inParserExtender)
 				if(scStream == token) 
 				{
 					// yes, found a stream. record current position as the position where the stream starts. 
-					// [tokenizer took care that the posiiton should be that way with a special case]
-					pdfObject = new PDFStreamInput((PDFDictionary*)pdfObject,mCurrentPositionProvider->GetCurrentPosition());
+					// remove from the current stream position the size of the tokenizer buffer, which is "read", but not used
+					pdfObject = new PDFStreamInput((PDFDictionary*)pdfObject, mCurrentPositionProvider->GetCurrentPosition() - mTokenizer.GetReadBufferSize());
 				}
 				else
 				{

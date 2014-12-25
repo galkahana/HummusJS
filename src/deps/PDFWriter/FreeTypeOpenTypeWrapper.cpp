@@ -21,6 +21,8 @@
 #include "FreeTypeOpenTypeWrapper.h"
 #include "Trace.h"
 
+#include FT_SFNT_NAMES_H
+
 #include <algorithm>
 #include <math.h>
 
@@ -263,6 +265,47 @@ std::string FreeTypeOpenTypeWrapper::GetPrivateGlyphName(unsigned int inGlyphInd
 unsigned int FreeTypeOpenTypeWrapper::GetFreeTypeGlyphIndexFromEncodingGlyphIndex(unsigned int inGlyphIndex)
 {
     return inGlyphIndex;
+}
+
+std::string FreeTypeOpenTypeWrapper::GetPostscriptNameNonStandard()
+{
+	// freetype may be over restrictive on language encoding for postscript...which shouldn't matter.
+	// it's doing the right thing per the specs, but there are fonts out there that don't respect the specs
+	// in that manner and still work on applications, so we don't want to be overrestrictive
+	FT_UInt nameCount = FT_Get_Sfnt_Name_Count(mFace);
+	std::string result;
+	FT_SfntName entry;
+	bool foundWin = false;
+
+	// look for win/mac. win takes prioerity;
+
+	for(FT_UInt i = 0;i<nameCount && !foundWin;++i)
+	{
+		if(FT_Get_Sfnt_Name(mFace,i,&entry) == 0)
+		{
+			if(entry.name_id == 6)
+			{
+				if(entry.platform_id == 1 && entry.encoding_id == 0)
+				{
+					// mac
+					result.assign((const char*)(entry.string),entry.string_len);
+				}
+				else if(entry.platform_id == 3 && entry.encoding_id == 1)
+				{
+					// win
+					foundWin = true;
+					result.clear();
+					for(FT_UInt j=1;j<entry.string_len;j+=2)
+					{
+						result.push_back(entry.string[j]); // unicode!
+					}
+				}
+			}
+		}
+	}
+
+
+	return result;
 }
 
 

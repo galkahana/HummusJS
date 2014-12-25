@@ -47,6 +47,7 @@ public:
     virtual unsigned int GetGlyphForUnicodeChar(unsigned long inChar);
     virtual std::string GetPrivateGlyphName(unsigned int inGlyphIndex);
     virtual unsigned int GetFreeTypeGlyphIndexFromEncodingGlyphIndex(unsigned int inGlyphIndex);
+	virtual std::string GetPostscriptNameNonStandard();
 
 private:
 	TT_Postscript* mPostScriptTable;

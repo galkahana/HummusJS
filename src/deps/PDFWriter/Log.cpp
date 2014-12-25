@@ -23,6 +23,9 @@
 #include "IByteWriterWithPosition.h"
 #include <ctime>
 #include <stdio.h>
+#ifdef __MINGW32__
+#include <share.h>
+#endif
 
 void STATIC_LogEntryToFile(Log* inThis,const Byte* inMessage, LongBufferSizeType inMessageSize)
 {
