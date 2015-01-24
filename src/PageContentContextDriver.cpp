@@ -119,13 +119,13 @@ PDFWriterDriver* PageContentContextDriver::GetPDFWriter()
 }
 
 
-class PageImageWritingTask : public IPageEndWritingTask
+class PageContentImageWritingTask : public IPageEndWritingTask
 {
 public:
-    PageImageWritingTask(PDFWriterDriver* inDriver,const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+    PageContentImageWritingTask(PDFWriterDriver* inDriver,const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
     {mDriver = inDriver;mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
     
-    virtual ~PageImageWritingTask(){}
+    virtual ~PageContentImageWritingTask(){}
     
     virtual PDFHummus::EStatusCode Write(PDFPage* inPageObject,
                                          ObjectsContext* inObjectsContext,
@@ -146,6 +146,6 @@ void PageContentContextDriver::ScheduleImageWrite(const std::string& inImagePath
 {
     mPDFWriterDriver->GetWriter()->GetDocumentContext().RegisterPageEndWritingTask(
                                                                                    ContentContext->GetAssociatedPage(),
-                                                                                   new PageImageWritingTask(mPDFWriterDriver,inImagePath,inImageIndex,inObjectID));
+                                                                                   new PageContentImageWritingTask(mPDFWriterDriver,inImagePath,inImageIndex,inObjectID));
     
 }
