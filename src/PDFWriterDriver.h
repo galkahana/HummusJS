@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 #include <utility>
 #include <string>
 #include <map>
@@ -63,7 +63,8 @@ public:
     virtual ~PDFWriterDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 
     PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
                                     EPDFVersion inPDFVersion,
@@ -111,36 +112,36 @@ private:
     
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> End(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreatePage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WritePage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WritePageAndReturnID(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartPageContentContext(const v8::Arguments& args);
-    static v8::Handle<v8::Value> PausePageContentContext(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateFormXObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndFormXObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateformXObjectFromJPG(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateImageXObjectFromJPG(const v8::Arguments& args);
-    static v8::Handle<v8::Value> RetrieveJPGImageInformation(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetFontForFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AttachURLLinktoCurrentPage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Shutdown(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateFormXObjectFromTIFF(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetObjectsContext(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AppendPDFPagesFromPDF(const v8::Arguments& args);
-    static v8::Handle<v8::Value> MergePDFPagesToPage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreatePDFCopyingContext(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateFormXObjectsFromPDF(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreatePDFCopyingContextForModifiedFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreatePDFTextString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreatePDFDate(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SGetImageDimensions(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetModifiedFileParser(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetModifiedInputFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetOutputFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetDocumentContext(const v8::Arguments& args);
-    static v8::Handle<v8::Value> RegisterAnnotationReferenceForNextPageWrite(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE End(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreatePage(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WritePage(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WritePageAndReturnID(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartPageContentContext(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE PausePageContentContext(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreateFormXObject(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndFormXObject(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreateformXObjectFromJPG(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreateImageXObjectFromJPG(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE RetrieveJPGImageInformation(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetFontForFile(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AttachURLLinktoCurrentPage(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Shutdown(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreateFormXObjectFromTIFF(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetObjectsContext(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AppendPDFPagesFromPDF(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE MergePDFPagesToPage(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreatePDFCopyingContext(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreateFormXObjectsFromPDF(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreatePDFCopyingContextForModifiedFile(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreatePDFTextString(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE CreatePDFDate(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE SGetImageDimensions(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetModifiedFileParser(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetModifiedInputFile(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetOutputFile(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetDocumentContext(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE RegisterAnnotationReferenceForNextPageWrite(const ARGS_TYPE& args);
     
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);

@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 
 class PDFObject;
@@ -38,22 +38,22 @@ public:
 private:
     
     
-    static v8::Handle<v8::Value> GetType(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFIndirectObjectReference(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFArray(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFDictionary(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFStream(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFBoolean(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFLiteralString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFHexString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFNull(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFName(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFInteger(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFReal(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToPDFSymbol(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE GetType(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFIndirectObjectReference(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFArray(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFDictionary(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFStream(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFBoolean(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFLiteralString(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFHexString(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFNull(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFName(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFInteger(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFReal(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToPDFSymbol(const ARGS_TYPE& args);
     // return number for pdf numbers (real and integer) and null for non numbers
-    static v8::Handle<v8::Value> ToNumber(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE ToNumber(const ARGS_TYPE& args);
     // strings (relevant for: names, literal string, hex string, real, integer, symbol, boolean)
-    static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE ToString(const ARGS_TYPE& args);
     
 };

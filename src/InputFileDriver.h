@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 #include "EStatusCode.h"
 
@@ -33,7 +33,8 @@ public:
     virtual ~InputFileDriver();
     
     static void Init(v8::Handle<v8::Object> inExports); // to allow instantiation from the hummus object
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     
@@ -49,11 +50,11 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> OpenFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CloseFile(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetFilePath(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetFileSize(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetInputStream(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE OpenFile(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CloseFile(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetFilePath(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetFileSize(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetInputStream(const ARGS_TYPE& args);
 
 };

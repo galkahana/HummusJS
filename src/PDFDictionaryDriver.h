@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
 #include "PDFDictionary.h"
@@ -28,8 +28,9 @@ class PDFDictionaryDriver : public PDFObjectDriver
 {
 public:
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance();
+	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFObjectCastPtr<PDFDictionary> TheObject;
     
@@ -39,8 +40,8 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToJSObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> QueryObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Exists(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToJSObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE QueryObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE Exists(const ARGS_TYPE& args);
 };

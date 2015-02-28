@@ -37,34 +37,44 @@ Persistent<Function> XObjectContentContextDriver::constructor;
 
 void XObjectContentContextDriver::Init()
 {
-    // prepare the context driver interfrace template
-    Local<FunctionTemplate> ft = FunctionTemplate::New(New);
-    ft->SetClassName(String::NewSymbol("XObjectContentContext"));
-    ft->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    AbstractContentContextDriver::Init(ft);
-    
-    constructor = Persistent<Function>::New(ft->GetFunction());
+	CREATE_ISOLATE_CONTEXT;
+
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("XObjectContentContext"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+	AbstractContentContextDriver::Init(t);
+	SET_CONSTRUCTOR(constructor, t);
 }
 
-Handle<Value> XObjectContentContextDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE XObjectContentContextDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
-    Local<Object> instance = constructor->NewInstance();
+    Local<Object> instance = NEW_INSTANCE(constructor);
     
-    return scope.Close(instance);
+    SET_FUNCTION_RETURN_VALUE(instance);
 }
 
-
-Handle<Value> XObjectContentContextDriver::New(const Arguments& args)
+v8::Handle<v8::Value> XObjectContentContextDriver::GetNewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
+}
+
+METHOD_RETURN_TYPE XObjectContentContextDriver::New(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     XObjectContentContextDriver* form = new XObjectContentContextDriver();
     form->Wrap(args.This());
     
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 AbstractContentContext* XObjectContentContextDriver::GetContext()

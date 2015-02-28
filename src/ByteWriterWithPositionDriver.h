@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 class IByteWriterWithPosition;
 
@@ -29,7 +29,8 @@ public:
     virtual ~ByteWriterWithPositionDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     void SetStream(IByteWriterWithPosition* inReader,bool inOwns);
@@ -45,7 +46,7 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Write(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCurrentPosition(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE Write(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetCurrentPosition(const ARGS_TYPE& args);
 };

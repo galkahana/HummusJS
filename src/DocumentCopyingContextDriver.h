@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 class PDFDocumentCopyingContext;
 class IByteReaderWithPosition;
@@ -31,7 +31,8 @@ public:
     virtual ~DocumentCopyingContextDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
     PDFDocumentCopyingContext* CopyingContext;
     // member holding an optional stream pointer, held by copying context for the sake of final release
@@ -41,19 +42,19 @@ private:
     DocumentCopyingContextDriver();
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CreateFormXObjectFromPDFPage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> MergePDFPageToPage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AppendPDFPageFromPDF(const v8::Arguments& args);
-    static v8::Handle<v8::Value> MergePDFPageToFormXObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetSourceDocumentParser(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CopyDirectObjectAsIs(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CopyObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CopyDirectObjectWithDeepCopy(const v8::Arguments& args);
-    static v8::Handle<v8::Value> CopyNewObjectsForDirectObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCopiedObjectID(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCopiedObjects(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ReplaceSourceObjects(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetSourceDocumentStream(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CreateFormXObjectFromPDFPage(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE MergePDFPageToPage(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE AppendPDFPageFromPDF(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE MergePDFPageToFormXObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetSourceDocumentParser(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CopyDirectObjectAsIs(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CopyObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CopyDirectObjectWithDeepCopy(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CopyNewObjectsForDirectObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetCopiedObjectID(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetCopiedObjects(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ReplaceSourceObjects(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetSourceDocumentStream(const ARGS_TYPE& args);
     
 };

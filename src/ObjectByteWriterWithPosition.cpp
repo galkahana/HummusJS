@@ -23,26 +23,29 @@ using namespace v8;
 
 ObjectByteWriterWithPosition::ObjectByteWriterWithPosition(Handle<Object> inObject)
 {
-    mObject = Persistent<Object>::New(inObject);
+	CREATE_ISOLATE_CONTEXT;
+
+	SET_PERSISTENT_OBJECT(mObject, OBJECT, inObject);
 }
 
 ObjectByteWriterWithPosition::~ObjectByteWriterWithPosition()
 {
-    mObject.Dispose();
+	DISPOSE_PERSISTENT(mObject);
 }
 
 IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize)
 {
-    HandleScope handle;
-    
-    Handle<Object> anArray = Array::New((int)inBufferSize);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Object> anArray = NEW_ARRAY((int)inBufferSize);
     for(int i=0;i<(int)inBufferSize;++i)
-        anArray->Set(Number::New(i),Number::New(inBuffer[i]));
+        anArray->Set(NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
     
-    Handle<Value> value = mObject->Get(String::New("write"));
+	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("write"));
     if(value->IsUndefined() || !value->IsFunction())
     {
-		ThrowException(Exception::TypeError(String::New("write is not a function, it should be you know...")));
+		THROW_EXCEPTION("write is not a function, it should be you know...");
         return 0;
     }
     Handle<Function> func = Handle<Function>::Cast(value);
@@ -50,10 +53,10 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     Handle<Value> args[1];
     args[0] = anArray;
     
-    Handle<Value> result = func->Call(mObject, 1, args);
+	Handle<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
     if(result.IsEmpty())
     {
-		ThrowException(Exception::TypeError(String::New("wrong return value. it's empty. return the number of written characters")));
+		THROW_EXCEPTION("wrong return value. it's empty. return the number of written characters");
 		return 0;
     }
     else if(result->IsNumber())
@@ -62,19 +65,20 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     }
     else
     {
-		ThrowException(Exception::TypeError(String::New("wrong return value. write should return the number of written characters")));
+		THROW_EXCEPTION("wrong return value. write should return the number of written characters");
 		return 0;
     }
 }
 
 IOBasicTypes::LongFilePositionType ObjectByteWriterWithPosition::GetCurrentPosition()
 {
-    HandleScope handle;
-    
-    Handle<Value> value = mObject->Get(String::New("getCurrentPosition"));
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("getCurrentPosition"));
     if(value->IsUndefined())
         return true;
     Handle<Function> func = Handle<Function>::Cast(value);
     
-    return (func->Call(mObject, 0, NULL)->ToNumber()->Value());
+	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->ToNumber()->Value());
 }

@@ -31,33 +31,46 @@ DictionaryContextDriver::~DictionaryContextDriver()
 
 void DictionaryContextDriver::Init()
 {
-    // prepare the form xobject driver interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("DictionaryContext"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("writeKey"),FunctionTemplate::New(WriteKey)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("writeNameValue"),FunctionTemplate::New(WriteNameValue)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("writeRectangleValue"),FunctionTemplate::New(WriteRectangleValue)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("writeLiteralStringValue"),FunctionTemplate::New(WriteLiteralStringValue)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("writeBooleanValue"),FunctionTemplate::New(WriteBooleanValue)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("writeObjectReferenceValue"),FunctionTemplate::New(WriteObjectReferenceValue)->GetFunction());
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	CREATE_ISOLATE_CONTEXT;
+
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("DictionaryContext"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "writeKey", WriteKey);
+	SET_PROTOTYPE_METHOD(t, "writeNameValue", WriteNameValue);
+	SET_PROTOTYPE_METHOD(t, "writeRectangleValue", WriteRectangleValue);
+	SET_PROTOTYPE_METHOD(t, "writeLiteralStringValue", WriteLiteralStringValue);
+	SET_PROTOTYPE_METHOD(t, "writeBooleanValue", WriteBooleanValue);
+	SET_PROTOTYPE_METHOD(t, "writeObjectReferenceValue", WriteObjectReferenceValue);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> DictionaryContextDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> DictionaryContextDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool DictionaryContextDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
 DictionaryContextDriver::DictionaryContextDriver()
@@ -68,25 +81,27 @@ DictionaryContextDriver::DictionaryContextDriver()
 Persistent<Function> DictionaryContextDriver::constructor;
 Persistent<FunctionTemplate> DictionaryContextDriver::constructor_template;
 
-Handle<v8::Value> DictionaryContextDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DictionaryContextDriver* driver = new DictionaryContextDriver();
     driver->Wrap(args.This());
     
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> DictionaryContextDriver::WriteKey(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteKey(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(!(args.Length() == 1) ||
        !args[0]->IsString())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a string to write")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments, provide a string to write");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         
     }
     
@@ -94,25 +109,26 @@ Handle<Value> DictionaryContextDriver::WriteKey(const Arguments& args)
     
     if(!driver->DictionaryContextInstance)
     {
-		ThrowException(Exception::TypeError(String::New("dictinoarycontext object not initialized, create using objectscontext.startDictionary")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     driver->DictionaryContextInstance->WriteKey(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> DictionaryContextDriver::WriteRectangleValue(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     // can accept array or four numbers
     if( (args.Length() != 1 && args.Length() != 4) ||
        (args.Length() == 1 && !args[0]->IsArray()) ||
        (args.Length() == 4 && (!args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber())))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an array of 4 numbers, or 4 numbers")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments, provide an array of 4 numbers, or 4 numbers");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         
     }
     
@@ -120,17 +136,17 @@ Handle<Value> DictionaryContextDriver::WriteRectangleValue(const Arguments& args
     
     if(!driver->DictionaryContextInstance)
     {
-		ThrowException(Exception::TypeError(String::New("dictinoarycontext object not initialized, create using objectscontext.startDictionary")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() == 1)
     {
         // array version. verify that there are 4 numbers
-        if(args[0]->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 4)
+        if(args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
         {
-            ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an array of 4 numbers, or 4 numbers")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("Wrong arguments, provide an array of 4 numbers, or 4 numbers");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
         driver->DictionaryContextInstance->WriteRectangleValue(PDFRectangle(
@@ -151,18 +167,19 @@ Handle<Value> DictionaryContextDriver::WriteRectangleValue(const Arguments& args
     }
     
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> DictionaryContextDriver::WriteNameValue(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteNameValue(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(!(args.Length() == 1) ||
        !args[0]->IsString())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a string to write")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments, provide a string to write");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         
     }
     
@@ -170,24 +187,25 @@ Handle<Value> DictionaryContextDriver::WriteNameValue(const Arguments& args)
     
     if(!driver->DictionaryContextInstance)
     {
-		ThrowException(Exception::TypeError(String::New("dictinoarycontext object not initialized, create using objectscontext.startDictionary")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     driver->DictionaryContextInstance->WriteNameValue(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> DictionaryContextDriver::WriteLiteralStringValue(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(!(args.Length() == 1) ||
        (!args[0]->IsString() && !args[0]->IsArray()))
     {
-		ThrowException(Exception::TypeError(String::New("wrong arguments, pass 1 argument that is a literal string (string) or an array")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("wrong arguments, pass 1 argument that is a literal string (string) or an array");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         
     }
 
@@ -195,14 +213,14 @@ Handle<Value> DictionaryContextDriver::WriteLiteralStringValue(const Arguments& 
     
     if(!driver->DictionaryContextInstance)
     {
-		ThrowException(Exception::TypeError(String::New("dictinoarycontext object not initialized, create using objectscontext.startDictionary")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
 
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::String::New("length")))->ToObject()->Uint32Value();
+		unsigned long arrayLength = (args[0]->ToObject()->Get(NEW_STRING("length")))->ToObject()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
 			string.push_back((unsigned char)args[0]->ToObject()->Get(i)->ToNumber()->Value());
 		driver->DictionaryContextInstance->WriteLiteralStringValue(string);
@@ -211,53 +229,55 @@ Handle<Value> DictionaryContextDriver::WriteLiteralStringValue(const Arguments& 
     {
 		driver->DictionaryContextInstance->WriteLiteralStringValue(*String::Utf8Value(args[0]->ToString()));
 	}
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> DictionaryContextDriver::WriteBooleanValue(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteBooleanValue(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(!(args.Length() == 1) ||
        !args[0]->IsBoolean())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a boolean to write")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments, provide a boolean to write");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         
     }
     DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args.This());
     
     if(!driver->DictionaryContextInstance)
     {
-		ThrowException(Exception::TypeError(String::New("dictinoarycontext object not initialized, create using objectscontext.startDictionary")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     driver->DictionaryContextInstance->WriteBooleanValue(args[0]->ToBoolean()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> DictionaryContextDriver::WriteObjectReferenceValue(const Arguments& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(!(args.Length() == 1) ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an object id to write")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments, provide an object id to write");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         
     }
     DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args.This());
     
     if(!driver->DictionaryContextInstance)
     {
-		ThrowException(Exception::TypeError(String::New("dictinoarycontext object not initialized, create using objectscontext.startDictionary")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)args[0]->ToNumber()->Uint32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }

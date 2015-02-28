@@ -40,43 +40,62 @@ ByteReaderWithPositionDriver::~ByteReaderWithPositionDriver()
 
 void ByteReaderWithPositionDriver::Init()
 {
-    // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("ByteReaderWithPosition"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("read"),FunctionTemplate::New(Read)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("notEnded"),FunctionTemplate::New(NotEnded)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("setPosition"),FunctionTemplate::New(SetPosition)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getCurrentPosition"),FunctionTemplate::New(GetCurrentPosition)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("setPositionFromEnd"),FunctionTemplate::New(SetPositionFromEnd)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("skip"),FunctionTemplate::New(Skip)->GetFunction());
-    
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+
+	CREATE_ISOLATE_CONTEXT;
+
+	// prepare the page interfrace template
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("ByteReaderWithPosition"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	// prepare the page interfrace template
+	SET_PROTOTYPE_METHOD(t, "read", Read);
+	SET_PROTOTYPE_METHOD(t, "notEnded", NotEnded);
+	SET_PROTOTYPE_METHOD(t, "setPosition", SetPosition);
+	SET_PROTOTYPE_METHOD(t, "getCurrentPosition", GetCurrentPosition);
+	SET_PROTOTYPE_METHOD(t, "setPositionFromEnd", SetPositionFromEnd);
+	SET_PROTOTYPE_METHOD(t, "skip", Skip);
+
+
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> ByteReaderWithPositionDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
 }
+
+v8::Handle<v8::Value> ByteReaderWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
+}
+
 
 bool ByteReaderWithPositionDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> ByteReaderWithPositionDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteReaderWithPositionDriver* driver = new ByteReaderWithPositionDriver();
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 void ByteReaderWithPositionDriver::SetStream(IByteReaderWithPosition* inReader,bool inOwns)
@@ -94,16 +113,17 @@ IByteReaderWithPosition* ByteReaderWithPositionDriver::GetStream()
 
 using namespace IOBasicTypes;
 
-v8::Handle<v8::Value> ByteReaderWithPositionDriver::Read(const v8::Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Read(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     // k. i'll just read the number of bytes and return an array of them
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass the number of bytes to read")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass the number of bytes to read");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
@@ -112,82 +132,87 @@ v8::Handle<v8::Value> ByteReaderWithPositionDriver::Read(const v8::Arguments& ar
     
     bufferSize = element->mInstance->Read(buffer,(int)bufferSize); // reading int cause that's the maximum that can read (use should read till notended anyways)
     
-    Local<Array> outBuffer = Array::New((int)bufferSize);
+    Local<Array> outBuffer = NEW_ARRAY((int)bufferSize);
     
     for(LongBufferSizeType i=0;i<bufferSize;++i)
-        outBuffer->Set(Number::New(i),Number::New(buffer[i]));
+        outBuffer->Set(NEW_NUMBER(i),NEW_NUMBER(buffer[i]));
     
-    return scope.Close(outBuffer);
+    SET_FUNCTION_RETURN_VALUE(outBuffer);
 }
 
-Handle<Value> ByteReaderWithPositionDriver::NotEnded(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::NotEnded(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     
-    return scope.Close(Boolean::New(element->mInstance->NotEnded()));
+    SET_FUNCTION_RETURN_VALUE(NEW_BOOLEAN(element->mInstance->NotEnded()));
 }
 
-Handle<Value> ByteReaderWithPositionDriver::GetCurrentPosition(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::GetCurrentPosition(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     
-    return scope.Close(Number::New(element->mInstance->GetCurrentPosition()));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->mInstance->GetCurrentPosition()));
 }
 
-Handle<Value> ByteReaderWithPositionDriver::Skip(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Skip(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass the number of bytes to skip")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass the number of bytes to skip");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
 
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     element->mInstance->Skip(args[0]->ToNumber()->Uint32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> ByteReaderWithPositionDriver::SetPosition(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPosition(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass the position")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass the position");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     element->mInstance->SetPosition(args[0]->ToNumber()->Uint32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> ByteReaderWithPositionDriver::SetPositionFromEnd(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPositionFromEnd(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass the position")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass the position");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     element->mInstance->SetPositionFromEnd(args[0]->ToNumber()->Uint32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }

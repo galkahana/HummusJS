@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 #include "PDFDictionary.h"
 #include "PDFObjectCast.h"
@@ -34,7 +34,8 @@ public:
     virtual ~PDFPageInputDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance();
     
     PDFPageInput* PageInput;
     PDFObjectCastPtr<PDFDictionary> PageInputDictionary;
@@ -42,13 +43,13 @@ public:
 private:
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetDictionary(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetMediaBox(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCropBox(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetTrimBox(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetBleedBox(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetArtBox(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetDictionary(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetMediaBox(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetCropBox(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetTrimBox(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetBleedBox(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetArtBox(const ARGS_TYPE& args);
     
     static v8::Handle<v8::Value> GetArrayForPDFRectangle(const PDFRectangle& inRectangle);
     

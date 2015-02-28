@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 #include "GlyphUnicodeMapping.h"
 #include "ObjectsBasicTypes.h"
@@ -68,109 +68,109 @@ private:
     ResourcesDictionary* mResourcesDictionary;
     
     // simple content placements
-    static v8::Handle<v8::Value> DrawPath(const v8::Arguments& args);
-    static v8::Handle<v8::Value> DrawCircle(const v8::Arguments& args);
-    static v8::Handle<v8::Value> DrawSquare(const v8::Arguments& args);
-    static v8::Handle<v8::Value> DrawRectangle(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteText(const v8::Arguments& args);
-    static v8::Handle<v8::Value> DrawImage(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE DrawPath(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE DrawCircle(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE DrawSquare(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE DrawRectangle(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteText(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE DrawImage(const ARGS_TYPE& args);
     
     // now for regular PDF operators implementation
     
     
     // path stroke/fill
-    static v8::Handle<v8::Value> b(const v8::Arguments& args);
-	static v8::Handle<v8::Value> B(const v8::Arguments& args);
-	static v8::Handle<v8::Value> bStar(const v8::Arguments& args);
-	static v8::Handle<v8::Value> BStar(const v8::Arguments& args);
-	static v8::Handle<v8::Value> s(const v8::Arguments& args);
-	static v8::Handle<v8::Value> S(const v8::Arguments& args);
-	static v8::Handle<v8::Value> f(const v8::Arguments& args);
-	static v8::Handle<v8::Value> F(const v8::Arguments& args);
-	static v8::Handle<v8::Value> fStar(const v8::Arguments& args);
-	static v8::Handle<v8::Value> n(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE b(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE B(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE bStar(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE BStar(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE s(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE S(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE f(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE F(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE fStar(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE n(const ARGS_TYPE& args);
 
     // path construction
-    static v8::Handle<v8::Value> m(const v8::Arguments& args);
-	static v8::Handle<v8::Value> l(const v8::Arguments& args);
-	static v8::Handle<v8::Value> c(const v8::Arguments& args);
-	static v8::Handle<v8::Value> v(const v8::Arguments& args);
-	static v8::Handle<v8::Value> y(const v8::Arguments& args);
-	static v8::Handle<v8::Value> h(const v8::Arguments& args);
-	static v8::Handle<v8::Value> re(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE m(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE l(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE c(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE v(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE y(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE h(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE re(const ARGS_TYPE& args);
 
     // graphic state
-    static v8::Handle<v8::Value> q(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Q(const v8::Arguments& args);
-    static v8::Handle<v8::Value> cm(const v8::Arguments& args);
-    static v8::Handle<v8::Value> w(const v8::Arguments& args);
-    static v8::Handle<v8::Value> J(const v8::Arguments& args);
-    static v8::Handle<v8::Value> j(const v8::Arguments& args);
-    static v8::Handle<v8::Value> M(const v8::Arguments& args);
-    static v8::Handle<v8::Value> d(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ri(const v8::Arguments& args);
-    static v8::Handle<v8::Value> i(const v8::Arguments& args);
-    static v8::Handle<v8::Value> gs(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE q(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Q(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE cm(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE w(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE J(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE j(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE M(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE d(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE ri(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE i(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE gs(const ARGS_TYPE& args);
 
     // color operators
-    static v8::Handle<v8::Value> CS(const v8::Arguments& args);
-    static v8::Handle<v8::Value> cs(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SC(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SCN(const v8::Arguments& args);
-    static v8::Handle<v8::Value> sc(const v8::Arguments& args);
-    static v8::Handle<v8::Value> scn(const v8::Arguments& args);
-    static v8::Handle<v8::Value> G(const v8::Arguments& args);
-    static v8::Handle<v8::Value> g(const v8::Arguments& args);
-    static v8::Handle<v8::Value> RG(const v8::Arguments& args);
-    static v8::Handle<v8::Value> rg(const v8::Arguments& args);
-    static v8::Handle<v8::Value> K(const v8::Arguments& args);
-    static v8::Handle<v8::Value> k(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE CS(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE cs(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE SC(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE SCN(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE sc(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE scn(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE G(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE g(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE RG(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE rg(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE K(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE k(const ARGS_TYPE& args);
     
  	// clip operators
-    static v8::Handle<v8::Value> W(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WStar(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE W(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WStar(const ARGS_TYPE& args);
 
     // XObject usage
-    static v8::Handle<v8::Value> doXObject(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE doXObject(const ARGS_TYPE& args);
 
     // Text state operators
-    static v8::Handle<v8::Value> Tc(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Tw(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Tz(const v8::Arguments& args);
-    static v8::Handle<v8::Value> TL(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Tr(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Ts(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE Tc(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Tw(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Tz(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE TL(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Tr(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Ts(const ARGS_TYPE& args);
     
 	// Text object operators
-    static v8::Handle<v8::Value> BT(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ET(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE BT(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE ET(const ARGS_TYPE& args);
    
 	// Text positioning operators
-    static v8::Handle<v8::Value> Td(const v8::Arguments& args);
-    static v8::Handle<v8::Value> TD(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Tm(const v8::Arguments& args);
-    static v8::Handle<v8::Value> TStar(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE Td(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE TD(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Tm(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE TStar(const ARGS_TYPE& args);
 
     // Font setting
-    static v8::Handle<v8::Value> Tf(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE Tf(const ARGS_TYPE& args);
 
     // Text showing
-    static v8::Handle<v8::Value> Tj(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Quote(const v8::Arguments& args);
-    static v8::Handle<v8::Value> DoubleQuote(const v8::Arguments& args);
-    static v8::Handle<v8::Value> TJ(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE Tj(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE Quote(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE DoubleQuote(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE TJ(const ARGS_TYPE& args);
     
     // Others
-    static v8::Handle<v8::Value> WriteFreeCode(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE WriteFreeCode(const ARGS_TYPE& args);
     
     
     static TextPlacingOptions ObjectToOptions(const v8::Handle<v8::Object>& inObject);
-    static GlyphUnicodeMappingList ArrayToGlyphsList(const v8::Handle<v8::Value>& inArray);
+	static GlyphUnicodeMappingList ArrayToGlyphsList(const v8::Handle<v8::Value>& inArray);
         
-    void SetupColorAndLineWidth(const v8::Handle<v8::Value>& inMaybeOptions);
-    void SetColor(const v8::Handle<v8::Value>& inMaybeOptions,bool inIsStroke);
-    void FinishPath(const v8::Handle<v8::Value>& inMaybeOptions);
-    void SetFont(const v8::Handle<v8::Value>& inMaybeOptions);
+	void SetupColorAndLineWidth(const v8::Handle<v8::Value>& inMaybeOptions);
+	void SetColor(const v8::Handle<v8::Value>& inMaybeOptions, bool inIsStroke);
+	void FinishPath(const v8::Handle<v8::Value>& inMaybeOptions);
+	void SetFont(const v8::Handle<v8::Value>& inMaybeOptions);
     void SetRGBColor(unsigned long inColorValue,bool inIsStroke);
 
 };

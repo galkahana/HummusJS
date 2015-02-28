@@ -24,3 +24,5 @@ pdfWriter.startPageContentContext(page).q()
 
 pdfWriter.writePage(page)
          .end();
+
+console.log('done - ok');

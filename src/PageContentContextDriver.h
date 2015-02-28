@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 #include "AbstractContentContextDriver.h"
 
@@ -33,7 +33,8 @@ public:
     virtual ~PageContentContextDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     void SetPDFWriter(PDFWriterDriver* inDriver);
@@ -52,8 +53,8 @@ private:
  
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCurrentPageContentStream(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetAssociatedPage(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetCurrentPageContentStream(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetAssociatedPage(const ARGS_TYPE& args);
     
 };

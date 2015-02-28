@@ -27,39 +27,53 @@ Persistent<FunctionTemplate> PDFSymbolDriver::constructor_template;
 
 void PDFSymbolDriver::Init()
 {
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("PDFSymbol"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor_template->InstanceTemplate()->SetAccessor(String::NewSymbol("value"),GetValue);
-    
-    PDFObjectDriver::Init(constructor_template);
+	CREATE_ISOLATE_CONTEXT;
 
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("PDFSymbol"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_ACCESSOR_METHOD(t, "value", GetValue);
+	PDFObjectDriver::Init(t);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> PDFSymbolDriver::NewInstance()
+METHOD_RETURN_TYPE PDFSymbolDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
-    Local<Object> instance = constructor->NewInstance();
+	Local<Object> instance = NEW_INSTANCE(constructor);
     
-    return scope.Close(instance);
+    SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> PDFSymbolDriver::GetNewInstance()
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool PDFSymbolDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> PDFSymbolDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE PDFSymbolDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     PDFSymbolDriver* driver = new PDFSymbolDriver();
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 PDFObject* PDFSymbolDriver::GetObject()
@@ -67,12 +81,13 @@ PDFObject* PDFSymbolDriver::GetObject()
     return TheObject.GetPtr();
 }
 
-Handle<Value> PDFSymbolDriver::GetValue(Local<String> property,const AccessorInfo &info)
+METHOD_RETURN_TYPE PDFSymbolDriver::GetValue(Local<String> property, const PROPERTY_TYPE &info)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<String> result = String::New(ObjectWrap::Unwrap<PDFSymbolDriver>(info.Holder())->TheObject->GetValue().c_str());
-    return scope.Close(result);
+    Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFSymbolDriver>(info.Holder())->TheObject->GetValue().c_str());
+    SET_ACCESSOR_RETURN_VALUE(result);
 }
 
 

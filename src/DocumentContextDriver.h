@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#include <node.h>
+#include "nodes.h"
 
 namespace PDFHummus
 {
@@ -31,7 +31,8 @@ class DocumentContextDriver : public node::ObjectWrap
 public:
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
     PDFHummus::DocumentContext* DocumentContextInstance;
     
@@ -39,6 +40,6 @@ private:
     DocumentContextDriver();
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetInfoDictionary(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetInfoDictionary(const ARGS_TYPE& args);
 };

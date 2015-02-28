@@ -33,47 +33,62 @@ PDFStreamDriver::PDFStreamDriver()
 
 void PDFStreamDriver::Init()
 {
-    // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("PDFStream"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getWriteStream"),FunctionTemplate::New(GetWriteStream)->GetFunction());
-    
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	CREATE_ISOLATE_CONTEXT;
+
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("PDFStream"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "getWriteStream", GetWriteStream);
+	SET_CONSTRUCTOR(constructor,t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template,t);
 }
 
-Handle<Value> PDFStreamDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE PDFStreamDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+	
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> PDFStreamDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool PDFStreamDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+	
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> PDFStreamDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE PDFStreamDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     PDFStreamDriver* driver = new PDFStreamDriver();
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> PDFStreamDriver::GetWriteStream(const Arguments& args)
+METHOD_RETURN_TYPE PDFStreamDriver::GetWriteStream(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Handle<Value> result = ByteWriterDriver::NewInstance(args);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Value> result = ByteWriterDriver::GetNewInstance(args);
     
     ObjectWrap::Unwrap<ByteWriterDriver>(result->ToObject())->SetStream(
                                                                         ObjectWrap::Unwrap<PDFStreamDriver>(args.This())->PDFStreamInstance->GetWriteStream(), false);
     
-    return scope.Close(result);
+	return SET_FUNCTION_RETURN_VALUE(result);
 }

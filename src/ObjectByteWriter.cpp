@@ -23,23 +23,26 @@ using namespace v8;
 
 ObjectByteWriter::ObjectByteWriter(Handle<Object> inObject)
 {
-    mObject = Persistent<Object>::New(inObject);
+	CREATE_ISOLATE_CONTEXT;
+
+	SET_PERSISTENT_OBJECT(mObject, OBJECT, inObject);
 }
 
 ObjectByteWriter::~ObjectByteWriter()
 {
-    mObject.Dispose();
+	DISPOSE_PERSISTENT(mObject);
 }
 
 IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize)
 {
-    HandleScope handle;
-    
-    Handle<Object> anArray = Array::New((int)inBufferSize);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Object> anArray = NEW_ARRAY((int)inBufferSize);
     for(int i=0;i<(int)inBufferSize;++i)
-        anArray->Set(Number::New(i),Number::New(inBuffer[i]));
+        anArray->Set(NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
     
-    Handle<Value> value = mObject->Get(String::New("write"));
+	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("write"));
     if(value->IsUndefined())
         return 0;
     Handle<Function> func = Handle<Function>::Cast(value);
@@ -48,5 +51,5 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byt
     Handle<Value> args[1];
     args[0] = anArray;
     
-    return (func->Call(mObject, 1, args)->ToNumber()->Uint32Value());
+	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args)->ToNumber()->Uint32Value());
 }

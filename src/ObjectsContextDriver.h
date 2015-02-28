@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#include <node.h>
+#include "nodes.h"
 
 class ObjectsContext;
 
@@ -28,7 +28,8 @@ class ObjectsContextDriver : public node::ObjectWrap
 public:
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
     ObjectsContext* ObjectsContextInstance;
     
@@ -36,32 +37,32 @@ private:
     ObjectsContextDriver();
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AllocateNewObjectID(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartDictionary(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartArray(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteNumber(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndArray(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndLine(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndDictionary(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndIndirectObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteIndirectObjectReference(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartNewIndirectObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartModifiedIndirectObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> DeleteObject(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AllocateNewObjectID(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartDictionary(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartArray(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteNumber(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndArray(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndLine(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndDictionary(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndIndirectObject(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteIndirectObjectReference(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartNewIndirectObject(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartModifiedIndirectObject(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE DeleteObject(const ARGS_TYPE& args);
 
-    static v8::Handle<v8::Value> WriteName(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteLiteralString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteHexString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteBoolean(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteKeyword(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteComment(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SetCompressStreams(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartPDFStream(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartUnfilteredPDFStream(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndPDFStream(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE WriteName(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteLiteralString(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteHexString(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteBoolean(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteKeyword(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteComment(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE SetCompressStreams(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartPDFStream(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE StartUnfilteredPDFStream(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndPDFStream(const ARGS_TYPE& args);
     
-    static v8::Handle<v8::Value> StartFreeContext(const v8::Arguments& args);
-    static v8::Handle<v8::Value> EndFreeContext(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE StartFreeContext(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE EndFreeContext(const ARGS_TYPE& args);
     
 };

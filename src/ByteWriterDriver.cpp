@@ -21,7 +21,6 @@
 #include "IByteWriter.h"
 
 using namespace v8;
-
 Persistent<Function> ByteWriterDriver::constructor;
 Persistent<FunctionTemplate> ByteWriterDriver::constructor_template;
 
@@ -40,38 +39,53 @@ ByteWriterDriver::~ByteWriterDriver()
 
 void ByteWriterDriver::Init()
 {
-    // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("ByteWriter"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("write"),FunctionTemplate::New(Write)->GetFunction());
-    
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+
+	CREATE_ISOLATE_CONTEXT;
+
+	// prepare the page interfrace template
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("ByteWriter"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "write", Write);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> ByteWriterDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE ByteWriterDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> ByteWriterDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool ByteWriterDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> ByteWriterDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE ByteWriterDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     ByteWriterDriver* driver = new ByteWriterDriver();
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 void ByteWriterDriver::SetStream(IByteWriter* inWriter,bool inOwns)
@@ -89,20 +103,21 @@ IByteWriter* ByteWriterDriver::GetStream()
 
 using namespace IOBasicTypes;
 
-v8::Handle<v8::Value> ByteWriterDriver::Write(const v8::Arguments& args)
+METHOD_RETURN_TYPE ByteWriterDriver::Write(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     // k. i'll just read the number of bytes and return an array of them
     if(args.Length() != 1 ||
        !args[0]->IsArray())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass an array of bytes to write")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass an array of bytes to write");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     ByteWriterDriver* element = ObjectWrap::Unwrap<ByteWriterDriver>(args.This());
-    int bufferSize = args[0]->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value();
+    int bufferSize = args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value();
     Byte* buffer = new Byte[bufferSize];
     
     for(int i=0;i<bufferSize;++i)
@@ -112,7 +127,7 @@ v8::Handle<v8::Value> ByteWriterDriver::Write(const v8::Arguments& args)
     
     delete[] buffer;
     
-    return scope.Close(Number::New(bufferSize));
+	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(bufferSize));
 }
 
 

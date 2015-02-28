@@ -29,41 +29,54 @@ Persistent<FunctionTemplate> PDFStreamInputDriver::constructor_template;
 
 void PDFStreamInputDriver::Init()
 {
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("PDFStreamInput"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getDictionary"),FunctionTemplate::New(GetDictionary)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getStreamContentStart"),FunctionTemplate::New(GetStreamContentStart)->GetFunction());
+	CREATE_ISOLATE_CONTEXT;
 
-    PDFObjectDriver::Init(constructor_template);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
 
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	t->SetClassName(NEW_STRING("PDFStreamInput"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "getDictionary", GetDictionary);
+	SET_PROTOTYPE_METHOD(t, "getStreamContentStart", GetStreamContentStart);
+	PDFObjectDriver::Init(t);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> PDFStreamInputDriver::NewInstance()
+METHOD_RETURN_TYPE PDFStreamInputDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
-    Local<Object> instance = constructor->NewInstance();
+	Local<Object> instance = NEW_INSTANCE(constructor);
     
-    return scope.Close(instance);
+    SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> PDFStreamInputDriver::GetNewInstance()
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool PDFStreamInputDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> PDFStreamInputDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE PDFStreamInputDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     PDFStreamInputDriver* driver = new PDFStreamInputDriver();
 
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 PDFObject* PDFStreamInputDriver::GetObject()
@@ -71,21 +84,23 @@ PDFObject* PDFStreamInputDriver::GetObject()
     return TheObject.GetPtr();
 }
 
-Handle<Value> PDFStreamInputDriver::GetDictionary(const Arguments& args)
+METHOD_RETURN_TYPE PDFStreamInputDriver::GetDictionary(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     PDFStreamInputDriver* driver = ObjectWrap::Unwrap<PDFStreamInputDriver>(args.This());
     RefCountPtr<PDFDictionary> streamDict = driver->TheObject->QueryStreamDictionary();
     Handle<Value> result = PDFObjectDriver::CreateDriver(streamDict.GetPtr());
 
-    return scope.Close(result);
+    SET_FUNCTION_RETURN_VALUE(result);
 }
 
-Handle<Value> PDFStreamInputDriver::GetStreamContentStart(const Arguments& args)
+METHOD_RETURN_TYPE PDFStreamInputDriver::GetStreamContentStart(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     PDFStreamInputDriver* driver = ObjectWrap::Unwrap<PDFStreamInputDriver>(args.This());
-    Handle<Number> result = Number::New(driver->TheObject->GetStreamContentStart());
+    Handle<Number> result = NEW_NUMBER(driver->TheObject->GetStreamContentStart());
     
-    return scope.Close(result);
+    SET_FUNCTION_RETURN_VALUE(result);
 }

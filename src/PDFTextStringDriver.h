@@ -19,22 +19,23 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 #include "PDFTextString.h"
 
 class PDFTextStringDriver : public node::ObjectWrap
 {
 public:
     static void Init(v8::Handle<v8::Object> inExports);
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
 private:
     PDFTextString mTextString;
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToBytesArray(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToString(const v8::Arguments& args);
-    static v8::Handle<v8::Value> FromString(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToBytesArray(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToString(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE FromString(const ARGS_TYPE& args);
     
 };

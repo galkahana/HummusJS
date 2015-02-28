@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#include <node.h>
+#include "nodes.h"
 
 class DictionaryContext;
 
@@ -29,9 +29,10 @@ public:
     virtual ~DictionaryContextDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
+	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     DictionaryContext* DictionaryContextInstance;
     
@@ -40,11 +41,11 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteKey(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteNameValue(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteRectangleValue(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteLiteralStringValue(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteBooleanValue(const v8::Arguments& args);
-    static v8::Handle<v8::Value> WriteObjectReferenceValue(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteKey(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteNameValue(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteRectangleValue(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteLiteralStringValue(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteBooleanValue(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteObjectReferenceValue(const ARGS_TYPE& args);
 };

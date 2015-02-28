@@ -94,253 +94,264 @@ void AbstractContentContextDriver::SetResourcesDictionary(ResourcesDictionary* i
 
 void AbstractContentContextDriver::Init(Handle<FunctionTemplate>& ioDriverTemplate)
 {
-    
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("b"),FunctionTemplate::New(b)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("B"),FunctionTemplate::New(B)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("bStar"),FunctionTemplate::New(bStar)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("BStar"),FunctionTemplate::New(BStar)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("s"),FunctionTemplate::New(s)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("S"),FunctionTemplate::New(S)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("f"),FunctionTemplate::New(f)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("F"),FunctionTemplate::New(F)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("fStar"),FunctionTemplate::New(fStar)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("n"),FunctionTemplate::New(n)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("m"),FunctionTemplate::New(m)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("l"),FunctionTemplate::New(l)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("c"),FunctionTemplate::New(c)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("v"),FunctionTemplate::New(v)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("y"),FunctionTemplate::New(y)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("h"),FunctionTemplate::New(h)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("re"),FunctionTemplate::New(re)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("q"),FunctionTemplate::New(q)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Q"),FunctionTemplate::New(Q)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("cm"),FunctionTemplate::New(cm)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("w"),FunctionTemplate::New(w)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("J"),FunctionTemplate::New(J)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("j"),FunctionTemplate::New(j)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("M"),FunctionTemplate::New(M)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("d"),FunctionTemplate::New(d)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("ri"),FunctionTemplate::New(ri)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("i"),FunctionTemplate::New(i)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("gs"),FunctionTemplate::New(gs)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("CS"),FunctionTemplate::New(CS)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("cs"),FunctionTemplate::New(cs)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("SC"),FunctionTemplate::New(SC)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("SCN"),FunctionTemplate::New(SCN)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("sc"),FunctionTemplate::New(sc)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("scn"),FunctionTemplate::New(scn)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("G"),FunctionTemplate::New(G)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("g"),FunctionTemplate::New(g)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("RG"),FunctionTemplate::New(RG)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("rg"),FunctionTemplate::New(rg)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("K"),FunctionTemplate::New(K)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("k"),FunctionTemplate::New(k)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("W"),FunctionTemplate::New(W)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("WStar"),FunctionTemplate::New(WStar)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("doXObject"),FunctionTemplate::New(doXObject)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tc"),FunctionTemplate::New(Tc)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tw"),FunctionTemplate::New(Tw)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tz"),FunctionTemplate::New(Tz)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("TL"),FunctionTemplate::New(TL)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tr"),FunctionTemplate::New(Tr)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Ts"),FunctionTemplate::New(Ts)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("BT"),FunctionTemplate::New(BT)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("ET"),FunctionTemplate::New(ET)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Td"),FunctionTemplate::New(Td)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("TD"),FunctionTemplate::New(TD)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tm"),FunctionTemplate::New(Tm)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("TStar"),FunctionTemplate::New(TStar)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tf"),FunctionTemplate::New(Tf)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Tj"),FunctionTemplate::New(Tj)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("Quote"),FunctionTemplate::New(Tj)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("DoubleQuote"),FunctionTemplate::New(Tj)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("TJ"),FunctionTemplate::New(Tj)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("writeFreeCode"),FunctionTemplate::New(WriteFreeCode)->GetFunction());
-    
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawPath"),FunctionTemplate::New(DrawPath)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawCircle"),FunctionTemplate::New(DrawCircle)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawSquare"),FunctionTemplate::New(DrawSquare)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawRectangle"),FunctionTemplate::New(DrawRectangle)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("writeText"),FunctionTemplate::New(WriteText)->GetFunction());
-    ioDriverTemplate->PrototypeTemplate()->Set(String::NewSymbol("drawImage"),FunctionTemplate::New(DrawImage)->GetFunction());
+	SET_PROTOTYPE_METHOD(ioDriverTemplate,"b",b);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "B", B);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "bStar", bStar);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "BStar", BStar);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "s", s);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "S", S);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "f", f);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "F", F);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "fStar", fStar);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "n", n);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "m", m);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "l", l);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "c", c);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "v", v);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "y", y);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "h", h);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "re", re);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "q", q);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Q", Q);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "cm", cm);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "w", w);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "J", J);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "j", j);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "M", M);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "d", d);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "ri", ri);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "i", i);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "gs", gs);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "CS", CS);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "cs", cs);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "SC", SC);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "SCN", SCN);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "sc", sc);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "scn", scn);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "G", G);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "g", g);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "RG", RG);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "rg", rg);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "K", K);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "k", k);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "W", W);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "WStar", WStar);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "doXObject", doXObject);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tc", Tc);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tw", Tw);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tz", Tz);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "TL", TL);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tr", Tr);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Ts", Ts);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "BT", BT);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "ET", ET);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Td", Td);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "TD", TD);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tm", Tm);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "TStar", TStar);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tf", Tf);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Tj", Tj);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "Quote", Quote);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "DoubleQuote", DoubleQuote);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "TJ", TJ);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "writeFreeCode", WriteFreeCode);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "drawPath", DrawPath);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "drawCircle", DrawCircle);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "drawSquare", DrawSquare);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "drawRectangle", DrawRectangle);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "writeText", WriteText);
+	SET_PROTOTYPE_METHOD(ioDriverTemplate, "drawImage", DrawImage);
 }
 
-Handle<Value> AbstractContentContextDriver::b(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::b(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->b();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::B(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::B(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->B();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::bStar(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::bStar(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->bStar();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::BStar(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::BStar(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->BStar();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::s(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::s(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
-    if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+	if (!contentContext->GetContext())
+		THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->s();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::S(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::S(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->S();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::f(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::f(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->f();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::F(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::F(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->F();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 
-Handle<Value> AbstractContentContextDriver::fStar(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::fStar(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->fStar();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 
-Handle<Value> AbstractContentContextDriver::n(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::n(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->n();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 
-Handle<Value> AbstractContentContextDriver::m(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::m(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 2 parameters, movement position")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 2 parameters, movement position");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->m(args[0]->ToNumber()->Value(),args[1]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::l(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::l(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 2 parameters, line to position")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 2 parameters, line to position");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->l(args[0]->ToNumber()->Value(),args[1]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::c(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::c(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 6 ||
@@ -351,8 +362,8 @@ Handle<Value> AbstractContentContextDriver::c(const Arguments& args)
         !args[4]->IsNumber() ||
         !args[5]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 6 parameters of the curve")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 6 parameters of the curve");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->c(args[0]->ToNumber()->Value(),
@@ -362,18 +373,19 @@ Handle<Value> AbstractContentContextDriver::c(const Arguments& args)
                                     args[4]->ToNumber()->Value(),
                                     args[5]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::v(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::v(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 4 ||
@@ -382,8 +394,8 @@ Handle<Value> AbstractContentContextDriver::v(const Arguments& args)
         !args[2]->IsNumber() ||
         !args[3]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 4 parameters of the curve")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 4 parameters of the curve");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->v(args[0]->ToNumber()->Value(),
@@ -391,18 +403,19 @@ Handle<Value> AbstractContentContextDriver::v(const Arguments& args)
                                     args[2]->ToNumber()->Value(),
                                     args[3]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::y(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::y(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 4 ||
@@ -411,8 +424,8 @@ Handle<Value> AbstractContentContextDriver::y(const Arguments& args)
         !args[2]->IsNumber() ||
         !args[3]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 4 parameters of the curve")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 4 parameters of the curve");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->y(args[0]->ToNumber()->Value(),
@@ -420,39 +433,41 @@ Handle<Value> AbstractContentContextDriver::y(const Arguments& args)
                                     args[2]->ToNumber()->Value(),
                                     args[3]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::h(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::h(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->GetContext()->h();
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::re(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::re(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()) {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 4 parameters: 2 bottom left coordinates, and width and height measures")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 4 parameters: 2 bottom left coordinates, and width and height measures");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->re(args[0]->ToNumber()->Value(),
@@ -460,42 +475,45 @@ Handle<Value> AbstractContentContextDriver::re(const Arguments& args)
                                      args[2]->ToNumber()->Value(),
                                      args[3]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::q(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::q(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
     else
         contentContext->GetContext()->q();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::Q(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Q(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
     else
         contentContext->GetContext()->Q();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::cm(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::cm(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 6 ||
@@ -506,8 +524,8 @@ Handle<Value> AbstractContentContextDriver::cm(const Arguments& args)
         !args[4]->IsNumber() ||
         !args[5]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->cm(args[0]->ToNumber()->Value(),
@@ -516,117 +534,122 @@ Handle<Value> AbstractContentContextDriver::cm(const Arguments& args)
                                      args[3]->ToNumber()->Value(),
                                      args[4]->ToNumber()->Value(),
                                      args[5]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::w(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::w(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, width measure")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, width measure");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->w(args[0]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::J(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::J(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, line cap style")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, line cap style");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->J(args[0]->ToNumber()->Int32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::j(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::j(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, line join style")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, line join style");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->j(args[0]->ToNumber()->Int32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::M(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::M(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, miter limit")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, miter limit");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->M(args[0]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::d(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 2 ||
         !args[0]->IsArray() ||
         !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 2 parameters - array for dash pattern and dash phase number")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 2 parameters - array for dash pattern and dash phase number");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
 
-    int dashArrayLength = args[0]->ToObject()->Get(v8::String::New("length"))->ToNumber()->Int32Value();
+    int dashArrayLength = args[0]->ToObject()->Get(NEW_STRING("length"))->ToNumber()->Int32Value();
     double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
         dashArray[i] = args[0]->ToObject()->Get(i)->ToNumber()->Int32Value();
@@ -635,132 +658,138 @@ Handle<Value> AbstractContentContextDriver::d(const Arguments& args)
     
     delete[] dashArray;
                              
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::ri(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::ri(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsString()) {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 string argument, the rendering intent")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 string argument, the rendering intent");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->ri(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::i(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::i(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, flatness")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, flatness");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->i(args[0]->ToNumber()->Int32Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::gs(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::gs(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsString()) {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 string argument, graphic state name")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 string argument, graphic state name");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->gs(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::CS(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::CS(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsString())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide a color space name")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide a color space name");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->CS(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::cs(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::cs(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsString())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide a color space name")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide a color space name");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->cs(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::SC(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::SC(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() == 0)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide at least one color component")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     
@@ -771,25 +800,26 @@ Handle<Value> AbstractContentContextDriver::SC(const Arguments& args)
     contentContext->GetContext()->SC(components,args.Length());
     
     delete[] components;
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::SCN(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::SCN(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() == 0 ||
         (args.Length() == 1 && !args[0]->IsNumber()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide at least one color component")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     bool hasPatternArgument = args[args.Length()-1]->IsString();
@@ -805,24 +835,25 @@ Handle<Value> AbstractContentContextDriver::SCN(const Arguments& args)
         contentContext->GetContext()->SCN(components,componentsLength);
     
     delete[] components;
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::sc(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::sc(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() == 0)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide at least one color component")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     
@@ -833,25 +864,26 @@ Handle<Value> AbstractContentContextDriver::sc(const Arguments& args)
     contentContext->GetContext()->sc(components,args.Length());
     
     delete[] components;
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::scn(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::scn(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() == 0 ||
         (args.Length() == 1 && !args[0]->IsNumber()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide at least one color component")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     bool hasPatternArgument = args[args.Length()-1]->IsString();
@@ -867,62 +899,65 @@ Handle<Value> AbstractContentContextDriver::scn(const Arguments& args)
         contentContext->GetContext()->scn(components,componentsLength);
     
     delete[] components;
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::G(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::G(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, gray value (0-255)")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, gray value (0-255)");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->G(args[0]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::g(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::g(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context using pdfWriter.startPageContentContext(page)")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 1 parameter, gray value (0-255)")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, gray value (0-255)");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->g(args[0]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::RG(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::RG(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 3 ||
@@ -930,25 +965,26 @@ Handle<Value> AbstractContentContextDriver::RG(const Arguments& args)
         !args[1]->IsNumber() ||
         !args[2]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 3 arguments as rgb color values")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 3 arguments as rgb color values");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->RG(args[0]->ToNumber()->Value(),
                                      args[1]->ToNumber()->Value(),
                                      args[2]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::rg(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::rg(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 3 ||
@@ -956,31 +992,32 @@ Handle<Value> AbstractContentContextDriver::rg(const Arguments& args)
         !args[1]->IsNumber() ||
         !args[2]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 3 arguments as rgb color values")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 3 arguments as rgb color values");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->rg(args[0]->ToNumber()->Value(),
                                      args[1]->ToNumber()->Value(),
                                      args[2]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 
-Handle<Value> AbstractContentContextDriver::K(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::K(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()) {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 4 cmyk components (values should be 0-255)")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 4 cmyk components (values should be 0-255)");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->K(args[0]->ToNumber()->Value(),
@@ -988,23 +1025,24 @@ Handle<Value> AbstractContentContextDriver::K(const Arguments& args)
                                     args[2]->ToNumber()->Value(),
                                     args[3]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::k(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::k(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()) {
-		ThrowException(Exception::TypeError(String::New("Wrong Argument, please provide 4 cmyk components (values should be 0-255)")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Argument, please provide 4 cmyk components (values should be 0-255)");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->k(args[0]->ToNumber()->Value(),
@@ -1012,56 +1050,59 @@ Handle<Value> AbstractContentContextDriver::k(const Arguments& args)
                                     args[2]->ToNumber()->Value(),
                                     args[3]->ToNumber()->Value());
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::W(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::W(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->GetContext()->W();
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::WStar(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::WStar(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->GetContext()->WStar();
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext() || !contentContext->mResourcesDictionary)
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1)
     {
-        ThrowException(Exception::TypeError(String::New("Invalid arguments. pass an xobject")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Invalid arguments. pass an xobject");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args[0]->IsString())
@@ -1078,8 +1119,8 @@ Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
         FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
         if(!formDriver)
         {
-            ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(formDriver->FormXObject->GetObjectID()));
@@ -1089,241 +1130,252 @@ Handle<Value> AbstractContentContextDriver::doXObject(const Arguments& args)
         ImageXObjectDriver* imageDriver = ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->ToObject());
         if(!imageDriver)
         {
-            ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddImageXObjectMapping(imageDriver->ImageXObject));
     }
     else
     {
-        ThrowException(Exception::TypeError(String::New("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::Tc(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tc(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide character space")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide character space");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Tc(args[0]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::Tw(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tw(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide word space")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide word space");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Tw(args[0]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::Tz(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tz(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide horizontal scaling")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide horizontal scaling");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Tz(args[0]->ToNumber()->Int32Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::TL(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::TL(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide text leading")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide text leading");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->TL(args[0]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::Tr(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tr(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide rendering mode")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide rendering mode");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Tr(args[0]->ToNumber()->Int32Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::Ts(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Ts(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide font rise")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide font rise");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Ts(args[0]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::BT(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::BT(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->BT();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::ET(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::ET(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
+        THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->ET();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 
-Handle<Value> AbstractContentContextDriver::Td(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Td(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 2 ||
         !args[0]->IsNumber() ||
         !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 2 arguments")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 2 arguments");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Td(args[0]->ToNumber()->Value(),
                                      args[1]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::TD(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::TD(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 2 ||
         !args[0]->IsNumber() ||
         !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 2 arguments")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 2 arguments");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->TD(args[0]->ToNumber()->Value(),
                                      args[1]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::Tm(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tm(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 6 ||
@@ -1334,8 +1386,8 @@ Handle<Value> AbstractContentContextDriver::Tm(const Arguments& args)
         !args[4]->IsNumber() ||
         !args[5]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix (for text)")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix (for text)");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->Tm(args[0]->ToNumber()->Value(),
@@ -1344,43 +1396,45 @@ Handle<Value> AbstractContentContextDriver::Tm(const Arguments& args)
                                      args[3]->ToNumber()->Value(),
                                      args[4]->ToNumber()->Value(),
                                      args[5]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::TStar(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::TStar(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->GetContext()->TStar();
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 
 
-Handle<Value> AbstractContentContextDriver::Tf(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 2 ||
         (!UsedFontDriver::HasInstance(args[0]) && !args[0]->IsString()) ||
         !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide a font object (create with pdfWriter.getFontForFile) or font resource name and a size measure")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide a font object (create with pdfWriter.getFontForFile) or font resource name and a size measure");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     if(args[0]->IsString())
@@ -1391,27 +1445,28 @@ Handle<Value> AbstractContentContextDriver::Tf(const Arguments& args)
         contentContext->GetContext()->Tf(
                                      ObjectWrap::Unwrap<UsedFontDriver>(args[0]->ToObject())->UsedFont,
                                      args[1]->ToNumber()->Value());
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
-Handle<Value> AbstractContentContextDriver::Tj(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Tj(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if ((args.Length() != 1 && args.Length() != 2 ) ||
         (!args[0]->IsString() && !args[0]->IsArray()) ||
         (args.Length() == 2 && !args[1]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 1 argument, the string that you wish to display or a glyphs IDs array, and an optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 1 argument, the string that you wish to display or a glyphs IDs array, and an optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
         
     
@@ -1437,26 +1492,27 @@ Handle<Value> AbstractContentContextDriver::Tj(const Arguments& args)
                 contentContext->GetContext()->Tj(*String::Utf8Value(args[0]->ToString()));
         }
     }
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::Quote(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if ((args.Length() != 1 && args.Length() != 2 ) ||
         (!args[0]->IsString() && !args[0]->IsArray()) ||
         (args.Length() == 2 && !args[1]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 1 argument, the string that you wish to display or a glyphs IDs array, and an optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 1 argument, the string that you wish to display or a glyphs IDs array, and an optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     if(args[0]->IsArray())
@@ -1482,18 +1538,19 @@ Handle<Value> AbstractContentContextDriver::Quote(const Arguments& args)
                 contentContext->GetContext()->Quote(*String::Utf8Value(args[0]->ToString()));
         }
     }
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::DoubleQuote(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if ((args.Length() != 3 && args.Length() != 4)||
@@ -1502,8 +1559,8 @@ Handle<Value> AbstractContentContextDriver::DoubleQuote(const Arguments& args)
         (!args[2]->IsString() && !args[2]->IsArray()) ||
         (args.Length() == 4 && !args[3]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide 3 arguments, word spacing, character spacing and text, and optionally an options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide 3 arguments, word spacing, character spacing and text, and optionally an options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     if(args[2]->IsArray())
@@ -1539,18 +1596,19 @@ Handle<Value> AbstractContentContextDriver::DoubleQuote(const Arguments& args)
     }
     
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> AbstractContentContextDriver::TJ(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::TypeError(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     // first, scan args to see if has arrays or lists, to realize which form of TJ to run
@@ -1580,8 +1638,8 @@ Handle<Value> AbstractContentContextDriver::TJ(const Arguments& args)
         
         if(!status)
         {
-            ThrowException(Exception::TypeError(String::New("Wrong arguments. please provide a variable number of elements each either string/glyphs list or number, and an optional final options object")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("Wrong arguments. please provide a variable number of elements each either string/glyphs list or number, and an optional final options object");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
         
@@ -1614,22 +1672,23 @@ Handle<Value> AbstractContentContextDriver::TJ(const Arguments& args)
         
         if(!status)
         {
-            ThrowException(Exception::TypeError(String::New("Wrong arguments. please provide a variable number of elements each either string/glyph list or number, and an optional final options object")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("Wrong arguments. please provide a variable number of elements each either string/glyph list or number, and an optional final options object");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         contentContext->GetContext()->TJ(params);
         
     }
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Handle<Object>& inObject)
 {
-    TextPlacingOptions options;
+	CREATE_ISOLATE_CONTEXT;
+	TextPlacingOptions options;
     
-    if(inObject->Has(String::NewSymbol("encoding")))
+	if (inObject->Has(NEW_SYMBOL("encoding")))
     {
-        std::string value = *String::Utf8Value(inObject->Get(String::NewSymbol("encoding"))->ToString());
+        std::string value = *String::Utf8Value(inObject->Get(NEW_SYMBOL("encoding"))->ToString());
         if(value.compare("hex"))
             options.encoding = TextPlacingOptions::EEncodingHex;
         else if(value.compare("code"))
@@ -1643,10 +1702,12 @@ TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Handle<Ob
 
 GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8::Handle<v8::Value>& inArray)
 {
-    GlyphUnicodeMappingList glyphList;
-    HandleScope handleScope;
-    
-    int arrayLength =inArray->ToObject()->Get(v8::String::New("length"))->ToNumber()->Int32Value();
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+	
+	GlyphUnicodeMappingList glyphList;
+
+    int arrayLength =inArray->ToObject()->Get(NEW_STRING("length"))->ToNumber()->Int32Value();
     Local<Object> arrayObject = inArray->ToObject();
 
     for(int i=0; i < arrayLength; ++i)
@@ -1654,7 +1715,7 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
         if(!arrayObject->Get(i)->IsArray())
             continue;
         
-        int itemLength = arrayObject->Get(i)->ToObject()->Get(v8::String::New("length"))->ToNumber()->Int32Value();
+        int itemLength = arrayObject->Get(i)->ToObject()->Get(NEW_STRING("length"))->ToNumber()->Int32Value();
         if(0 == itemLength)
             continue;
         
@@ -1670,46 +1731,48 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
     return glyphList;
 }
 
-Handle<Value> AbstractContentContextDriver::WriteFreeCode(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::WriteFreeCode(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsString())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide string to write")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide string to write");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
     contentContext->GetContext()->WriteFreeCode(*String::Utf8Value(args[0]->ToString()));
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
 
 /* context.drawPath(x1,y1,x2,y2,x3,y3...{type:stroke, color:#FF00FF, width:3, close:true})
  */
-Handle<Value> AbstractContentContextDriver::DrawPath(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::DrawPath(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 2)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide path coordinates and an optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide path coordinates and an optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1723,46 +1786,49 @@ Handle<Value> AbstractContentContextDriver::DrawPath(const Arguments& args)
     }
     
     contentContext->FinishPath(args[args.Length() - 1]);
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& inMaybeOptions)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     if(!inMaybeOptions->IsObject())
         return;
     
     Handle<Object> options = inMaybeOptions->ToObject();
     
-    bool isStroke = !options->Has(String::New("type")) ||
-                    strcmp(*String::Utf8Value(options->Get(String::New("type"))),"stroke") == 0;
+    bool isStroke = !options->Has(NEW_STRING("type")) ||
+                    strcmp(*String::Utf8Value(options->Get(NEW_STRING("type"))),"stroke") == 0;
     SetColor(inMaybeOptions,isStroke);
     
-    if(isStroke && options->Has(String::New("width")))
-        GetContext()->w(options->Get(String::New("width"))->ToNumber()->Uint32Value());
+    if(isStroke && options->Has(NEW_STRING("width")))
+        GetContext()->w(options->Get(NEW_STRING("width"))->ToNumber()->Uint32Value());
 }
 
 void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,bool inIsStroke)
 {
-    if(!inMaybeOptions->IsObject())
+	CREATE_ISOLATE_CONTEXT;
+	
+	if (!inMaybeOptions->IsObject())
         return;
     
     Handle<Object> options = inMaybeOptions->ToObject();
 
-    if(options->Has(String::New("color")))
+    if(options->Has(NEW_STRING("color")))
     {
-        if(options->Get(String::New("color"))->IsString())
+        if(options->Get(NEW_STRING("color"))->IsString())
         {
             // string, named color. always RGB (for now)
-            SetRGBColor(sColorMap.GetRGBForColorName(*String::Utf8Value(options->Get(String::New("color"))->ToString())),inIsStroke);
+            SetRGBColor(sColorMap.GetRGBForColorName(*String::Utf8Value(options->Get(NEW_STRING("color"))->ToString())),inIsStroke);
         }
         else
         {
             // should be number
-            unsigned long colorvalue = (unsigned long)(options->Get(String::New("color"))->ToInteger()->Value());
-            std::string colorspace = options->Has(String::New("colorspace")) ?
-            *String::Utf8Value(options->Get(String::New("colorspace")->ToString())) :
+            unsigned long colorvalue = (unsigned long)(options->Get(NEW_STRING("color"))->ToInteger()->Value());
+            std::string colorspace = options->Has(NEW_STRING("colorspace")) ?
+            *String::Utf8Value(options->Get(NEW_STRING("colorspace")->ToString())) :
             "rgb";
             if(colorspace.compare("rgb") == 0)
             {
@@ -1807,7 +1873,9 @@ void AbstractContentContextDriver::SetRGBColor(unsigned long inColorValue,bool i
 
 void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOptions)
 {
-    bool closePath = false;
+	CREATE_ISOLATE_CONTEXT;
+	
+	bool closePath = false;
     std::string type = "stroke";
     
     if(inMaybeOptions->IsObject())
@@ -1815,11 +1883,11 @@ void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOption
     
         Handle<Object> options = inMaybeOptions->ToObject();
     
-        if(options->Has(String::New("type")))
-            type = *String::Utf8Value(options->Get(String::New("type")));
+        if(options->Has(NEW_STRING("type")))
+            type = *String::Utf8Value(options->Get(NEW_STRING("type")));
         
-        if(options->Has(String::New("close")))
-            closePath = options->Get(String::New("close"))->ToBoolean()->Value();
+        if(options->Has(NEW_STRING("close")))
+            closePath = options->Get(NEW_STRING("close"))->ToBoolean()->Value();
     }
     
     if(type.compare("stroke") == 0)
@@ -1844,21 +1912,22 @@ void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOption
 /* context.drawCircle(x,y,r,[{type:stroke, color:#FF00FF, width:3, close:true}])
  */
 
-Handle<Value> AbstractContentContextDriver::DrawCircle(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::DrawCircle(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 3)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide x and y coordinates for center, radius and an optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide x and y coordinates for center, radius and an optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1888,26 +1957,27 @@ Handle<Value> AbstractContentContextDriver::DrawCircle(const Arguments& args)
  */
     
     contentContext->FinishPath(args[args.Length() - 1]);
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 /* context.drawSquare(x,y,l,[{type:stroke, color:#FF00FF, width:3, close:true}])
  */
-Handle<Value> AbstractContentContextDriver::DrawSquare(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::DrawSquare(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 3)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1919,26 +1989,27 @@ Handle<Value> AbstractContentContextDriver::DrawSquare(const Arguments& args)
     );
 
     contentContext->FinishPath(args[args.Length() - 1]);
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 /* context.drawSquare(x,y,w,h,[{type:stroke, color:#FF00FF, width:3, close:true}])
  */
-Handle<Value> AbstractContentContextDriver::DrawRectangle(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::DrawRectangle(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 4)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide bottom left coordinates, width and height and optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide bottom left coordinates, width and height and optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1950,7 +2021,7 @@ Handle<Value> AbstractContentContextDriver::DrawRectangle(const Arguments& args)
                                      );
     
     contentContext->FinishPath(args[args.Length() - 1]);
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 #include <ft2build.h>
@@ -1984,21 +2055,22 @@ double sGetUnderlinePositionFactor(FreeTypeFaceWrapper* inFTWrapper)
 
 /* context.writeText(text,x,y,[{font:fontObject, size:fontSize ,color:#FF00FF,underline:boolean}])
  */
-Handle<Value> AbstractContentContextDriver::WriteText(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 3)
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide the text and x,y coordinate for text position. optionally also add an options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide the text and x,y coordinate for text position. optionally also add an options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     contentContext->GetContext()->BT();
@@ -2021,14 +2093,14 @@ Handle<Value> AbstractContentContextDriver::WriteText(const Arguments& args)
 	if(args.Length() >= 4 && args[3]->IsObject())
 	{
 		Handle<Object> options = args[3]->ToObject();
-		if(options->Has(String::New("underline")) && 
-				options->Get(String::New("underline"))->ToBoolean()->Value() &&
-				UsedFontDriver::HasInstance(options->Get(String::New("font"))))
+		if(options->Has(NEW_STRING("underline")) && 
+				options->Get(NEW_STRING("underline"))->ToBoolean()->Value() &&
+				UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
 		{
 			// draw underline. use font data for position and thickness
-			double fontSize = options->Has(String::New("size")) ? options->Get(String::New("size"))->ToNumber()->Value():1;
+			double fontSize = options->Has(NEW_STRING("size")) ? options->Get(NEW_STRING("size"))->ToNumber()->Value():1;
 
-			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(String::New("font"))->ToObject())->UsedFont;
+			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->ToObject())->UsedFont;
 			FreeTypeFaceWrapper*  ftWrapper = font->GetFreeTypeFont();
 
 			contentContext->SetColor(args[3],true);
@@ -2040,31 +2112,34 @@ Handle<Value> AbstractContentContextDriver::WriteText(const Arguments& args)
 		}
 	}
 
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeOptions)
 {
-    if(!inMaybeOptions->IsObject())
+	CREATE_ISOLATE_CONTEXT;
+	
+	if (!inMaybeOptions->IsObject())
         return;
     
     Handle<Object> options = inMaybeOptions->ToObject();
     
-    if(options->Has(String::New("font")) &&
-       UsedFontDriver::HasInstance(options->Get(String::New("font"))))
-        GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(String::New("font"))->ToObject())->UsedFont,
-                         options->Has(String::New("size")) ? options->Get(String::New("size"))->ToNumber()->Value():1);
+    if(options->Has(NEW_STRING("font")) &&
+       UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
+        GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->ToObject())->UsedFont,
+                         options->Has(NEW_STRING("size")) ? options->Get(NEW_STRING("size"))->ToNumber()->Value():1);
 }
 
-Handle<Value> AbstractContentContextDriver::DrawImage(const Arguments& args)
+METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     AbstractContentContextDriver* contentContext = ObjectWrap::Unwrap<AbstractContentContextDriver>(args.This());
     if(!contentContext->GetContext())
     {
-        ThrowException(Exception::Error(String::New("Null content context. Please create a context")));
-        return scope.Close(Undefined());
+        THROW_EXCEPTION("Null content context. Please create a context");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 3 ||
@@ -2073,8 +2148,8 @@ Handle<Value> AbstractContentContextDriver::DrawImage(const Arguments& args)
        !args[2]->IsString() ||
        (args.Length() >= 4 && !args[3]->IsObject()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object")));
-		return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
 
     /*
@@ -2095,18 +2170,18 @@ Handle<Value> AbstractContentContextDriver::DrawImage(const Arguments& args)
     {
         Handle<Object> optionsObject = args[3]->ToObject();
         
-        if(optionsObject->Has(String::New("index")))
-            imageIndex = optionsObject->Get(String::New("index"))->ToNumber()->Uint32Value();
+        if(optionsObject->Has(NEW_STRING("index")))
+            imageIndex = optionsObject->Get(NEW_STRING("index"))->ToNumber()->Uint32Value();
         
-        if(optionsObject->Has(String::New("transformation")))
+        if(optionsObject->Has(NEW_STRING("transformation")))
         {
-            Handle<Value> transformationValue = optionsObject->Get(String::New("transformation"));
+            Handle<Value> transformationValue = optionsObject->Get(NEW_STRING("transformation"));
             
             if(transformationValue->IsArray() || transformationValue->IsObject())
             {
                 Handle<Object> transformationObject = transformationValue->ToObject();
                 
-                if(transformationValue->IsArray() && transformationObject->Get(String::New("length"))->ToNumber()->Value() == 6)
+                if(transformationValue->IsArray() && transformationObject->Get(NEW_STRING("length"))->ToNumber()->Value() == 6)
                 {
                     for(int i=0;i<6;++i)
                         transformation[i] = transformationObject->Get(i)->ToNumber()->Value();
@@ -2114,13 +2189,13 @@ Handle<Value> AbstractContentContextDriver::DrawImage(const Arguments& args)
                 else if(transformationValue->IsObject())
                 {
                     // fitting object, determine transformation according to image dimensions relation to width/height
-                    double constraintWidth = transformationObject->Get(String::New("width"))->ToNumber()->Value();
-                    double constraintheight = transformationObject->Get(String::New("height"))->ToNumber()->Value();
-                    bool proportional = transformationObject->Has(String::New("proportional")) ?
-                                            transformationObject->Get(String::New("proportional"))->ToBoolean()->Value() :
+                    double constraintWidth = transformationObject->Get(NEW_STRING("width"))->ToNumber()->Value();
+                    double constraintheight = transformationObject->Get(NEW_STRING("height"))->ToNumber()->Value();
+                    bool proportional = transformationObject->Has(NEW_STRING("proportional")) ?
+                                            transformationObject->Get(NEW_STRING("proportional"))->ToBoolean()->Value() :
                                             false;
-                    bool fitAlways = transformationObject->Has(String::New("fit")) ?
-                                    strcmp("always",*String::Utf8Value(transformationObject->Get(String::New("fit"))->ToString())) == 0:
+                    bool fitAlways = transformationObject->Has(NEW_STRING("fit")) ?
+                                    strcmp("always",*String::Utf8Value(transformationObject->Get(NEW_STRING("fit"))->ToString())) == 0:
                                     false;
                     
                     // getting the image dimensions from the pdfwriter to allow optimization on image reads
@@ -2173,5 +2248,5 @@ Handle<Value> AbstractContentContextDriver::DrawImage(const Arguments& args)
     contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(result.first));
     contentContext->GetContext()->Q();
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }

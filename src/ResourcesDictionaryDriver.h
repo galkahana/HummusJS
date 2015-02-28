@@ -19,7 +19,7 @@
  */
 
 #pragma once
-#include <node.h>
+#include "nodes.h"
 
 class ResourcesDictionary;
 
@@ -27,7 +27,8 @@ class ResourcesDictionaryDriver : public node::ObjectWrap
 {
 public:
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 
     // set externally
     ResourcesDictionary* ResourcesDictionaryInstance;
@@ -36,17 +37,17 @@ private:
     ResourcesDictionaryDriver();
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddFormXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddImageXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddProcsetResource(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddExtGStateMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddFontMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddColorSpaceMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddPatternMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddPropertyMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddXObjectMapping(const v8::Arguments& args);
-    static v8::Handle<v8::Value> AddShadingMapping(const v8::Arguments& args);
+    static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddFormXObjectMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddImageXObjectMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddProcsetResource(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddExtGStateMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddFontMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddColorSpaceMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddPatternMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddPropertyMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddXObjectMapping(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE AddShadingMapping(const ARGS_TYPE& args);
 
     
     

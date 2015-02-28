@@ -10,3 +10,5 @@ console.log('author decoded',info.Author.toText());
 console.log('creator value',info.Author.value);
 console.log('creator decoded',info.Author.toText());
 console.log('creation date value',info.CreationDate.value);
+
+console.log('done - ok');

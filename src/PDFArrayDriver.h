@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
 #include "PDFArray.h"
@@ -28,7 +28,8 @@ class PDFArrayDriver : public PDFObjectDriver
 {
 public:
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance();
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFObjectCastPtr<PDFArray> TheObject;
@@ -39,8 +40,8 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ToJSArray(const v8::Arguments& args);
-    static v8::Handle<v8::Value> QueryObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetLength(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToJSArray(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE QueryObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetLength(const ARGS_TYPE& args);
 };

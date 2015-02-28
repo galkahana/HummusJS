@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 #include "PDFObjectDriver.h"
 #include "PDFObjectCast.h"
 #include "PDFNull.h"
@@ -28,8 +28,9 @@ class PDFNullDriver : public PDFObjectDriver
 {
 public:
     static void Init();
-    static v8::Handle<v8::Value> NewInstance();
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance();
+	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFObjectCastPtr<PDFNull> TheObject;
     
@@ -39,6 +40,6 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetValue(v8::Local<v8::String> property,const v8::AccessorInfo &info);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetValue(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
 };

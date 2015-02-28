@@ -26,79 +26,93 @@ Persistent<Function> PDFTextStringDriver::constructor;
 
 void PDFTextStringDriver::Init(Handle<Object> inExports)
 {
-    // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    t->SetClassName(String::NewSymbol("PDFTextString"));
-    t->InstanceTemplate()->SetInternalFieldCount(1);
-    t->PrototypeTemplate()->Set(String::NewSymbol("toBytesArray"),FunctionTemplate::New(ToBytesArray)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("toString"),FunctionTemplate::New(ToString)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("fromString"),FunctionTemplate::New(FromString)->GetFunction());
-    
-    constructor = Persistent<Function>::New(t->GetFunction());
-    inExports->Set(String::NewSymbol("PDFTextString"),constructor);
+	CREATE_ISOLATE_CONTEXT;
+
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("PDFTextString"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "toBytesArray", ToBytesArray);
+	SET_PROTOTYPE_METHOD(t, "toString", ToString);
+	SET_PROTOTYPE_METHOD(t, "fromString", FromString);
+	SET_CONSTRUCTOR(constructor, t);
+
+	SET_CONSTRUCTOR_EXPORT(inExports, "PDFTextString", t);
+
 }
 
-Handle<Value> PDFTextStringDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE PDFTextStringDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    if(args.Length() != 1 || !args[0]->IsString())
-    {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. Provide 1 argument which is a string")));
-        return scope.Close(Undefined());
-    }
-    
-    const unsigned argc = 1;
-    Handle<Value> argv[argc] = {args[0]};
-    Local<Object> instance = constructor->NewInstance(argc, argv);
-    
-    return scope.Close(instance);
+	SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args));
 }
 
-Handle<Value> PDFTextStringDriver::New(const Arguments& args)
+v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	if (args.Length() != 1 || !args[0]->IsString())
+	{
+		THROW_EXCEPTION("Wrong arguments. Provide 1 argument which is a string");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+
+	const unsigned argc = 1;
+	Handle<Value> argv[argc] = { args[0] };
+	Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+
+	return CLOSE_SCOPE(instance);
+}
+
+METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     PDFTextStringDriver* element = new PDFTextStringDriver();
     if(args.Length() > 0 && args[0]->IsString())
         element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
     
     element->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE( args.This());
 }
 
-Handle<Value> PDFTextStringDriver::ToBytesArray(const Arguments& args)
+METHOD_RETURN_TYPE PDFTextStringDriver::ToBytesArray(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     
 	std::string aString = element->mTextString.ToString();
 
-	Local<Array> result = Array::New(aString.length());
+	Local<Array> result = NEW_ARRAY(aString.length());
 
 	for(std::string::size_type i=0;i<aString.length();++i)
-		result->Set(v8::Number::New(i),v8::Number::New(aString[i]));
+		result->Set(NEW_NUMBER(i),NEW_NUMBER(aString[i]));
 
-	return scope.Close(result);
+	SET_FUNCTION_RETURN_VALUE(result);
 }
 
-Handle<Value> PDFTextStringDriver::ToString(const Arguments& args)
+METHOD_RETURN_TYPE PDFTextStringDriver::ToString(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     
-    return scope.Close(String::New(element->mTextString.ToUTF8String().c_str()));
+    SET_FUNCTION_RETURN_VALUE(NEW_STRING(element->mTextString.ToUTF8String().c_str()));
 }
 
-Handle<Value> PDFTextStringDriver::FromString(const Arguments& args)
+METHOD_RETURN_TYPE PDFTextStringDriver::FromString(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     if(args.Length() > 0 && args[0]->IsString())
         element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
     
-    return scope.Close(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This());
 }

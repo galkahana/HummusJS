@@ -36,55 +36,70 @@ UsedFontDriver::UsedFontDriver()
 
 void UsedFontDriver::Init()
 {
-    // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("PDFUsedFont"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("calculateTextDimensions"),FunctionTemplate::New(CalculateTextDimensions)->GetFunction());
-    
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	CREATE_ISOLATE_CONTEXT;
+
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("PDFUsedFont"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "calculateTextDimensions", CalculateTextDimensions);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> UsedFontDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE UsedFontDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
-    Local<Object> instance = constructor->NewInstance();
+    Local<Object> instance = NEW_INSTANCE(constructor);
         
-    return scope.Close(instance);
+    SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> UsedFontDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool UsedFontDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> UsedFontDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE UsedFontDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     
     UsedFontDriver* usedFont = new UsedFontDriver();
     usedFont->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-Handle<Value> UsedFontDriver::CalculateTextDimensions(const Arguments& args)
+METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args)
 {
     // completly copied of the freetype toturial.... :)
     // this will calculate the dimensions of a string. it uses mainly the "advance"
     // of the glyphs, which is what the plain text placement of hummus does...so it should be
     // alligned with it. right now there's no kerning calculations, simply because there's no kerning right now.
-    HandleScope scope;
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
     long fontSize;
 
     if(args.Length() < 1 || args.Length() > 2 ||
        (!args[0]->IsString() && !args[0]->IsArray()) ||
        (args.Length() == 2 && !args[1]->IsNumber()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments, provide a string or array of glyph indexes, and optionally also a font size")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments, provide a string or array of glyph indexes, and optionally also a font size");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() == 2)
@@ -107,7 +122,7 @@ Handle<Value> UsedFontDriver::CalculateTextDimensions(const Arguments& args)
     }
     else // array of glyph indexes
     {
-        unsigned int arrayLength = args[0]->ToObject()->Get(v8::String::New("length"))->ToNumber()->Uint32Value();
+        unsigned int arrayLength = args[0]->ToObject()->Get(v8::NEW_STRING("length"))->ToNumber()->Uint32Value();
         for(unsigned int i=0; i < arrayLength;++i)
             glyphs.push_back(args[0]->ToObject()->Get(i)->ToNumber()->Uint32Value());
     }
@@ -181,18 +196,18 @@ Handle<Value> UsedFontDriver::CalculateTextDimensions(const Arguments& args)
     }
     
     
-    Handle<Object> result = Object::New();
+    Handle<Object> result = NEW_OBJECT;
     // file the end object with results
     
     // adapt results to the size, and PDF font size
     
-    result->Set(String::New("xMin"),Number::New((double)(bbox.xMin*fontSize)/1000));
-    result->Set(String::New("yMin"),Number::New((double)(bbox.yMin*fontSize)/1000));
-    result->Set(String::New("xMax"),Number::New((double)(bbox.xMax*fontSize)/1000));
-    result->Set(String::New("yMax"),Number::New((double)(bbox.yMax*fontSize)/1000));
-    result->Set(String::New("width"),Number::New((double)(bbox.xMax-bbox.xMin)*fontSize/1000));
-    result->Set(String::New("height"),Number::New((double)(bbox.yMax-bbox.yMin)*fontSize/1000));
+    result->Set(NEW_STRING("xMin"),NEW_NUMBER((double)(bbox.xMin*fontSize)/1000));
+    result->Set(NEW_STRING("yMin"),NEW_NUMBER((double)(bbox.yMin*fontSize)/1000));
+    result->Set(NEW_STRING("xMax"),NEW_NUMBER((double)(bbox.xMax*fontSize)/1000));
+    result->Set(NEW_STRING("yMax"),NEW_NUMBER((double)(bbox.yMax*fontSize)/1000));
+    result->Set(NEW_STRING("width"),NEW_NUMBER((double)(bbox.xMax-bbox.xMin)*fontSize/1000));
+    result->Set(NEW_STRING("height"),NEW_NUMBER((double)(bbox.yMax-bbox.yMin)*fontSize/1000));
     
-    return scope.Close(result);
+    SET_FUNCTION_RETURN_VALUE(result);
 }
 

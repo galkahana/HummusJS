@@ -21,7 +21,6 @@
 #include "IByteWriterWithPosition.h"
 
 using namespace v8;
-
 Persistent<Function> ByteWriterWithPositionDriver::constructor;
 Persistent<FunctionTemplate> ByteWriterWithPositionDriver::constructor_template;
 
@@ -40,39 +39,53 @@ ByteWriterWithPositionDriver::~ByteWriterWithPositionDriver()
 
 void ByteWriterWithPositionDriver::Init()
 {
-    // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("ByteWriterWithPosition"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("write"),FunctionTemplate::New(Write)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("getCurrentPosition"),FunctionTemplate::New(GetCurrentPosition)->GetFunction());
-    
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	CREATE_ISOLATE_CONTEXT;
+
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("ByteWriterWithPosition"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "write", Write);
+	SET_PROTOTYPE_METHOD(t, "getCurrentPosition", GetCurrentPosition);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> ByteWriterWithPositionDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE ByteWriterWithPositionDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
 }
+
+Handle<Value> ByteWriterWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
+}
+
 
 bool ByteWriterWithPositionDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> ByteWriterWithPositionDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE ByteWriterWithPositionDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteWriterWithPositionDriver* driver = new ByteWriterWithPositionDriver();
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 void ByteWriterWithPositionDriver::SetStream(IByteWriterWithPosition* inWriterWithPosition,bool inOwns)
@@ -90,20 +103,21 @@ IByteWriterWithPosition* ByteWriterWithPositionDriver::GetStream()
 
 using namespace IOBasicTypes;
 
-v8::Handle<v8::Value> ByteWriterWithPositionDriver::Write(const v8::Arguments& args)
+METHOD_RETURN_TYPE ByteWriterWithPositionDriver::Write(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     // k. i'll just read the number of bytes and return an array of them
     if(args.Length() != 1 ||
        !args[0]->IsArray())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass an array of bytes to write")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass an array of bytes to write");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     ByteWriterWithPositionDriver* element = ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(args.This());
-    int bufferSize = args[0]->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value();
+    int bufferSize = args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value();
     Byte* buffer = new Byte[bufferSize];
     
     for(int i=0;i<bufferSize;++i)
@@ -113,15 +127,16 @@ v8::Handle<v8::Value> ByteWriterWithPositionDriver::Write(const v8::Arguments& a
     
     delete[] buffer;
     
-    return scope.Close(Number::New(bufferSize));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(bufferSize));
 }
 
-v8::Handle<v8::Value> ByteWriterWithPositionDriver::GetCurrentPosition(const v8::Arguments& args)
+METHOD_RETURN_TYPE ByteWriterWithPositionDriver::GetCurrentPosition(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteWriterWithPositionDriver* element = ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(args.This());
 
-    return scope.Close(Number::New(element->mInstance->GetCurrentPosition()));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->mInstance->GetCurrentPosition()));
 }
 

@@ -28,6 +28,7 @@
 #include "IByteReaderWithPosition.h"
 
 using namespace v8;
+Persistent<Function> DocumentCopyingContextDriver::constructor;
 
 DocumentCopyingContextDriver::~DocumentCopyingContextDriver()
 {
@@ -42,62 +43,71 @@ DocumentCopyingContextDriver::DocumentCopyingContextDriver()
     ReadStreamProxy = NULL;
 }
 
-Persistent<Function> DocumentCopyingContextDriver::constructor;
-
 void DocumentCopyingContextDriver::Init()
 {
-    // prepare the context driver interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    t->SetClassName(String::NewSymbol("DocumentCopyingContext"));
-    t->InstanceTemplate()->SetInternalFieldCount(1);
-    
-    t->PrototypeTemplate()->Set(String::NewSymbol("createFormXObjectFromPDFPage"),FunctionTemplate::New(CreateFormXObjectFromPDFPage)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPageToPage"),FunctionTemplate::New(MergePDFPageToPage)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("appendPDFPageFromPDF"),FunctionTemplate::New(AppendPDFPageFromPDF)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("mergePDFPageToFormXObject"),FunctionTemplate::New(MergePDFPageToFormXObject)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("getSourceDocumentParser"),FunctionTemplate::New(GetSourceDocumentParser)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("copyDirectObjectAsIs"),FunctionTemplate::New(CopyDirectObjectAsIs)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("copyObject"),FunctionTemplate::New(CopyObject)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("copyDirectObjectWithDeepCopy"),FunctionTemplate::New(CopyDirectObjectWithDeepCopy)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("copyNewObjectsForDirectObject"),FunctionTemplate::New(CopyNewObjectsForDirectObject)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("getCopiedObjectID"),FunctionTemplate::New(GetCopiedObjectID)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("getCopiedObjects"),FunctionTemplate::New(GetCopiedObjects)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("replaceSourceObjects"),FunctionTemplate::New(ReplaceSourceObjects)->GetFunction());
-    t->PrototypeTemplate()->Set(String::NewSymbol("getSourceDocumentStream"),FunctionTemplate::New(GetSourceDocumentStream)->GetFunction());
-    
+	CREATE_ISOLATE_CONTEXT;
 
-    constructor = Persistent<Function>::New(t->GetFunction());
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+
+	t->SetClassName(NEW_STRING("DocumentCopyingContext"));
+	t->InstanceTemplate()->SetInternalFieldCount(1);
+
+	SET_PROTOTYPE_METHOD(t, "createFormXObjectFromPDFPage", CreateFormXObjectFromPDFPage);
+	SET_PROTOTYPE_METHOD(t, "mergePDFPageToPage", MergePDFPageToPage);
+	SET_PROTOTYPE_METHOD(t, "appendPDFPageFromPDF", AppendPDFPageFromPDF);
+	SET_PROTOTYPE_METHOD(t, "mergePDFPageToFormXObject", MergePDFPageToFormXObject);
+	SET_PROTOTYPE_METHOD(t, "getSourceDocumentParser", GetSourceDocumentParser);
+	SET_PROTOTYPE_METHOD(t, "copyDirectObjectAsIs", CopyDirectObjectAsIs);
+	SET_PROTOTYPE_METHOD(t, "copyObject", CopyObject);
+	SET_PROTOTYPE_METHOD(t, "copyDirectObjectWithDeepCopy", CopyDirectObjectWithDeepCopy);
+	SET_PROTOTYPE_METHOD(t, "copyNewObjectsForDirectObject", CopyNewObjectsForDirectObject);
+	SET_PROTOTYPE_METHOD(t, "getCopiedObjectID", GetCopiedObjectID);
+	SET_PROTOTYPE_METHOD(t, "getCopiedObjects", GetCopiedObjects);
+	SET_PROTOTYPE_METHOD(t, "replaceSourceObjects", ReplaceSourceObjects);
+	SET_PROTOTYPE_METHOD(t, "getSourceDocumentStream", GetSourceDocumentStream);
+	SET_CONSTRUCTOR(constructor, t);
 }
 
-Handle<Value> DocumentCopyingContextDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
 }
 
-Handle<Value> DocumentCopyingContextDriver::New(const Arguments& args)
+v8::Handle<v8::Value> DocumentCopyingContextDriver::GetNewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
+}
+
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::New(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContext = new DocumentCopyingContextDriver();
     copyingContext->Wrap(args.This());
     
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-v8::Handle<v8::Value> DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(const v8::Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() < 2 ||
@@ -106,8 +116,8 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage
        (!args[1]->IsNumber() && !args[1]->IsArray()) ||
        (args.Length() == 3 && !args[2]->IsArray()))
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 2 or 3 arugments, where the first is a 0 based page index, and the second is a EPDFPageBox enumeration value or a 4 numbers array defining an box. a 3rd parameter may be provided to deisgnate the result form matrix")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 2 or 3 arugments, where the first is a 0 based page index, and the second is a EPDFPageBox enumeration value or a 4 numbers array defining an box. a 3rd parameter may be provided to deisgnate the result form matrix");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
  
     double matrixBuffer[6];
@@ -116,10 +126,10 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage
     if(args.Length() == 3)
     {
         Handle<Object> matrixArray = args[2]->ToObject();
-        if(matrixArray->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 6)
+        if(matrixArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 6)
         {
-            ThrowException(Exception::TypeError(String::New("matrix array should be 6 numbers long")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("matrix array should be 6 numbers long");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
         for(int i=0;i<6;++i)
@@ -139,10 +149,10 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage
     else
     {
         Handle<Object> boxArray = args[1]->ToObject();
-        if(boxArray->Get(v8::String::New("length"))->ToObject()->Uint32Value() != 4)
+        if(boxArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
         {
-            ThrowException(Exception::TypeError(String::New("box dimensions array should be 4 numbers long")));
-            return scope.Close(Undefined());
+            THROW_EXCEPTION("box dimensions array should be 4 numbers long");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
         PDFRectangle box(boxArray->Get(0)->ToNumber()->Value(),
@@ -159,33 +169,34 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage
     
     if(result.first != eSuccess)
     {
-		ThrowException(Exception::Error(String::New("Unable to create form xobject from PDF page, parhaps the page index does not fit the total pages count")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Unable to create form xobject from PDF page, parhaps the page index does not fit the total pages count");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    Local<Number> idValue = Number::New(result.second);
+    Local<Number> idValue = NEW_NUMBER(result.second);
     
-    return scope.Close(idValue);
+    SET_FUNCTION_RETURN_VALUE(idValue);
 }
 
-v8::Handle<v8::Value> DocumentCopyingContextDriver::MergePDFPageToPage(const v8::Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToPage(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 2 ||
        !PDFPageDriver::HasInstance(args[0]) ||
        !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 2 arugments, where the first is a page, and the second is a page index to merge")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 2 arugments, where the first is a page, and the second is a page index to merge");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     EStatusCode status = copyingContextDriver->CopyingContext->MergePDFPageToPage(
@@ -193,61 +204,63 @@ v8::Handle<v8::Value> DocumentCopyingContextDriver::MergePDFPageToPage(const v8:
                                                                                   args[1]->ToNumber()->Uint32Value());
     
     if(status != eSuccess)
-		ThrowException(Exception::Error(String::New("Unable to merge page index to page. parhaps the page index is wrong")));
-    return scope.Close(Undefined());
+		THROW_EXCEPTION("Unable to merge page index to page. parhaps the page index is wrong");
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 
 }
 
-v8::Handle<v8::Value> DocumentCopyingContextDriver::AppendPDFPageFromPDF(const v8::Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::AppendPDFPageFromPDF(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide a page index to append")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide a page index to append");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->AppendPDFPageFromPDF(args[0]->ToNumber()->Uint32Value());
     
     if(result.first != eSuccess)
     {
-		ThrowException(Exception::Error(String::New("Unable to append page. parhaps the page index is wrong")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Unable to append page. parhaps the page index is wrong");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    Local<Number> idValue = Number::New(result.second);
-    return scope.Close(idValue);
+    Local<Number> idValue = NEW_NUMBER(result.second);
+    SET_FUNCTION_RETURN_VALUE(idValue);
     
 }
 
-Handle<Value> DocumentCopyingContextDriver::MergePDFPageToFormXObject(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToFormXObject(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 2 ||
        !FormXObjectDriver::HasInstance(args[0]) ||
        !args[1]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 2 arugments, where the first is a form, and the second is a page index to merge")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 2 arugments, where the first is a form, and the second is a page index to merge");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     EStatusCode status = copyingContextDriver->CopyingContext->MergePDFPageToFormXObject(
@@ -255,213 +268,221 @@ Handle<Value> DocumentCopyingContextDriver::MergePDFPageToFormXObject(const Argu
                                                                                   args[1]->ToNumber()->Uint32Value());
     
     if(status != eSuccess)
-		ThrowException(Exception::Error(String::New("Unable to merge page index to form. parhaps the page index is wrong")));
-    return scope.Close(Undefined());
+		THROW_EXCEPTION("Unable to merge page index to form. parhaps the page index is wrong");
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 
 }
 
-Handle<Value> DocumentCopyingContextDriver::GetSourceDocumentParser(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentParser(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContext = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
-    Handle<Value> newInstance = PDFReaderDriver::NewInstance(args);
+    Handle<Value> newInstance = PDFReaderDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->ToObject())->SetFromOwnedParser(copyingContext->CopyingContext->GetSourceDocumentParser());
-    return scope.Close(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance);
 }
 
-Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectAsIs(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyDirectObjectAsIs(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1) // need to sometimes check that this is a PDFObject
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is PDFObject to copy")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, which is PDFObject to copy");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     EStatusCode status = copyingContextDriver->CopyingContext->CopyDirectObjectAsIs(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->ToObject())->GetObject());
     if(status != eSuccess)
-		ThrowException(Exception::Error(String::New("Unable to merge page index to form. parhaps the page index is wrong")));
-    return scope.Close(Undefined());
+		THROW_EXCEPTION("Unable to merge page index to form. parhaps the page index is wrong");
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     
 }
 
-Handle<Value> DocumentCopyingContextDriver::CopyObject(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyObject(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is object ID of the object to copy")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, which is object ID of the object to copy");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->CopyObject(args[0]->ToNumber()->Uint32Value());
  
      if(result.first != eSuccess)
-		ThrowException(Exception::Error(String::New("unable to copy the object. object id may be wrong")));
-     return scope.Close(Number::New(result.second));
+		THROW_EXCEPTION("unable to copy the object. object id may be wrong");
+     SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result.second));
     
 }
 
-Handle<Value> DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1) // need to sometimes check that this is a PDFObject
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is PDFObject to copy")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, which is PDFObject to copy");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     EStatusCodeAndObjectIDTypeList result = copyingContextDriver->CopyingContext->CopyDirectObjectWithDeepCopy(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->ToObject())->GetObject());
     if(result.first != eSuccess)
-		ThrowException(Exception::Error(String::New("Unable to copy object, parhaps the object id is wrong")));
+		THROW_EXCEPTION("Unable to copy object, parhaps the object id is wrong");
 
-    Local<Array> resultObjectIDs = Array::New((unsigned int)result.second.size());
+    Local<Array> resultObjectIDs = NEW_ARRAY((unsigned int)result.second.size());
     unsigned int index = 0;
     
     ObjectIDTypeList::iterator it = result.second.begin();
     for(; it != result.second.end();++it)
-        resultObjectIDs->Set(Number::New(index++),Number::New(*it));
+        resultObjectIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
     
-    return scope.Close(resultObjectIDs);
+    SET_FUNCTION_RETURN_VALUE(resultObjectIDs);
 }
 
 
-Handle<Value> DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1 ||
        !args[0]->IsArray())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is an array of object IDs")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, which is an array of object IDs");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     ObjectIDTypeList objectIDs;
     Handle<Object> objectIDsArray = args[0]->ToObject();
 
-    unsigned int length = objectIDsArray->Get(v8::String::New("length"))->ToObject()->Uint32Value();
+    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
     
     for(unsigned int i=0;i <length;++i)
         objectIDs.push_back(objectIDsArray->Get(i)->ToNumber()->Uint32Value());
     
     EStatusCode status = copyingContextDriver->CopyingContext->CopyNewObjectsForDirectObject(objectIDs);
     if(status != eSuccess)
-		ThrowException(Exception::Error(String::New("Unable to copy elements")));
-    return scope.Close(Undefined());
+		THROW_EXCEPTION("Unable to copy elements");
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     
 }
 
 
 
-Handle<Value> DocumentCopyingContextDriver::GetCopiedObjectID(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetCopiedObjectID(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, an object ID to check")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, an object ID to check");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
         
     EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->GetCopiedObjectID(args[0]->ToNumber()->Uint32Value());
     if(result.first != eSuccess)
-		ThrowException(Exception::Error(String::New("Unable to find element")));
-    return scope.Close(Number::New(result.second));
+		THROW_EXCEPTION("Unable to find element");
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result.second));
     
 }
 
 typedef BoxingBaseWithRW<ObjectIDType> ObjectIDTypeObject;
 
-Handle<Value> DocumentCopyingContextDriver::GetCopiedObjects(const Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetCopiedObjects(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
 
     // create an object that will serve as the map
 
-    Local<Object> result = Object::New();
+    Local<Object> result = NEW_OBJECT;
     
 	MapIterator<ObjectIDTypeToObjectIDTypeMap> it = copyingContextDriver->CopyingContext->GetCopiedObjectsMappingIterator();
     
     while(it.MoveNext())
-        result->Set(String::New(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),Number::New(it.GetValue()));
+        result->Set(NEW_STRING(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),NEW_NUMBER(it.GetValue()));
     
-    return scope.Close(result);
+    SET_FUNCTION_RETURN_VALUE(result);
 }
 
-Handle<Value> DocumentCopyingContextDriver::ReplaceSourceObjects(const v8::Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS_TYPE& args)
 {
     // getting a dictionary mapping source to target object, translating to the C++ map...and on we go
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     if(args.Length() != 0 ||
        !args[0]->IsObject())
     {
- 		ThrowException(Exception::TypeError(String::New("Wrong arguments. provide 1 arugment, which is an object mapping source object ids to map to target object IDs")));
-        return scope.Close(Undefined());
+ 		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, which is an object mapping source object ids to map to target object IDs");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     // create an object that will serve as the map
@@ -473,7 +494,7 @@ Handle<Value> DocumentCopyingContextDriver::ReplaceSourceObjects(const v8::Argum
     
     for(unsigned long i=0; i < objectKeys->Length(); ++i)
     {
-        Handle<String> key  = objectKeys->Get(Number::New(0))->ToString();
+        Handle<String> key  = objectKeys->Get(NEW_NUMBER(0))->ToString();
         Handle<Value> value = anObject->Get(key);
         
         resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*String::Utf8Value(key)),value->ToNumber()->Uint32Value()));
@@ -482,28 +503,29 @@ Handle<Value> DocumentCopyingContextDriver::ReplaceSourceObjects(const v8::Argum
     
     copyingContextDriver->CopyingContext->ReplaceSourceObjects(resultMap);
     
-    return scope.Close(Undefined());
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 }
 
-Handle<Value> DocumentCopyingContextDriver::GetSourceDocumentStream(const v8::Arguments& args)
+METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentStream(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     DocumentCopyingContextDriver* copyingContextDriver = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     if(!copyingContextDriver->CopyingContext)
     {
-		ThrowException(Exception::TypeError(String::New("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("copying context object not initialized, create using pdfWriter.createPDFCopyingContext or PDFWriter.createPDFCopyingContextForModifiedFile");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
 
-    Handle<Value> resultDriver = ByteReaderWithPositionDriver::NewInstance(args);
+	Handle<Value> resultDriver = ByteReaderWithPositionDriver::GetNewInstance(args);
     
     ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(resultDriver->ToObject())->SetStream(
         copyingContextDriver->CopyingContext->GetSourceDocumentStream(),
         false);
     
-    return scope.Close(resultDriver);
+    SET_FUNCTION_RETURN_VALUE(resultDriver);
 }
 
 

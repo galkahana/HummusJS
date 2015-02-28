@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 class IByteReaderWithPosition;
 
@@ -29,7 +29,9 @@ public:
     virtual ~ByteReaderWithPositionDriver();
     
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     void SetStream(IByteReaderWithPosition* inReader,bool inOwns);
@@ -45,13 +47,13 @@ private:
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Read(const v8::Arguments& args);
-    static v8::Handle<v8::Value> NotEnded(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SetPosition(const v8::Arguments& args);
-    static v8::Handle<v8::Value> SetPositionFromEnd(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetCurrentPosition(const v8::Arguments& args);
-    static v8::Handle<v8::Value> Skip(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE Read(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE NotEnded(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE SetPosition(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE SetPositionFromEnd(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetCurrentPosition(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE Skip(const ARGS_TYPE& args);
 
     
 };

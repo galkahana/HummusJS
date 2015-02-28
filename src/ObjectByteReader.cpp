@@ -23,32 +23,36 @@ using namespace v8;
 
 ObjectByteReader::ObjectByteReader(Handle<Object> inObject)
 {
-    mObject = Persistent<Object>::New(inObject);
+	CREATE_ISOLATE_CONTEXT;
+	
+	SET_PERSISTENT_OBJECT(mObject, OBJECT, inObject);
 }
 
 ObjectByteReader::~ObjectByteReader()
 {
-    mObject.Dispose();
+	DISPOSE_PERSISTENT(mObject);
 }
 
 IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize)
 {
-    HandleScope handle;
-    
-    Handle<Value> value = mObject->Get(String::New("read"));
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("read"));
+
     if(value->IsUndefined())
         return 0;
     Handle<Function> func = Handle<Function>::Cast(value);
     
     Handle<Value> args[1];
-    args[0] = Number::New(inBufferSize);
+    args[0] = NEW_NUMBER(inBufferSize);
     
-    Handle<Value> result = func->Call(mObject, 1, args);
+	Handle<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
     
     if(!result->IsArray())
         return 0;
     
-    IOBasicTypes::LongBufferSizeType bufferLength = result->ToObject()->Get(v8::String::New("length"))->ToObject()->Uint32Value();
+    IOBasicTypes::LongBufferSizeType bufferLength = result->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
         inBuffer[i] = (IOBasicTypes::Byte)(value->ToObject()->Get((uint32_t)i)->ToNumber()->Uint32Value());
     
@@ -57,12 +61,13 @@ IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBu
 
 bool ObjectByteReader::NotEnded()
 {
-    HandleScope handle;
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
 
-    Handle<Value> value = mObject->Get(String::New("notEnded"));
+	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("notEnded"));
     if(value->IsUndefined())
         return true;
     Handle<Function> func = Handle<Function>::Cast(value);
     
-    return (func->Call(mObject, 0, NULL)->ToBoolean()->Value());
+	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->ToBoolean()->Value());
 }

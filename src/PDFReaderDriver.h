@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include <node.h>
+#include "nodes.h"
 
 #include "PDFParser.h"
 #include "InputFile.h"
@@ -32,7 +32,8 @@ public:
     virtual ~PDFReaderDriver();
 
     static void Init();
-    static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
+	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
     PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath);
@@ -43,23 +44,23 @@ private:
     PDFReaderDriver();
     
     static v8::Persistent<v8::Function> constructor;
-    static v8::Handle<v8::Value> New(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetPDFLevel(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetPagesCount(const v8::Arguments& args);
-    static v8::Handle<v8::Value> QueryDictionaryObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> QueryArrayObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetTrailer(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ParseNewObject(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetPageObjectID(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ParsePageDictionary(const v8::Arguments& args);
-    static v8::Handle<v8::Value> ParsePage(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetObjectsCount(const v8::Arguments& args);
-    static v8::Handle<v8::Value> IsEncrypted(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetXrefSize(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetXrefEntry(const v8::Arguments& args);
-    static v8::Handle<v8::Value> GetXrefPosition(const v8::Arguments& args);
-    static v8::Handle<v8::Value> StartReadingFromStream(const v8::Arguments& args);
-    static v8::Handle<v8::Value>  GetParserStream(const v8::Arguments& args);
+	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetPDFLevel(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetPagesCount(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE QueryDictionaryObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE QueryArrayObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetTrailer(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ParseNewObject(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetPageObjectID(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ParsePageDictionary(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ParsePage(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetObjectsCount(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE IsEncrypted(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetXrefSize(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetXrefEntry(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetXrefPosition(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE StartReadingFromStream(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE  GetParserStream(const ARGS_TYPE& args);
 
     
     bool mStartedWithStream;

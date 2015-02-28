@@ -40,39 +40,52 @@ ByteReaderDriver::~ByteReaderDriver()
 
 void ByteReaderDriver::Init()
 {
+	CREATE_ISOLATE_CONTEXT;
+
     // prepare the page interfrace template
-    Local<FunctionTemplate> t = FunctionTemplate::New(New);
-    constructor_template = Persistent<FunctionTemplate>::New(t);
-    constructor_template->SetClassName(String::NewSymbol("ByteReader"));
-    constructor_template->InstanceTemplate()->SetInternalFieldCount(1);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	t->SetClassName(NEW_STRING("ByteReader"));
+    t->InstanceTemplate()->SetInternalFieldCount(1);
     
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("read"),FunctionTemplate::New(Read)->GetFunction());
-    constructor_template->PrototypeTemplate()->Set(String::NewSymbol("notEnded"),FunctionTemplate::New(NotEnded)->GetFunction());
-    
-    constructor = Persistent<Function>::New(constructor_template->GetFunction());
+	SET_PROTOTYPE_METHOD(t, "read", Read);
+	SET_PROTOTYPE_METHOD(t, "notEnded", NotEnded);
+	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-Handle<Value> ByteReaderDriver::NewInstance(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderDriver::NewInstance(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
-    Local<Object> instance = constructor->NewInstance();
-    return scope.Close(instance);
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	SET_FUNCTION_RETURN_VALUE(instance);
+}
+
+v8::Handle<v8::Value> ByteReaderDriver::GetNewInstance(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+	return CLOSE_SCOPE(instance);
 }
 
 bool ByteReaderDriver::HasInstance(Handle<Value> inObject)
 {
-    return inObject->IsObject() &&
-    constructor_template->HasInstance(inObject->ToObject());
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-Handle<Value> ByteReaderDriver::New(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderDriver::New(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteReaderDriver* driver = new ByteReaderDriver();
     driver->Wrap(args.This());
-    return args.This();
+	SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
 void ByteReaderDriver::SetStream(IByteReader* inReader,bool inOwns)
@@ -90,16 +103,17 @@ IByteReader* ByteReaderDriver::GetStream()
 
 using namespace IOBasicTypes;
 
-v8::Handle<v8::Value> ByteReaderDriver::Read(const v8::Arguments& args)
+METHOD_RETURN_TYPE ByteReaderDriver::Read(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     // k. i'll just read the number of bytes and return an array of them
     if(args.Length() != 1 ||
        !args[0]->IsNumber())
     {
-		ThrowException(Exception::TypeError(String::New("Wrong arguments. pass the number of bytes to read")));
-        return scope.Close(Undefined());
+		THROW_EXCEPTION("Wrong arguments. pass the number of bytes to read");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     ByteReaderDriver* element = ObjectWrap::Unwrap<ByteReaderDriver>(args.This());
@@ -108,23 +122,24 @@ v8::Handle<v8::Value> ByteReaderDriver::Read(const v8::Arguments& args)
     
     bufferSize = element->mInstance->Read(buffer,(int)bufferSize); // reading int cause that's the maximum that can read (use should read till notended anyways)
 
-    Local<Array> outBuffer = Array::New((int)bufferSize);
+    Local<Array> outBuffer = NEW_ARRAY((int)bufferSize);
     
     for(LongBufferSizeType i=0;i<bufferSize;++i)
-        outBuffer->Set(Number::New(i),Number::New(buffer[i]));
+		outBuffer->Set(NEW_NUMBER(i), NEW_NUMBER(buffer[i]));
     
     delete[] buffer;
     
-    return scope.Close(outBuffer);
+    SET_FUNCTION_RETURN_VALUE(outBuffer);
 }
 
-Handle<Value> ByteReaderDriver::NotEnded(const Arguments& args)
+METHOD_RETURN_TYPE ByteReaderDriver::NotEnded(const ARGS_TYPE& args)
 {
-    HandleScope scope;
-    
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
     ByteReaderDriver* element = ObjectWrap::Unwrap<ByteReaderDriver>(args.This());
     
-    return scope.Close(Boolean::New(element->mInstance->NotEnded()));
+	SET_FUNCTION_RETURN_VALUE(NEW_BOOLEAN(element->mInstance->NotEnded()));
 }
 
 
