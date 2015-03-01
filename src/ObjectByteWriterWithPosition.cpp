@@ -25,7 +25,7 @@ ObjectByteWriterWithPosition::ObjectByteWriterWithPosition(Handle<Object> inObje
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	SET_PERSISTENT_OBJECT(mObject, OBJECT, inObject);
+	SET_PERSISTENT_OBJECT(mObject, Object, inObject);
 }
 
 ObjectByteWriterWithPosition::~ObjectByteWriterWithPosition()

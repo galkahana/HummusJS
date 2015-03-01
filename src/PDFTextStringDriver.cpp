@@ -44,6 +44,9 @@ void PDFTextStringDriver::Init(Handle<Object> inExports)
 
 METHOD_RETURN_TYPE PDFTextStringDriver::NewInstance(const ARGS_TYPE& args)
 {
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+		
 	SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args));
 }
 

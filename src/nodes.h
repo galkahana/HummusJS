@@ -5,7 +5,7 @@
 
 #define NODE_0_10_MODULE_VERSION 11
 
-#if NODE_MODULE_VERSION >= NODE_0_10_MODULE_VERSION
+#if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
 #include <node_object_wrap.h>
 
 #define ARGS_TYPE v8::FunctionCallbackInfo<v8::Value>
@@ -40,6 +40,7 @@
 #define OBJECT_FROM_PERSISTENT(p) Local<Object>::New(isolate, p)
 #define GET_CURRENT_CONTEXT v8::Isolate::GetCurrent()->GetCurrentContext()
 #define CLOSE_SCOPE(v) scope.Escape(v)
+#define ESCAPABLE_HANDLE(v) Local<v>
 
 #else
 
@@ -50,7 +51,7 @@
 #define CREATE_ISOLATE_CONTEXT
 #define NEW_FUNCTION_TEMPLATE(X) FunctionTemplate::New(X)
 #define NEW_STRING(X) String::New(X)
-#define NEW_SYMBOL(X) String:NewSymbol(X)
+#define NEW_SYMBOL(X) String::NewSymbol(X)
 #define NEW_NUMBER(X) Number::New(X)
 #define NEW_INTEGER(X) Integer::New(X)
 #define NEW_ARRAY(X) Array::New(X)
@@ -58,22 +59,24 @@
 #define NEW_OBJECT Object::New()
 #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(String::NewSymbol(s), f);
 #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(String::NewSymbol(s), f,g);
-#define SET_CONSTRUCTOR_EXPORT(t,s,c) t->Set(String::NewSymbol(s),c)
+#define SET_CONSTRUCTOR_EXPORT(t,s,c) t->Set(String::NewSymbol(s),c->GetFunction())
 #define SET_PROTOTYPE_METHOD(t,s,f) t->PrototypeTemplate()->Set(String::NewSymbol(s),FunctionTemplate::New(f)->GetFunction())
 #define SET_PERSISTENT_OBJECT(c,ot,t) c =Persistent<ot>::New(t);
-#define SET_CONSTRUCTOR(c,t) SET_PERSISTENT_OBJECT(c,Function,t)
-#define CREATE_SCOPE HandleScope scope
+#define SET_CONSTRUCTOR(c,t) SET_PERSISTENT_OBJECT(c,Function,t->GetFunction())
+#define CREATE_SCOPE v8::HandleScope scope
+#define CREATE_ESCAPABLE_SCOPE v8::HandleScope scope
 #define NEW_INSTANCE(c) c->NewInstance()
 #define NEW_INSTANCE_ARGS(c,argc,argv) c->NewInstance(argc,argv)
 #define SET_ACCESSOR_RETURN_VALUE(v) return scope.Close(v)
 #define SET_FUNCTION_RETURN_VALUE(v) return scope.Close(v)
 #define HAS_INSTANCE(c,o) c->HasInstance(o->ToObject())
 #define UNDEFINED Undefined()
-#define THROW_EXCEPTION(s) ThrowException(Exception::TypeError(String::New(s)));
+#define THROW_EXCEPTION(s) ThrowException(Exception::TypeError(String::New(s)))
 #define DISPOSE_PERSISTENT(p) p.Dispose()
 #define OBJECT_FROM_PERSISTENT(p) p
 #define GET_CURRENT_CONTEXT v8::Context::GetCurrent()
-#define CLOSE_SCOPE(v) scope.Close(val)
+#define CLOSE_SCOPE(v) scope.Close(v)
+#define ESCAPABLE_HANDLE(v) Handle<v>
 #endif
 
-#define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,Function,t)
+#define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)

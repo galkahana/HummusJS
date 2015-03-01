@@ -25,7 +25,7 @@ ObjectByteWriter::ObjectByteWriter(Handle<Object> inObject)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	SET_PERSISTENT_OBJECT(mObject, OBJECT, inObject);
+	SET_PERSISTENT_OBJECT(mObject, Object, inObject);
 }
 
 ObjectByteWriter::~ObjectByteWriter()
