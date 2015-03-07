@@ -34,6 +34,7 @@
 using namespace v8;
 
 Persistent<Function> PDFReaderDriver::constructor;
+Persistent<FunctionTemplate> PDFReaderDriver::constructor_template;
 
 PDFReaderDriver::PDFReaderDriver()
 {
@@ -76,6 +77,7 @@ void PDFReaderDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "startReadingFromStream", StartReadingFromStream);
 	SET_PROTOTYPE_METHOD(t, "getParserStream", GetParserStream);
 	SET_CONSTRUCTOR(constructor, t);
+    SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);    
 }
 
 METHOD_RETURN_TYPE PDFReaderDriver::NewInstance(const ARGS_TYPE& args)
@@ -84,6 +86,13 @@ METHOD_RETURN_TYPE PDFReaderDriver::NewInstance(const ARGS_TYPE& args)
     CREATE_ESCAPABLE_SCOPE;
 
 	SET_FUNCTION_RETURN_VALUE(PDFReaderDriver::GetNewInstance(args));
+}
+
+bool PDFReaderDriver::HasInstance(Handle<Value> inObject)
+{
+    CREATE_ISOLATE_CONTEXT;
+
+    return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
 v8::Handle<v8::Value> PDFReaderDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -244,6 +253,11 @@ void PDFReaderDriver::SetFromOwnedParser(PDFParser* inParser)
         mPDFFile.CloseFile();
     }
     mPDFReader = inParser;
+}
+
+PDFParser* PDFReaderDriver::GetParser()
+{
+    return mPDFReader;
 }
 
 METHOD_RETURN_TYPE PDFReaderDriver::ParseNewObject(const ARGS_TYPE& args)
@@ -444,3 +458,4 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetParserStream(const ARGS_TYPE& args)
     
     SET_FUNCTION_RETURN_VALUE(driver);
 }
+

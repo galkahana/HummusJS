@@ -34,16 +34,19 @@ public:
     static void Init();
 	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
     PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath);
     PDFHummus::EStatusCode StartPDFParsing(v8::Handle<v8::Object> inStreamObject);
     void SetFromOwnedParser(PDFParser* inParser);
+    PDFParser* GetParser();
     
 private:
     PDFReaderDriver();
     
     static v8::Persistent<v8::Function> constructor;
+    static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPDFLevel(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPagesCount(const ARGS_TYPE& args);

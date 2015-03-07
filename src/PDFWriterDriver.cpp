@@ -1003,11 +1003,26 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     
     if(args[0]->IsObject())
     {
-        proxy = new ObjectByteReaderWithPosition(args[0]->ToObject());
-        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(proxy);
+        if(PDFReaderDriver::HasInstance(args[0]))
+        {
+            // parser based copying context
+
+            PDFParser* theParser = ObjectWrap::Unwrap<PDFReaderDriver>(args[0]->ToObject())->GetParser();
+            copyingContext = pdfWriter->mPDFWriter.GetDocumentContext().CreatePDFCopyingContext(theParser);
+        }
+        else
+        {
+            // stream based copying context
+
+            proxy = new ObjectByteReaderWithPosition(args[0]->ToObject());
+            copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(proxy);
+        }
     }
     else
+    {
+        // file path based copying context
         copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()));
+    }
     
     if(!copyingContext)
     {
