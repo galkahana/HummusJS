@@ -247,7 +247,8 @@ PDFPageModifier.prototype.writePage = function()
 
     // get last page object, convert to JS object, so it's easier to traverse
     var pageObjectID = cpyCxt.getSourceDocumentParser().getPageObjectID(this.pageIndex);
-    var pageDictionaryObject = cpyCxt.getSourceDocumentParser().parsePage(this.pageIndex).getDictionary().toJSObject();
+    var pageDictionaryObject = cpyCxt.getSourceDocumentParser().parsePage(this.pageIndex).getDictionary();
+    var pageDictionaryJSObject = pageDictionaryObject.toJSObject();
 
 
 
@@ -256,24 +257,25 @@ PDFPageModifier.prototype.writePage = function()
     var modifiedPageObject = objCxt.startDictionary();
 
     // copy all elements of the page to the new page object, but the "Contents" and "Resources" elements, and  "Annots"
-     Object.getOwnPropertyNames(pageDictionaryObject).forEach(function(element,index,array)
+     Object.getOwnPropertyNames(pageDictionaryJSObject).forEach(function(element,index,array)
                                                         {
                                                             if(element != 'Resources' && element != 'Contents' && element != 'Annots')
                                                             {
                                                                 modifiedPageObject.writeKey(element);
-                                                                cpyCxt.copyDirectObjectAsIs(pageDictionaryObject[element]);
+                                                                cpyCxt.copyDirectObjectAsIs(pageDictionaryJSObject[element]);
                                                             }
                                                         });
      // Write new annotations entry, joining existing annotations, and new ones (from links)
-     if(pageDictionaryObject['Annots'] || this.annotations.length > 0)
+     if(pageDictionaryJSObject['Annots'] || this.annotations.length > 0)
      {
         modifiedPageObject.writeKey('Annots');
         objCxt.startArray();
 
         // write old annots, if any exist
-        if(pageDictionaryObject['Annots'])
+        if(pageDictionaryJSObject['Annots'])
         {
-            pageDictionaryObject['Annots'].toPDFArray().toJSArray().forEach(function(inElement)
+            var annotsObj = cpyCxt.getSourceDocumentParser().queryDictionaryObject(pageDictionaryObject,'Annots');
+            annotsObj.toPDFArray().toJSArray().forEach(function(inElement)
             {
                 objCxt.writeIndirectObjectReference(inElement.toPDFIndirectObjectReference().getObjectID());
             });
@@ -293,23 +295,23 @@ PDFPageModifier.prototype.writePage = function()
 
     // Write new contents entry, joining the existing contents with the new one. take care of various scenarios of the existing Contents
     modifiedPageObject.writeKey('Contents');
-    if(!pageDictionaryObject['Contents']) // no contents
+    if(!pageDictionaryJSObject['Contents']) // no contents
     {
         objCxt.writeIndirectObjectReference(newContentObjectID);
     }
     else
     {
         objCxt.startArray();
-        if(pageDictionaryObject['Contents'].getType() == module.exports.ePDFObjectArray) // contents stream array
+        if(pageDictionaryJSObject['Contents'].getType() == module.exports.ePDFObjectArray) // contents stream array
         {
-            pageDictionaryObject['Contents'].toPDFArray().toJSArray().forEach(function(inElement)
+            pageDictionaryJSObject['Contents'].toPDFArray().toJSArray().forEach(function(inElement)
             {
                 objCxt.writeIndirectObjectReference(inElement.toPDFIndirectObjectReference().getObjectID());
             });
         }
         else // single stream
         {
-            objCxt.writeIndirectObjectReference(pageDictionaryObject['Contents'].toPDFIndirectObjectReference().getObjectID());
+            objCxt.writeIndirectObjectReference(pageDictionaryJSObject['Contents'].toPDFIndirectObjectReference().getObjectID());
         }
 
         objCxt.writeIndirectObjectReference(newContentObjectID);
@@ -322,7 +324,7 @@ PDFPageModifier.prototype.writePage = function()
     var newResourcesIndirect = null;
     var formResourcesNames = [];
     modifiedPageObject.writeKey('Resources');
-    if(!pageDictionaryObject['Resources'])
+    if(!pageDictionaryJSObject['Resources'])
     {
         // no existing resource dictionary, so write my own
         var dict = objCxt.startDictionary();
@@ -342,10 +344,10 @@ PDFPageModifier.prototype.writePage = function()
     else
     {
         // resources may be direct, or indirect. if direct, write as is, adding the new form xobject, otherwise wait till page object ends and write then
-        isResorucesIndirect =  (pageDictionaryObject['Resources'].getType() == module.exports.ePDFObjectIndirectObjectReference);
+        isResorucesIndirect =  (pageDictionaryJSObject['Resources'].getType() == module.exports.ePDFObjectIndirectObjectReference);
         if(isResorucesIndirect)
         {
-            resourcesIndirect = pageDictionaryObject['Resources'].toPDFIndirectObjectReference().getObjectID();
+            resourcesIndirect = pageDictionaryJSObject['Resources'].toPDFIndirectObjectReference().getObjectID();
             if(this.writer.modifiedResourcesDictionary[resourcesIndirect])
             {
                 // already modified resources dictionary. this means that
@@ -362,7 +364,7 @@ PDFPageModifier.prototype.writePage = function()
 
         }
         else
-            formResourcesNames = writeModifiedResourcesDict(cpyCxt.getSourceDocumentParser(),pageDictionaryObject['Resources'],objCxt,cpyCxt,this.contexts);
+            formResourcesNames = writeModifiedResourcesDict(cpyCxt.getSourceDocumentParser(),pageDictionaryJSObject['Resources'],objCxt,cpyCxt,this.contexts);
     }
 
     // end page object and writing
