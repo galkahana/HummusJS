@@ -732,3 +732,10 @@ PDFHummus::EHummusImageType PDFWriter::GetImageType(const std::string& inImageFi
 {
 	return mDocumentContext.GetImageType(inImageFile,inImageIndex);
 }
+
+unsigned long PDFWriter::GetImagePagesCount(const std::string& inImageFile)
+{
+	return mDocumentContext.GetImagePagesCount(inImageFile);
+}
+
+

@@ -32,6 +32,7 @@
 #include "PDFEmbedParameterTypes.h"
 #include "PDFDocumentHandler.h"
 #include "ObjectsBasicTypes.h"
+#include "EHummusImageType.h"
 
 #include <string>
 #include <set>
@@ -85,15 +86,6 @@ typedef std::pair<std::string,unsigned long> StringAndULongPair;
 
 namespace PDFHummus
 {
-	// image type enumeration, for images supported by hummus
-	enum EHummusImageType
-	{
-		eUndefined,
-		ePDF,
-		eJPG,
-		eTIFF
-	};
-
 	struct HummusImageInformation
 	{
 		HummusImageInformation(){writtenObjectID = 0;imageType=eUndefined;imageWidth=-1;imageHeight=-1;}
@@ -264,6 +256,7 @@ namespace PDFHummus
 		// some public image info services, for users of hummus
 		DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0);
 		EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+		unsigned long GetImagePagesCount(const std::string& inImageFile);
 
 
 		// Font [Text] (font index is for multi-font files. for single file fonts, pass 0)

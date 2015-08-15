@@ -248,9 +248,46 @@ EStatusCode JPEGImageParser::ReadJFIFData(JPEGImageInformation& outImageInformat
 	return status;
 }
 
-EStatusCode JPEGImageParser::ReadPhotoshopData(JPEGImageInformation& outImageInformation,bool outPhotoshopDataOK)
+TwoLevelStatus JPEGImageParser::ReadStreamToBuffer(unsigned long inAmountToRead,unsigned long& refReadLimit)
 {
-	EStatusCode status;
+	if (refReadLimit < inAmountToRead)
+		return TwoLevelStatus(PDFHummus::eSuccess, PDFHummus::eFailure);
+	EStatusCode status = ReadStreamToBuffer(inAmountToRead);
+	if (status == PDFHummus::eSuccess)
+		refReadLimit -= inAmountToRead;
+	return TwoLevelStatus(status, PDFHummus::eSuccess);
+}
+TwoLevelStatus JPEGImageParser::ReadLongValue(
+	unsigned long& refReadLimit,
+	unsigned long& outLongValue,
+	bool inUseLittleEndian)
+{
+	if (refReadLimit < 4)
+		return TwoLevelStatus(PDFHummus::eSuccess, PDFHummus::eFailure);
+
+	EStatusCode status = ReadLongValue(outLongValue, inUseLittleEndian);
+	if (status == PDFHummus::eSuccess)
+		refReadLimit -= 4;
+	return TwoLevelStatus(status, PDFHummus::eSuccess);
+}
+
+EStatusCode JPEGImageParser::SkipStream(unsigned long inSkip, unsigned long& refReadLimit)
+{
+	if (refReadLimit < inSkip)
+		return PDFHummus::eFailure;
+	SkipStream(inSkip);
+	refReadLimit -= inSkip;
+	return PDFHummus::eSuccess;
+}
+
+EStatusCode JPEGImageParser::ReadPhotoshopData(JPEGImageInformation& outImageInformation, bool outPhotoshopDataOK)
+{
+	// code below uses a two level status where the primary is in charge of read error
+	// and the seconary is in charge of realizing whether the data is correct. 
+	// error in the former should cause complete break. error in the latter is fine on the read level
+	// and simply means the data is logically corrupt and should simply be skipped
+
+	TwoLevelStatus twoLevelStatus(eSuccess,eSuccess);
 	unsigned int intSkip;
 	unsigned long toSkip;
 	unsigned int nameSkip;
@@ -258,58 +295,60 @@ EStatusCode JPEGImageParser::ReadPhotoshopData(JPEGImageInformation& outImageInf
 	bool resolutionBimNotFound = true;
 
 	do {
-		status = ReadIntValue(intSkip);
-		if(status != PDFHummus::eSuccess)
+		twoLevelStatus.primary = ReadIntValue(intSkip);
+		if (twoLevelStatus.primary != PDFHummus::eSuccess)
 			break;
-		toSkip = intSkip-2;
-		status = SkipTillChar(scEOS,toSkip);
-		if(status != PDFHummus::eSuccess)
+		toSkip = intSkip - 2;
+		twoLevelStatus.primary = SkipTillChar(scEOS, toSkip);
+		if (twoLevelStatus.primary != PDFHummus::eSuccess)
 			break;
-		while(toSkip > 0 && resolutionBimNotFound)
+
+		while (toSkip > 0 && resolutionBimNotFound)
 		{
-			status = ReadStreamToBuffer(4);
-			if(status !=PDFHummus::eSuccess)
+			twoLevelStatus = ReadStreamToBuffer(4, toSkip);
+			if(twoLevelStatus.eitherBad())
 				break;
-            toSkip-=4;
-            if(0 != memcmp(mReadBuffer,sc8Bim,4))
-                break; // k. corrupt header. stop here and just skip the next
-			status = ReadStreamToBuffer(3);
-			if(status !=PDFHummus::eSuccess)
+			if (0 != memcmp(mReadBuffer, sc8Bim, 4))
+				break; 
+			twoLevelStatus = ReadStreamToBuffer(3,toSkip);
+			if (twoLevelStatus.eitherBad())
 				break;
-			toSkip-=3;
 			nameSkip = (int)mReadBuffer[2];
-			if(nameSkip % 2 == 0)
+			if (nameSkip % 2 == 0)
 				++nameSkip;
-			SkipStream(nameSkip);
-			toSkip-=nameSkip;
-			resolutionBimNotFound = (0 != memcmp(mReadBuffer,scResolutionBIMID,2));
-			status = ReadLongValue(dataLength);
-			if(status != PDFHummus::eSuccess)
+			twoLevelStatus.secondary = SkipStream(nameSkip, toSkip);
+			if (twoLevelStatus.secondary)
 				break;
-			toSkip-=4;
-			if(resolutionBimNotFound)
+			resolutionBimNotFound = (0 != memcmp(mReadBuffer, scResolutionBIMID, 2));
+			twoLevelStatus = ReadLongValue(toSkip, dataLength);
+			if (twoLevelStatus.eitherBad())
+				break;
+			if (resolutionBimNotFound)
 			{
-				if(dataLength % 2 == 1)
+				if (dataLength % 2 == 1)
 					++dataLength;
-				toSkip-=dataLength;
-				SkipStream(dataLength);
+				twoLevelStatus.secondary = SkipStream(dataLength, toSkip);
+				if (twoLevelStatus.secondary != PDFHummus::eSuccess)
+					break;
 			}
 			else
 			{
-				status = ReadStreamToBuffer(16);
-				if(status !=PDFHummus::eSuccess)
+				twoLevelStatus = ReadStreamToBuffer(16, toSkip);
+				if (twoLevelStatus.eitherBad())
 					break;
-				toSkip-=16;
+
 				outImageInformation.PhotoshopInformationExists = true;
 				outImageInformation.PhotoshopXDensity = GetIntValue(mReadBuffer) + GetFractValue(mReadBuffer + 2);
 				outImageInformation.PhotoshopYDensity = GetIntValue(mReadBuffer + 8) + GetFractValue(mReadBuffer + 10);
 			}
 		}
-		if(PDFHummus::eSuccess == status)
+
+		if (PDFHummus::eSuccess == twoLevelStatus.primary)
 			SkipStream(toSkip);
-	}while(false);
-    outPhotoshopDataOK = !resolutionBimNotFound;
-	return status;
+	} while (false);
+
+	outPhotoshopDataOK = !resolutionBimNotFound && twoLevelStatus.secondary == PDFHummus::eSuccess;
+	return twoLevelStatus.primary;
 }
 
 EStatusCode JPEGImageParser::ReadExifData(JPEGImageInformation& outImageInformation)

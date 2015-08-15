@@ -67,6 +67,12 @@ void PDFObjectParser::ResetReadState()
 	mTokenizer.ResetReadState();
 }
 
+void PDFObjectParser::ResetReadState(const PDFParserTokenizer& inExternalTokenizer)
+{
+	mTokenBuffer.clear();
+	mTokenizer.ResetReadState(inExternalTokenizer);
+}
+
 static const std::string scR = "R";
 static const std::string scStream = "stream";
 PDFObject* PDFObjectParser::ParseNewObject(IPDFParserExtender* inParserExtender)

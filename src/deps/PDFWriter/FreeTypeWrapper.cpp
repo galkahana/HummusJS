@@ -51,18 +51,19 @@ FreeTypeWrapper::FreeTypeWrapper(void)
 
 FreeTypeWrapper::~FreeTypeWrapper(void)
 {
-	if(mFreeType)
-		FT_Done_FreeType(mFreeType);
-
 	FTFaceToFTStreamListMap::iterator it = mOpenStreams.begin();
-	for(;it != mOpenStreams.end();++it)
+	for (; it != mOpenStreams.end(); ++it)
 	{
 		FTStreamList::iterator itStreams = it->second.begin();
-		for(; itStreams != it->second.end();++itStreams)
+		for (; itStreams != it->second.end(); ++itStreams)
 		{
 			delete *itStreams;
 		}
 	}
+	mOpenStreams.clear();
+	if (mFreeType)
+		FT_Done_FreeType(mFreeType);
+
 }
 
 // using my own streams, to implement UTF8 paths

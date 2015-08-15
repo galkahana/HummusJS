@@ -26,6 +26,25 @@
 struct JPEGImageInformation;
 class IByteReaderWithPosition;
 
+struct TwoLevelStatus
+{
+	PDFHummus::EStatusCode primary;
+	PDFHummus::EStatusCode secondary;
+
+	TwoLevelStatus(PDFHummus::EStatusCode inPrimary,
+		PDFHummus::EStatusCode inSecondary)
+	{
+		primary = inPrimary;
+		secondary = inSecondary;
+
+	}
+
+	bool eitherBad()
+	{
+		return primary != PDFHummus::eSuccess || secondary != PDFHummus::eSuccess;
+	}
+};
+
 class JPEGImageParser
 {
 public:
@@ -41,11 +60,13 @@ private:
 
 	PDFHummus::EStatusCode ReadJPEGID();
 	PDFHummus::EStatusCode ReadStreamToBuffer(unsigned long inAmountToRead);
+	TwoLevelStatus ReadStreamToBuffer(unsigned long inAmountToRead, unsigned long& refReadLimit);
 	PDFHummus::EStatusCode ReadJpegTag(unsigned int& outTagID);
 	PDFHummus::EStatusCode ReadSOF0Data(JPEGImageInformation& outImageInformation);
 	unsigned int GetIntValue(const IOBasicTypes::Byte* inBuffer,
 							 bool inUseLittleEndian = false);
 	void SkipStream(unsigned long inSkip);
+	PDFHummus::EStatusCode SkipStream(unsigned long inSkip, unsigned long& refReadLimit);
 	PDFHummus::EStatusCode ReadJFIFData(JPEGImageInformation& outImageInformation);
 	PDFHummus::EStatusCode ReadPhotoshopData(JPEGImageInformation& outImageInformation,bool outPhotoshopDataOK);
 	PDFHummus::EStatusCode ReadExifData(JPEGImageInformation& outImageInformation);
@@ -61,8 +82,12 @@ private:
 	PDFHummus::EStatusCode ReadIntValue(	unsigned int& outIntValue,
 								bool inUseLittleEndian = false);
 	PDFHummus::EStatusCode SkipTillChar(IOBasicTypes::Byte inSkipUntilValue,unsigned long& refSkipLimit);
-	PDFHummus::EStatusCode ReadLongValue(	unsigned long& outLongValue,
-								bool inUseLittleEndian = false);
+	PDFHummus::EStatusCode ReadLongValue(unsigned long& outLongValue,
+		bool inUseLittleEndian);
+	TwoLevelStatus ReadLongValue(
+		unsigned long& refReadLimit,
+		unsigned long& outLongValue,
+		bool inUseLittleEndian = false);
 	unsigned long GetLongValue(	const IOBasicTypes::Byte* inBuffer,
 								bool inUseLittleEndian);
 	double GetFractValue(const IOBasicTypes::Byte* inBuffer);

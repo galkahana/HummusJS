@@ -342,22 +342,22 @@ EStatusCode CFFPrimitiveWriter::WriteRealOperand(double inValue,long inFractalLe
     
 	// Integer part
 	if(integerValue != 0)
-		if(WriteIntegerOfReal(integerValue,buffer,usedFirst) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
-    
-	// Fractal part (if there was an integer or not)
-	if(fractalValue != 0)
 	{
-		if(0 == integerValue)
-		{
-			if(SetOrWriteNibble(0,buffer,usedFirst) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
-		}
-        
+	        if(WriteIntegerOfReal(integerValue,buffer,usedFirst) != PDFHummus::eSuccess)
+			return PDFHummus::eFailure;
+        }
+	else
+	{
+		if(SetOrWriteNibble(0,buffer,usedFirst) != PDFHummus::eSuccess)
+			return PDFHummus::eFailure;
+	}
+
+	// Fractal part (if there was an integer or not)
+	if(fractalValue != 0 && inFractalLength > 0)
+	{
 		if(SetOrWriteNibble(0xa,buffer,usedFirst) != PDFHummus::eSuccess)
 			return PDFHummus::eFailure;
-        
-        
+
 		while(fractalValue != 0 && inFractalLength > 0)
 		{
 			if(SetOrWriteNibble((Byte)floor(fractalValue * 10),buffer,usedFirst) != PDFHummus::eSuccess)
@@ -438,3 +438,5 @@ EStatusCode CFFPrimitiveWriter::PadNBytes(unsigned short inBytesToPad)
 		Write(BytePad,1);
 	return status;
 }
+
+

@@ -95,6 +95,7 @@ void PDFWriterDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "createPDFTextString", CreatePDFTextString);
 	SET_PROTOTYPE_METHOD(t, "createPDFDate", CreatePDFDate);
 	SET_PROTOTYPE_METHOD(t, "getImageDimensions", SGetImageDimensions);
+	SET_PROTOTYPE_METHOD(t, "getImagePagesCount", GetImagePagesCount);
 	SET_PROTOTYPE_METHOD(t, "getModifiedFileParser", GetModifiedFileParser);
 	SET_PROTOTYPE_METHOD(t, "getModifiedInputFile", GetModifiedInputFile);
 	SET_PROTOTYPE_METHOD(t, "getOutputFile", GetOutputFile);
@@ -1190,11 +1191,11 @@ DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inIma
     
     if(-1 == imageInformation.imageWidth)
     {
-        CachedHummusImageInformation::EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
+        PDFHummus::EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
         
         switch(imageType)
         {
-            case CachedHummusImageInformation::ePDF:
+            case PDFHummus::ePDF:
             {
                 // get the dimensions via the PDF parser. will use the media rectangle to draw image
                 PDFParser pdfParser;
@@ -1212,7 +1213,7 @@ DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inIma
                 
                 break;
             }
-            case CachedHummusImageInformation::eJPG:
+            case PDFHummus::eJPG:
             {
                 BoolAndJPEGImageInformation jpgImageInformation = mPDFWriter.GetDocumentContext().GetJPEGImageHandler().RetrieveImageInformation(inImageFile);
                 if(!jpgImageInformation.first)
@@ -1224,7 +1225,7 @@ DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inIma
                 imageInformation.imageHeight = dimensions.second;
                 break;
             }
-            case CachedHummusImageInformation::eTIFF:
+            case PDFHummus::eTIFF:
             {
                 TIFFImageHandler hummusTiffHandler;
                 
@@ -1256,11 +1257,11 @@ static const Byte scMagicTIFFLittleEndianTiff[] = {0x49,0x49,0x2A,0x00};
 static const Byte scMagicTIFFLittleEndianBigTiff[] = {0x49,0x49,0x2B,0x00};
 
 
-CachedHummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
+PDFHummus::EHummusImageType PDFWriterDriver::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
 {
     CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
     
-    if(imageInformation.imageType == CachedHummusImageInformation::eUndefined)
+    if(imageInformation.imageType == PDFHummus::eUndefined)
     {
         // The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF
         // PDF is recognized by starting with "%PDF"
@@ -1278,19 +1279,19 @@ CachedHummusImageInformation::EHummusImageType PDFWriterDriver::GetImageType(con
             inputFile.GetInputStream()->Read(magic,readLength);
         
             if(readLength >= 4 && memcmp(scPDFMagic,magic,4) == 0)
-                imageInformation.imageType =  CachedHummusImageInformation::ePDF;
+                imageInformation.imageType =  PDFHummus::ePDF;
             else if(readLength >= 2 && memcmp(scMagicJPG,magic,2) == 0)
-                imageInformation.imageType = CachedHummusImageInformation::eJPG;
+                imageInformation.imageType = PDFHummus::eJPG;
             else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianTiff,magic,4) == 0)
-                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
+                imageInformation.imageType = PDFHummus::eTIFF;
             else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianBigTiff,magic,4) == 0)
-                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
+                imageInformation.imageType = PDFHummus::eTIFF;
             else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianTiff,magic,4) == 0)
-                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
+                imageInformation.imageType = PDFHummus::eTIFF;
             else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianBigTiff,magic,4) == 0)
-                imageInformation.imageType = CachedHummusImageInformation::eTIFF;
+                imageInformation.imageType = PDFHummus::eTIFF;
             else
-                imageInformation.imageType = CachedHummusImageInformation::eUndefined;
+                imageInformation.imageType = PDFHummus::eUndefined;
         }
         
     }
@@ -1323,11 +1324,11 @@ PDFWriter* PDFWriterDriver::GetWriter()
 EStatusCode PDFWriterDriver::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
 {
     EStatusCode status;
-    CachedHummusImageInformation::EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
+    PDFHummus::EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
         
     switch(imageType)
     {
-        case CachedHummusImageInformation::ePDF:
+        case PDFHummus::ePDF:
         {
             PDFDocumentCopyingContext* copyingContext = NULL;
             PDFFormXObject* formXObject = NULL;
@@ -1362,14 +1363,14 @@ EStatusCode PDFWriterDriver::WriteFormForImage(const std::string& inImagePath,un
             delete copyingContext;
             break;
         }
-        case CachedHummusImageInformation::eJPG:
+        case PDFHummus::eJPG:
         {
             PDFFormXObject* form = mPDFWriter.CreateFormXObjectFromJPGFile(inImagePath,inObjectID);
             status = (form ? eSuccess:eFailure);
             delete form;
             break;
         }
-        case CachedHummusImageInformation::eTIFF:
+        case PDFHummus::eTIFF:
         {
             TIFFUsageParameters params;
             params.PageIndex = (unsigned int)inImageIndex;
@@ -1413,6 +1414,26 @@ METHOD_RETURN_TYPE PDFWriterDriver::SGetImageDimensions(const ARGS_TYPE& args)
     newObject->Set(NEW_STRING("height"),NEW_NUMBER(dimensions.second));
     SET_FUNCTION_RETURN_VALUE(newObject);
 };
+
+
+METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	if (args.Length() != 1 ||
+		!args[0]->IsString())
+	{
+		THROW_EXCEPTION("wrong arguments, pass 1 argument. a path to an imag");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+
+	PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+	unsigned long result = pdfWriter->mPDFWriter.GetImagePagesCount(*String::Utf8Value(args[0]->ToString()));
+
+	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result));
+}
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedFileParser(const ARGS_TYPE& args)
 {

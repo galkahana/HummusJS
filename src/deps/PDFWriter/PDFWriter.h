@@ -238,6 +238,7 @@ public:
 	// some public image info services, for users of hummus
 	DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0);
 	EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+	unsigned long GetImagePagesCount(const std::string& inImageFile);
 
 
 	// fonts [text], font index is provided for multi-font file packages (such as dfont and ttc), 0 the default is

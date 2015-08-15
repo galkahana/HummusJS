@@ -1,4 +1,6 @@
 
+var allOK = true;
+
 function createPageFormImage(inPDFWriter,inImageForm)
 {
     var page = inPDFWriter.createPage(0,0,595,842);
@@ -11,6 +13,13 @@ function createPageFormImage(inPDFWriter,inImageForm)
 
 
 var pdfWriter = require('../hummus').createWriter('./output/TiffSpecialsTest.pdf');
+
+var pageCount = pdfWriter.getImagePagesCount('./TestMaterials/images/tiff/multipage.tif');
+if (pageCount != 4)
+{
+    console.log('unexpected number of pages, expected 4 found', pageCount);
+    allOK = false;
+}
 
 for(var i=0;i<4;++i)
 {
@@ -75,5 +84,8 @@ for(var i=0;i<4;++i)
 }
 
 pdfWriter.end();
-console.log('done - ok');
+if (allOK)
+    console.log('done - ok');
+else
+    console.log('done - error');
 

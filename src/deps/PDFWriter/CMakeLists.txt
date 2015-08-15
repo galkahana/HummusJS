@@ -178,6 +178,7 @@ DictOperand.h
 DocumentContext.h
 DocumentContextExtenderAdapter.h
 EFontStretch.h
+EHummusImageType.h
 EPDFVersion.h
 EStatusCode.h
 ETokenSeparator.h
@@ -397,6 +398,7 @@ source_group(Infrastructure\\Basics FILES
 BetweenIncluding.h
 CMYKRGBColor.cpp
 CMYKRGBColor.h
+EHummusImageType.h
 EPDFVersion.h
 EStatusCode.h
 MyStringBuf.h

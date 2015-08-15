@@ -2569,6 +2569,7 @@ DoubleAndDoublePair DocumentContext::GetImageDimensions(const std::string& inIma
 				imageHeight = dimensions.second;
 				break;
 			}
+#ifndef PDFHUMMUS_NO_TIFF
 			case eTIFF:
 			{
 				TIFFImageHandler hummusTiffHandler;
@@ -2585,6 +2586,7 @@ DoubleAndDoublePair DocumentContext::GetImageDimensions(const std::string& inIma
 				imageHeight = dimensions.second;
 				break;
 			}
+#endif
 			default:
 			{
 				// just avoding uninteresting compiler warnings. meaning...if you can't get the image type or unsupported, do nothing
@@ -2654,6 +2656,55 @@ PDFHummus::EHummusImageType DocumentContext::GetImageType(const std::string& inI
     return imageInformation.imageType;
 }
 
+unsigned long DocumentContext::GetImagePagesCount(const std::string& inImageFile)
+{
+	unsigned long result = 0;
+
+	EHummusImageType imageType = GetImageType(inImageFile,0);
+
+	switch (imageType)
+	{
+		case ePDF:
+		{
+			// get the dimensions via the PDF parser. will use the media rectangle to draw image
+			PDFParser pdfParser;
+
+			InputFile file;
+			if (file.OpenFile(inImageFile) != eSuccess)
+				break;
+			if (pdfParser.StartPDFParsing(file.GetInputStream()) != eSuccess)
+				break;
+
+			result = pdfParser.GetPagesCount();
+			break;
+		}
+		case eJPG:
+		{
+			result = 1;
+		}
+#ifndef PDFHUMMUS_NO_TIFF
+		case eTIFF:
+		{
+			TIFFImageHandler hummusTiffHandler;
+
+			InputFile file;
+			if (file.OpenFile(inImageFile) != eSuccess)
+				break;
+
+			result = hummusTiffHandler.ReadImagePageCount(file.GetInputStream());
+			break;
+		}
+#endif
+		default:
+		{
+				   // just avoding uninteresting compiler warnings. meaning...if you can't get the image type or unsupported, do nothing
+		}
+	}
+
+	return result;
+
+}
+
 EStatusCode DocumentContext::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
 {
     EStatusCode status;
@@ -2702,7 +2753,8 @@ EStatusCode DocumentContext::WriteFormForImage(const std::string& inImagePath,un
             delete form;
             break;
         }
-        case eTIFF:
+#ifndef PDFHUMMUS_NO_TIFF
+		case eTIFF:
         {
             TIFFUsageParameters params;
             params.PageIndex = (unsigned int)inImageIndex;
@@ -2712,7 +2764,8 @@ EStatusCode DocumentContext::WriteFormForImage(const std::string& inImagePath,un
             delete form;
             break;
         }
-        default:
+#endif
+		default:
         {
             status = eFailure;
         }

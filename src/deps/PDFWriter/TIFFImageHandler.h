@@ -151,6 +151,8 @@ public:
     DoubleAndDoublePair ReadImageDimensions(IByteReaderWithPosition* inTIFFStream,unsigned long inImageIndex);
 	// retrieves some image data, see struct for info
 	TiffImageInfo ReadImageInfo(IByteReaderWithPosition* inTIFFStream,unsigned long inImageIndex);
+	// get number of images in the tiff collection
+	unsigned long ReadImagePageCount(IByteReaderWithPosition* inTIFFStream);
 private:
 	PDFHummus::DocumentContext* mContainerDocumentContext;
 	ObjectsContext* mObjectsContext;

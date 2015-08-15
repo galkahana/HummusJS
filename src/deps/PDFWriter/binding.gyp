@@ -184,6 +184,7 @@
                'DocumentContext.h',
                'DocumentContextExtenderAdapter.h',
                'EFontStretch.h',
+			   'EHummusImageType.h',
                'EPDFVersion.h',
                'EStatusCode.h',
                'ETokenSeparator.h',

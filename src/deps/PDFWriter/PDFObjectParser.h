@@ -52,6 +52,10 @@ public:
 
 	// calls this when changing underlying stream position
 	void ResetReadState();
+	// reset, but with an external tokenizer, which is useful if you are using
+	// another pdf parser tokenizer and want to start parsing objects, and don't want to lose
+	// buffered characters
+	void ResetReadState(const PDFParserTokenizer& inExternalTokenizer);
 
 private:
 	PDFParserTokenizer mTokenizer;

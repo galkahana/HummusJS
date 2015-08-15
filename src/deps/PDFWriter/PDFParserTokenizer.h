@@ -57,6 +57,8 @@ public:
 
 	// calls this when changing underlying stream position
 	void ResetReadState();
+	// cll this when wanting to reset to another tokenizer state (it's a copycon, essentially)
+	void ResetReadState(const PDFParserTokenizer& inExternalTokenizer);
 
 	// Advanced option!
 	// This will return the position of the stream on the first byte of the recently provided token (use after GetNextToken).

@@ -25,6 +25,7 @@
 #include <map>
 
 #include "PDFWriter.h"
+#include "EHummusImageType.h"
 #include "PDFEmbedParameterTypes.h"
 #include "ObjectByteWriterWithPosition.h"
 #include "ObjectByteReaderWithPosition.h"
@@ -35,20 +36,14 @@ typedef std::pair<std::string,unsigned long> StringAndULongPair;
 typedef std::pair<ObjectIDType,bool> ObjectIDTypeAndBool;
 
 
+
 struct CachedHummusImageInformation
 {
-    enum EHummusImageType
-    {
-        eUndefined,
-        ePDF,
-        eJPG,
-        eTIFF
-    };
     
     CachedHummusImageInformation(){writtenObjectID = 0;imageType=eUndefined;imageWidth=-1;imageHeight=-1;}
     
     ObjectIDType writtenObjectID;
-    EHummusImageType imageType;
+    PDFHummus::EHummusImageType imageType;
     double imageWidth;
     double imageHeight;
 };
@@ -137,6 +132,7 @@ private:
     static METHOD_RETURN_TYPE CreatePDFTextString(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE CreatePDFDate(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE SGetImageDimensions(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetImagePagesCount(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetModifiedFileParser(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetModifiedInputFile(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetOutputFile(const ARGS_TYPE& args);
@@ -147,7 +143,7 @@ private:
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
 
     CachedHummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
-    CachedHummusImageInformation::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+    PDFHummus::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
     
     bool mStartedWithStream;
     PDFWriter mPDFWriter;

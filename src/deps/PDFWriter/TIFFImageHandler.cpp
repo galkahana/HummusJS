@@ -3584,4 +3584,51 @@ TIFFImageHandler::TiffImageInfo TIFFImageHandler::ReadImageInfo(IByteReaderWithP
     return imageInfo;
 }
 
+unsigned long TIFFImageHandler::ReadImagePageCount(IByteReaderWithPosition* inTIFFStream)
+{
+	TIFF* input = NULL;
+	unsigned long result = 0;
+	EStatusCode status;
+
+	do
+	{
+		TIFFSetErrorHandler(ReportError);
+		TIFFSetWarningHandler(ReportWarning);
+
+		StreamWithPos streamInfo;
+		streamInfo.mStream = inTIFFStream;
+		streamInfo.mOriginalPosition = inTIFFStream->GetCurrentPosition();
+
+		input = TIFFClientOpen("Stream", "r", (thandle_t)&streamInfo, STATIC_streamRead,
+			STATIC_streamWrite,
+			STATIC_streamSeek,
+			STATIC_streamClose,
+			STATIC_tiffSize,
+			STATIC_tiffMap,
+			STATIC_tiffUnmap);
+		if (!input)
+		{
+			TRACE_LOG("TIFFImageHandler::ReadImagePageCount. cannot open stream for reading");
+			break;
+		}
+
+
+		InitializeConversionState();
+		mT2p->input = input;
+		mT2p->inputFilePath = "";
+
+		status = ReadTopLevelTiffInformation();
+		if (status != PDFHummus::eSuccess)
+			break;
+
+		result = mT2p->tiff_pagecount;
+	} while (false);
+
+	DestroyConversionState();
+	if (input != NULL)
+		TIFFClose(input);
+
+	return result;
+}
+
 #endif

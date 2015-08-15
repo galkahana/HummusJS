@@ -514,7 +514,8 @@ EStatusCode Type1ToCFFEmbeddedFontWriter::WriteTopDictSegment(MyStringBuf& ioTop
 	AddNumberOperandIfNotDefault(dictPrimitiveWriter,mType1Input.mFontInfoDictionary.ItalicAngle,0xC02,0.0);
 	AddNumberOperandIfNotDefault(dictPrimitiveWriter,mType1Input.mFontInfoDictionary.UnderlinePosition,0xC03,-100.0);
 	AddNumberOperandIfNotDefault(dictPrimitiveWriter,mType1Input.mFontInfoDictionary.UnderlineThickness,0xC04,50.0);
-	AddNumberOperandIfNotDefault(dictPrimitiveWriter,mType1Input.mFontDictionary.UniqueID,13,0);
+	if (mType1Input.mFontDictionary.UniqueID >= 0)
+	  AddNumberOperandIfNotDefault(dictPrimitiveWriter,mType1Input.mFontDictionary.UniqueID,13,0);
 	AddNumberOperandIfNotDefault(dictPrimitiveWriter,mType1Input.mFontDictionary.StrokeWidth,0xC08,0.0);
 	
 	// FontMatrix
@@ -886,3 +887,5 @@ void Type1ToCFFEmbeddedFontWriter::TranslateFromFreeTypeToType1(FreeTypeFaceWrap
         outGlyphNames.push_back(inFontInfo.GetGlyphName(*it));
     
 }
+
+
