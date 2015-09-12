@@ -121,7 +121,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     }
     else
     {
-        status = driver->StartPDF(*String::Utf8Value(args[0]->ToString()), pdfVersion,logConfig,PDFCreationSettings(compressStreams,true));
+        status = driver->StartPDF(std::string(*String::Utf8Value(args[0]->ToString())), pdfVersion,logConfig,PDFCreationSettings(compressStreams,true));
     }
     
     if(status != PDFHummus::eSuccess)
@@ -308,8 +308,8 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
     if(args[0]->IsObject())
         status = driver->StartPDFParsing(args[0]->ToObject());
     else
-        status = driver->StartPDFParsing(*String::Utf8Value(args[0]->ToString()));
         
+        status = driver->StartPDFParsing(std::string(*String::Utf8Value(args[0]->ToString())));
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to start parsing PDF file");
