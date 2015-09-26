@@ -344,8 +344,8 @@ PDFPageModifier.prototype.writePage = function()
     else
     {
         // resources may be direct, or indirect. if direct, write as is, adding the new form xobject, otherwise wait till page object ends and write then
-        isResorucesIndirect =  (pageDictionaryJSObject['Resources'].getType() == module.exports.ePDFObjectIndirectObjectReference);
-        if(isResorucesIndirect)
+        var isResourcesIndirect =  (pageDictionaryJSObject['Resources'].getType() == module.exports.ePDFObjectIndirectObjectReference);
+        if(isResourcesIndirect)
         {
             resourcesIndirect = pageDictionaryJSObject['Resources'].toPDFIndirectObjectReference().getObjectID();
             if(this.writer.modifiedResourcesDictionary[resourcesIndirect])
