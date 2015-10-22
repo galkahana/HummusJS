@@ -1,14 +1,17 @@
-var pdfWriter = require('../hummus').createWriter('./output/AppendSpecialPagesTest.pdf');
 var assert = require('assert');
 
-assert.throws(function(){pdfWriter.appendPDFPagesFromPDF('./TestMaterials/Protected.pdf')});
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/ObjectStreamsModified.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/ObjectStreams.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/AddedItem.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/AddedPage.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/MultipleChange.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/RemovedItem.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/Linearized.pdf');
-pdfWriter.end();
+describe('AppendSpecialPagesTest', function() {
+	it('should complete without error', function() {
+		var pdfWriter = require('../hummus').createWriter(__dirname + '/output/AppendSpecialPagesTest.pdf');
 
-console.log('done - ok');
+		assert.throws(function(){pdfWriter.appendPDFPagesFromPDF('./TestMaterials/Protected.pdf')});
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/ObjectStreamsModified.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/ObjectStreams.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/AddedItem.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/AddedPage.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/MultipleChange.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/RemovedItem.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/Linearized.pdf');
+		pdfWriter.end();
+	});
+});

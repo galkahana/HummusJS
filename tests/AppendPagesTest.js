@@ -1,9 +1,11 @@
-var pdfWriter = require('../hummus').createWriter('./output/AppendPagesTest.pdf');
+describe('AppendPagesTest', function() {
+	it('should complete without error', function() {
+		var pdfWriter = require('../hummus').createWriter(__dirname + '/output/AppendPagesTest.pdf');
 
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/Original.pdf');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/XObjectContent.PDF');
-pdfWriter.appendPDFPagesFromPDF('./TestMaterials/BasicTIFFImagesTest.PDF');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/Original.pdf');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/XObjectContent.PDF');
+		pdfWriter.appendPDFPagesFromPDF(__dirname + '/TestMaterials/BasicTIFFImagesTest.PDF');
 
-pdfWriter.end();
-
-console.log('done - ok');
+		pdfWriter.end();
+	});
+});

@@ -8,7 +8,7 @@
   "main": "./hummus.js",
   "scripts": {
     "install": "node-gyp rebuild",
-    "test": "node ./runTests.js"
+    "test": "mocha -R list ./tests/*.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,9 @@
     "src",
     "hummus.js",
     "binding.gyp"
-  ]
+  ],
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "mocha": "^2.3.3"
+  }
 }

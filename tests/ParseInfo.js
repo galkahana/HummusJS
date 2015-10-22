@@ -1,14 +1,16 @@
 var hummus = require('../hummus');
+var assert = require('chai').assert;
 var fs = require('fs');
 
-var pdfReader = hummus.createReader('./TestMaterials/SettingInfoValues.PDF');
+describe('ParseInfo', function() {
+	it('should read fields correctly', function() {
+		var pdfReader = hummus.createReader(__dirname + '/TestMaterials/SettingInfoValues.PDF');
+		var info = pdfReader.queryDictionaryObject(pdfReader.getTrailer(), "Info").toJSObject();
 
-var info = pdfReader.queryDictionaryObject(pdfReader.getTrailer(), "Info").toJSObject();
-
-console.log('author value',info.Author.value);
-console.log('author decoded',info.Author.toText());
-console.log('creator value',info.Author.value);
-console.log('creator decoded',info.Author.toText());
-console.log('creation date value',info.CreationDate.value);
-
-console.log('done - ok');
+		assert.equal(info.Author.value, 'Gal Kahana', 'author value');
+		assert.equal(info.Author.toText(), 'Gal Kahana', 'author decoded');
+		assert.equal(info.Author.value, 'Gal Kahana', 'creator value');
+		assert.equal(info.Author.toText(), 'Gal Kahana', 'creator decoded');
+		assert.equal(info.CreationDate.value, 'D:20140720204655+03\'00\'', 'creation date value');
+	});
+});
