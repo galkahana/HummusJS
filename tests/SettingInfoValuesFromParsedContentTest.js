@@ -7,7 +7,7 @@ describe('SettingInfoValuesFromParsedContent', function() {
 		var outStream = new hummus.PDFWStreamForFile(__dirname + '/output/SettingInfoValuesFromParsedContent.pdf');
 		var pdfWriter = hummus.createWriter(outStream);
 
-		var copyCtx = pdfWriter.createPDFCopyingContext(__dirname + '/TestMaterials/SettingInfoValues.PDF');
+		var copyCtx = pdfWriter.createPDFCopyingContext(__dirname + '/TestMaterials/SettingInfoValues.pdf');
 
 		var info = copyCtx.getSourceDocumentParser().queryDictionaryObject(
 		    copyCtx.getSourceDocumentParser().getTrailer(), "Info"
