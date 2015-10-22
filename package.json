@@ -8,7 +8,7 @@
   "main": "./hummus.js",
   "scripts": {
     "install": "node-gyp rebuild",
-    "test": "mocha -R list ./tests/*.js"
+    "test": "mocha -R tap ./tests/*.js"
   },
   "repository": {
     "type": "git",
