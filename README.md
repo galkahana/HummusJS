@@ -1,4 +1,4 @@
-### HummusJS
+# HummusJS
 [![NPM version](http://img.shields.io/npm/v/hummus.svg?style=flat)](https://www.npmjs.org/package/hummus)
 [![Build Status](https://travis-ci.org/galkahana/HummusJS.svg)](https://travis-ci.org/galkahana/HummusJS)
 

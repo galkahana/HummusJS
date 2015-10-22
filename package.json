@@ -3,7 +3,7 @@
   "version": "1.0.43",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "author": "Gal Kahana <gal.kahana@hotmail.com>",
   "main": "./hummus.js",
   "scripts": {
