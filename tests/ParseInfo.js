@@ -4,7 +4,7 @@ var fs = require('fs');
 
 describe('ParseInfo', function() {
 	it('should read fields correctly', function() {
-		var pdfReader = hummus.createReader(__dirname + '/TestMaterials/SettingInfoValues.PDF');
+		var pdfReader = hummus.createReader(__dirname + '/TestMaterials/SettingInfoValues.pdf');
 		var info = pdfReader.queryDictionaryObject(pdfReader.getTrailer(), "Info").toJSObject();
 
 		assert.equal(info.Author.value, 'Gal Kahana', 'author value');

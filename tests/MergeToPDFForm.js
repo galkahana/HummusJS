@@ -1,6 +1,6 @@
 describe('MergeToPDFForm', function() {
 	it('should complete without error', function() {
-		var pdfWriter = require('../Hummus.js').createWriter(__dirname + '/output/MergeToPDFForm.pdf');
+		var pdfWriter = require('../hummus.js').createWriter(__dirname + '/output/MergeToPDFForm.pdf');
 		var page = pdfWriter.createPage(0,0,595,842);
 		var copyingContext = pdfWriter.createPDFCopyingContext(__dirname + '/TestMaterials/Linearized.pdf');
 		var form = pdfWriter.createFormXObject(0,0,297.5,842);

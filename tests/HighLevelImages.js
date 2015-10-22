@@ -5,7 +5,7 @@ describe('HighLevelImages', function() {
 		var cxt = pdfWriter.startPageContentContext(page);
 
 		// simple image placement
-		cxt.drawImage(10,10,__dirname+'/TestMaterials/Images/soundcloud_logo.jpg')
+		cxt.drawImage(10,10,__dirname+'/TestMaterials/images/soundcloud_logo.jpg')
 			.drawImage(10,500,__dirname+'/TestMaterials/images/tiff/cramps.tif')
 			.drawImage(0,0,__dirname+'/TestMaterials/XObjectContent.PDF');
 
@@ -15,7 +15,7 @@ describe('HighLevelImages', function() {
 		var cxt = pdfWriter.startPageContentContext(page);
 
 		cxt.drawImage(10,10, __dirname + '/TestMaterials/images/tiff/multipage.tif',{index:2})
-			.drawImage(10,10, __dirname + '/TestMaterials/Images/soundcloud_logo.jpg',{transformation:[0.25,0,0,0.25,0,0]})
+			.drawImage(10,10, __dirname + '/TestMaterials/images/soundcloud_logo.jpg',{transformation:[0.25,0,0,0.25,0,0]})
 			.drawImage(0,0, __dirname + '/TestMaterials/XObjectContent.PDF',{transformation:{width:100,height:100}})
 			.drawImage(100,100, __dirname + '/TestMaterials/XObjectContent.PDF',{transformation:{width:100,height:100, proportional:true}});
 
@@ -24,7 +24,7 @@ describe('HighLevelImages', function() {
 		cxt.drawRectangle(0,0,100,100,pathStrokeOptions);
 		cxt.drawRectangle(100,100,100,100,pathStrokeOptions);
 
-		var jpgDimensions = pdfWriter.getImageDimensions(__dirname + '/TestMaterials/Images/soundcloud_logo.jpg');
+		var jpgDimensions = pdfWriter.getImageDimensions(__dirname + '/TestMaterials/images/soundcloud_logo.jpg');
 		cxt.drawRectangle(10,10,jpgDimensions.width/4,jpgDimensions.height/4,pathStrokeOptions);
 
 		pdfWriter.writePage(page);
