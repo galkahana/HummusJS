@@ -1,5 +1,10 @@
-
 var hummus = require('../hummus');
-var pdfWriter = hummus.createWriter('./output/EmptyWriter.pdf',{version:hummus.ePDFVersion14});
-pdfWriter.end();
-console.log('done - ok');
+
+describe('EmptyWriter', function() {
+	it('should complete without error', function() {
+		var pdfWriter = hummus.createWriter(__dirname + '/output/EmptyWriter.pdf', {
+			version:hummus.ePDFVersion14
+		});
+		pdfWriter.end();
+	});
+});

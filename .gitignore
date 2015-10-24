@@ -2,7 +2,7 @@ hummusjs
 build
 .DS_Store
 tests/output
-samples/node_modules
+node_modules
 
 #all the binaries
 # Compiled source #

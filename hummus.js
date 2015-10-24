@@ -44,7 +44,7 @@ function PDFWStreamForFile(inPath)
     this.position = 0;
     this.path = inPath;
 }
- 
+
 PDFWStreamForFile.prototype.write = function(inBytesArray)
 {
     if(inBytesArray.length > 0)
@@ -56,18 +56,18 @@ PDFWStreamForFile.prototype.write = function(inBytesArray)
     else
         return 0;
 };
- 
+
 PDFWStreamForFile.prototype.getCurrentPosition = function()
 {
     return this.position;
 };
- 
+
 PDFWStreamForFile.prototype.close = function(inCallback)
 {
     if(this.ws)
     {
         var self = this;
- 
+
         this.ws.end(function()
         {
             self.ws = null;
@@ -81,9 +81,9 @@ PDFWStreamForFile.prototype.close = function(inCallback)
             inCallback();
     }
 };
- 
+
  module.exports.PDFWStreamForFile = PDFWStreamForFile;
- 
+
 /*
     PDFRStreamForFile is an implementation of a read stream using the supplied file path.
 */
@@ -93,57 +93,57 @@ function PDFRStreamForFile(inPath)
     this.rs = fs.openSync(inPath,'r');
     this.path = inPath;
     this.rposition = 0;
-    this.fileSize = fs.statSync(inPath)["size"]; 
+    this.fileSize = fs.statSync(inPath)["size"];
 }
- 
+
 PDFRStreamForFile.prototype.read = function(inAmount)
 {
     var buffer = new Buffer(inAmount*2);
     var bytesRead = fs.readSync(this.rs, buffer, 0, inAmount,this.rposition);
     var arr = [];
- 
+
     for(var i=0;i<bytesRead;++i)
         arr.push(buffer[i]);
     this.rposition+=bytesRead;
     return arr;
 }
- 
+
 PDFRStreamForFile.prototype.notEnded = function()
 {
     return this.rposition < this.fileSize;
 }
- 
+
 PDFRStreamForFile.prototype.setPosition = function(inPosition)
 {
     this.rposition = inPosition;
 }
- 
+
 PDFRStreamForFile.prototype.setPositionFromEnd = function(inPosition)
 {
     this.rposition = this.fileSize-inPosition;
 }
- 
+
 PDFRStreamForFile.prototype.skip = function(inAmount)
 {
     this.rposition += inAmount;
 }
- 
+
 PDFRStreamForFile.prototype.getCurrentPosition = function(inAmount)
 {
     return this.rposition;
 }
- 
+
 PDFRStreamForFile.prototype.close = function(inCallback)
 {
     fs.close(this.rs,inCallback);
 };
 
 module.exports.PDFRStreamForFile = PDFRStreamForFile;
- 
+
 /*
     PDFPageModifier is a helper class providing a content context for existing pages, when in a file modification scenarios.
     Using PDFPageModifier simplifies the process of adding content to existing pages, making it as simple to do as if it were
-    a new Page, with a regular content context.  
+    a new Page, with a regular content context.
 */
 
 function PDFPageModifier(inModifiedFileWriter,inPageIndex)
@@ -318,7 +318,7 @@ PDFPageModifier.prototype.writePage = function()
         objCxt.endArray();
     }
 
-    // Write a new resource entry. copy all but the "XObject" entry, which needs to be modified. Just for kicks i'm keeping the original 
+    // Write a new resource entry. copy all but the "XObject" entry, which needs to be modified. Just for kicks i'm keeping the original
     // form (either direct dictionary, or indirect object)
     var resourcesIndirect = null;
     var newResourcesIndirect = null;
@@ -351,7 +351,7 @@ PDFPageModifier.prototype.writePage = function()
             if(this.writer.modifiedResourcesDictionary[resourcesIndirect])
             {
                 // already modified resources dictionary. this means that
-                // the resources dictionary is shared. the simplest solution for this is to 
+                // the resources dictionary is shared. the simplest solution for this is to
                 // create a new resources dictionary
                 newResourcesIndirect = objCxt.allocateNewObjectID();
                 modifiedPageObject.writeObjectReferenceValue(newResourcesIndirect);
@@ -402,7 +402,7 @@ PDFPageModifier.prototype.writePage = function()
                 .writeKeyword('Q')
     });
     objCxt.endPDFStream(streamCxt)
-          .endIndirectObject(); 
+          .endIndirectObject();
 
     return this;
 };
@@ -429,19 +429,19 @@ function writeModifiedResourcesDict(inParser,inSourceDirect,inObjCxt,inCpyCxt,in
 
     if(sourceObject['XObject']) // original exists, copy its keys
     {
-        // i'm having a very sophisticated algo here to create a new unique name. 
+        // i'm having a very sophisticated algo here to create a new unique name.
         // i'm making sure it's different in one letter from any name, using a well known discrete math proof method
         imageObjectName = '';
         // getting the dict via inParser, cause it could be an indirect reference, or direct object and i don't want to know
         var jsDict = inParser.queryDictionaryObject(inSourceDirect.toPDFDictionary(),'XObject').toPDFDictionary().toJSObject();
-        
+
         Object.getOwnPropertyNames(jsDict).forEach(function(element,index,array)
                                                     {
                                                             xobjectDict.writeKey(element);
                                                             inCpyCxt.copyDirectObjectAsIs(jsDict[element]);
                                                             imageObjectName+=String.fromCharCode(
                                                                     getDifferentChar(element.length >= index+1 ? element.charCodeAt(index) : 0x39));
-                                                    });     
+                                                    });
         inObjCxt.endLine();
     }
     else

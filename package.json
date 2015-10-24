@@ -2,9 +2,13 @@
   "name": "hummus",
   "version": "1.0.43",
   "description": "Create, read and modify PDF files and streams",
-  "main": "hummus",
+  "homepage": "http://pdfhummus.com/",
+  "license": "Apache-2.0",
+  "author": "Gal Kahana <gal.kahana@hotmail.com>",
+  "main": "./hummus.js",
   "scripts": {
-    "install": "node-gyp rebuild"
+    "install": "node-gyp rebuild",
+    "test": "mocha -R tap ./tests/*.js"
   },
   "repository": {
     "type": "git",
@@ -14,10 +18,13 @@
     "pdf",
     "pdfhummus"
   ],
-  "homepage": "pdfhummus.com",
-  "author": "Gal Kahana <gal.kahana@hotmail.com>",
-  "license": "Apache 2.0",
-  "gypfile": true,
-  "readmeFilename": "readme",
-  "gitHead": "c9aeb5d2fec332e89a0b309f93bc16d77419c3f8"
+  "files": [
+    "src",
+    "hummus.js",
+    "binding.gyp"
+  ],
+  "devDependencies": {
+    "chai": "^3.4.0",
+    "mocha": "^2.3.3"
+  }
 }
