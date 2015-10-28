@@ -7,7 +7,7 @@
   "author": "Gal Kahana <gal.kahana@hotmail.com>",
   "main": "./hummus.js",
   "scripts": {
-    "install": "node-gyp rebuild",
+    "install": "node-pre-gyp install --fallback-to-build",
     "test": "mocha -R tap ./tests/*.js"
   },
   "repository": {
@@ -23,8 +23,23 @@
     "hummus.js",
     "binding.gyp"
   ],
-  "devDependencies": {
-    "chai": "^3.4.0",
-    "mocha": "^2.3.3"
-  }
+  "dependencies"  : {
+      "node-pre-gyp": "^0.6.13"
+   },
+   "bundledDependencies":["node-pre-gyp"],
+   "devDependencies": {
+      "aws-sdk": "~2.0.0-rc.15",
+      "chai": "^3.4.0",
+      "mocha": "^2.3.3"
+  },
+  "binary": {
+      "module_name": "hummus",
+      "module_path": "./binding",
+      "remote_path": "./{module_name}/v{version}/{toolset}/",
+      "host": "https://hummus.s3-us-west-2.amazonaws.com",
+      "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
+    },
+   "publishConfig": {
+      "registry": "https://registry.npmjs.org/"
+   }  
 }

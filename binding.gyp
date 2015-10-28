@@ -2,6 +2,8 @@
     'targets': [
     {
             'target_name': 'hummus',
+            'type': 'loadable_module',
+			'product_extension': 'node',
             'dependencies': [
                './src/deps/PDFWriter/binding.gyp:pdfwriter'
             ],
@@ -56,7 +58,20 @@
                 './src/hummus.cpp'
             ]
 
-	}
+	   },
+		{
+			'target_name': 'action_after_build',
+			'type': 'none',
+			'dependencies': [ '<(module_name)' ],
+			'copies': [
+				{
+					'files': [
+						'<(PRODUCT_DIR)/hummus.node'
+					],
+					'destination': '<(module_path)'
+				}
+			]
+		}
 
     ]        
 }

@@ -2,7 +2,9 @@ hummusjs
 build
 .DS_Store
 tests/output
+binding
 node_modules
+aws.json
 
 #all the binaries
 # Compiled source #

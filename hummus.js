@@ -1,6 +1,9 @@
-// start with binary objects
-module.exports = require('./build/Release/hummus');
 var fs = require('fs');
+var path = require('path');
+var pregyp = require('node-pre-gyp');
+var binding_path = pregyp.find(path.resolve(path.join(__dirname,'./package.json')));
+var hummus = module.exports = require(binding_path);
+
 
 /*
     PDFStreamForResponse is an implementation of a write stream that writes directly to an HTTP response.
@@ -31,7 +34,7 @@ PDFStreamForResponse.prototype.getCurrentPosition = function()
     return this.position;
 };
 
-module.exports.PDFStreamForResponse = PDFStreamForResponse;
+hummus.PDFStreamForResponse = PDFStreamForResponse;
 
 
 /*
@@ -82,7 +85,7 @@ PDFWStreamForFile.prototype.close = function(inCallback)
     }
 };
 
- module.exports.PDFWStreamForFile = PDFWStreamForFile;
+ hummus.PDFWStreamForFile = PDFWStreamForFile;
 
 /*
     PDFRStreamForFile is an implementation of a read stream using the supplied file path.
@@ -138,7 +141,7 @@ PDFRStreamForFile.prototype.close = function(inCallback)
     fs.close(this.rs,inCallback);
 };
 
-module.exports.PDFRStreamForFile = PDFRStreamForFile;
+hummus.PDFRStreamForFile = PDFRStreamForFile;
 
 /*
     PDFPageModifier is a helper class providing a content context for existing pages, when in a file modification scenarios.
@@ -302,7 +305,7 @@ PDFPageModifier.prototype.writePage = function()
     else
     {
         objCxt.startArray();
-        if(pageDictionaryJSObject['Contents'].getType() == module.exports.ePDFObjectArray) // contents stream array
+        if(pageDictionaryJSObject['Contents'].getType() == hummus.ePDFObjectArray) // contents stream array
         {
             pageDictionaryJSObject['Contents'].toPDFArray().toJSArray().forEach(function(inElement)
             {
@@ -344,7 +347,7 @@ PDFPageModifier.prototype.writePage = function()
     else
     {
         // resources may be direct, or indirect. if direct, write as is, adding the new form xobject, otherwise wait till page object ends and write then
-        var isResourcesIndirect =  (pageDictionaryJSObject['Resources'].getType() == module.exports.ePDFObjectIndirectObjectReference);
+        var isResourcesIndirect =  (pageDictionaryJSObject['Resources'].getType() == hummus.ePDFObjectIndirectObjectReference);
         if(isResourcesIndirect)
         {
             resourcesIndirect = pageDictionaryJSObject['Resources'].toPDFIndirectObjectReference().getObjectID();
@@ -486,4 +489,4 @@ function getDifferentChar(inCharCode)
     return 0x41;
 }
 
-module.exports.PDFPageModifier = PDFPageModifier;
+hummus.PDFPageModifier = PDFPageModifier;
