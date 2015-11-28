@@ -96,6 +96,7 @@ void PDFWriterDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "createPDFDate", CreatePDFDate);
 	SET_PROTOTYPE_METHOD(t, "getImageDimensions", SGetImageDimensions);
 	SET_PROTOTYPE_METHOD(t, "getImagePagesCount", GetImagePagesCount);
+	SET_PROTOTYPE_METHOD(t, "getImageType", SGetImageType);
 	SET_PROTOTYPE_METHOD(t, "getModifiedFileParser", GetModifiedFileParser);
 	SET_PROTOTYPE_METHOD(t, "getModifiedInputFile", GetModifiedInputFile);
 	SET_PROTOTYPE_METHOD(t, "getOutputFile", GetOutputFile);
@@ -1433,6 +1434,45 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
 	unsigned long result = pdfWriter->mPDFWriter.GetImagePagesCount(*String::Utf8Value(args[0]->ToString()));
 
 	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result));
+}
+
+METHOD_RETURN_TYPE PDFWriterDriver::SGetImageType(const ARGS_TYPE& args) {
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	if (args.Length() != 1 ||
+		!args[0]->IsString())
+	{
+		THROW_EXCEPTION("wrong arguments, pass 1 argument. a path to an imag");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+
+	PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    PDFHummus::EHummusImageType imageType = pdfWriter->GetImageType(*String::Utf8Value(args[0]->ToString()),0);
+        
+    switch(imageType)
+    {
+        case PDFHummus::ePDF:
+        {
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("PDF"));
+            break;
+        }
+        case PDFHummus::eJPG:
+        {
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("JPEG"));
+            break;
+        }
+        case PDFHummus::eTIFF:
+        {
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("TIFF"));
+            break;
+        }
+        default:
+        {
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);    
+        }
+    }
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedFileParser(const ARGS_TYPE& args)

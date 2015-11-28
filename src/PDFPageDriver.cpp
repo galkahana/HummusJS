@@ -49,6 +49,10 @@ void PDFPageDriver::Init(Handle<Object> inExports)
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_ACCESSOR_METHODS(t, "mediaBox", GetMediaBox, SetMediaBox);
+	SET_ACCESSOR_METHODS(t, "cropBox", GetCropBox, SetCropBox);
+	SET_ACCESSOR_METHODS(t, "bleedBox", GetBleedBox, SetBleedBox);
+	SET_ACCESSOR_METHODS(t, "trimBox", GetTrimBox, SetTrimBox);
+	SET_ACCESSOR_METHODS(t, "artBox", GetArtBox, SetArtBox);
 	SET_PROTOTYPE_METHOD(t, "getResourcesDictionary", GetResourcesDictionary);
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
@@ -157,6 +161,110 @@ METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROP
     SET_ACCESSOR_RETURN_VALUE(mediaBox);
 }
 
+METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPERTY_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+    
+    BoolAndPDFRectangle cropBox = pageDriver->mPDFPage->GetCropBox();
+    
+    if(cropBox.first) 
+    {
+        Local<Array> box = NEW_ARRAY(4);
+        
+        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(cropBox.second.LowerLeftX));
+        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(cropBox.second.LowerLeftY));
+        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(cropBox.second.UpperRightX));
+        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(cropBox.second.UpperRightY));
+    
+        SET_ACCESSOR_RETURN_VALUE(box);
+    }
+    else
+    {
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+    }
+}
+
+METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(Local<String> property, const PROPERTY_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+    
+    BoolAndPDFRectangle bleedBox = pageDriver->mPDFPage->GetBleedBox();
+    
+    if(bleedBox.first) 
+    {
+        Local<Array> box = NEW_ARRAY(4);
+        
+        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(bleedBox.second.LowerLeftX));
+        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(bleedBox.second.LowerLeftY));
+        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(bleedBox.second.UpperRightX));
+        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(bleedBox.second.UpperRightY));
+    
+        SET_ACCESSOR_RETURN_VALUE(box);
+    }
+    else
+    {
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+    }
+}
+
+METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(Local<String> property, const PROPERTY_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+    
+    BoolAndPDFRectangle trimBox = pageDriver->mPDFPage->GetTrimBox();
+    
+    if(trimBox.first) 
+    {
+        Local<Array> box = NEW_ARRAY(4);
+        
+        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(trimBox.second.LowerLeftX));
+        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(trimBox.second.LowerLeftY));
+        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(trimBox.second.UpperRightX));
+        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(trimBox.second.UpperRightY));
+    
+        SET_ACCESSOR_RETURN_VALUE(box);
+    }
+    else
+    {
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+    }
+}
+
+METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(Local<String> property, const PROPERTY_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+    
+    BoolAndPDFRectangle artBox = pageDriver->mPDFPage->GetArtBox();
+    
+    if(artBox.first) 
+    {
+        Local<Array> box = NEW_ARRAY(4);
+        
+        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(artBox.second.LowerLeftX));
+        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(artBox.second.LowerLeftY));
+        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(artBox.second.UpperRightX));
+        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(artBox.second.UpperRightY));
+    
+        SET_ACCESSOR_RETURN_VALUE(box);
+    }
+    else
+    {
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+    }
+}
+
 void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
@@ -171,6 +279,86 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
     pageDriver->mPDFPage->SetMediaBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(1)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(2)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(3)->ToNumber()->Value()));
+    
+}
+
+void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+
+    if(!value->IsArray())
+        THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
+    
+    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
+    
+    pageDriver->mPDFPage->SetCropBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(1)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(2)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(3)->ToNumber()->Value()));
+    
+}
+
+void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+
+    if(!value->IsArray())
+        THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
+    
+    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
+    
+    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(1)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(2)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(3)->ToNumber()->Value()));
+    
+}
+
+void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+
+    if(!value->IsArray())
+        THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
+    
+    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
+    
+    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(1)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(2)->ToNumber()->Value(),
+                                                  value->ToObject()->Get(3)->ToNumber()->Value()));
+    
+}
+
+void PDFPageDriver::SetArtBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+
+    if(!value->IsArray())
+        THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
+    
+    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
+    
+    pageDriver->mPDFPage->SetArtBox(PDFRectangle(value->ToObject()->Get(0)->ToNumber()->Value(),
                                                   value->ToObject()->Get(1)->ToNumber()->Value(),
                                                   value->ToObject()->Get(2)->ToNumber()->Value(),
                                                   value->ToObject()->Get(3)->ToNumber()->Value()));

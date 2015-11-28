@@ -133,6 +133,7 @@ private:
     static METHOD_RETURN_TYPE CreatePDFDate(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE SGetImageDimensions(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetImagePagesCount(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE SGetImageType(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetModifiedFileParser(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetModifiedInputFile(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetOutputFile(const ARGS_TYPE& args);
