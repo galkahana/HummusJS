@@ -28,6 +28,12 @@ describe('EmptyPagesTest', function() {
 		page.artBox = [4,4,591,838];
 		assert.deepEqual(page.artBox, [4,4,591,838], 'defined art box');
 
+		// rotate
+		assert.equal(page.rotate, undefined, 'null rotate');
+		page.rotate = 90;
+		assert.equal(page.rotate, 90, 'defined rotate');
+
+
 		pdfWriter.writePage(page);
 		pdfWriter.end();
 	});
