@@ -50,6 +50,7 @@ private:
 	static METHOD_RETURN_TYPE GetTrimBox(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetBleedBox(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetArtBox(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetRotate(const ARGS_TYPE& args);
     
     static v8::Handle<v8::Value> GetArrayForPDFRectangle(const PDFRectangle& inRectangle);
     

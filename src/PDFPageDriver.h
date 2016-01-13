@@ -59,6 +59,8 @@ private:
     static void SetTrimBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
 	static METHOD_RETURN_TYPE GetArtBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
     static void SetArtBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetRotate(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
+    static void SetRotate(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
 	static METHOD_RETURN_TYPE GetResourcesDictionary(const ARGS_TYPE& args);
     
     PDFPage* mPDFPage;

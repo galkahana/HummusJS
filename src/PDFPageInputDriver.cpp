@@ -50,6 +50,7 @@ void PDFPageInputDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "getTrimBox", GetTrimBox);
 	SET_PROTOTYPE_METHOD(t, "getBleedBox", GetBleedBox);
 	SET_PROTOTYPE_METHOD(t, "getArtBox", GetArtBox);
+	SET_PROTOTYPE_METHOD(t, "getRotate", GetRotate);
 	SET_CONSTRUCTOR(constructor, t);
 }
 
@@ -193,4 +194,20 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetArtBox(const ARGS_TYPE& args)
 	}
 	else
 		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetArtBox()));
+}
+
+METHOD_RETURN_TYPE PDFPageInputDriver::GetRotate(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	PDFPageInputDriver* element = ObjectWrap::Unwrap<PDFPageInputDriver>(args.This());
+
+	if (!element->PageInput)
+	{
+		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+	else
+		SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->PageInput->GetRotate()));
 }

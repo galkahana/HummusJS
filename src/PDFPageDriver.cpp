@@ -53,6 +53,7 @@ void PDFPageDriver::Init(Handle<Object> inExports)
 	SET_ACCESSOR_METHODS(t, "bleedBox", GetBleedBox, SetBleedBox);
 	SET_ACCESSOR_METHODS(t, "trimBox", GetTrimBox, SetTrimBox);
 	SET_ACCESSOR_METHODS(t, "artBox", GetArtBox, SetArtBox);
+    SET_ACCESSOR_METHODS(t, "rotate",GetRotate, SetRotate);
 	SET_PROTOTYPE_METHOD(t, "getResourcesDictionary", GetResourcesDictionary);
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
@@ -284,6 +285,41 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
                                                   value->ToObject()->Get(3)->ToNumber()->Value()));
     
 }
+    
+METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPERTY_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+    
+    BoolAndUnsignedInt rotate = pageDriver->mPDFPage->GetRotate();
+    
+    if(rotate.first) 
+    {
+        Handle<Number> result = NEW_NUMBER(rotate.second);
+        SET_ACCESSOR_RETURN_VALUE(result);        
+    }
+    else
+    {
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+    }
+}    
+
+void PDFPageDriver::SetRotate(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
+
+    if(!value->IsNumber())
+        THROW_EXCEPTION("Rotation is not set to a number");
+    
+    pageDriver->mPDFPage->SetRotate(value->ToNumber()->Uint32Value());
+    
+}
+
 
 void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
