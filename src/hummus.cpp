@@ -61,6 +61,10 @@
 #include "ObjectByteReaderWithPosition.h"
 #include "ObjectByteWriter.h"
 #include "PDFStreamDriver.h"
+#include "ByteReaderDriver.h"
+#include "ByteWriterDriver.h"
+#include "ByteReaderWithPositionDriver.h"
+#include "ByteWriterWithPositionDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -376,6 +380,11 @@ void HummusInit(Handle<Object> exports) {
     OutputFileDriver::Init(exports);
     InfoDictionaryDriver::Init();
     PDFStreamDriver::Init();
+    ByteReaderDriver::Init();
+	ByteWriterDriver::Init();
+	ByteReaderWithPositionDriver::Init();
+	ByteWriterWithPositionDriver::Init();
+
     
     // define methods
 	exports->Set(NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE(CreateWriter)->GetFunction());
