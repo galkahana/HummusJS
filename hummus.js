@@ -4,7 +4,6 @@ var pregyp = require('node-pre-gyp');
 var binding_path = pregyp.find(path.resolve(path.join(__dirname,'./package.json')));
 var hummus = module.exports = require(binding_path);
 
-
 /*
     PDFStreamForResponse is an implementation of a write stream that writes directly to an HTTP response.
     Using this stream frees the user from having to create a PDF file on disk when generating on-demand PDFs
