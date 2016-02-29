@@ -280,7 +280,7 @@ PDFPageModifier.prototype.writePage = function()
             var annotsObj = cpyCxt.getSourceDocumentParser().queryDictionaryObject(pageDictionaryObject,'Annots');
             annotsObj.toPDFArray().toJSArray().forEach(function(inElement)
             {
-                objCxt.writeIndirectObjectReference(inElement.toPDFIndirectObjectReference().getObjectID());
+                cpyCxt.copyDirectObjectAsIs(inElement);
             });
         }
 
