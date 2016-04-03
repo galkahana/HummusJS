@@ -65,6 +65,15 @@ v8::Handle<v8::Value> ResourcesDictionaryDriver::GetNewInstance(const ARGS_TYPE&
 	return CLOSE_SCOPE(instance);
 }
 
+v8::Handle<v8::Value> ResourcesDictionaryDriver::GetInstanceFor(ResourcesDictionary* inResourcesDictionaryInstance) {
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+    ObjectWrap::Unwrap<ResourcesDictionaryDriver>(instance->ToObject())->ResourcesDictionaryInstance = inResourcesDictionaryInstance;
+	return CLOSE_SCOPE(instance);    
+}
+
 ResourcesDictionaryDriver::ResourcesDictionaryDriver()
 {
     ResourcesDictionaryInstance = NULL;

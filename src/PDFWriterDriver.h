@@ -29,6 +29,7 @@
 #include "PDFEmbedParameterTypes.h"
 #include "ObjectByteWriterWithPosition.h"
 #include "ObjectByteReaderWithPosition.h"
+#include "IDocumentContextExtender.h"
 
 
 typedef std::pair<unsigned long,unsigned long> ULongAndULongPair;
@@ -52,12 +53,12 @@ typedef std::map<StringAndULongPair,CachedHummusImageInformation> StringAndULong
 
 class IByteWriterWithPosition;
 
-class PDFWriterDriver : public node::ObjectWrap
+class PDFWriterDriver : public node::ObjectWrap, IDocumentContextExtender
 {
 public:
     virtual ~PDFWriterDriver();
     
-    static void Init();
+    static void Init(v8::Handle<v8::Object> inExports);
 	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 
@@ -102,6 +103,90 @@ public:
 
     PDFWriter* GetWriter();
     
+    
+    // IDocumentContextExtender implementation
+	virtual PDFHummus::EStatusCode OnPageWrite(
+							PDFPage* inPage,
+							DictionaryContext* inPageDictionaryContext,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext);
+	virtual PDFHummus::EStatusCode OnResourcesWrite(
+							ResourcesDictionary* inResources,
+							DictionaryContext* inPageResourcesDictionaryContext,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext);
+	virtual PDFHummus::EStatusCode OnResourceDictionaryWrite(
+							DictionaryContext* inResourceDictionary,
+							const std::string& inResourceDictionaryName,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext);
+	virtual PDFHummus::EStatusCode OnFormXObjectWrite(
+							ObjectIDType inFormXObjectID,
+							ObjectIDType inFormXObjectResourcesDictionaryID,
+							DictionaryContext* inFormDictionaryContext,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext);
+	virtual PDFHummus::EStatusCode OnJPEGImageXObjectWrite(
+							ObjectIDType inImageXObjectID,
+							DictionaryContext* inImageDictionaryContext,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							JPEGImageHandler* inJPGImageHandler);
+	virtual PDFHummus::EStatusCode OnTIFFImageXObjectWrite(
+							ObjectIDType inImageXObjectID,
+							DictionaryContext* inImageDictionaryContext,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							TIFFImageHandler* inTIFFImageHandler);
+	virtual PDFHummus::EStatusCode OnCatalogWrite(
+							CatalogInformation* inCatalogInformation,
+							DictionaryContext* inCatalogDictionaryContext,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext);
+	virtual PDFHummus::EStatusCode OnPDFParsingComplete(
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnBeforeCreateXObjectFromPage(
+							PDFDictionary* inPageObjectDictionary,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnAfterCreateXObjectFromPage(
+							PDFFormXObject* iPageObjectResultXObject,
+							PDFDictionary* inPageObjectDictionary,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnBeforeCreatePageFromPage(
+							PDFDictionary* inPageObjectDictionary,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnAfterCreatePageFromPage(
+							PDFPage* iPageObjectResultPage,
+							PDFDictionary* inPageObjectDictionary,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnBeforeMergePageFromPage(
+							PDFPage* inTargetPage,
+							PDFDictionary* inPageObjectDictionary,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnAfterMergePageFromPage(
+							PDFPage* inTargetPage,
+							PDFDictionary* inPageObjectDictionary,
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+	virtual PDFHummus::EStatusCode OnPDFCopyingComplete(
+							ObjectsContext* inPDFWriterObjectContext,
+							PDFHummus::DocumentContext* inDocumentContext,
+							PDFDocumentHandler* inPDFDocumentHandler);
+    virtual bool IsCatalogUpdateRequiredForModifiedFile(PDFParser* inModifiderFileParser);
+        
 private:
     PDFWriterDriver();
     
@@ -145,6 +230,8 @@ private:
 
     CachedHummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
     PDFHummus::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+    PDFHummus::EStatusCode setupListenerIfOK(PDFHummus::EStatusCode inCode);
+    PDFHummus::EStatusCode triggerEvent(const std::string& inEventName, v8::Handle<v8::Object> inParams);
     
     bool mStartedWithStream;
     PDFWriter mPDFWriter;

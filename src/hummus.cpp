@@ -348,7 +348,7 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
 void HummusInit(Handle<Object> exports) {
 	CREATE_ISOLATE_CONTEXT;
 
-    PDFWriterDriver::Init();
+    PDFWriterDriver::Init(exports);
     PDFPageDriver::Init(exports);
     PageContentContextDriver::Init();
     FormXObjectDriver::Init();

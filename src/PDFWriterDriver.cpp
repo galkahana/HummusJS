@@ -42,6 +42,8 @@
 #include "OutputFileDriver.h"
 #include "DocumentContextDriver.h"
 #include "ObjectByteReaderWithPosition.h"
+#include "DictionaryContextDriver.h"
+#include "ResourcesDictionaryDriver.h"
 
 using namespace v8;
 
@@ -61,7 +63,7 @@ PDFWriterDriver::~PDFWriterDriver()
     delete mReadStreamProxy;
 }
 
-void PDFWriterDriver::Init()
+void PDFWriterDriver::Init(Handle<Object> inExports)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -103,6 +105,7 @@ void PDFWriterDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "registerAnnotationReferenceForNextPageWrite", RegisterAnnotationReferenceForNextPageWrite);
 
 	SET_CONSTRUCTOR(constructor, t);
+    SET_CONSTRUCTOR_EXPORT(inExports, "PDFWriter", t);
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::NewInstance(const ARGS_TYPE& args)
@@ -129,6 +132,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::New(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     
     PDFWriterDriver* pdfWriter = new PDFWriterDriver();
+        
     pdfWriter->Wrap(args.This());
     
 	SET_FUNCTION_RETURN_VALUE(args.This());
@@ -147,6 +151,10 @@ METHOD_RETURN_TYPE PDFWriterDriver::End(const ARGS_TYPE& args)
         status = pdfWriter->mPDFWriter.EndPDFForStream();
     else
         status = pdfWriter->mPDFWriter.EndPDF();
+    
+    // now remove event listener
+    pdfWriter->mPDFWriter.GetDocumentContext().AddDocumentContextExtender(pdfWriter);
+
     
     if(status != PDFHummus::eSuccess)
     {
@@ -558,7 +566,7 @@ PDFHummus::EStatusCode PDFWriterDriver::StartPDF(const std::string& inOutputFile
 {
     mStartedWithStream = false;
     
-    return mPDFWriter.StartPDF(inOutputFilePath,inPDFVersion,inLogConfiguration,inCreationSettings);
+    return setupListenerIfOK(mPDFWriter.StartPDF(inOutputFilePath,inPDFVersion,inLogConfiguration,inCreationSettings));
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::StartPDF(Handle<Object> inWriteStream,
@@ -569,7 +577,7 @@ PDFHummus::EStatusCode PDFWriterDriver::StartPDF(Handle<Object> inWriteStream,
 
     mWriteStreamProxy = new ObjectByteWriterWithPosition(inWriteStream);
     mStartedWithStream = true;
-    return mPDFWriter.StartPDFForStream(mWriteStreamProxy,inPDFVersion,inLogConfiguration,inCreationSettings);
+    return setupListenerIfOK(mPDFWriter.StartPDFForStream(mWriteStreamProxy,inPDFVersion,inLogConfiguration,inCreationSettings));
 }
 
 
@@ -580,7 +588,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(const std::string& inOutputF
                                                     const LogConfiguration& inLogConfiguration)
 {
     mStartedWithStream = false;
-   return mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath,inOptionalOtherOutputFile,inLogConfiguration);
+   return setupListenerIfOK(mPDFWriter.ContinuePDF(inOutputFilePath,inStateFilePath,inOptionalOtherOutputFile,inLogConfiguration));
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(Handle<Object> inOutputStream,
@@ -594,7 +602,7 @@ PDFHummus::EStatusCode PDFWriterDriver::ContinuePDF(Handle<Object> inOutputStrea
         mReadStreamProxy = new ObjectByteReaderWithPosition(inModifiedSourceStream);
     
     
-    return mPDFWriter.ContinuePDFForStream(mWriteStreamProxy,inStateFilePath,inModifiedSourceStream.IsEmpty() ? NULL : mReadStreamProxy,inLogConfiguration);
+    return setupListenerIfOK(mPDFWriter.ContinuePDFForStream(mWriteStreamProxy,inStateFilePath,inModifiedSourceStream.IsEmpty() ? NULL : mReadStreamProxy,inLogConfiguration));
 }
 
 
@@ -607,12 +615,8 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(const std::string& inSourceFil
     // two phase, cause i don't want to bother the users with the level BS.
     // first, parse the source file, get the level. then modify with this level
     
-    PDFHummus::EStatusCode status;
     mStartedWithStream = false;
-    
-    status = mPDFWriter.ModifyPDF(inSourceFile,inPDFVersion,inOptionalOtherOutputFile,inLogConfiguration,inCreationSettings);
-    
-    return status;
+    return setupListenerIfOK(mPDFWriter.ModifyPDF(inSourceFile,inPDFVersion,inOptionalOtherOutputFile,inLogConfiguration,inCreationSettings));
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(Handle<Object> inSourceStream,
@@ -621,16 +625,13 @@ PDFHummus::EStatusCode PDFWriterDriver::ModifyPDF(Handle<Object> inSourceStream,
                                                   const LogConfiguration& inLogConfiguration,
                                                   const PDFCreationSettings& inCreationSettings)
 {
-    PDFHummus::EStatusCode status;
     mStartedWithStream = true;
    
     mWriteStreamProxy = new ObjectByteWriterWithPosition(inDestinationStream);
     mReadStreamProxy = new ObjectByteReaderWithPosition(inSourceStream);
     
     // use minimal leve ePDFVersion10 to use the modified file level (cause i don't care
-    status = mPDFWriter.ModifyPDFForStream(mReadStreamProxy,mWriteStreamProxy,false,inPDFVersion,inLogConfiguration,inCreationSettings);
-    
-    return status;
+    return setupListenerIfOK(mPDFWriter.ModifyPDFForStream(mReadStreamProxy,mWriteStreamProxy,false,inPDFVersion,inLogConfiguration,inCreationSettings));
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& args)
@@ -1549,4 +1550,209 @@ METHOD_RETURN_TYPE PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(
     pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(args[0]->ToNumber()->Uint32Value());
 
     SET_FUNCTION_RETURN_VALUE(args.This());
+}
+
+/*
+    From now on, extensions event triggers.
+    got the following events for now:
+    
+    OnPageWrite: {
+                    page:PDFPage,
+                    pageDictionaryContext:DictionaryContext
+                }
+    OnResourcesWrite {
+                resources: ResourcesDictionary
+                pageResourcesDictionaryContext: DictionaryContext
+    }
+    OnResourceDictionaryWrite {
+                resourceDictionaryName: string
+                resourceDictionary: DictionaryContext	
+    }
+    OnCatalogWrite {
+                catalogDictionaryContext: DictionaryContext
+    }
+*/
+
+PDFHummus::EStatusCode PDFWriterDriver::OnPageWrite(
+                        PDFPage* inPage,
+                        DictionaryContext* inPageDictionaryContext,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext) {
+                            
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Object> params = NEW_OBJECT;
+
+	params->Set(NEW_SYMBOL("page"),PDFPageDriver::GetNewInstance(inPage));
+	params->Set(NEW_SYMBOL("pageDictionaryContext"),DictionaryContextDriver::GetInstanceFor(inPageDictionaryContext));
+    return triggerEvent("OnPageWrite",params);        
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnResourcesWrite(
+                        ResourcesDictionary* inResources,
+                        DictionaryContext* inPageResourcesDictionaryContext,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext) {
+ 	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Object> params = NEW_OBJECT;
+
+	params->Set(NEW_SYMBOL("resources"),ResourcesDictionaryDriver::GetInstanceFor(inResources));
+	params->Set(NEW_SYMBOL("pageResourcesDictionaryContext"),DictionaryContextDriver::GetInstanceFor(inPageResourcesDictionaryContext));
+    return triggerEvent("OnResourcesWrite",params);        
+}
+
+PDFHummus::EStatusCode PDFWriterDriver::OnResourceDictionaryWrite(
+                        DictionaryContext* inResourceDictionary,
+                        const std::string& inResourceDictionaryName,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext) {
+ 	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Object> params = NEW_OBJECT;
+
+	params->Set(NEW_SYMBOL("resourceDictionaryName"),NEW_STRING(inResourceDictionaryName.c_str()));
+	params->Set(NEW_SYMBOL("resourceDictionary"),DictionaryContextDriver::GetInstanceFor(inResourceDictionary));
+    return triggerEvent("OnResourceDictionaryWrite",params);        
+}
+
+PDFHummus::EStatusCode PDFWriterDriver::OnFormXObjectWrite(
+                        ObjectIDType inFormXObjectID,
+                        ObjectIDType inFormXObjectResourcesDictionaryID,
+                        DictionaryContext* inFormDictionaryContext,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnJPEGImageXObjectWrite(
+                        ObjectIDType inImageXObjectID,
+                        DictionaryContext* inImageDictionaryContext,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        JPEGImageHandler* inJPGImageHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnTIFFImageXObjectWrite(
+                        ObjectIDType inImageXObjectID,
+                        DictionaryContext* inImageDictionaryContext,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        TIFFImageHandler* inTIFFImageHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+
+PDFHummus::EStatusCode PDFWriterDriver::triggerEvent(const std::string& inEventName, v8::Handle<v8::Object> inParams) {
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+
+	Handle<Value> value = this->handle()->Get(NEW_STRING("triggerDocumentExtensionEvent"));
+    if(value->IsUndefined())
+        return PDFHummus::eFailure;
+    Handle<Function> func = Handle<Function>::Cast(value);
+    Handle<Value> args[2];
+    args[0] = NEW_STRING(inEventName.c_str());
+    args[1] = inParams;
+	func->Call(this->handle(), 2, args);                
+    return PDFHummus::eSuccess; 
+}
+
+
+PDFHummus::EStatusCode PDFWriterDriver::OnCatalogWrite(
+                        CatalogInformation* inCatalogInformation,
+                        DictionaryContext* inCatalogDictionaryContext,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext) {
+                
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    Handle<Object> params = NEW_OBJECT;
+
+    // this is the only important one
+	params->Set(NEW_SYMBOL("catalogDictionaryContext"),DictionaryContextDriver::GetInstanceFor(inCatalogDictionaryContext));
+    return triggerEvent("OnCatalogWrite",params);                               
+}
+
+
+PDFHummus::EStatusCode PDFWriterDriver::OnPDFParsingComplete(
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnBeforeCreateXObjectFromPage(
+                        PDFDictionary* inPageObjectDictionary,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnAfterCreateXObjectFromPage(
+                        PDFFormXObject* iPageObjectResultXObject,
+                        PDFDictionary* inPageObjectDictionary,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnBeforeCreatePageFromPage(
+                        PDFDictionary* inPageObjectDictionary,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnAfterCreatePageFromPage(
+                        PDFPage* iPageObjectResultPage,
+                        PDFDictionary* inPageObjectDictionary,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnBeforeMergePageFromPage(
+                        PDFPage* inTargetPage,
+                        PDFDictionary* inPageObjectDictionary,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnAfterMergePageFromPage(
+                        PDFPage* inTargetPage,
+                        PDFDictionary* inPageObjectDictionary,
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                            
+    return PDFHummus::eSuccess;                               
+}
+PDFHummus::EStatusCode PDFWriterDriver::OnPDFCopyingComplete(
+                        ObjectsContext* inPDFWriterObjectContext,
+                        PDFHummus::DocumentContext* inDocumentContext,
+                        PDFDocumentHandler* inPDFDocumentHandler) {
+                 
+    return PDFHummus::eSuccess;                               
+}
+bool PDFWriterDriver::IsCatalogUpdateRequiredForModifiedFile(PDFParser* inModifiderFileParser) {
+    
+    return false;
+}
+
+PDFHummus::EStatusCode PDFWriterDriver::setupListenerIfOK(PDFHummus::EStatusCode inCode) {
+    if(inCode == PDFHummus::eSuccess)
+        mPDFWriter.GetDocumentContext().AddDocumentContextExtender(this);
+    return inCode;
 }

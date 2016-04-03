@@ -66,6 +66,16 @@ v8::Handle<v8::Value> DictionaryContextDriver::GetNewInstance(const ARGS_TYPE& a
 	return CLOSE_SCOPE(instance);
 }
 
+v8::Handle<v8::Value> DictionaryContextDriver::GetInstanceFor(DictionaryContext* inDictionaryContextInstance) {
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	Local<Object> instance = NEW_INSTANCE(constructor);
+    ObjectWrap::Unwrap<DictionaryContextDriver>(instance->ToObject())->DictionaryContextInstance = inDictionaryContextInstance;
+	return CLOSE_SCOPE(instance);    
+}
+
+
 bool DictionaryContextDriver::HasInstance(Handle<Value> inObject)
 {
 	CREATE_ISOLATE_CONTEXT;

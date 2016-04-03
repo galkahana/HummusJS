@@ -3,6 +3,23 @@ var path = require('path');
 var pregyp = require('node-pre-gyp');
 var binding_path = pregyp.find(path.resolve(path.join(__dirname,'./package.json')));
 var hummus = module.exports = require(binding_path);
+var EventEmitter = require('events');
+
+/*
+    addons to PDFWriter prototype for events listening
+*/
+
+hummus.PDFWriter.prototype.getEvents = function() {
+    if(!this.events)
+        this.events = new EventEmitter();
+    return this.events;
+}
+
+hummus.PDFWriter.prototype.triggerDocumentExtensionEvent = function(eventName,eventParams) {
+    eventParams.writer = this;
+    this.getEvents().emit(eventName,eventParams);
+}
+
 
 /*
     PDFStreamForResponse is an implementation of a write stream that writes directly to an HTTP response.
