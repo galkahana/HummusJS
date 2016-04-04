@@ -1578,7 +1578,6 @@ PDFHummus::EStatusCode PDFWriterDriver::OnPageWrite(
                         DictionaryContext* inPageDictionaryContext,
                         ObjectsContext* inPDFWriterObjectContext,
                         PDFHummus::DocumentContext* inDocumentContext) {
-                            
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -1593,7 +1592,7 @@ PDFHummus::EStatusCode PDFWriterDriver::OnResourcesWrite(
                         DictionaryContext* inPageResourcesDictionaryContext,
                         ObjectsContext* inPDFWriterObjectContext,
                         PDFHummus::DocumentContext* inDocumentContext) {
- 	CREATE_ISOLATE_CONTEXT;
+    CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
     Handle<Object> params = NEW_OBJECT;
@@ -1608,7 +1607,7 @@ PDFHummus::EStatusCode PDFWriterDriver::OnResourceDictionaryWrite(
                         const std::string& inResourceDictionaryName,
                         ObjectsContext* inPDFWriterObjectContext,
                         PDFHummus::DocumentContext* inDocumentContext) {
- 	CREATE_ISOLATE_CONTEXT;
+     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
     Handle<Object> params = NEW_OBJECT;
@@ -1650,15 +1649,14 @@ PDFHummus::EStatusCode PDFWriterDriver::triggerEvent(const std::string& inEventN
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-
-	Handle<Value> value = this->handle()->Get(NEW_STRING("triggerDocumentExtensionEvent"));
+	Handle<Value> value = THIS_HANDLE->Get(NEW_STRING("triggerDocumentExtensionEvent"));
     if(value->IsUndefined())
         return PDFHummus::eFailure;
     Handle<Function> func = Handle<Function>::Cast(value);
     Handle<Value> args[2];
     args[0] = NEW_STRING(inEventName.c_str());
     args[1] = inParams;
-	func->Call(this->handle(), 2, args);                
+	func->Call(THIS_HANDLE, 2, args);                
     return PDFHummus::eSuccess; 
 }
 
@@ -1668,7 +1666,6 @@ PDFHummus::EStatusCode PDFWriterDriver::OnCatalogWrite(
                         DictionaryContext* inCatalogDictionaryContext,
                         ObjectsContext* inPDFWriterObjectContext,
                         PDFHummus::DocumentContext* inDocumentContext) {
-                
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 

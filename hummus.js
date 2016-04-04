@@ -3,7 +3,7 @@ var path = require('path');
 var pregyp = require('node-pre-gyp');
 var binding_path = pregyp.find(path.resolve(path.join(__dirname,'./package.json')));
 var hummus = module.exports = require(binding_path);
-var EventEmitter = require('events');
+var EventEmitter = require('events').EventEmitter;
 
 /*
     addons to PDFWriter prototype for events listening

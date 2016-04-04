@@ -41,6 +41,7 @@
 #define GET_CURRENT_CONTEXT v8::Isolate::GetCurrent()->GetCurrentContext()
 #define CLOSE_SCOPE(v) scope.Escape(v)
 #define ESCAPABLE_HANDLE(v) Local<v>
+#define THIS_HANDLE (this->handle())
 
 #else
 
@@ -77,6 +78,7 @@
 #define GET_CURRENT_CONTEXT v8::Context::GetCurrent()
 #define CLOSE_SCOPE(v) scope.Close(v)
 #define ESCAPABLE_HANDLE(v) Handle<v>
+#define THIS_HANDLE v8::Local<v8::Object>::New(this->handle_)
 #endif
 
 #define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)
