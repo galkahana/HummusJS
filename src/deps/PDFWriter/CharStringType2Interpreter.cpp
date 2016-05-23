@@ -142,11 +142,11 @@ Byte* CharStringType2Interpreter::InterpretNumber(Byte* inProgramCounter)
 			if(operand.RealValue > 0)
 				operand.RealValue+=
 					(double)(((unsigned short)(*(newPosition+3)) << 8) + (*(newPosition+4))) /
-								(1 << 8);
+								(1 << 16);
 			else
 				operand.RealValue-=
 					(double)(((unsigned short)(*(newPosition+3)) << 8) + (*(newPosition+4))) /
-								(1 << 8);
+								(1 << 16);
 		newPosition += 5;
 	}
 	else

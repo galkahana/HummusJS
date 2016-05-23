@@ -165,7 +165,7 @@ EStatusCode WrittenFontCFF::WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo,
 	EStatusCode status = PDFHummus::eSuccess;
 	do
 	{
-		if(mANSIRepresentation && mANSIRepresentation->mWrittenObjectID != 0)
+		if(mANSIRepresentation && !mANSIRepresentation->isEmpty() && mANSIRepresentation->mWrittenObjectID != 0)
 		{
 			CFFANSIFontWriter fontWriter;
 
@@ -178,7 +178,7 @@ EStatusCode WrittenFontCFF::WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo,
 			}
 		}
 
-		if(mCIDRepresentation && mCIDRepresentation->mWrittenObjectID != 0)
+		if(mCIDRepresentation && !mCIDRepresentation->isEmpty()  && mCIDRepresentation->mWrittenObjectID != 0)
 		{
 			CIDFontWriter fontWriter;
 			CFFDescendentFontWriter descendentFontWriter;

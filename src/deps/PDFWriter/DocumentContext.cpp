@@ -2204,9 +2204,15 @@ ObjectReference DocumentContext::GetOriginalDocumentPageTreeRoot(PDFParser* inMo
 			break;
 		}
         
-        rootObject.GenerationNumber = pagesReference->mVersion;
-        rootObject.ObjectID = pagesReference->mObjectID;
-                
+		// check if the pages tree is not deleted. this should allow users
+		// to override the page tree
+		GetObjectWriteInformationResult objectRegistryData = mObjectsContext->GetInDirectObjectsRegistry().GetObjectWriteInformation(pagesReference->mObjectID);
+		if (objectRegistryData.first && objectRegistryData.second.mObjectReferenceType == ObjectWriteInformation::Used)
+		{
+			rootObject.GenerationNumber = pagesReference->mVersion;
+			rootObject.ObjectID = pagesReference->mObjectID;
+		}
+
 	}while(false);
     
 	return rootObject;    

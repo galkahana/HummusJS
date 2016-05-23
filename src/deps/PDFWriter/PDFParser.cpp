@@ -618,8 +618,8 @@ EStatusCode PDFParser::ParseXrefFromXrefTable(XrefEntryInput* inXrefTable,
 			}
 			if(currentObject < inXrefSize)
 			{
-				inXrefTable[currentObject].mObjectPosition = LongFilePositionTypeBox((const char*)entry);
-				inXrefTable[currentObject].mRivision = ULong((const char*)(entry+11));
+				inXrefTable[currentObject].mObjectPosition = LongFilePositionTypeBox(std::string((const char*)entry, 10));
+				inXrefTable[currentObject].mRivision = ULong(std::string((const char*)(entry + 11), 5));
 				inXrefTable[currentObject].mType = entry[17] == 'n' ? eXrefEntryExisting:eXrefEntryDelete;
 			}
 			++currentObject;
@@ -637,8 +637,8 @@ EStatusCode PDFParser::ParseXrefFromXrefTable(XrefEntryInput* inXrefTable,
 				}
 				if(currentObject < inXrefSize)
 				{
-					inXrefTable[currentObject].mObjectPosition = LongFilePositionTypeBox((const char*)entry);
-					inXrefTable[currentObject].mRivision = ULong((const char*)(entry+11));
+					inXrefTable[currentObject].mObjectPosition = LongFilePositionTypeBox(std::string((const char*)entry, 10));
+					inXrefTable[currentObject].mRivision = ULong(std::string((const char*)(entry + 11), 5));
 					inXrefTable[currentObject].mType = entry[17] == 'n' ? eXrefEntryExisting:eXrefEntryDelete;
 				}
 				++currentObject;

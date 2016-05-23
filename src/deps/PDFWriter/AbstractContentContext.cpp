@@ -1105,6 +1105,9 @@ EStatusCode AbstractContentContext::WriteTextCommandWithDirectGlyphSelection(con
 		return PDFHummus::eFailure;
 	}
 	
+	// skip if there's no text going to be written (also means no font ID)
+	if(encodedCharactersList.empty() || 0 == fontObjectID)
+		return PDFHummus::eSuccess;
 
 	// Write the font reference (only if required)
 	std::string fontName = GetResourcesDictionary()->AddFontMapping(fontObjectID);
@@ -1183,6 +1186,10 @@ EStatusCode AbstractContentContext::TJ(const GlyphUnicodeMappingListOrDoubleList
 		return PDFHummus::eFailure;
 	}
 	
+	// skip if there's no text going to be written (also means no font ID)
+	if(encodedCharachtersListsList.empty() || 0 == fontObjectID)
+		return PDFHummus::eSuccess;
+
 	// status only returns if strings can be coded or not. so continue with writing regardless
 
 	// Write the font reference (only if required)

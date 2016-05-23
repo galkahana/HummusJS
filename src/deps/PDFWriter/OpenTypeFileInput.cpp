@@ -282,6 +282,7 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNT()
 
 EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
 {
+	EStatusCode status = eSuccess;
     // mac resource fork header parsing
     // see: https://developer.apple.com/legacy/mac/library/documentation/mac/pdf/MoreMacintoshToolbox.pdf
 
@@ -293,35 +294,46 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
         
         mPrimitivesReader.SetOffset(mHeaderOffset);
         
-        for(unsigned short i=0; i<16; i++)
-            mPrimitivesReader.ReadBYTE(head[i]);
+        for(unsigned short i=0; i<16 && status == eSuccess; i++)
+            status = mPrimitivesReader.ReadBYTE(head[i]);
+
+		if (status != eSuccess)
+		{
+			return status;
+		}
         
         rdata_pos = ( head[0] << 24 )  | ( head[1] << 16 )  | ( head[2] <<  8 )  | head[3] ;
         map_pos   = ( head[4] << 24 )  | ( head[5] << 16 )  | ( head[6] <<  8 )  | head[7] ;
         rdata_len = ( head[8] << 24 )  | ( head[9] << 16 )  | ( head[10] <<  8 ) | head[11] ;
         
-        if ( rdata_pos + rdata_len != map_pos || map_pos == 0 ) {
-            return PDFHummus::eFailure;
-        }
+        /*
+			if ( rdata_pos + rdata_len != map_pos || map_pos == 0 ) {
+				return PDFHummus::eFailure;
+			}
+		*/
         
         mPrimitivesReader.SetOffset(map_pos);
         
-        head2[15] = (Byte)(head[15]+1); // make it be different
-        
-        for(unsigned short i=0; i<16; i++)
-            mPrimitivesReader.ReadBYTE(head2[i]);
-        
-        {
-            // check that the two headers match
+        //head2[15] = (Byte)(head[15]+1); // make it be different
+
+		for (unsigned short i = 0; i<16 && status == eSuccess; i++)
+			status = mPrimitivesReader.ReadBYTE(head2[i]);
+		if (status != eSuccess) {
+			return status;
+		}
+
+		/*
+			{
             
-            int allzeros = 1, allmatch = 1;
-            for (int i = 0; i < 16; ++i )
-            {
-                if ( head[i] != 0 ) allzeros = 0;
-                if ( head2[i] != head[i] ) allmatch = 0;
-            }
-            if ( !allzeros && !allmatch ) return PDFHummus::eFailure;
-        }
+				int allzeros = 1, allmatch = 1;
+				for (int i = 0; i < 16; ++i )
+				{
+					if ( head[i] != 0 ) allzeros = 0;
+					if ( head2[i] != head[i] ) allmatch = 0;
+				}
+				if ( !allzeros && !allmatch ) return PDFHummus::eFailure;
+			}
+		*/
     }
 
     /* If we have reached this point then it is probably a mac resource */
@@ -332,7 +344,9 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
                            + 2);  /* skip attributes */
     
     unsigned short type_list;
-    mPrimitivesReader.ReadUSHORT(type_list);
+    status = mPrimitivesReader.ReadUSHORT(type_list);
+	if (status != eSuccess)
+		return status;
    
     map_offset  = map_pos + type_list;
     
@@ -341,16 +355,26 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
     // read the resource type list
 
     unsigned short cnt;
-    mPrimitivesReader.ReadUSHORT(cnt);
+    status = mPrimitivesReader.ReadUSHORT(cnt);
+	if (status != eSuccess)
+		return status;
 
-    for (int i = 0; i < cnt + 1; ++i )
+	bool foundSfnt = false;
+
+    for (int i = 0; i < cnt + 1 && status == eSuccess && !foundSfnt; ++i )
     {
         long tag;
         unsigned short subcnt, rpos;
-        mPrimitivesReader.ReadLONG(tag);
-        mPrimitivesReader.ReadUSHORT(subcnt);
-        mPrimitivesReader.ReadUSHORT(rpos);
-        
+        status = mPrimitivesReader.ReadLONG(tag);
+		if (status != eSuccess)
+			break;
+		status = mPrimitivesReader.ReadUSHORT(subcnt);
+		if (status != eSuccess)
+			break;
+		status = mPrimitivesReader.ReadUSHORT(rpos);
+		if (status != eSuccess)
+			break;
+
         if ( (unsigned long)tag == GetTag("sfnt") ) {
             
             mPrimitivesReader.SetOffset(map_offset + rpos);
@@ -360,17 +384,27 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
             
             std::map<unsigned short, unsigned long> resOffsetsMap;
  
-            for (int j = 0; j < subcnt + 1; ++j )
+            for (int j = 0; j < subcnt + 1 && status == eSuccess; ++j )
             {
                 unsigned short res_id, res_name;
                 unsigned long temp, mbz, res_offset;
-                mPrimitivesReader.ReadUSHORT(res_id);
-                mPrimitivesReader.ReadUSHORT(res_name);
-                mPrimitivesReader.ReadULONG(temp);
-                mPrimitivesReader.ReadULONG(mbz);
-                res_offset = temp & 0xFFFFFFL;
+                status = mPrimitivesReader.ReadUSHORT(res_id);
+				if (status != eSuccess)
+					break;
+				status = mPrimitivesReader.ReadUSHORT(res_name);
+				if (status != eSuccess)
+					break;
+				status = mPrimitivesReader.ReadULONG(temp);
+				if (status != eSuccess)
+					break;
+				status = mPrimitivesReader.ReadULONG(mbz);
+				if (status != eSuccess)
+					break;
+				res_offset = temp & 0xFFFFFFL;
                resOffsetsMap.insert(std::pair<unsigned short, unsigned long>(res_id,rdata_pos + res_offset));
             }
+			if (status != eSuccess)
+				break;
            
             int face_index = mFaceIndex, cur_face = 0; 
            unsigned long fontOffset = 0;
@@ -386,7 +420,8 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
             if (cur_face != face_index)
             {
                 TRACE_LOG("OpenTypeFileInput::ReadOpenTypeSFNTFromDfont, could not find face inside resource");
-                return PDFHummus::eFailure;
+                status = PDFHummus::eFailure;
+				break;
             }
             
             
@@ -394,10 +429,14 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
             mTableOffset = mHeaderOffset; 
 
             // try to open the resource as a TrueType font specification
-            return ReadOpenTypeSFNT();
+			foundSfnt = true;
         }
     }
-    return PDFHummus::eFailure;
+
+	if (status == eSuccess && foundSfnt)
+		return ReadOpenTypeSFNT();
+	else
+	    return PDFHummus::eFailure;
 }
 unsigned long OpenTypeFileInput::GetTag(const char* inTagName)
 

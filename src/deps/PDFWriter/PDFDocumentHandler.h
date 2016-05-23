@@ -224,7 +224,10 @@ private:
 	PDFHummus::EStatusCode WriteStreamObject(PDFStreamInput* inStream,ObjectIDTypeList& outSourceObjectsToAdd);
 	PDFHummus::EStatusCode WriteStreamObject(PDFStreamInput* inStream);
 	EStatusCodeAndObjectIDType CreatePDFPageForPage(unsigned long inPageIndex);
-	PDFHummus::EStatusCode CopyPageContentToTargetPage(PDFPage* inPage,PDFDictionary* inPageObject);
+
+	PDFHummus::EStatusCode CopyPageContentToTargetPagePassthrough(PDFPage* inPage, PDFDictionary* inPageObject);
+	PDFHummus::EStatusCode CopyPageContentToTargetPageRecoded(PDFPage* inPage,PDFDictionary* inPageObject);
+
 	PDFHummus::EStatusCode WritePDFStreamInputToContentContext(PageContentContext* inContentContext,PDFStreamInput* inContentSource);
 	PDFHummus::EStatusCode MergePDFPageForPage(PDFPage* inTargetPage,unsigned long inSourcePageIndex);
 	PDFHummus::EStatusCode MergeResourcesToPage(PDFPage* inTargetPage,PDFDictionary* inPage,StringToStringMap& outMappedResourcesNames);

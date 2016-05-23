@@ -844,7 +844,7 @@ void CFFFileInput::ReadEncoding(EncodingsInfo* inEncoding,LongFilePositionType i
 				}
 			}
 		}
-		if((encodingFormat & 0x80) == 1) // supplaments exist, need to add to encoding end
+		if((encodingFormat & 0x80) !=  0) // supplaments exist, need to add to encoding end
 		{
 			mPrimitivesReader.SetOffset(inEncoding->mEncodingEnd); // set position to end of encoding, and start of supplamental, so that can read their count
 			Byte supplamentalsCount = 0;

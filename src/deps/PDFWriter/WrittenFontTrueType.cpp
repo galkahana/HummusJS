@@ -113,7 +113,7 @@ EStatusCode WrittenFontTrueType::WriteFontDefinition(FreeTypeFaceWrapper& inFont
 	EStatusCode status = PDFHummus::eSuccess;
 	do
 	{
-		if(mANSIRepresentation && mANSIRepresentation->mWrittenObjectID != 0)
+		if(mANSIRepresentation && !mANSIRepresentation->isEmpty() && mANSIRepresentation->mWrittenObjectID != 0)
 		{
 			TrueTypeANSIFontWriter fontWriter;
 
@@ -126,7 +126,7 @@ EStatusCode WrittenFontTrueType::WriteFontDefinition(FreeTypeFaceWrapper& inFont
 			}
 		}
 
-		if(mCIDRepresentation && mCIDRepresentation->mWrittenObjectID != 0)
+		if(mCIDRepresentation && !mCIDRepresentation->isEmpty()  && mCIDRepresentation->mWrittenObjectID != 0)
 		{
 			CIDFontWriter fontWriter;
 			TrueTypeDescendentFontWriter descendentFontWriter;

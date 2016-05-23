@@ -64,6 +64,10 @@ struct WrittenFontRepresentation
 	UIntToGlyphEncodingInfoMap mGlyphIDToEncodedChar;
 	ObjectIDType mWrittenObjectID;
 
+	bool isEmpty() {
+		return mGlyphIDToEncodedChar.empty();
+	}
+
 	UIntVector GetGlyphIDsAsOrderedVector() 
 		{
 			return GetOrderedKeys(mGlyphIDToEncodedChar);
