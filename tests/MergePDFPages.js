@@ -172,7 +172,7 @@ describe('MergePDFPages', function() {
 		});
 	});
 		
-	describe('OnlyMergeFromStream', function() {
+	describe('MergeFromStream', function() {
 		it('should complete without error', function() {
 			var pdfWriter = hummus.createWriter(__dirname + '/output/TestOnlyMerge.pdf');
 			var page = pdfWriter.createPage(0,0,595,842);
