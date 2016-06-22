@@ -947,9 +947,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     
     if(args.Length() < 2 ||
        !PDFPageDriver::HasInstance(args[0]) ||
-       !args[1]->IsString())
+       !(args[1]->IsString() || 
+         (args[1]->IsObject() && 
+          IByteReaderWithPosition::HasInstance(args[1])))
+      )
     {
-		THROW_EXCEPTION("Wrong arguments, pass a page object, a path to pages source file, and two optional: configuration object and callback function that will be called between pages merging");
+		THROW_EXCEPTION("Wrong arguments, pass a page object, a path to pages source file or an IByteReaderWithPosition, and two optional: configuration object and callback function that will be called between pages merging");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
@@ -972,9 +975,21 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     if(caller.IsValid())
         pdfWriter->mPDFWriter.GetDocumentContext().AddDocumentContextExtender(&caller);
     
-    EStatusCode status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
-                                                                    *String::Utf8Value(args[1]->ToString()),
-                                                                    pageRange);
+    EStatusCode status;
+    if(args[1]->IsString()) 
+    {
+        status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
+                                                           *String::Utf8Value(args[1]->ToString()),
+                                                           pageRange);
+    }
+    else 
+    {
+        IByteReaderWithPosition* byteReader = ObjectWrap::Unwrap<IByteReaderWithPosition>(args[1]->ToObject());
+        status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
+                                                           byteReader,
+                                                           pageRange);
+    }
+	
     if(caller.IsValid())
         pdfWriter->mPDFWriter.GetDocumentContext().RemoveDocumentContextExtender(&caller);
 
