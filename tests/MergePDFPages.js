@@ -171,9 +171,7 @@ describe('MergePDFPages', function() {
 			pdfWriter.writePage(page).end();
 		});
 	});
-	
-	
-	
+		
 	describe('OnlyMergeFromStream', function() {
 		it('should complete without error', function() {
 			var pdfWriter = hummus.createWriter(__dirname + '/output/TestOnlyMerge.pdf');
