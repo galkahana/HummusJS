@@ -19,6 +19,7 @@
  */
 #include "PDFWriterDriver.h"
 #include "PDFPageDriver.h"
+#include "ByteReaderWithPositionDriver.h"
 #include "PageContentContextDriver.h"
 #include "FormXObjectDriver.h"
 #include "UsedFontDriver.h"
@@ -958,7 +959,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     
     if(!args[1]->IsString() && 
-       !IByteReaderWithPosition::HasInstance(args[1]))
+       !ByteReaderWithPositionDriver::HasInstance(args[1]))
     {
 		THROW_EXCEPTION("Invalid arguments. Second argument must be either an input stream or a path to a pages source file.");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
@@ -992,9 +993,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     else 
     {
-        IByteReaderWithPosition* byteReader = ObjectWrap::Unwrap<IByteReaderWithPosition>(args[1]->ToObject());
+        ByteReaderWithPositionDriver* byteReader = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args[1]->ToObject());
         status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
-                                                           byteReader,
+                                                           byteReader->GetStream(),
                                                            pageRange);
     }
 	
