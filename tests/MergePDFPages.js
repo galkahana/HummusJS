@@ -174,7 +174,7 @@ describe('MergePDFPages', function() {
 		
 	describe('MergeFromStream', function() {
 		it('should complete without error', function() {
-			var pdfWriter = hummus.createWriter(__dirname + '/output/TestOnlyMerge.pdf');
+			var pdfWriter = hummus.createWriter(__dirname + '/output/TestStreamMerge.pdf');
 			var page = pdfWriter.createPage(0,0,595,842);
 			
 			var inStream = new hummus.PDFRStreamForFile(__dirname + '/TestMaterials/AddedPage.pdf');
