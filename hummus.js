@@ -147,7 +147,7 @@ PDFRStreamForFile.prototype.skip = function(inAmount)
     this.rposition += inAmount;
 }
 
-PDFRStreamForFile.prototype.getCurrentPosition = function(inAmount)
+PDFRStreamForFile.prototype.getCurrentPosition = function()
 {
     return this.rposition;
 }
