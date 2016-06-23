@@ -959,7 +959,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     
     if(!args[1]->IsString() && 
-       !ByteReaderWithPositionDriver::HasInstance(args[1]))
+       !args[1]->IsObject())
     {
 		THROW_EXCEPTION("Invalid arguments. Second argument must be either an input stream or a path to a pages source file.");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
@@ -993,9 +993,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     else 
     {
-        ByteReaderWithPositionDriver* byteReader = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args[1]->ToObject());
+        ObjectByteReaderWithPosition* proxy = new ObjectByteReaderWithPosition(args[1]->ToObject());
         status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
-                                                           byteReader->GetStream(),
+                                                           proxy,
                                                            pageRange);
     }
 	
