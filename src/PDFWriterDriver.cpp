@@ -19,6 +19,7 @@
  */
 #include "PDFWriterDriver.h"
 #include "PDFPageDriver.h"
+#include "ByteReaderWithPositionDriver.h"
 #include "PageContentContextDriver.h"
 #include "FormXObjectDriver.h"
 #include "UsedFontDriver.h"
@@ -940,16 +941,27 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     /*
         parameters are:
             target page
-            file path to pdf to merge pages to
+            file path to pdf to merge pages from OR stream of pdf to merge pages from
             optional 1: options object
             optional 2: callback function to call after each page merge
      */
     
-    if(args.Length() < 2 ||
-       !PDFPageDriver::HasInstance(args[0]) ||
-       !args[1]->IsString())
+    if(args.Length() < 2)
     {
-		THROW_EXCEPTION("Wrong arguments, pass a page object, a path to pages source file, and two optional: configuration object and callback function that will be called between pages merging");
+		THROW_EXCEPTION("Too few arguments. Pass a page object, a path to pages source file or an IByteReaderWithPosition, and two optional: configuration object and callback function that will be called between pages merging");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    if(!PDFPageDriver::HasInstance(args[0]))
+    {
+		THROW_EXCEPTION("Invalid arguments. First argument must be a page object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+    }
+    
+    if(!args[1]->IsString() && 
+       !args[1]->IsObject())
+    {
+		THROW_EXCEPTION("Invalid arguments. Second argument must be either an input stream or a path to a pages source file.");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
@@ -972,9 +984,21 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     if(caller.IsValid())
         pdfWriter->mPDFWriter.GetDocumentContext().AddDocumentContextExtender(&caller);
     
-    EStatusCode status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
-                                                                    *String::Utf8Value(args[1]->ToString()),
-                                                                    pageRange);
+    EStatusCode status;
+    if(args[1]->IsString()) 
+    {
+        status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
+                                                           *String::Utf8Value(args[1]->ToString()),
+                                                           pageRange);
+    }
+    else 
+    {
+        ObjectByteReaderWithPosition* proxy = new ObjectByteReaderWithPosition(args[1]->ToObject());
+        status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
+                                                           proxy,
+                                                           pageRange);
+    }
+	
     if(caller.IsValid())
         pdfWriter->mPDFWriter.GetDocumentContext().RemoveDocumentContextExtender(&caller);
 

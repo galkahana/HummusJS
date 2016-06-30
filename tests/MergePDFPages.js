@@ -171,4 +171,19 @@ describe('MergePDFPages', function() {
 			pdfWriter.writePage(page).end();
 		});
 	});
+		
+	describe('MergeFromStream', function() {
+		it('should complete without error', function() {
+			var pdfWriter = hummus.createWriter(__dirname + '/output/TestStreamMerge.pdf');
+			var page = pdfWriter.createPage(0,0,595,842);
+			
+			var inStream = new hummus.PDFRStreamForFile(__dirname + '/TestMaterials/AddedPage.pdf');
+
+			pdfWriter.mergePDFPagesToPage(page,
+				inStream,
+				{type:hummus.eRangeTypeSpecific,specificRanges:[[0,0]]})
+
+			pdfWriter.writePage(page).end();
+		});
+	});
 });
