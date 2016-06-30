@@ -993,9 +993,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     else 
     {
-        ObjectByteReaderWithPosition* proxy = new ObjectByteReaderWithPosition(args[1]->ToObject());
+		ObjectByteReaderWithPosition proxy(args[0]->ToObject());
         status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
-                                                           proxy,
+                                                           &proxy,
                                                            pageRange);
     }
 	
