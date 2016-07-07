@@ -2,6 +2,8 @@ var assert = require('chai').assert;
 
 describe('TiffSpecialsTest', function() {
 	it('should complete without error', function() {
+		this.timeout(15000);
+		
 		function createPageFormImage(inPDFWriter,inImageForm) {
 			var page = inPDFWriter.createPage(0,0,595,842);
 			inPDFWriter.startPageContentContext(page)

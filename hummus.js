@@ -165,12 +165,13 @@ hummus.PDFRStreamForFile = PDFRStreamForFile;
     a new Page, with a regular content context.
 */
 
-function PDFPageModifier(inModifiedFileWriter,inPageIndex)
+function PDFPageModifier(inModifiedFileWriter,inPageIndex,inEnsureContentEncapsulation)
 {
     this.writer = inModifiedFileWriter;
     if(this.writer.modifiedResourcesDictionary === undefined)
         this.writer.modifiedResourcesDictionary = {}; // dictionary used to store resource dictinaries already modified
     this.pageIndex = inPageIndex;
+    this.ensureContentEncapsulation = inEnsureContentEncapsulation;
     this.contexts = [];
     this.annotations = [];
 }
@@ -260,6 +261,7 @@ PDFPageModifier.prototype.writePage = function()
     // that is unique
     var objCxt = this.writer.getObjectsContext();
     var newContentObjectID = objCxt.allocateNewObjectID();
+    var newEncapsulatingObjectID = null;
 
     // create a copying context, so we can copy the page dictionary, and modify its contents + resources dict
     var cpyCxt = this.writer.createPDFCopyingContextForModifiedFile();
@@ -321,6 +323,12 @@ PDFPageModifier.prototype.writePage = function()
     else
     {
         objCxt.startArray();
+        if(this.ensureContentEncapsulation) {
+            // if i want to ensure that modification code will work in an expected way i have to encapsulate
+            // the existing content. simple q before, and Q after should do the trick.
+            newEncapsulatingObjectID = objCxt.allocateNewObjectID();
+            objCxt.writeIndirectObjectReference(newEncapsulatingObjectID);
+        }
         if(pageDictionaryJSObject['Contents'].getType() == hummus.ePDFObjectArray) // contents stream array
         {
             pageDictionaryJSObject['Contents'].toPDFArray().toJSArray().forEach(function(inElement)
@@ -401,14 +409,27 @@ PDFPageModifier.prototype.writePage = function()
         objCxt.endIndirectObject();
     }
 
+    // if required write encapsulation code, so that new stream is independent of graphic context of original
+    if(newEncapsulatingObjectID) {
+        objCxt.startNewIndirectObject(newEncapsulatingObjectID);
+        var encStreamCxt = objCxt.startUnfilteredPDFStream();
+        objCxt.writeKeyword('q')
+                .endPDFStream(encStreamCxt)
+                .endIndirectObject();
+    }
 
     // last but not least, create the actual content stream object, placing the form
     objCxt.startNewIndirectObject(newContentObjectID);
     var streamCxt = objCxt.startUnfilteredPDFStream();
 
+    if(newEncapsulatingObjectID) {
+        objCxt.writeKeyword('Q');
+    }
+
     formResourcesNames.forEach(function(inElement)
     {
-        objCxt.writeKeyword('q')
+        objCxt
+                .writeKeyword('q')
                 .writeNumber(1)
                 .writeNumber(0)
                 .writeNumber(0)
