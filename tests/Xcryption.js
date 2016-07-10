@@ -29,7 +29,7 @@ describe('Xcryption', function() {
 	describe('Encrypt PDF With a Password', function() {
 		it('should complete without error', function() {
 			hummus.recrypt(
-				__dirname + '/TestMaterials/Original.PDF',
+				__dirname + '/TestMaterials/Original.pdf',
 				__dirname + '/output/RecryptPDFOriginalToPasswordProtected.PDF',
 				{
 					userPassword: 'user1',
