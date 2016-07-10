@@ -21,6 +21,8 @@ limitations under the License.
 #include "MD5Generator.h"
 #include "PDFDate.h"
 
+#include <string.h>
+
 using namespace IOBasicTypes;
 
 
