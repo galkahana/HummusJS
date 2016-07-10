@@ -1,7 +1,7 @@
 var hummus = require('../hummus');
 var assert = require('chai').assert;
 
-describe('ParseInfo', function() {
+describe('ImageTypeTest', function() {
 	it('should complete without error and read fields correctly', function() {
 		var pdfWriter = hummus.createWriter(__dirname + '/output/DummyEmptyFile.pdf',{version:hummus.ePDFVersion14});
 		

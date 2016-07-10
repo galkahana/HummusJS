@@ -181,8 +181,8 @@ void CIDFontWriter::WriteToUnicodeMap(ObjectIDType inToUnicodeMap)
 	unsigned long vectorSize = (unsigned long)mCharactersVector.size() - 1; // cause 0 is not there
 
 	cmapWriteContext->Write((const Byte*)scCmapHeader,strlen(scCmapHeader));
-	primitiveWriter.WriteHexString(scFourByteRangeStart);
-	primitiveWriter.WriteHexString(scFourByteRangeEnd,eTokenSeparatorEndLine);
+	primitiveWriter.WriteEncodedHexString(scFourByteRangeStart);
+	primitiveWriter.WriteEncodedHexString(scFourByteRangeEnd,eTokenSeparatorEndLine);
 	cmapWriteContext->Write((const Byte*)scEndCodeSpaceRange,strlen(scEndCodeSpaceRange));
 
 	if(vectorSize < 100)

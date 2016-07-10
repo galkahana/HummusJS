@@ -21,7 +21,7 @@
 #include "CFFANSIFontWriter.h"
 #include "ANSIFontWriter.h"
 #include "DictionaryContext.h"
-#include "IByteWriterWithPosition.h"
+#include "OutputStringBufferStream.h"
 #include "PrimitiveObjectsWriter.h"
 #include "PDFStream.h"
 #include "SafeBufferMacrosDefs.h"
@@ -138,26 +138,22 @@ void CFFANSIFontWriter::WriteCharSet(	DictionaryContext* inDescriptorContext,
 										FreeTypeFaceWrapper* inFontInfo,
 										const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs)
 {
+	// constructing glyph names in a string as names. only when done - submit to output
+	OutputStringBufferStream aStream;
+	PrimitiveObjectsWriter primitiveWriter(&aStream);
+
+	UIntAndGlyphEncodingInfoVector::const_iterator it = inEncodedGlyphs.begin() + 1; // skip 0 character
+
+	for (; it != inEncodedGlyphs.end(); ++it)
+	{
+		std::string glyphName = inFontInfo->GetGlyphName(it->first);
+		primitiveWriter.WriteName(glyphName.c_str(), eTokenSepratorNone);
+	}
+
+
 	// ChartSet
 	inDescriptorContext->WriteKey(scCharSet);
-
-	// charset is a rather long string. i'd rather write it down as it goes, than format a string
-	// and submit it.
-	IByteWriterWithPosition* directStream = inObjectsContext->StartFreeContext();
-	PrimitiveObjectsWriter primitiveWriter(directStream);
-
-	directStream->Write(scLeftParanthesis,1);
-
-	UIntAndGlyphEncodingInfoVector::const_iterator it = inEncodedGlyphs.begin()+1; // skip 0 character
-	
-	for(; it != inEncodedGlyphs.end(); ++it)
-	{
-        std::string glyphName = inFontInfo->GetGlyphName(it->first);
-		primitiveWriter.WriteName(glyphName.c_str(),eTokenSepratorNone);
-	}
-	directStream->Write(scRightParanthesis,1);
-	inObjectsContext->EndFreeContext();
-	inObjectsContext->EndLine();
+	inDescriptorContext->WriteLiteralStringValue(aStream.ToString());
 }
 
 static const std::string scFontFile3 = "FontFile3";

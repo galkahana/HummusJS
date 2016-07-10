@@ -97,8 +97,8 @@ void PageContentContext::RenewStreamConnection()
 class PageImageWritingTask : public IPageEndWritingTask
 {
 public:
-    PageImageWritingTask(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
-    {mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
+    PageImageWritingTask(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID,const PDFParsingOptions& inPDFParsingOptions)
+    {mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;mPDFParsingOptions = inPDFParsingOptions;}
     
     virtual ~PageImageWritingTask(){}
     
@@ -106,18 +106,19 @@ public:
                                          ObjectsContext* inObjectsContext,
                                          PDFHummus::DocumentContext* inDocumentContext)
     {
-        return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
+        return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID,mPDFParsingOptions);
     }
     
 private:
     std::string mImagePath;
     unsigned long mImageIndex;
     ObjectIDType mObjectID;
+	PDFParsingOptions mPDFParsingOptions;
 };
 
-void PageContentContext::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+void PageContentContext::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID, const PDFParsingOptions& inParsingOptions)
 {
     mDocumentContext->RegisterPageEndWritingTask(GetAssociatedPage(),
-                                                 new PageImageWritingTask(inImagePath,inImageIndex,inObjectID));
+                                                 new PageImageWritingTask(inImagePath,inImageIndex,inObjectID,inParsingOptions));
 
 }

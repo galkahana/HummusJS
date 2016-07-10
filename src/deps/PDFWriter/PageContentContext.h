@@ -55,6 +55,6 @@ private:
 	// AbstractContentContext implementation
 	virtual ResourcesDictionary* GetResourcesDictionary();
 	virtual void RenewStreamConnection();
-	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
+	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID, const PDFParsingOptions& inParsingOptions);
 
 };

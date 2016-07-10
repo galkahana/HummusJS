@@ -207,8 +207,31 @@ static const IOBasicTypes::Byte scRightAngle[1] = {'>'};
 void PrimitiveObjectsWriter::WriteHexString(const std::string& inString,ETokenSeparator inSeparate)
 {
 	mStreamForWriting->Write(scLeftAngle,1);
-	mStreamForWriting->Write((const IOBasicTypes::Byte *)inString.c_str(),inString.size());
+	IOBasicTypes::Byte buffer[3];
+	std::string::const_iterator it = inString.begin();
+	for (; it != inString.end(); ++it)
+	{
+		Byte aValue = *it;
+		SAFE_SPRINTF_1((char*)buffer, 3, "%02X", aValue);
+		mStreamForWriting->Write(buffer, 2);
+	}
+	
 	mStreamForWriting->Write(scRightAngle,1);
+	WriteTokenSeparator(inSeparate);
+}
+
+void PrimitiveObjectsWriter::WriteEncodedHexString(const std::string& inString, ETokenSeparator inSeparate)
+{
+	// string is already encoded, so no need to sprintf
+	mStreamForWriting->Write(scLeftAngle, 1);
+	std::string::const_iterator it = inString.begin();
+	for (; it != inString.end(); ++it)
+	{
+		Byte aValue = *it;
+		mStreamForWriting->Write(&aValue, 1);
+	}
+
+	mStreamForWriting->Write(scRightAngle, 1);
 	WriteTokenSeparator(inSeparate);
 }
 

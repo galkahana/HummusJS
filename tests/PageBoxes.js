@@ -1,7 +1,7 @@
 var hummus = require('../hummus'),
 	assert = require('chai').assert;
 
-describe('EmptyPagesTest', function() {
+describe('PagesBoxes', function() {
 	it('should complete without error', function() {
 		var pdfWriter = hummus.createWriter(__dirname + '/output/PageBoxes.pdf',{version:hummus.ePDFVersion14});
 		var page = pdfWriter.createPage();

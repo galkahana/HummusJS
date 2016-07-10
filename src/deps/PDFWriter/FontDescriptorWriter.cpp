@@ -36,6 +36,8 @@ FontDescriptorWriter::~FontDescriptorWriter(void)
 {
 }
 
+static const std::string scType = "Type";
+static const std::string scFontDescriptor = "FontDescriptor";
 static const std::string scFontName = "FontName";
 static const std::string scFontFamily = "FontFamily";
 static const std::string scFontStretch = "FontStretch";
@@ -77,6 +79,10 @@ void FontDescriptorWriter::WriteFontDescriptor(	ObjectIDType inFontDescriptorObj
 	inObjectsContext->StartNewIndirectObject(inFontDescriptorObjectID);
 	fontDescriptorDictionary = inObjectsContext->StartDictionary();
 	
+	// Type
+	fontDescriptorDictionary->WriteKey(scType);
+	fontDescriptorDictionary->WriteNameValue(scFontDescriptor);
+
 	// FontName
 	fontDescriptorDictionary->WriteKey(scFontName);
 	fontDescriptorDictionary->WriteNameValue(inFontPostscriptName);

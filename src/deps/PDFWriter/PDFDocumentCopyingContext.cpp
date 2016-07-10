@@ -36,12 +36,13 @@ PDFDocumentCopyingContext::~PDFDocumentCopyingContext(void)
 EStatusCode PDFDocumentCopyingContext::Start(const std::string& inPDFFilePath,
 											  DocumentContext* inDocumentContext,
 											  ObjectsContext* inObjectsContext,
+										    	const PDFParsingOptions& inOptions,
 											  IPDFParserExtender* inParserExtender)
 {
 	mDocumentContext = inDocumentContext;
 	inDocumentContext->RegisterCopyingContext(this);
 	mDocumentHandler.SetOperationsContexts(inDocumentContext,inObjectsContext);
-	EStatusCode status = mDocumentHandler.StartFileCopyingContext(inPDFFilePath);
+	EStatusCode status = mDocumentHandler.StartFileCopyingContext(inPDFFilePath, inOptions);
     if(eSuccess == status)
         mDocumentHandler.SetParserExtender(inParserExtender);
     return status;
@@ -50,12 +51,13 @@ EStatusCode PDFDocumentCopyingContext::Start(const std::string& inPDFFilePath,
 EStatusCode PDFDocumentCopyingContext::Start(IByteReaderWithPosition* inPDFStream,
 											 DocumentContext* inDocumentContext,
 											 ObjectsContext* inObjectsContext,
+											const PDFParsingOptions& inOptions,
 											 IPDFParserExtender* inParserExtender)
 {
 	mDocumentContext = inDocumentContext;
 	inDocumentContext->RegisterCopyingContext(this);
 	mDocumentHandler.SetOperationsContexts(inDocumentContext,inObjectsContext);
-	EStatusCode status = mDocumentHandler.StartStreamCopyingContext(inPDFStream);
+	EStatusCode status = mDocumentHandler.StartStreamCopyingContext(inPDFStream, inOptions);
     if(eSuccess == status)
         mDocumentHandler.SetParserExtender(inParserExtender);
     return status;
@@ -63,15 +65,12 @@ EStatusCode PDFDocumentCopyingContext::Start(IByteReaderWithPosition* inPDFStrea
 
 PDFHummus::EStatusCode PDFDocumentCopyingContext::Start(PDFParser* inPDFParser,
                              DocumentContext* inDocumentContext,
-                             ObjectsContext* inObjectsContext,
-                             IPDFParserExtender* inParserExtender)
+                             ObjectsContext* inObjectsContext)
 {
 	mDocumentContext = inDocumentContext;
 	inDocumentContext->RegisterCopyingContext(this);
 	mDocumentHandler.SetOperationsContexts(inDocumentContext,inObjectsContext);
-	EStatusCode status = mDocumentHandler.StartParserCopyingContext(inPDFParser); 
-    mDocumentHandler.SetParserExtender(inParserExtender);
-    return status;
+	return mDocumentHandler.StartParserCopyingContext(inPDFParser); 
 }
 
 EStatusCodeAndObjectIDType PDFDocumentCopyingContext::CreateFormXObjectFromPDFPage(unsigned long inPageIndex,

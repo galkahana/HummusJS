@@ -39,6 +39,7 @@
 #include "RefCountPtr.h"
 #include "PDFObjectCast.h"
 #include "IPDFParserExtender.h"
+#include "DecryptionHelper.h"
 
 #include <sstream>
 
@@ -46,6 +47,8 @@ using namespace PDFHummus;
 
 PDFObjectParser::PDFObjectParser(void)
 {
+	mParserExtender = NULL;
+	mDecryptionHelper = NULL;
 }
 
 PDFObjectParser::~PDFObjectParser(void)
@@ -75,7 +78,7 @@ void PDFObjectParser::ResetReadState(const PDFParserTokenizer& inExternalTokeniz
 
 static const std::string scR = "R";
 static const std::string scStream = "stream";
-PDFObject* PDFObjectParser::ParseNewObject(IPDFParserExtender* inParserExtender)
+PDFObject* PDFObjectParser::ParseNewObject()
 {
 	PDFObject* pdfObject = NULL;
 	std::string token;
@@ -97,13 +100,13 @@ PDFObject* PDFObjectParser::ParseNewObject(IPDFParserExtender* inParserExtender)
 		// Literal String
 		else if(IsLiteralString(token))
 		{
-			pdfObject = ParseLiteralString(token,inParserExtender);
+			pdfObject = ParseLiteralString(token);
 			break;
 		}
 		// Hexadecimal String
 		else if(IsHexadecimalString(token))
 		{
-			pdfObject = ParseHexadecimalString(token,inParserExtender);
+			pdfObject = ParseHexadecimalString(token);
 			break;
 		}
 		// NULL
@@ -183,13 +186,13 @@ PDFObject* PDFObjectParser::ParseNewObject(IPDFParserExtender* inParserExtender)
 		// Array
 		else if(IsArray(token))
 		{
-			pdfObject = ParseArray(inParserExtender);
+			pdfObject = ParseArray();
 			break;
 		}
 		// Dictionary
 		else if (IsDictionary(token))
 		{
-			pdfObject = ParseDictionary(inParserExtender);
+			pdfObject = ParseDictionary();
 
 			if(pdfObject)
 			{
@@ -266,7 +269,7 @@ bool PDFObjectParser::IsLiteralString(const std::string& inToken)
 }
 
 static const char scRightParanthesis = ')';
-PDFObject* PDFObjectParser::ParseLiteralString(const std::string& inToken,IPDFParserExtender* inParserExtender)
+PDFObject* PDFObjectParser::ParseLiteralString(const std::string& inToken)
 {
   std::stringbuf stringBuffer;
 	Byte buffer;
@@ -339,11 +342,31 @@ PDFObject* PDFObjectParser::ParseLiteralString(const std::string& inToken,IPDFPa
 		stringBuffer.sputn((const char*)&buffer,1);
 	}
 
-	if(inParserExtender)
-		return new PDFLiteralString(inParserExtender->DecryptString(stringBuffer.str()));
-	else
-		return new PDFLiteralString(stringBuffer.str());
+	return new PDFLiteralString(MaybeDecryptString(stringBuffer.str()));
 }
+
+/*
+
+
+*/
+
+std::string PDFObjectParser::MaybeDecryptString(const std::string& inString) {
+	if (mDecryptionHelper->IsEncrypted()) {
+
+		if (mDecryptionHelper->CanDecryptDocument())
+			return mDecryptionHelper->DecryptString(inString);
+		else {
+			if (mParserExtender)
+				return mParserExtender->DecryptString(inString);
+			else
+				return inString;
+		}
+	}
+	else {
+		return inString;
+	}
+}
+
 
 static const char scLeftAngle = '<';
 bool PDFObjectParser::IsHexadecimalString(const std::string& inToken)
@@ -354,7 +377,7 @@ bool PDFObjectParser::IsHexadecimalString(const std::string& inToken)
 
 
 static const char scRightAngle = '>';
-PDFObject* PDFObjectParser::ParseHexadecimalString(const std::string& inToken,IPDFParserExtender* inParserExtender)
+PDFObject* PDFObjectParser::ParseHexadecimalString(const std::string& inToken)
 {
 	// verify that last character is '>'
 	if(inToken.at(inToken.size()-1) != scRightAngle)
@@ -362,10 +385,31 @@ PDFObject* PDFObjectParser::ParseHexadecimalString(const std::string& inToken,IP
 		TRACE_LOG1("PDFObjectParser::ParseHexadecimalString, exception in parsing hexadecimal string, no closing angle, Expression: %s",inToken.c_str());
 		return NULL;
 	}
-	if(inParserExtender)
-		return new PDFHexString(inParserExtender->DecryptString(inToken.substr(1,inToken.size()-2)));
-	else
-		return new PDFHexString(inToken.substr(1,inToken.size()-2));
+
+	return new PDFHexString(MaybeDecryptString(DecodeHexString(inToken.substr(1, inToken.size() - 2))));
+}
+
+std::string PDFObjectParser::DecodeHexString(const std::string inStringToDecode) {
+	std::stringbuf stringBuffer;
+	std::string content = inStringToDecode;
+	Byte buffer;
+
+	// pad with ending 0
+	if (content.length() % 2 != 0)
+		content.push_back('0');
+
+	std::string::const_iterator it = content.begin();
+
+	for (; it != content.end(); ++it)
+	{
+		buffer = GetHexValue(*it).second * 16;
+		++it;
+		buffer += GetHexValue(*it).second;
+		stringBuffer.sputn((const char*)&buffer, 1);
+	}
+
+	return stringBuffer.str();
+
 }
 
 static const std::string scNull = "null";
@@ -495,7 +539,7 @@ bool PDFObjectParser::IsArray(const std::string& inToken)
 }
 
 static const std::string scRightSquare = "]";
-PDFObject* PDFObjectParser::ParseArray(IPDFParserExtender* inParserExtender)
+PDFObject* PDFObjectParser::ParseArray()
 {
 	PDFArray* anArray = new PDFArray();
 	bool arrayEndEncountered = false;
@@ -510,7 +554,7 @@ PDFObject* PDFObjectParser::ParseArray(IPDFParserExtender* inParserExtender)
 			break;
 
 		ReturnTokenToBuffer(token);
-		RefCountPtr<PDFObject> anObject(ParseNewObject(inParserExtender));
+		RefCountPtr<PDFObject> anObject(ParseNewObject());
 		if(!anObject)
 		{
 			status = PDFHummus::eFailure;
@@ -551,7 +595,7 @@ bool PDFObjectParser::IsDictionary(const std::string& inToken)
 }
 
 static const std::string scDoubleRightAngle = ">>";
-PDFObject* PDFObjectParser::ParseDictionary(IPDFParserExtender* inParserExtender)
+PDFObject* PDFObjectParser::ParseDictionary()
 {
 	PDFDictionary* aDictionary = new PDFDictionary();
 	bool dictionaryEndEncountered = false;
@@ -567,7 +611,7 @@ PDFObject* PDFObjectParser::ParseDictionary(IPDFParserExtender* inParserExtender
 		ReturnTokenToBuffer(token);
 
 		// Parse Key
-		PDFObjectCastPtr<PDFName> aKey(ParseNewObject(inParserExtender));
+		PDFObjectCastPtr<PDFName> aKey(ParseNewObject());
 		if(!aKey)
 		{
 			status = PDFHummus::eFailure;
@@ -584,7 +628,7 @@ PDFObject* PDFObjectParser::ParseDictionary(IPDFParserExtender* inParserExtender
 		}
 
 		// Parse Value
-		RefCountPtr<PDFObject> aValue = ParseNewObject(inParserExtender);
+		RefCountPtr<PDFObject> aValue = ParseNewObject();
 		if(!aValue)
 		{
 			status = PDFHummus::eFailure;
@@ -627,4 +671,13 @@ BoolAndByte PDFObjectParser::GetHexValue(Byte inValue)
 		TRACE_LOG1("PDFObjectParser::GetHexValue, unrecongnized hex value - %c",inValue);
 		return BoolAndByte(false,inValue);
 	}
+}
+
+void PDFObjectParser::SetDecryptionHelper(DecryptionHelper* inDecryptionHelper) {
+	mDecryptionHelper = inDecryptionHelper;
+}
+
+void PDFObjectParser::SetParserExtender(IPDFParserExtender* inParserExtender)
+{
+	mParserExtender = inParserExtender;
 }

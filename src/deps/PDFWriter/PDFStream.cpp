@@ -22,9 +22,11 @@
 #include "IObjectsContextExtender.h"
 #include "InputStringBufferStream.h"
 #include "OutputStreamTraits.h"
+#include "EncryptionHelper.h"
 
 PDFStream::PDFStream(bool inCompressStream,
 					 IByteWriterWithPosition* inOutputStream,
+					 EncryptionHelper* inEncryptionHelper,
 					 ObjectIDType inExtentObjectID,
 					 IObjectsContextExtender* inObjectsContextExtender)
 {
@@ -33,6 +35,13 @@ PDFStream::PDFStream(bool inCompressStream,
 	mExtendObjectID = inExtentObjectID;	
 	mStreamStartPosition = inOutputStream->GetCurrentPosition();
 	mOutputStream = inOutputStream;
+	if (inEncryptionHelper && inEncryptionHelper->IsEncrypting()) {
+		mEncryptionStream = inEncryptionHelper->CreateEncryptionStream(inOutputStream);
+	}
+	else {
+		mEncryptionStream = NULL;
+	}
+
 	mStreamLength = 0;
     mStreamDictionaryContextForDirectExtentStream = NULL;
 
@@ -41,23 +50,24 @@ PDFStream::PDFStream(bool inCompressStream,
 	{
 		if(mExtender && mExtender->OverridesStreamCompression())
 		{
-			mWriteStream = mExtender->GetCompressionWriteStream(inOutputStream);
+			mWriteStream = mExtender->GetCompressionWriteStream(mEncryptionStream ? mEncryptionStream:inOutputStream);
 		}
 		else
 		{
-			mFlateEncodingStream.Assign(inOutputStream);
+			mFlateEncodingStream.Assign(mEncryptionStream ? mEncryptionStream : inOutputStream);
 			mWriteStream = &mFlateEncodingStream;
 		}
 	}
 	else
-		mWriteStream = inOutputStream;
+		mWriteStream = mEncryptionStream ? mEncryptionStream : inOutputStream;
 
 }
 
 PDFStream::PDFStream(
           bool inCompressStream,
           IByteWriterWithPosition* inOutputStream,
-          DictionaryContext* inStreamDictionaryContextForDirectExtentStream,
+			EncryptionHelper* inEncryptionHelper,
+			DictionaryContext* inStreamDictionaryContextForDirectExtentStream,
           IObjectsContextExtender* inObjectsContextExtender)
 {
 	mExtender = inObjectsContextExtender;
@@ -69,21 +79,29 @@ PDFStream::PDFStream(
     mStreamDictionaryContextForDirectExtentStream = inStreamDictionaryContextForDirectExtentStream;
     
     mTemporaryOutputStream.Assign(&mTemporaryStream);
+	if (inEncryptionHelper && inEncryptionHelper->IsEncrypting()) {
+		mEncryptionStream = inEncryptionHelper->CreateEncryptionStream(&mTemporaryOutputStream);
+	}
+	else {
+		mEncryptionStream = NULL;
+	}
+
+
     
 	if(mCompressStream)
 	{
 		if(mExtender && mExtender->OverridesStreamCompression())
 		{
-			mWriteStream = mExtender->GetCompressionWriteStream(&mTemporaryOutputStream);
+			mWriteStream = mExtender->GetCompressionWriteStream(mEncryptionStream ? mEncryptionStream : &mTemporaryOutputStream);
 		}
 		else
 		{
-			mFlateEncodingStream.Assign(&mTemporaryOutputStream);
+			mFlateEncodingStream.Assign(mEncryptionStream ? mEncryptionStream : &mTemporaryOutputStream);
 			mWriteStream = &mFlateEncodingStream;
 		}
 	}
 	else
-		mWriteStream = &mTemporaryOutputStream;
+		mWriteStream = mEncryptionStream ? mEncryptionStream : &mTemporaryOutputStream;
     
 }
 
@@ -105,7 +123,14 @@ void PDFStream::FinalizeStreamWrite()
 	mWriteStream = NULL;
 	if(mCompressStream)
 		mFlateEncodingStream.Assign(NULL);  // this both finished encoding any left buffers and releases ownership from mFlateEncodingStream
-    
+
+	if (mEncryptionStream) {
+		// safe to delete. encryption stream is not supposed to own the underlying stream in any case. make sure
+		// to delete before measuring output, as flushing may occur at this point
+		delete mEncryptionStream;
+		mEncryptionStream = NULL;
+	}
+
     // different endings, depending if direct stream writing or not
     if(mExtendObjectID == 0)
     {

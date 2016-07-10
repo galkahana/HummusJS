@@ -32,6 +32,8 @@
 #include "PDFIndirectObjectReference.h"
 #include "PDFBoolean.h"
 #include "PDFLiteralString.h"
+#include "EncryptionHelper.h"
+#include "PDFObjectParser.h"
 
 using namespace PDFHummus;
 
@@ -40,6 +42,7 @@ ObjectsContext::ObjectsContext(void)
 	mOutputStream = NULL;
 	mCompressStreams = true;
 	mExtender = NULL;
+	mEncryptionHelper = NULL;
 }
 
 ObjectsContext::~ObjectsContext(void)
@@ -53,6 +56,15 @@ void ObjectsContext::SetOutputStream(IByteWriterWithPosition* inOutputStream)
 {
 	mOutputStream = inOutputStream;
 	mPrimitiveWriter.SetStreamForWriting(inOutputStream);
+}
+
+void ObjectsContext::SetEncryptionHelper(EncryptionHelper* inEncryptionHelper) 
+{
+	mEncryptionHelper = inEncryptionHelper;
+}
+
+bool ObjectsContext::IsEncrypting() {
+	return mEncryptionHelper && mEncryptionHelper->IsEncrypting();
 }
 
 static const IOBasicTypes::Byte scComment[1] = {'%'};
@@ -70,13 +82,38 @@ void ObjectsContext::WriteName(const std::string& inName,ETokenSeparator inSepar
 
 void ObjectsContext::WriteLiteralString(const std::string& inString,ETokenSeparator inSeparate)
 {
-	mPrimitiveWriter.WriteLiteralString(inString,inSeparate);
+	mPrimitiveWriter.WriteLiteralString(MaybeEncryptString(inString),inSeparate);
 }
 
 void ObjectsContext::WriteHexString(const std::string& inString,ETokenSeparator inSeparate)
 {
-	mPrimitiveWriter.WriteHexString(inString,inSeparate);
+	mPrimitiveWriter.WriteHexString(MaybeEncryptString(inString),inSeparate);
 }
+
+void ObjectsContext::WriteEncodedHexString(const std::string& inString, ETokenSeparator inSeparate) 
+{
+	if (IsEncrypting())
+	{
+		WriteHexString(DecodeHexString(inString), inSeparate);
+	}
+	else {
+		mPrimitiveWriter.WriteEncodedHexString(inString, inSeparate);
+	}
+}
+
+std::string ObjectsContext::MaybeEncryptString(const std::string& inString) {
+	if (IsEncrypting())
+		return mEncryptionHelper->EncryptString(inString);
+	else
+		return inString;
+}
+
+std::string ObjectsContext::DecodeHexString(const std::string& inString) {
+	PDFObjectParser objectParser;
+
+	return objectParser.DecodeHexString(inString);
+}
+
 
 void ObjectsContext::WriteIndirectObjectReference(const ObjectReference& inObjectReference,ETokenSeparator inSeparate)
 {
@@ -106,6 +143,14 @@ void ObjectsContext::EndFreeContext()
 {
 	// currently just a marker, do nothing. allegedly used to return to a "controlled" context
 }
+
+LongFilePositionType ObjectsContext::GetCurrentPosition() {
+	if (!mOutputStream) // in case somebody gets smart and ask before the stream is set
+		return 0;
+
+	return mOutputStream->GetCurrentPosition();
+}
+
 
 static const IOBasicTypes::Byte scXref[] = {'x','r','e','f'};
 
@@ -276,6 +321,11 @@ ObjectIDType ObjectsContext::StartNewIndirectObject()
 	mPrimitiveWriter.WriteInteger(newObjectID);
 	mPrimitiveWriter.WriteInteger(0);
 	mPrimitiveWriter.WriteKeyword(scObj);
+
+	if(IsEncrypting()) {
+		mEncryptionHelper->OnObjectStart((long long)newObjectID, 0);
+	}
+
 	return newObjectID;
 }
 
@@ -285,6 +335,10 @@ void ObjectsContext::StartNewIndirectObject(ObjectIDType inObjectID)
 	mPrimitiveWriter.WriteInteger(inObjectID);
 	mPrimitiveWriter.WriteInteger(0);
 	mPrimitiveWriter.WriteKeyword(scObj);
+
+	if (IsEncrypting()) {
+		mEncryptionHelper->OnObjectStart((long long)inObjectID, 0);
+	}
 }
 
 void ObjectsContext::StartModifiedIndirectObject(ObjectIDType inObjectID)
@@ -293,12 +347,20 @@ void ObjectsContext::StartModifiedIndirectObject(ObjectIDType inObjectID)
 	mPrimitiveWriter.WriteInteger(inObjectID);
 	mPrimitiveWriter.WriteInteger(0);
 	mPrimitiveWriter.WriteKeyword(scObj);    
+
+	if (IsEncrypting()) {
+		mEncryptionHelper->OnObjectStart((long long)inObjectID, 0);
+	}
 }
 
 static const std::string scEndObj = "endobj";
 void ObjectsContext::EndIndirectObject()
 {
 	mPrimitiveWriter.WriteKeyword(scEndObj);
+
+	if (IsEncrypting()) {
+		mEncryptionHelper->OnObjectEnd();
+	}
 }
 
 void ObjectsContext::StartArray()
@@ -352,10 +414,10 @@ PDFStream* ObjectsContext::StartPDFStream(DictionaryContext* inStreamDictionary,
         // Write Stream Content
         WriteKeyword(scStream);
         
-        return new PDFStream(mCompressStreams,mOutputStream,lengthObjectID,mExtender);
+        return new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,lengthObjectID,mExtender);
     }
     else
-        return new PDFStream(mCompressStreams,mOutputStream,streamDictionaryContext,mExtender);
+        return new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,streamDictionaryContext,mExtender);
 	
 }
 
@@ -379,7 +441,7 @@ PDFStream* ObjectsContext::StartUnfilteredPDFStream(DictionaryContext* inStreamD
 	WriteKeyword(scStream);
 
 	// now begin the stream itself
-	return new PDFStream(false,mOutputStream,lengthObjectID,NULL);
+	return new PDFStream(false,mOutputStream, mEncryptionHelper,lengthObjectID,NULL);
 }
 
 void ObjectsContext::EndPDFStream(PDFStream* inStream)
@@ -515,6 +577,7 @@ void ObjectsContext::Cleanup()
 	mOutputStream = NULL;
 	mCompressStreams = true;
 	mExtender = NULL;
+	mEncryptionHelper = NULL;
 
 	mSubsetFontsNamesSequance.Reset();
 	mReferencesRegistry.Reset();

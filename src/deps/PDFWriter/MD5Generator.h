@@ -66,9 +66,12 @@
 #pragma once
 
 #include "EStatusCode.h"
+#include "IOBasicTypes.h"
+#include <list>
 #include <string>
 
 
+typedef std::list<IOBasicTypes::Byte> ByteList;
 
 class MD5Generator
 {
@@ -77,15 +80,21 @@ public:
 	~MD5Generator(void);
 
 	PDFHummus::EStatusCode Accumulate(const std::string& inString);
+	PDFHummus::EStatusCode Accumulate(const ByteList& inString);
+	PDFHummus::EStatusCode Accumulate(const IOBasicTypes::Byte* inArray, IOBasicTypes::LongBufferSizeType inLength);
 
-	std::string ToString();
+	const ByteList& ToString();
+	const std::string& ToStringAsString();
+	const std::string& ToHexString();
 
 private:
 
 	typedef unsigned       int uint4; 
 	typedef unsigned short int uint2; 
 	typedef unsigned      char uint1; 
-	std::string MD5FinalString;
+	std::string MD5FinalHexString;
+	ByteList MD5FinalString;
+	std::string MD5FinalStringAsString;
 
 	uint4 mState[4];
 	uint4 mCount[2];     // number of *bits*, mod 2^64
@@ -93,7 +102,7 @@ private:
 	uint1 mDigest[16];
 	bool mIsFinalized;
 
-	void Accumulate(const uint1* inBlock,unsigned long inBlockSize);
+	void _Accumulate(const uint1* inBlock,unsigned long inBlockSize);
 
 	void Transform(const uint1 *inBuffer);  // does the real update work.  Note 
                                    // that length is implied to be 64.
@@ -110,7 +119,8 @@ private:
 	void HH(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac);
 	void II(uint4& a, uint4 b, uint4 c, uint4 d, uint4 x, uint4 s, uint4 ac);
 	void Encode(uint1 *output, uint4 *input, uint4 len);
-	void SetFinalStringToHex();
+	void Finalize();
+	void PrepareFinalStrings();
 
 	static const uint1 PADDING[64];
 

@@ -185,15 +185,27 @@ EStatusCode	DocumentContext::FinalizeNewPDF(bool inEmbedFonts)
 		if(status != 0)
 			break;
 
-		WritePagesTree();
+		// don't write page tree if no pages. this should allow
+		// customizations to use an alternative algorithm for pages writing
+		// just by avoiding using humusses
+		if(DocumentHasNewPages())
+			WritePagesTree();
 
-		status = WriteCatalogObjectOfNewPDF();
-		if(status != 0)
-			break;
+		// don't write catalog if reference already setup
+		// this would allow customization
+		// to completly overwrite hummus catalog writing
+		// by setting it beforehand
+		if (!mTrailerInformation.GetRoot().first) {
+			status = WriteCatalogObjectOfNewPDF();
+			if (status != 0)
+				break;
+		}
 
 
 		// write the info dictionary of the trailer, if has any valid entries
 		WriteInfoDictionary();
+		// write encryption dictionary, if encrypting
+		WriteEncryptionDictionary();
 
 		status = mObjectsContext->WriteXrefTable(xrefTablePosition);
 		if(status != 0)
@@ -298,9 +310,11 @@ EStatusCode DocumentContext::WriteTrailerDictionaryValues(DictionaryContext* inD
 			inDictionaryContext->WriteObjectReferenceValue(objectIDResult.second);
 		}
 
-		// write ID
+		// write ID [must be unencrypted, in encrypted documents]
+		mEncryptionHelper.PauseEncryption();
 
-		std::string id = GenerateMD5IDForFile();
+		if(mNewPDFID.empty()) // new pdf id is created prior to end in case of encryption
+			mNewPDFID = GenerateMD5IDForFile();
 		inDictionaryContext->WriteKey(scID);
 		mObjectsContext->StartArray();
         
@@ -308,10 +322,12 @@ EStatusCode DocumentContext::WriteTrailerDictionaryValues(DictionaryContext* inD
         if(mModifiedDocumentIDExists)
             mObjectsContext->WriteHexString(mModifiedDocumentID);
         else
-            mObjectsContext->WriteHexString(id);
-		mObjectsContext->WriteHexString(id);
+            mObjectsContext->WriteHexString(mNewPDFID);
+		mObjectsContext->WriteHexString(mNewPDFID);
 		mObjectsContext->EndArray();
 		mObjectsContext->EndLine();
+
+		mEncryptionHelper.ReleaseEncryption();
 
 	}while(false);
 	
@@ -408,17 +424,64 @@ void DocumentContext::WriteInfoDictionary()
 	
 }
 
+void DocumentContext::WriteEncryptionDictionary() {
+	if (!mEncryptionHelper.IsDocumentEncrypted())
+		return;
+
+	ObjectIDType encryptionDictionaryID = mObjectsContext->StartNewIndirectObject();
+	mEncryptionHelper.WriteEncryptionDictionary(mObjectsContext);
+	mObjectsContext->EndIndirectObject();
+
+	mTrailerInformation.SetEncrypt(encryptionDictionaryID);
+}
+
 CatalogInformation& DocumentContext::GetCatalogInformation()
 {
 	return mCatalogInformation;
 }
+
+void DocumentContext::SetupEncryption(const EncryptionOptions& inEncryptionOptions,EPDFVersion inPDFVersion)
+{
+	mObjectsContext->SetEncryptionHelper(&mEncryptionHelper);
+	if (inEncryptionOptions.ShouldEncrypt) {
+		mNewPDFID = GenerateMD5IDForFile();
+
+		mEncryptionHelper.Setup(
+			inEncryptionOptions.ShouldEncrypt,
+			((double)inPDFVersion) / 10.0,
+			inEncryptionOptions.UserPassword,
+			inEncryptionOptions.OwnerPassword,
+			inEncryptionOptions.UserProtectionOptionsFlag,
+			true,
+			mNewPDFID
+			);
+	}
+	else
+		mEncryptionHelper.SetupNoEncryption();
+}
+
+void DocumentContext::SetupEncryption(PDFParser* inModifiedFileParser) {
+	mObjectsContext->SetEncryptionHelper(&mEncryptionHelper);
+
+	if (inModifiedFileParser->IsEncrypted() && inModifiedFileParser->IsEncryptionSupported()) {
+		mEncryptionHelper.Setup(inModifiedFileParser->GetDecryptionHelper());
+	}
+	else
+		mEncryptionHelper.SetupNoEncryption();
+}
+
+bool DocumentContext::SupportsEncryption()
+{
+	return mEncryptionHelper.SupportsEncryption();
+}
+
 
 static const std::string scType = "Type";
 static const std::string scCatalog = "Catalog";
 static const std::string scPages = "Pages";
 EStatusCode DocumentContext::WriteCatalogObjectOfNewPDF()
 {
-    return WriteCatalogObject(mCatalogInformation.GetPageTreeRoot(mObjectsContext->GetInDirectObjectsRegistry())->GetID());
+    return WriteCatalogObject(DocumentHasNewPages() ? mCatalogInformation.GetPageTreeRoot(mObjectsContext->GetInDirectObjectsRegistry())->GetID(): ObjectReference());
     
 }
 
@@ -433,8 +496,10 @@ EStatusCode DocumentContext::WriteCatalogObject(const ObjectReference& inPageTre
 	catalogContext->WriteKey(scType);
 	catalogContext->WriteNameValue(scCatalog);
 
-	catalogContext->WriteKey(scPages);
-	catalogContext->WriteObjectReferenceValue(inPageTreeRootObjectReference);
+	if (inPageTreeRootObjectReference.ObjectID != 0) {
+		catalogContext->WriteKey(scPages);
+		catalogContext->WriteObjectReferenceValue(inPageTreeRootObjectReference);
+	}
 
 	IDocumentContextExtenderSet::iterator it = mExtenders.begin();
 	for(; it != mExtenders.end() && PDFHummus::eSuccess == status; ++it)
@@ -722,11 +787,7 @@ std::string DocumentContext::GenerateMD5IDForFile()
 	// file location
 	md5.Accumulate(mOutputFilePath);
 
-	// current writing position (will serve as "file size")
-	IByteWriterWithPosition *outputStream = mObjectsContext->StartFreeContext();
-	mObjectsContext->EndFreeContext();
-
-	md5.Accumulate(BoxingBaseWithRW<LongFilePositionType>(outputStream->GetCurrentPosition()).ToString());
+	md5.Accumulate(BoxingBaseWithRW<LongFilePositionType>(mObjectsContext->GetCurrentPosition()).ToString());
 
 	// document information dictionary
 	InfoDictionary& infoDictionary = mTrailerInformation.GetInfo();
@@ -746,7 +807,7 @@ std::string DocumentContext::GenerateMD5IDForFile()
 	while(it.MoveNext())
 		md5.Accumulate(it.GetValue().ToString());
 
-	return md5.ToString();
+	return md5.ToStringAsString();
 }
 
 bool DocumentContext::HasContentContext(PDFPage* inPage)
@@ -1267,29 +1328,32 @@ PDFUsedFont* DocumentContext::GetFontForFile(const std::string& inFontFilePath,c
 }
 
 EStatusCodeAndObjectIDTypeList DocumentContext::CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
+																			const PDFParsingOptions& inParsingOptions,
 																			const PDFPageRange& inPageRange,
 																			EPDFPageBox inPageBoxToUseAsFormBox,
 																			const double* inTransformationMatrix,
 																			const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFFilePath,inPageRange,inPageBoxToUseAsFormBox,inTransformationMatrix,inCopyAdditionalObjects);	
+	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFFilePath,inParsingOptions,inPageRange,inPageBoxToUseAsFormBox,inTransformationMatrix,inCopyAdditionalObjects);	
 
 }
 
 EStatusCodeAndObjectIDTypeList DocumentContext::CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
+																			const PDFParsingOptions& inParsingOptions,
 																			const PDFPageRange& inPageRange,
 																			const PDFRectangle& inCropBox,
 																			const double* inTransformationMatrix,
 																			const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFFilePath,inPageRange,inCropBox,inTransformationMatrix,inCopyAdditionalObjects);	
+	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFFilePath,inParsingOptions,inPageRange,inCropBox,inTransformationMatrix,inCopyAdditionalObjects);	
 
 }
 EStatusCodeAndObjectIDTypeList DocumentContext::AppendPDFPagesFromPDF(const std::string& inPDFFilePath,
+																	const PDFParsingOptions& inParsingOptions,
 																	  const PDFPageRange& inPageRange,
 																	  const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.AppendPDFPagesFromPDF(inPDFFilePath,inPageRange,inCopyAdditionalObjects);	
+	return mPDFDocumentHandler.AppendPDFPagesFromPDF(inPDFFilePath,inParsingOptions,inPageRange,inCopyAdditionalObjects);	
 }
 
 EStatusCode DocumentContext::WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectID)
@@ -1303,6 +1367,7 @@ EStatusCode DocumentContext::WriteState(ObjectsContext* inStateWriter,ObjectIDTy
 		ObjectIDType trailerInformationID = inStateWriter->GetInDirectObjectsRegistry().AllocateNewObjectID();
 		ObjectIDType catalogInformationID = inStateWriter->GetInDirectObjectsRegistry().AllocateNewObjectID();
 		ObjectIDType usedFontsRepositoryID = inStateWriter->GetInDirectObjectsRegistry().AllocateNewObjectID();
+		ObjectIDType encryptionHelperID = inStateWriter->GetInDirectObjectsRegistry().AllocateNewObjectID();
 
 		DictionaryContext* documentDictionary = inStateWriter->StartDictionary();
 
@@ -1317,7 +1382,11 @@ EStatusCode DocumentContext::WriteState(ObjectsContext* inStateWriter,ObjectIDTy
 
 		documentDictionary->WriteKey("mUsedFontsRepository");
 		documentDictionary->WriteNewObjectReferenceValue(usedFontsRepositoryID);
-        
+
+		documentDictionary->WriteKey("mEncryptionHelper");
+		documentDictionary->WriteNewObjectReferenceValue(encryptionHelperID);
+
+
         documentDictionary->WriteKey("mModifiedDocumentIDExists");
         documentDictionary->WriteBooleanValue(mModifiedDocumentIDExists);
         
@@ -1327,6 +1396,12 @@ EStatusCode DocumentContext::WriteState(ObjectsContext* inStateWriter,ObjectIDTy
             documentDictionary->WriteHexStringValue(mModifiedDocumentID);
         }
 
+		if (!mNewPDFID.empty())
+		{
+			documentDictionary->WriteKey("mNewPDFID");
+			documentDictionary->WriteHexStringValue(mNewPDFID);
+		}
+
 		inStateWriter->EndDictionary(documentDictionary);
 		inStateWriter->EndIndirectObject();
 
@@ -1335,6 +1410,10 @@ EStatusCode DocumentContext::WriteState(ObjectsContext* inStateWriter,ObjectIDTy
 		
 		status = mUsedFontsRepository.WriteState(inStateWriter,usedFontsRepositoryID);
 		if(status != PDFHummus::eSuccess)
+			break;
+
+		status = mEncryptionHelper.WriteState(inStateWriter, encryptionHelperID);
+		if (status != PDFHummus::eSuccess)
 			break;
 	}while(false);
 
@@ -1571,6 +1650,11 @@ EStatusCode DocumentContext::ReadState(PDFParser* inStateReader,ObjectIDType inO
         mModifiedDocumentID = modifiedDocumentExists->GetValue();
     }    
     
+	PDFObjectCastPtr<PDFHexString> newPDFID(documentState->QueryDirectObject("mNewPDFID"));
+
+	if (!!newPDFID)
+		mNewPDFID = newPDFID->GetValue();
+
 	PDFObjectCastPtr<PDFDictionary> trailerInformationState(inStateReader->QueryDictionaryObject(documentState.GetPtr(),"mTrailerInformation"));
 	ReadTrailerState(inStateReader,trailerInformationState.GetPtr());
 
@@ -1578,8 +1662,12 @@ EStatusCode DocumentContext::ReadState(PDFParser* inStateReader,ObjectIDType inO
 	ReadCatalogInformationState(inStateReader,catalogInformationState.GetPtr());
 
 	PDFObjectCastPtr<PDFIndirectObjectReference> usedFontsInformationStateID(documentState->QueryDirectObject("mUsedFontsRepository"));
+	EStatusCode status =  mUsedFontsRepository.ReadState(inStateReader, usedFontsInformationStateID->mObjectID);
+	if (status != eSuccess)
+		return status;
 
-	return mUsedFontsRepository.ReadState(inStateReader,usedFontsInformationStateID->mObjectID);
+	PDFObjectCastPtr<PDFIndirectObjectReference> encrytpionStateID(documentState->QueryDirectObject("mEncryptionHelper"));
+	return mEncryptionHelper.ReadState(inStateReader, encrytpionStateID->mObjectID);
 }
 
 void DocumentContext::ReadTrailerState(PDFParser* inStateReader,PDFDictionary* inTrailerState)
@@ -1751,11 +1839,11 @@ void DocumentContext::ReadPageTreeState(PDFParser* inStateReader,PDFDictionary* 
 	}
 }
 
-PDFDocumentCopyingContext* DocumentContext::CreatePDFCopyingContext(const std::string& inFilePath)
+PDFDocumentCopyingContext* DocumentContext::CreatePDFCopyingContext(const std::string& inFilePath, const PDFParsingOptions& inOptions)
 {
 	PDFDocumentCopyingContext* context = new PDFDocumentCopyingContext();
 
-	if(context->Start(inFilePath,this,mObjectsContext,mParserExtender) != PDFHummus::eSuccess)
+	if(context->Start(inFilePath,this,mObjectsContext,inOptions,mParserExtender) != PDFHummus::eSuccess)
 	{
 		delete context;
 		return NULL;
@@ -1860,12 +1948,14 @@ void DocumentContext::RegisterAnnotationReferenceForNextPageWrite(ObjectIDType i
 
 EStatusCode DocumentContext::MergePDFPagesToPage(PDFPage* inPage,
 								const std::string& inPDFFilePath,
+								const PDFParsingOptions& inParsingOptions,
 								const PDFPageRange& inPageRange,
 								const ObjectIDTypeList& inCopyAdditionalObjects)
 {
 	return mPDFDocumentHandler.MergePDFPagesToPage(inPage,
 												   inPDFFilePath,
-												   inPageRange,
+													inParsingOptions,
+													inPageRange,
 												   inCopyAdditionalObjects);
 }
 
@@ -1891,43 +1981,47 @@ PDFFormXObject* DocumentContext::CreateFormXObjectFromJPGStream(IByteReaderWithP
 }
 
 EStatusCodeAndObjectIDTypeList DocumentContext::CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
+																	const PDFParsingOptions& inParsingOptions,
 																	const PDFPageRange& inPageRange,
 																	EPDFPageBox inPageBoxToUseAsFormBox,
 																	const double* inTransformationMatrix,
 																	const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFStream,inPageRange,inPageBoxToUseAsFormBox,inTransformationMatrix,inCopyAdditionalObjects);
+	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFStream, inParsingOptions,inPageRange,inPageBoxToUseAsFormBox,inTransformationMatrix,inCopyAdditionalObjects);
 }
 
 EStatusCodeAndObjectIDTypeList DocumentContext::CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
+																	const PDFParsingOptions& inParsingOptions,
 																	const PDFPageRange& inPageRange,
 																	const PDFRectangle& inCropBox,
 																	const double* inTransformationMatrix,
 																	const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFStream,inPageRange,inCropBox,inTransformationMatrix,inCopyAdditionalObjects);
+	return mPDFDocumentHandler.CreateFormXObjectsFromPDF(inPDFStream,inParsingOptions,inPageRange,inCropBox,inTransformationMatrix,inCopyAdditionalObjects);
 }
 
 EStatusCodeAndObjectIDTypeList DocumentContext::AppendPDFPagesFromPDF(IByteReaderWithPosition* inPDFStream,
+																const PDFParsingOptions& inParsingOptions,
 																const PDFPageRange& inPageRange,
 																const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.AppendPDFPagesFromPDF(inPDFStream,inPageRange,inCopyAdditionalObjects);
+	return mPDFDocumentHandler.AppendPDFPagesFromPDF(inPDFStream,inParsingOptions,inPageRange,inCopyAdditionalObjects);
 }
 
 EStatusCode DocumentContext::MergePDFPagesToPage(	PDFPage* inPage,
 											IByteReaderWithPosition* inPDFStream,
-											const PDFPageRange& inPageRange,
+										const PDFParsingOptions& inParsingOptions,
+										const PDFPageRange& inPageRange,
 											const ObjectIDTypeList& inCopyAdditionalObjects)
 {
-	return mPDFDocumentHandler.MergePDFPagesToPage(inPage,inPDFStream,inPageRange,inCopyAdditionalObjects);
+	return mPDFDocumentHandler.MergePDFPagesToPage(inPage,inPDFStream, inParsingOptions,inPageRange,inCopyAdditionalObjects);
 }
 
-PDFDocumentCopyingContext* DocumentContext::CreatePDFCopyingContext(IByteReaderWithPosition* inPDFStream)
+PDFDocumentCopyingContext* DocumentContext::CreatePDFCopyingContext(IByteReaderWithPosition* inPDFStream, const PDFParsingOptions& inOptions)
 {
 	PDFDocumentCopyingContext* context = new PDFDocumentCopyingContext();
 
-	if(context->Start(inPDFStream,this,mObjectsContext,mParserExtender) != PDFHummus::eSuccess)
+	if(context->Start(inPDFStream,this,mObjectsContext, inOptions,mParserExtender) != PDFHummus::eSuccess)
 	{
 		delete context;
 		return NULL;
@@ -2150,6 +2244,9 @@ EStatusCode	DocumentContext::FinalizeModifiedPDF(PDFParser* inModifiedFileParser
                 
  		// write the info dictionary of the trailer, if has any valid entries
 		WriteInfoDictionary();
+
+		// write encryption dictionary, if encrypting
+		WriteEncryptionDictionary();
         
         if(RequiresXrefStream(inModifiedFileParser))
         {
@@ -2283,7 +2380,7 @@ ObjectIDType DocumentContext::WriteCombinedPageTree(PDFParser* inModifiedFilePar
     MapIterator<PDFNameToPDFObjectMap>  pageTreeIt = originalTreeRootObject->GetIterator();
     PDFDocumentCopyingContext aCopyingContext;
     
-    EStatusCode status = aCopyingContext.Start(inModifiedFileParser,this,mObjectsContext,NULL);
+    EStatusCode status = aCopyingContext.Start(inModifiedFileParser,this,mObjectsContext);
     
     do {
         
@@ -2392,7 +2489,7 @@ EStatusCode DocumentContext::WriteXrefStream(LongFilePositionType& outXrefPositi
         // start the xref with a dictionary detailing the trailer information, then move to the
         // xref table aspects, with the lower level objects context.
         
-        outXrefPosition = mObjectsContext->StartFreeContext()->GetCurrentPosition();
+        outXrefPosition = mObjectsContext->GetCurrentPosition();
         mObjectsContext->StartNewIndirectObject();
  
         mObjectsContext->EndFreeContext();
@@ -2419,7 +2516,7 @@ PDFDocumentCopyingContext* DocumentContext::CreatePDFCopyingContext(PDFParser* i
 {
 	PDFDocumentCopyingContext* context = new PDFDocumentCopyingContext();
     
-	if(context->Start(inPDFParser,this,mObjectsContext,mParserExtender) != PDFHummus::eSuccess)
+	if(context->Start(inPDFParser,this,mObjectsContext) != PDFHummus::eSuccess)
 	{
 		delete context;
 		return NULL;
@@ -2531,7 +2628,10 @@ void DocumentContext::RegisterTiledPatternEndWritingTask(PDFTiledPattern* inPatt
 	it->second.push_back(inWritingTask);
 }
 
-DoubleAndDoublePair DocumentContext::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex)
+DoubleAndDoublePair DocumentContext::GetImageDimensions(
+	const std::string& inImageFile,
+	unsigned long inImageIndex,
+	const PDFParsingOptions& inOptions)
 {
     HummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
 
@@ -2553,7 +2653,7 @@ DoubleAndDoublePair DocumentContext::GetImageDimensions(const std::string& inIma
 				InputFile file;
 				if(file.OpenFile(inImageFile) != eSuccess)
 					break;
-				if(pdfParser.StartPDFParsing(file.GetInputStream()) != eSuccess)
+				if(pdfParser.StartPDFParsing(file.GetInputStream(), inOptions) != eSuccess)
 					break;
                 
 				PDFPageInput helper(&pdfParser,pdfParser.ParsePage(inImageIndex));
@@ -2662,7 +2762,9 @@ PDFHummus::EHummusImageType DocumentContext::GetImageType(const std::string& inI
     return imageInformation.imageType;
 }
 
-unsigned long DocumentContext::GetImagePagesCount(const std::string& inImageFile)
+unsigned long DocumentContext::GetImagePagesCount(
+	const std::string& inImageFile,
+	const PDFParsingOptions& inOptions)
 {
 	unsigned long result = 0;
 
@@ -2678,7 +2780,7 @@ unsigned long DocumentContext::GetImagePagesCount(const std::string& inImageFile
 			InputFile file;
 			if (file.OpenFile(inImageFile) != eSuccess)
 				break;
-			if (pdfParser.StartPDFParsing(file.GetInputStream()) != eSuccess)
+			if (pdfParser.StartPDFParsing(file.GetInputStream(), inOptions) != eSuccess)
 				break;
 
 			result = pdfParser.GetPagesCount();
@@ -2711,7 +2813,11 @@ unsigned long DocumentContext::GetImagePagesCount(const std::string& inImageFile
 
 }
 
-EStatusCode DocumentContext::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+EStatusCode DocumentContext::WriteFormForImage(
+	const std::string& inImagePath,
+	unsigned long inImageIndex,
+	ObjectIDType inObjectID,
+	const PDFParsingOptions& inParsingOptions)
 {
     EStatusCode status;
     EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
@@ -2724,7 +2830,7 @@ EStatusCode DocumentContext::WriteFormForImage(const std::string& inImagePath,un
             PDFFormXObject* formXObject = NULL;
             do {
                 // hmm...pdf merging doesn't have an innate method to force an object id. so i'll create a form, and merge into it
-                copyingContext = CreatePDFCopyingContext(inImagePath);
+                copyingContext = CreatePDFCopyingContext(inImagePath, inParsingOptions);
                 if(!copyingContext)
                 {
                     status = eFailure;

@@ -43,8 +43,10 @@ ResourcesDictionary* XObjectContentContext::GetResourcesDictionary()
 class FormImageWritingTask : public IFormEndWritingTask
  {
  public:
- FormImageWritingTask(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
- {mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
+ FormImageWritingTask(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID, const PDFParsingOptions& inPDFParsingOptions)
+ {
+	 mImagePath = inImagePath; mImageIndex = inImageIndex; mObjectID = inObjectID; mPDFParsingOptions = inPDFParsingOptions;
+ }
  
  virtual ~FormImageWritingTask(){}
  
@@ -52,19 +54,20 @@ class FormImageWritingTask : public IFormEndWritingTask
                                         ObjectsContext* inObjectsContext,
                                         PDFHummus::DocumentContext* inDocumentContext)
      {
-         return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
+         return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID, mPDFParsingOptions);
      }
  
  private:
      std::string mImagePath;
      unsigned long mImageIndex;
      ObjectIDType mObjectID;
- };
+	 PDFParsingOptions mPDFParsingOptions;
+};
 
-void XObjectContentContext::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
+void XObjectContentContext::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID, const PDFParsingOptions& inParsingOptions)
 {
     mDocumentContext->RegisterFormEndWritingTask(
                                                    mPDFFormXObjectOfContext,
-                                                   new FormImageWritingTask(inImagePath,inImageIndex,inObjectID));
+                                                   new FormImageWritingTask(inImagePath,inImageIndex,inObjectID,inParsingOptions));
 
 }

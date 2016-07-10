@@ -38,7 +38,7 @@ typedef std::vector<PDFFormXObject*> PDFFormXObjectVector;
 class PDFModifiedPage
 {
 public:
-	PDFModifiedPage(PDFWriter* inWriter,unsigned long inPageIndex);
+	PDFModifiedPage(PDFWriter* inWriter,unsigned long inPageIndex,bool inEnsureContentEncapsulation = false);
 	~PDFModifiedPage(void);
 
 	AbstractContentContext* StartContentContext();
@@ -56,6 +56,7 @@ private:
 
 	PDFWriter* mWriter;
 	unsigned long mPageIndex;
+	bool mEnsureContentEncapsulation;
 	PDFFormXObject* mCurrentContext;
 	PDFFormXObjectVector mContenxts;
 

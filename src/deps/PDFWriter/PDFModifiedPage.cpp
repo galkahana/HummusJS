@@ -32,16 +32,18 @@
 #include "PDFIndirectObjectReference.h"
 #include "PDFArray.h"
 #include "BoxingBase.h"
+#include "PDFStream.h"
 
 #include <string>
 
 using namespace std;
 
-PDFModifiedPage::PDFModifiedPage(PDFWriter* inWriter,unsigned long inPageIndex)
+PDFModifiedPage::PDFModifiedPage(PDFWriter* inWriter,unsigned long inPageIndex,bool inEnsureContentEncapsulation)
 {
 	mWriter = inWriter;
 	mPageIndex = inPageIndex;
 	mCurrentContext = NULL;
+	mEnsureContentEncapsulation = inEnsureContentEncapsulation;
 }
 
 PDFModifiedPage::~PDFModifiedPage(void)
@@ -85,6 +87,7 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
     // that is unique
 	ObjectsContext& objectContext  = mWriter->GetObjectsContext();
 	ObjectIDType newContentObjectID = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
+	ObjectIDType newEncapsulatingObjectID = 0;
 
 
     // create a copying context, so we can copy the page dictionary, and modify its contents + resources dict
@@ -119,6 +122,13 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 	else
 	{
 		objectContext.StartArray();
+		if (mEnsureContentEncapsulation)
+		{
+			newEncapsulatingObjectID = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
+			objectContext.WriteNewIndirectObjectReference(newEncapsulatingObjectID);
+		}
+
+
 		PDFObjectCastPtr<PDFArray> anArray(pageDictionaryObject->QueryDirectObject("Contents"));
 		if(!anArray)
 		{
@@ -137,7 +147,7 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 				objectContext.WriteIndirectObjectReference(ref->mObjectID,ref->mVersion);
 			}
 		}
-		objectContext.WriteIndirectObjectReference(newContentObjectID);
+		objectContext.WriteNewIndirectObjectReference(newContentObjectID);
 		objectContext.EndArray();
 		objectContext.EndLine();
 	}
@@ -206,28 +216,45 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 		objectContext.EndIndirectObject();
 	}
 
+	// if required write encapsulation code, so that new stream is independent of graphic context of original
+	PDFStream* newStream;
+	PrimitiveObjectsWriter primitivesWriter;
+	if (newEncapsulatingObjectID != 0)
+	{
+		objectContext.StartNewIndirectObject(newEncapsulatingObjectID);
+		newStream = objectContext.StartPDFStream();
+		primitivesWriter.SetStreamForWriting(newStream->GetWriteStream());
+		primitivesWriter.WriteKeyword("q");
+		objectContext.EndPDFStream(newStream);
+
+	}
+
     // last but not least, create the actual content stream object, placing the form
 	objectContext.StartNewIndirectObject(newContentObjectID);
-	PDFStream* newStream = objectContext.StartUnfilteredPDFStream();
+	newStream = objectContext.StartPDFStream();
+	primitivesWriter.SetStreamForWriting(newStream->GetWriteStream());
+
+	if (newEncapsulatingObjectID != 0) {
+		primitivesWriter.WriteKeyword("Q");
+	}
 
 	vector<string>::iterator it = formResourcesNames.begin();
 	for(;it!=formResourcesNames.end();++it)
 	{
-		objectContext.WriteKeyword("q");
-		objectContext.WriteInteger(1);
-		objectContext.WriteInteger(0);
-		objectContext.WriteInteger(0);
-		objectContext.WriteInteger(1);
-		objectContext.WriteInteger(0);
-		objectContext.WriteInteger(0);
-		objectContext.WriteKeyword("cm");
-		objectContext.WriteName(*it);
-		objectContext.WriteKeyword("Do");
-		objectContext.WriteKeyword("Q");
+		primitivesWriter.WriteKeyword("q");
+		primitivesWriter.WriteInteger(1);
+		primitivesWriter.WriteInteger(0);
+		primitivesWriter.WriteInteger(0);
+		primitivesWriter.WriteInteger(1);
+		primitivesWriter.WriteInteger(0);
+		primitivesWriter.WriteInteger(0);
+		primitivesWriter.WriteKeyword("cm");
+		primitivesWriter.WriteName(*it);
+		primitivesWriter.WriteKeyword("Do");
+		primitivesWriter.WriteKeyword("Q");
 	}
 
 	objectContext.EndPDFStream(newStream);
-	objectContext.EndIndirectObject();
 
 	return eSuccess;
 }
