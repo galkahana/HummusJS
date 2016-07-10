@@ -24,6 +24,7 @@ limitations under the License.
 #include "ObjectsBasicTypes.h"
 
 #include <list>
+#include <string>
 
 typedef std::list<IOBasicTypes::Byte> ByteList;
 typedef std::list<ByteList> ByteListList;
