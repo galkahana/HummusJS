@@ -132,35 +132,3 @@ PDFWriterDriver* PageContentContextDriver::GetPDFWriter()
 {
     return mPDFWriterDriver;
 }
-
-
-class PageContentImageWritingTask : public IPageEndWritingTask
-{
-public:
-    PageContentImageWritingTask(PDFWriterDriver* inDriver,const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
-    {mDriver = inDriver;mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
-    
-    virtual ~PageContentImageWritingTask(){}
-    
-    virtual PDFHummus::EStatusCode Write(PDFPage* inPageObject,
-                                         ObjectsContext* inObjectsContext,
-                                         PDFHummus::DocumentContext* inDocumentContext)
-    {
-        return mDriver->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
-    }
-    
-private:
-    PDFWriterDriver* mDriver;
-    std::string mImagePath;
-    unsigned long mImageIndex;
-    ObjectIDType mObjectID;
-};
-
-
-void PageContentContextDriver::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
-{
-    mPDFWriterDriver->GetWriter()->GetDocumentContext().RegisterPageEndWritingTask(
-                                                                                   ContentContext->GetAssociatedPage(),
-                                                                                   new PageContentImageWritingTask(mPDFWriterDriver,inImagePath,inImageIndex,inObjectID));
-    
-}

@@ -49,7 +49,6 @@ private:
     PageContentContextDriver();
 
     virtual AbstractContentContext* GetContext();
-    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
  
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;

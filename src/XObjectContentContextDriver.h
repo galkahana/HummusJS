@@ -49,9 +49,7 @@ private:
     PDFWriterDriver* mPDFWriterDriver;
    
     virtual AbstractContentContext* GetContext();
-    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
 
-    
     static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
     

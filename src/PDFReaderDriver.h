@@ -37,8 +37,8 @@ public:
 	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
-    PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath);
-    PDFHummus::EStatusCode StartPDFParsing(v8::Handle<v8::Object> inStreamObject);
+    PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath,const PDFParsingOptions& inParsingOptions);
+    PDFHummus::EStatusCode StartPDFParsing(v8::Handle<v8::Object> inStreamObject,const PDFParsingOptions& inParsingOptions);
     void SetFromOwnedParser(PDFParser* inParser);
     PDFParser* GetParser();
     

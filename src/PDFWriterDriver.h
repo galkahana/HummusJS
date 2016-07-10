@@ -95,12 +95,6 @@ public:
                                      const PDFCreationSettings& inCreationSettings);
     
     
-    
-    // image registry services, optimization for r/w
-    DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex);
-    ObjectIDTypeAndBool RegisterImageForDrawing(const std::string& inImageFile,unsigned long inImageIndex);
-    PDFHummus::EStatusCode WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
-
     PDFWriter* GetWriter();
     
     
@@ -216,9 +210,9 @@ private:
     static METHOD_RETURN_TYPE CreatePDFCopyingContextForModifiedFile(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE CreatePDFTextString(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE CreatePDFDate(const ARGS_TYPE& args);
-    static METHOD_RETURN_TYPE SGetImageDimensions(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE GetImageDimensions(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetImagePagesCount(const ARGS_TYPE& args);
-	static METHOD_RETURN_TYPE SGetImageType(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetImageType(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetModifiedFileParser(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetModifiedInputFile(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetOutputFile(const ARGS_TYPE& args);
@@ -228,14 +222,11 @@ private:
     static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
     static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
 
-    CachedHummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
-    PDFHummus::EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
     PDFHummus::EStatusCode setupListenerIfOK(PDFHummus::EStatusCode inCode);
     PDFHummus::EStatusCode triggerEvent(const std::string& inEventName, v8::Handle<v8::Object> inParams);
     
     bool mStartedWithStream;
     PDFWriter mPDFWriter;
-    StringAndULongPairToCachedHummusImageInformationMap mImagesInformation;
     ObjectByteWriterWithPosition* mWriteStreamProxy;
     ObjectByteReaderWithPosition* mReadStreamProxy;
 };
