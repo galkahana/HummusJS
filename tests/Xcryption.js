@@ -5,7 +5,7 @@ describe('Xcryption', function() {
 		it('should complete without error', function() {
 			hummus.recrypt(
 				__dirname + '/TestMaterials/PDFWithPassword.PDF',
-				__dirname + '/Output/RecryptPDFWithPasswordToNothing.PDF',
+				__dirname + '/output/RecryptPDFWithPasswordToNothing.PDF',
 				{
 					password:'user'
 				});
@@ -16,7 +16,7 @@ describe('Xcryption', function() {
 		it('should complete without error', function() {
 			hummus.recrypt(
 				__dirname + '/TestMaterials/PDFWithPassword.PDF',
-				__dirname + '/Output/RecryptPDFWithPasswordToNewPassword.PDF',
+				__dirname + '/output/RecryptPDFWithPasswordToNewPassword.PDF',
 				{
 					password:'user',
 					userPassword: 'user1',
@@ -30,7 +30,7 @@ describe('Xcryption', function() {
 		it('should complete without error', function() {
 			hummus.recrypt(
 				__dirname + '/TestMaterials/Original.PDF',
-				__dirname + '/Output/RecryptPDFOriginalToPasswordProtected.PDF',
+				__dirname + '/output/RecryptPDFOriginalToPasswordProtected.PDF',
 				{
 					userPassword: 'user1',
 					ownerPassword: 'owner1',
