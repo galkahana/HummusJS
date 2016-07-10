@@ -188,7 +188,7 @@ EStatusCode DecryptionHelper::Setup(PDFParser* inParser, const std::string& inPa
 		mSupportsDecryption = true;
 	}while(false);
 
-	return EStatusCode::eSuccess;
+	return eSuccess;
 }
 
 bool DecryptionHelper::IsEncrypted() const{
