@@ -105,8 +105,8 @@ typedef std::list<ResourceTokenMarker> ResourceTokenMarkerList;
 
 class PDFDocumentHandler : public DocumentContextExtenderAdapter
 {
-	friend InWritingPolicy;
-	friend OutWritingPolicy;
+	friend class InWritingPolicy;
+	friend class OutWritingPolicy;
 
 public:
 	PDFDocumentHandler(void);
