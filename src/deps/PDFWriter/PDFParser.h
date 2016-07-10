@@ -196,7 +196,7 @@ private:
                                                   XrefEntryInput** outExtendedTable,
                                                   ObjectIDType* outExtendedTableSize);
     XrefEntryInput* ExtendXrefTableToSize(XrefEntryInput* inXrefTable,ObjectIDType inOldSize,ObjectIDType inNewSize);
-	PDFHummus::EStatusCode PDFParser::ReadNextXrefEntry(Byte inBuffer[20]);
+	PDFHummus::EStatusCode ReadNextXrefEntry(Byte inBuffer[20]);
 	PDFObject*  ParseExistingInDirectObject(ObjectIDType inObjectID);
 	PDFHummus::EStatusCode SetupDecryptionHelper(const std::string& inPassword);
 	PDFHummus::EStatusCode ParsePagesObjectIDs();
