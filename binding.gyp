@@ -41,7 +41,6 @@
                 './src/FormXObjectDriver.cpp',
                 './src/AbstractContentContextDriver.cpp',
                 './src/PageContentContextDriver.cpp',
-                './src/PDFPageModifierDriver.cpp',
                 './src/PDFPageDriver.cpp',
                 './src/PDFWriterDriver.cpp',
                 './src/PDFPageInputDriver.cpp',
