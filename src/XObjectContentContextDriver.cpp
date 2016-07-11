@@ -30,7 +30,6 @@ XObjectContentContextDriver::XObjectContentContextDriver()
     // initially null, set by external pdfwriter
     ContentContext = NULL;
     FormOfContext = NULL;
-    mPDFWriterDriver = NULL;
 }
 
 Persistent<Function> XObjectContentContextDriver::constructor;
@@ -81,45 +80,3 @@ AbstractContentContext* XObjectContentContextDriver::GetContext()
 {
     return ContentContext;
 }
-
-void XObjectContentContextDriver::SetPDFWriter(PDFWriterDriver* inPDFWriter)
-{
-    mPDFWriterDriver = inPDFWriter;
-}
-
-PDFWriterDriver* XObjectContentContextDriver::GetPDFWriter()
-{
-    return mPDFWriterDriver;
-}
-
- class XObjectFormImageWritingTask : public IFormEndWritingTask
- {
- public:
- XObjectFormImageWritingTask(PDFWriterDriver* inDriver,const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
- {mDriver = inDriver;mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
- 
- virtual ~XObjectFormImageWritingTask(){}
- 
-     virtual PDFHummus::EStatusCode Write(PDFFormXObject* inFormXObject,
-                                        ObjectsContext* inObjectsContext,
-                                        PDFHummus::DocumentContext* inDocumentContext)
-     {
-         return mDriver->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
-     }
- 
- private:
-     PDFWriterDriver* mDriver;
-     std::string mImagePath;
-     unsigned long mImageIndex;
-     ObjectIDType mObjectID;
- };
-
-
-void XObjectContentContextDriver::ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
-{
-    mPDFWriterDriver->GetWriter()->GetDocumentContext().RegisterFormEndWritingTask(
-                                                            FormOfContext,
-                                                            new XObjectFormImageWritingTask(mPDFWriterDriver,inImagePath,inImageIndex,inObjectID));
-
-}
-

@@ -32,7 +32,6 @@ FormXObjectDriver::~FormXObjectDriver()
 
 FormXObjectDriver::FormXObjectDriver()
 {
-    mPDFWriterDriver = NULL;
     FormXObject = NULL;
 }
 
@@ -120,7 +119,6 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentContext(const ARGS_TYPE& args)
     contentContextDriver->ContentContext = formDriver->FormXObject->GetContentContext();
     contentContextDriver->FormOfContext = formDriver->FormXObject;
     contentContextDriver->SetResourcesDictionary(&(formDriver->FormXObject->GetResourcesDictionary()));
-    contentContextDriver->SetPDFWriter(formDriver->mPDFWriterDriver);
     
     SET_FUNCTION_RETURN_VALUE(newInstance);
 }
@@ -136,12 +134,6 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetResourcesDictionary(const ARGS_TYPE& ar
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(formDriver->FormXObject->GetResourcesDictionary());
     
     SET_FUNCTION_RETURN_VALUE(newInstance);
-}
-
-
-void FormXObjectDriver::SetPDFWriter(PDFWriterDriver* inPDFWriterDriver)
-{
-    mPDFWriterDriver = inPDFWriterDriver;
 }
 
 METHOD_RETURN_TYPE FormXObjectDriver::GetContentStream(const ARGS_TYPE& args)

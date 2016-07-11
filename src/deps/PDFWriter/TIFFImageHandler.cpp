@@ -3372,7 +3372,7 @@ void TIFFImageHandler::WriteIndexedCSForBiLevelColorMap()
 		}
 		mPalleteStream<<colorsBuffer;
 	}
-	mObjectsContext->WriteHexString(mPalleteStream.str());
+	mObjectsContext->WriteEncodedHexString(mPalleteStream.str());
 	mObjectsContext->EndArray(eTokenSeparatorEndLine);
 }
 

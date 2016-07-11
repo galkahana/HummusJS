@@ -65,6 +65,8 @@
 #include "ByteWriterDriver.h"
 #include "ByteReaderWithPositionDriver.h"
 #include "ByteWriterWithPositionDriver.h"
+#include "PDFWriter.h"
+#include "PDFPageModifierDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -88,7 +90,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 	}
     
     EPDFVersion pdfVersion = ePDFVersion13;
-    bool compressStreams = true;
+    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     if(args.Length() == 2 && args[1]->IsObject())
@@ -107,7 +109,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
         }
             
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            compressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
 
         if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
         {
@@ -115,17 +117,34 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
             logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
         }
 
+        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+        }
+        else // default to print only
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
     }
     
     EStatusCode status;
     
     if(args[0]->IsObject())
     {
-        status = driver->StartPDF(args[0]->ToObject(), pdfVersion,logConfig,PDFCreationSettings(compressStreams,true));
+        status = driver->StartPDF(args[0]->ToObject(), pdfVersion,logConfig,pdfCreationSettings);
     }
     else
     {
-        status = driver->StartPDF(std::string(*String::Utf8Value(args[0]->ToString())), pdfVersion,logConfig,PDFCreationSettings(compressStreams,true));
+        status = driver->StartPDF(std::string(*String::Utf8Value(args[0]->ToString())), pdfVersion,logConfig,pdfCreationSettings);
     }
     
     if(status != PDFHummus::eSuccess)
@@ -134,6 +153,133 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     SET_FUNCTION_RETURN_VALUE(instance);
+
+}
+
+/*
+    hummus.recrypt(
+        inOriginalPath/inOriginalStream,
+        inNewPath/inNewStream,
+        [options])
+
+    options = 
+    {
+        password:
+        version:
+        compress:
+        log:
+        userPassword:
+        ownerPassword: // must pass userPassword!
+        userProtectionFlag: // must pass userPassword!
+    }
+*/
+
+METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+	if (args.Length() < 2 || args.Length() > 3) {
+		THROW_EXCEPTION("Wrong number of arguments, Provide one argument stating the location of the source file, a second one for the destination file, and an optional options object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+    
+	if (!args[0]->IsString() && !args[0]->IsObject()) {
+		THROW_EXCEPTION("Wrong arguments, please provide a path to a file as the first argument or a stream object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+
+	if (!args[1]->IsString() && !args[1]->IsObject()) {
+		THROW_EXCEPTION("Wrong arguments, please provide a path to a file as the second argument or a stream object");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+	}
+
+    if(args[1]->IsString() && !args[0]->IsString() || args[1]->IsObject() && !args[0]->IsObject()) {
+		THROW_EXCEPTION("Wrong arguments, please either provide two paths or two stream objects for the first two arguments");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+    }
+    
+
+    EPDFVersion pdfVersion = ePDFVersion13;
+    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
+    std::string originalPassword;
+    
+    if(args.Length() == 3 && args[2]->IsObject())
+    {
+        Handle<Object> anObject = args[2]->ToObject();
+        if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
+        {
+            long pdfVersionValue = anObject->Get(NEW_STRING("version"))->ToNumber()->Int32Value();
+            
+            if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
+            {
+                THROW_EXCEPTION("Wrong argument for PDF version, please provide a valid PDF version");
+                SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            }
+            pdfVersion = (EPDFVersion)pdfVersionValue;
+        }
+            
+        if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+
+        if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
+        {
+            logConfig.ShouldLog = true;
+            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("password")) && anObject->Get(NEW_STRING("password"))->IsString())
+        {
+            originalPassword = *String::Utf8Value(anObject->Get(NEW_STRING("password"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+        }
+        else // default to print only
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
+    }
+    
+    EStatusCode status;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition readStreamProxy(args[0]->ToObject());
+        ObjectByteWriterWithPosition writeStreamProxy(args[1]->ToObject());
+        status = PDFWriter::RecryptPDF(&readStreamProxy,
+                                    originalPassword,
+                                    &writeStreamProxy,
+                                    logConfig,
+                                    pdfCreationSettings);
+    }
+    else
+    {
+        status = PDFWriter::RecryptPDF(std::string(*String::Utf8Value(args[0]->ToString())),
+                                    originalPassword,
+                                    std::string(*String::Utf8Value(args[1]->ToString())),
+                                    logConfig,
+                                    pdfCreationSettings);
+    }
+    
+    if(status != PDFHummus::eSuccess)
+    {
+		THROW_EXCEPTION("Unable to recrypt files, check that input and output files are clear and arguments are coool");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 
 }
 
@@ -232,9 +378,9 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     
     
     EPDFVersion pdfVersion = ePDFVersion10;
-    bool compressStreams = true;
     std::string alternativePath;
     Handle<Value> alternativeStream;
+    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     int optionsObjectIndex = args[0]->IsString() ? 1:2;
@@ -255,7 +401,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
         }
         
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            compressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
             alternativePath = *String::Utf8Value(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
@@ -265,6 +411,25 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             logConfig.ShouldLog = true;
             logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
         }
+
+        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+        }
+        else // default to print only
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
+        
     }
     
     EStatusCode status;
@@ -275,13 +440,13 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
                                    args[1]->ToObject(),
                                    pdfVersion,
                                    logConfig,
-                                   PDFCreationSettings(compressStreams,true));
+                                   pdfCreationSettings);
     }
     else
     {
         status = driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
                                pdfVersion,alternativePath,logConfig,
-                               PDFCreationSettings(compressStreams,true));
+                               pdfCreationSettings);
     }
     
     if(status != PDFHummus::eSuccess)
@@ -301,19 +466,33 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
     
     PDFReaderDriver* driver = ObjectWrap::Unwrap<PDFReaderDriver>(instance->ToObject());
     
-	if (args.Length() != 1 || (!args[0]->IsString() && !args[0]->IsObject()))
+	if (args.Length() < 1 ||
+        args.Length() > 2 ||
+        (!args[0]->IsString() && !args[0]->IsObject()) ||
+        (args.Length() >=2 && !args[1]->IsObject()))
     {
-		THROW_EXCEPTION("Wrong arguments, provide 1 string - path to file read, or a read stream object");
+		THROW_EXCEPTION("Wrong arguments, provide 1 string - path to file read, or a read stream object, and optionally an options object");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
         
     PDFHummus::EStatusCode status;
+    PDFParsingOptions parsingOptions;
+
+    if(args.Length() >= 2) 
+    {
+        Handle<Object> options = args[1]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }
+    }
+        
         
     if(args[0]->IsObject())
-        status = driver->StartPDFParsing(args[0]->ToObject());
+        status = driver->StartPDFParsing(args[0]->ToObject(),parsingOptions);
     else
         
-        status = driver->StartPDFParsing(std::string(*String::Utf8Value(args[0]->ToString())));
+        status = driver->StartPDFParsing(std::string(*String::Utf8Value(args[0]->ToString())),parsingOptions);
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to start parsing PDF file");
@@ -384,6 +563,7 @@ void HummusInit(Handle<Object> exports) {
 	ByteWriterDriver::Init();
 	ByteReaderWithPositionDriver::Init();
 	ByteWriterWithPositionDriver::Init();
+    PDFPageModifierDriver::Init(exports);
 
     
     // define methods
@@ -391,6 +571,7 @@ void HummusInit(Handle<Object> exports) {
 	exports->Set(NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE(CreateWriterToContinue)->GetFunction());
 	exports->Set(NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE(CreateWriterToModify)->GetFunction());
 	exports->Set(NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE(CreateReader)->GetFunction());
+    exports->Set(NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction());
     
     // define pdf versions enum
     exports->Set(NEW_SYMBOL("ePDFVersion10"),NEW_NUMBER(ePDFVersion10));

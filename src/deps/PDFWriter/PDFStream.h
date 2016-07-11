@@ -40,6 +40,7 @@ using namespace IOBasicTypes;
 class IByteWriterWithPosition;
 class IObjectsContextExtender;
 class DictionaryContext;
+class EncryptionHelper;
 
 class PDFStream
 {
@@ -47,13 +48,15 @@ public:
 	PDFStream(
 		bool inCompressStream,
 		IByteWriterWithPosition* inOutputStream,
+		EncryptionHelper* inEncryptionHelper,
 		ObjectIDType inExtentObjectID,
 		IObjectsContextExtender* inObjectsContextExtender);
     
     PDFStream(
         bool inCompressStream,
         IByteWriterWithPosition* inOutputStream,
-        DictionaryContext* inStreamDictionaryContextForDirectExtentStream,
+		EncryptionHelper* inEncryptionHelper,
+		DictionaryContext* inStreamDictionaryContextForDirectExtentStream,
         IObjectsContextExtender* inObjectsContextExtender);
     
     
@@ -79,7 +82,8 @@ private:
 	bool mCompressStream;
 	OutputFlateEncodeStream mFlateEncodingStream;
 	IByteWriterWithPosition* mOutputStream;
-	ObjectIDType mExtendObjectID;	
+	IByteWriterWithPosition* mEncryptionStream;
+	ObjectIDType mExtendObjectID;
 	LongFilePositionType mStreamLength;
 	LongFilePositionType mStreamStartPosition;
 	IByteWriter* mWriteStream;

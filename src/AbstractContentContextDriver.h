@@ -56,14 +56,12 @@ public:
     
     void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
 
-    virtual PDFWriterDriver* GetPDFWriter() = 0;
 protected:
     AbstractContentContextDriver();
         
 private:
     
     virtual AbstractContentContext* GetContext() = 0;
-    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID) = 0;
 
     ResourcesDictionary* mResourcesDictionary;
     

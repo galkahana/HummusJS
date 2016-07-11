@@ -1439,7 +1439,7 @@ void AbstractContentContext::DrawImage(double inX,double inY,const std::string& 
 	}
 	else if(inOptions.transformationMethod == eFit)
 	{
-		DoubleAndDoublePair imageDimensions = mDocumentContext->GetImageDimensions(inImagePath,inOptions.imageIndex);
+		DoubleAndDoublePair imageDimensions = mDocumentContext->GetImageDimensions(inImagePath,inOptions.imageIndex,inOptions.pdfParsingOptions);
 
         double scaleX = 1;
         double scaleY = 1;
@@ -1475,7 +1475,7 @@ void AbstractContentContext::DrawImage(double inX,double inY,const std::string& 
     if(result.second)
     {
         // if first usage, write the image
-        ScheduleImageWrite(inImagePath,inOptions.imageIndex,result.first);
+        ScheduleImageWrite(inImagePath,inOptions.imageIndex,result.first,inOptions.pdfParsingOptions);
     }
     
     q();

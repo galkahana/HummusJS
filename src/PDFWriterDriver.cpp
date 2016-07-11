@@ -97,9 +97,9 @@ void PDFWriterDriver::Init(Handle<Object> inExports)
 	SET_PROTOTYPE_METHOD(t, "createPDFCopyingContextForModifiedFile", CreatePDFCopyingContextForModifiedFile);
 	SET_PROTOTYPE_METHOD(t, "createPDFTextString", CreatePDFTextString);
 	SET_PROTOTYPE_METHOD(t, "createPDFDate", CreatePDFDate);
-	SET_PROTOTYPE_METHOD(t, "getImageDimensions", SGetImageDimensions);
+	SET_PROTOTYPE_METHOD(t, "getImageDimensions", GetImageDimensions);
 	SET_PROTOTYPE_METHOD(t, "getImagePagesCount", GetImagePagesCount);
-	SET_PROTOTYPE_METHOD(t, "getImageType", SGetImageType);
+	SET_PROTOTYPE_METHOD(t, "getImageType", GetImageType);
 	SET_PROTOTYPE_METHOD(t, "getModifiedFileParser", GetModifiedFileParser);
 	SET_PROTOTYPE_METHOD(t, "getModifiedInputFile", GetModifiedInputFile);
 	SET_PROTOTYPE_METHOD(t, "getOutputFile", GetOutputFile);
@@ -262,9 +262,6 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
     contentContextDriver->SetResourcesDictionary(&(pageDriver->GetPage()->GetResourcesDictionary()));
     
-    // set pdf driver, so context can use it for central registry of the PDF
-    contentContextDriver->SetPDFWriter(pdfWriter);
-
     // save it also at page driver, so we can end the context when the page is written
     pageDriver->ContentContext = contentContextDriver->ContentContext;
     
@@ -329,8 +326,6 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
                                                                                          args[1]->ToNumber()->Value(),
                                                                                          args[2]->ToNumber()->Value(),
                                                                                          args[3]->ToNumber()->Value()));
-    // set pdf driver, so context can use it for central registry of the PDF
-    formXObjectDriver->SetPDFWriter(pdfWriter);
     SET_FUNCTION_RETURN_VALUE(newInstance);
 }
 
@@ -824,22 +819,29 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    if((args.Length() != 1  &&
-       args.Length() != 2) ||
-       (!args[0]->IsString() && !args[0]->IsObject())||
-       (args.Length() == 2 && !args[1]->IsObject()))
+    if( (args.Length() < 1  && args.Length() > 2) ||
+        (!args[0]->IsString() && !args[0]->IsObject()) ||
+        (args.Length() >= 2 && !args[1]->IsObject())
+       )
     {
-		THROW_EXCEPTION("wrong arguments, pass a path for file to append pages from or a stream object, and optionally a configuration object");
+		THROW_EXCEPTION("wrong arguments, pass a path for file to append pages from or a stream object, optionally an options object");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
     PDFPageRange pageRange;
+    PDFParsingOptions parsingOptions;
     
-    if(args.Length() == 2)
-        pageRange = ObjectToPageRange(args[1]->ToObject());
-    
+    if(args.Length() >= 2) {
+        Handle<Object> options = args[1]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }        
+        pageRange = ObjectToPageRange(options);
+    }
+
     EStatusCodeAndObjectIDTypeList result;
     
     if(args[0]->IsObject())
@@ -847,13 +849,17 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
         ObjectByteReaderWithPosition proxy(args[0]->ToObject());
         result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
                                                              &proxy,
-                                                             pageRange);
+                                                             pageRange,
+                                                             ObjectIDTypeList(),
+                                                             parsingOptions);
     }
     else
     {
         result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
                                                         *String::Utf8Value(args[0]->ToString()),
-                                                        pageRange);
+                                                        pageRange,
+                                                        ObjectIDTypeList(),
+                                                        parsingOptions);
     }
     
     if(result.first != eSuccess)
@@ -969,12 +975,25 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     PDFPageDriver* page = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
     
     PDFPageRange pageRange;
+    PDFParsingOptions parsingOptions; 
     
     // get page range
-    if(args.Length() > 2 && args[2]->IsObject())
-        pageRange = ObjectToPageRange(args[2]->ToObject());
-    else if(args.Length() > 3 && args[3]->IsObject())
-        pageRange = ObjectToPageRange(args[3]->ToObject());
+    if(args.Length() > 2 && args[2]->IsObject()) {
+        Handle<Object> options = args[2]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }        
+        pageRange = ObjectToPageRange(options);
+    } 
+    else if(args.Length() > 3 && args[3]->IsObject()) {
+        Handle<Object> options = args[3]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }        
+        pageRange = ObjectToPageRange(options);
+    }
     
     // now see if there's a need for activating the callback. will do that using the document extensibility option of the lib
     MergeInterpageCallbackCaller caller;
@@ -989,14 +1008,18 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     {
         status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
                                                            *String::Utf8Value(args[1]->ToString()),
-                                                           pageRange);
+                                                           pageRange,
+                                                           ObjectIDTypeList(),
+                                                           parsingOptions);
     }
     else 
     {
 		ObjectByteReaderWithPosition proxy(args[1]->ToObject());
         status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
                                                            &proxy,
-                                                           pageRange);
+                                                           pageRange,
+                                                           ObjectIDTypeList(),
+                                                           parsingOptions);
     }
 	
     if(caller.IsValid())
@@ -1015,9 +1038,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    if(args.Length() != 1 || (!args[0]->IsString() && !args[0]->IsObject()))
+    if( (args.Length() < 1  && args.Length() > 2) ||
+        (!args[0]->IsString() && !args[0]->IsObject()) ||
+        (args.Length() >= 2 && !args[1]->IsObject())
+       )
     {
-		THROW_EXCEPTION("wrong arguments, pass 1 argument. A path to a PDF file to create copying context for or a stream object");
+		THROW_EXCEPTION("wrong arguments, pass a path to a PDF file to create copying context for or a stream object, and then an optional options object");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
@@ -1026,13 +1052,22 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     PDFDocumentCopyingContext* copyingContext;
 
     ObjectByteReaderWithPosition* proxy = NULL;
+    PDFParsingOptions parsingOptions;
+
+    if(args.Length() >= 2) {
+        Handle<Object> options = args[1]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }        
+    }
 
     
     if(args[0]->IsObject())
     {
         if(PDFReaderDriver::HasInstance(args[0]))
         {
-            // parser based copying context
+            // parser based copying context  [note that here parsingOptions doesn't matter as the parser creation already took it into account]
 
             PDFParser* theParser = ObjectWrap::Unwrap<PDFReaderDriver>(args[0]->ToObject())->GetParser();
             copyingContext = pdfWriter->mPDFWriter.GetDocumentContext().CreatePDFCopyingContext(theParser);
@@ -1042,13 +1077,13 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
             // stream based copying context
 
             proxy = new ObjectByteReaderWithPosition(args[0]->ToObject());
-            copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(proxy);
+            copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(proxy,parsingOptions);
         }
     }
     else
     {
         // file path based copying context
-        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()));
+        copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(*String::Utf8Value(args[0]->ToString()),parsingOptions);
     }
     
     if(!copyingContext)
@@ -1077,16 +1112,23 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
        (args.Length() == 5 && !args[4]->IsArray())
        )
     {
-		THROW_EXCEPTION("wrong arguments, pass a path to the file, and optionals - a box enumerator or actual 4 numbers box, a range object, a matrix for the form, and array of object ids to copy in addition");
+		THROW_EXCEPTION("wrong arguments, pass a path to the file, and optionals - a box enumerator or actual 4 numbers box, a range object, a matrix for the form, array of object ids to copy in addition");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
     PDFPageRange pageRange;
+    PDFParsingOptions parsingOptions;
     
-    if(args.Length() >= 3)
-        pageRange = ObjectToPageRange(args[2]->ToObject());
+    if(args.Length() >= 3) {
+        Handle<Object> options = args[2]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }
+        pageRange = ObjectToPageRange(options);
+    }
     
     EStatusCodeAndObjectIDTypeList result;
     double matrixBuffer[6];
@@ -1107,7 +1149,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     }
     
     ObjectIDTypeList extraObjectsList;
-    if(args.Length() == 5)
+    if(args.Length() >= 5)
     {
         Handle<Object> objectsIDsArray = args[4]->ToObject();
         unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
@@ -1115,7 +1157,6 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
             extraObjectsList.push_back((ObjectIDType)(objectsIDsArray->Get(i)->ToNumber()->Uint32Value()));
             
     }
-    
     
     if(args[1]->IsArray())
     {
@@ -1136,7 +1177,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
                                                                  pageRange,
                                                                  box,
                                                                  transformationMatrix,
-                                                                 extraObjectsList);
+                                                                 extraObjectsList,
+                                                                 parsingOptions);
     }
     else
     {
@@ -1145,7 +1187,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
                                                                 pageRange,
                                                                 (EPDFPageBox)args[1]->ToNumber()->Uint32Value(),
                                                                  transformationMatrix,
-                                                                 extraObjectsList);
+                                                                 extraObjectsList,
+                                                                 parsingOptions);
     }
     
     if(result.first != eSuccess)
@@ -1199,240 +1242,42 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFDate(const ARGS_TYPE& args)
     
 }
 
-CachedHummusImageInformation& PDFWriterDriver::GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex)
-{
-    StringAndULongPairToCachedHummusImageInformationMap::iterator it = mImagesInformation.find(StringAndULongPair(inImageFile,inImageIndex));
-    
-    if(it == mImagesInformation.end())
-        it = mImagesInformation.insert(
-                        StringAndULongPairToCachedHummusImageInformationMap::value_type(
-                                StringAndULongPair(inImageFile,inImageIndex),CachedHummusImageInformation())).first;
-    
-    return it->second;
-}
-
-DoubleAndDoublePair PDFWriterDriver::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex)
-{
-    CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
-    
-    if(-1 == imageInformation.imageWidth)
-    {
-        PDFHummus::EHummusImageType imageType = GetImageType(inImageFile,inImageIndex);
-        
-        switch(imageType)
-        {
-            case PDFHummus::ePDF:
-            {
-                // get the dimensions via the PDF parser. will use the media rectangle to draw image
-                PDFParser pdfParser;
-                
-                InputFile file;
-                if(file.OpenFile(inImageFile) != eSuccess)
-                    break;
-                if(pdfParser.StartPDFParsing(file.GetInputStream()) != eSuccess)
-                    break;
-                
-                PDFPageInput helper(&pdfParser,pdfParser.ParsePage(inImageIndex));
-                
-                imageInformation.imageWidth = helper.GetMediaBox().UpperRightX - helper.GetMediaBox().LowerLeftX;
-                imageInformation.imageHeight = helper.GetMediaBox().UpperRightY - helper.GetMediaBox().LowerLeftY;
-                
-                break;
-            }
-            case PDFHummus::eJPG:
-            {
-                BoolAndJPEGImageInformation jpgImageInformation = mPDFWriter.GetDocumentContext().GetJPEGImageHandler().RetrieveImageInformation(inImageFile);
-                if(!jpgImageInformation.first)
-                    break;
-                
-                DoubleAndDoublePair dimensions = mPDFWriter.GetDocumentContext().GetJPEGImageHandler().GetImageDimensions(jpgImageInformation.second);
-                
-                imageInformation.imageWidth = dimensions.first;
-                imageInformation.imageHeight = dimensions.second;
-                break;
-            }
-            case PDFHummus::eTIFF:
-            {
-                TIFFImageHandler hummusTiffHandler;
-                
-                InputFile file;
-                if(file.OpenFile(inImageFile) != eSuccess)
-                    break;
-                
-                DoubleAndDoublePair dimensions = hummusTiffHandler.ReadImageDimensions(file.GetInputStream(),inImageIndex);
-
-                imageInformation.imageWidth = dimensions.first;
-                imageInformation.imageHeight = dimensions.second;
-                break;
-            }
-            default:
-            {
-                // just avoding uninteresting compiler warnings. meaning...if you can't get the image type or unsupported, do nothing
-            }
-        }
-    }
-    
-    return DoubleAndDoublePair(imageInformation.imageWidth,imageInformation.imageHeight);
-}
-
-static const Byte scPDFMagic[] = {0x25,0x50,0x44,0x46};
-static const Byte scMagicJPG[] = {0xFF,0xD8};
-static const Byte scMagicTIFFBigEndianTiff[] = {0x4D,0x4D,0x00,0x2A};
-static const Byte scMagicTIFFBigEndianBigTiff[] = {0x4D,0x4D,0x00,0x2B};
-static const Byte scMagicTIFFLittleEndianTiff[] = {0x49,0x49,0x2A,0x00};
-static const Byte scMagicTIFFLittleEndianBigTiff[] = {0x49,0x49,0x2B,0x00};
-
-
-PDFHummus::EHummusImageType PDFWriterDriver::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
-{
-    CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
-    
-    if(imageInformation.imageType == PDFHummus::eUndefined)
-    {
-        // The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF
-        // PDF is recognized by starting with "%PDF"
-        // JPG will start with "0xff,0xd8"
-        // TIFF will start with "0x49,0x49" (little endian) or "0x4D,0x4D" (big endian)
-        // then either 42 or 43 (tiff or big tiff respectively) written in 2 bytes, as either big or little endian
-        
-        // so just read the first 4 bytes and it should be enough to recognize a known format
-        
-        Byte magic[4];
-        unsigned long readLength = 4;
-        InputFile inputFile;
-        if(inputFile.OpenFile(inImageFile) == eSuccess)
-        {
-            inputFile.GetInputStream()->Read(magic,readLength);
-        
-            if(readLength >= 4 && memcmp(scPDFMagic,magic,4) == 0)
-                imageInformation.imageType =  PDFHummus::ePDF;
-            else if(readLength >= 2 && memcmp(scMagicJPG,magic,2) == 0)
-                imageInformation.imageType = PDFHummus::eJPG;
-            else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianTiff,magic,4) == 0)
-                imageInformation.imageType = PDFHummus::eTIFF;
-            else if(readLength >= 4 && memcmp(scMagicTIFFBigEndianBigTiff,magic,4) == 0)
-                imageInformation.imageType = PDFHummus::eTIFF;
-            else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianTiff,magic,4) == 0)
-                imageInformation.imageType = PDFHummus::eTIFF;
-            else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianBigTiff,magic,4) == 0)
-                imageInformation.imageType = PDFHummus::eTIFF;
-            else
-                imageInformation.imageType = PDFHummus::eUndefined;
-        }
-        
-    }
-
-    
-    return imageInformation.imageType;
-}
-
-ObjectIDTypeAndBool PDFWriterDriver::RegisterImageForDrawing(const std::string& inImageFile,unsigned long inImageIndex)
-{
-    CachedHummusImageInformation& imageInformation = GetImageInformationStructFor(inImageFile,inImageIndex);
-    bool firstTime;
-    
-    if(imageInformation.writtenObjectID == 0)
-    {
-        imageInformation.writtenObjectID = mPDFWriter.GetObjectsContext().GetInDirectObjectsRegistry().AllocateNewObjectID();
-        firstTime = true;
-    }
-    else
-        firstTime = false;
-    
-    return ObjectIDTypeAndBool(imageInformation.writtenObjectID,firstTime);
-}
-
 PDFWriter* PDFWriterDriver::GetWriter()
 {
     return &mPDFWriter;
 }
 
-EStatusCode PDFWriterDriver::WriteFormForImage(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID)
-{
-    EStatusCode status;
-    PDFHummus::EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
-        
-    switch(imageType)
-    {
-        case PDFHummus::ePDF:
-        {
-            PDFDocumentCopyingContext* copyingContext = NULL;
-            PDFFormXObject* formXObject = NULL;
-            do {
-                // hmm...pdf merging doesn't have an innate method to force an object id. so i'll create a form, and merge into it
-                copyingContext = mPDFWriter.CreatePDFCopyingContext(inImagePath);
-                if(!copyingContext)
-                {
-                    status = eFailure;
-                    break;
-                }
-                
-                // PDFPageInput(PDFParser* inParser,PDFObject* inPageObject);
-                PDFPageInput pageInput(copyingContext->GetSourceDocumentParser(),
-                                       copyingContext->GetSourceDocumentParser()->ParsePage(inImageIndex));
-                
-                formXObject = mPDFWriter.StartFormXObject(pageInput.GetMediaBox(),inObjectID);
-                if(!formXObject)
-                {
-                    status = eFailure;
-                    break;
-                }
-                
-                status = copyingContext->MergePDFPageToFormXObject(formXObject,inImageIndex);
-                if(status != eSuccess)
-                    break;
-                
-                status = mPDFWriter.EndFormXObject(formXObject);
-            }while(false);
-
-            delete formXObject;
-            delete copyingContext;
-            break;
-        }
-        case PDFHummus::eJPG:
-        {
-            PDFFormXObject* form = mPDFWriter.CreateFormXObjectFromJPGFile(inImagePath,inObjectID);
-            status = (form ? eSuccess:eFailure);
-            delete form;
-            break;
-        }
-        case PDFHummus::eTIFF:
-        {
-            TIFFUsageParameters params;
-            params.PageIndex = (unsigned int)inImageIndex;
-            
-            PDFFormXObject* form = mPDFWriter.CreateFormXObjectFromTIFFFile(inImagePath,inObjectID,params);
-            status = (form ? eSuccess:eFailure);
-            delete form;
-            break;
-        }
-        default:
-        {
-            status = eFailure;
-        }
-    }
-    return status;
-}
-
-
-METHOD_RETURN_TYPE PDFWriterDriver::SGetImageDimensions(const ARGS_TYPE& args)
+METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    if(args.Length() < 1 || args.Length() > 2 ||
+    if(args.Length() < 1 || args.Length() > 3 ||
        !args[0]->IsString() ||
-       (args.Length()==2 && !args[1]->IsNumber()))
+       (args.Length()>=2 && !args[1]->IsNumber()) ||
+       (args.Length() >= 3 && !args[2]->IsObject())
+       )
     {
-		THROW_EXCEPTION("wrong arguments, pass 1 or 2 argument. a path to an image, and optional image index (for multi-image files)");
+		THROW_EXCEPTION("wrong arguments, pass 1 to 3 arguments. a path to an image, an optional image index (for multi-image files), and an options object");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
 
-    DoubleAndDoublePair dimensions = pdfWriter->GetImageDimensions(
+    PDFParsingOptions parsingOptions;
+
+    if(args.Length() >= 3) {
+        Handle<Object> options = args[2]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }        
+    }
+
+    DoubleAndDoublePair dimensions = pdfWriter->mPDFWriter.GetImageDimensions(
                                   *String::Utf8Value(args[0]->ToString()),
-                                  args.Length() == 2 ? args[1]->ToNumber()->Uint32Value() : 0);
+                                  args.Length() >= 2 ? args[1]->ToNumber()->Uint32Value() : 0,
+                                  parsingOptions);
     
     Handle<Object> newObject = NEW_OBJECT;
     
@@ -1447,21 +1292,32 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	if (args.Length() != 1 ||
-		!args[0]->IsString())
+    if(args.Length() < 1 || args.Length() > 2 ||
+       !args[0]->IsString() ||
+       (args.Length() >= 2 && !args[1]->IsObject())
+       )
 	{
-		THROW_EXCEPTION("wrong arguments, pass 1 argument. a path to an imag");
+		THROW_EXCEPTION("wrong arguments, pass 1 argument and an optional one. a path to an image, and an options object");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
 
 	PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    PDFParsingOptions parsingOptions;
 
-	unsigned long result = pdfWriter->mPDFWriter.GetImagePagesCount(*String::Utf8Value(args[0]->ToString()));
+    if(args.Length() >= 2) {
+        Handle<Object> options = args[1]->ToObject();
+        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        {
+            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+        }        
+    }    
+
+	unsigned long result = pdfWriter->mPDFWriter.GetImagePagesCount(*String::Utf8Value(args[0]->ToString()),parsingOptions);
 
 	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result));
 }
 
-METHOD_RETURN_TYPE PDFWriterDriver::SGetImageType(const ARGS_TYPE& args) {
+METHOD_RETURN_TYPE PDFWriterDriver::GetImageType(const ARGS_TYPE& args) {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -1474,7 +1330,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::SGetImageType(const ARGS_TYPE& args) {
 
 	PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
 
-    PDFHummus::EHummusImageType imageType = pdfWriter->GetImageType(*String::Utf8Value(args[0]->ToString()),0);
+    PDFHummus::EHummusImageType imageType = pdfWriter->mPDFWriter.GetImageType(*String::Utf8Value(args[0]->ToString()),0);
         
     switch(imageType)
     {

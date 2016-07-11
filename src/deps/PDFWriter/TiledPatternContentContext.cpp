@@ -43,8 +43,10 @@ ResourcesDictionary* TiledPatternContentContext::GetResourcesDictionary()
 class TiledPatternImageWritingTask : public ITiledPatternEndWritingTask
  {
  public:
-TiledPatternImageWritingTask(const std::string& inImagePath, unsigned long inImageIndex, ObjectIDType inObjectID)
- {mImagePath = inImagePath;mImageIndex = inImageIndex;mObjectID = inObjectID;}
+	 TiledPatternImageWritingTask(const std::string& inImagePath, unsigned long inImageIndex, ObjectIDType inObjectID, const PDFParsingOptions& inPDFParsingOptions)
+	 {
+		 mImagePath = inImagePath; mImageIndex = inImageIndex; mObjectID = inObjectID; mPDFParsingOptions = inPDFParsingOptions;
+	 }
  
 virtual ~TiledPatternImageWritingTask(){}
  
@@ -52,19 +54,20 @@ virtual ~TiledPatternImageWritingTask(){}
                                         ObjectsContext* inObjectsContext,
                                         PDFHummus::DocumentContext* inDocumentContext)
      {
-         return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID);
+         return inDocumentContext->WriteFormForImage(mImagePath,mImageIndex,mObjectID, mPDFParsingOptions);
      }
  
  private:
      std::string mImagePath;
      unsigned long mImageIndex;
      ObjectIDType mObjectID;
+	 PDFParsingOptions mPDFParsingOptions;
  };
 
-void TiledPatternContentContext::ScheduleImageWrite(const std::string& inImagePath, unsigned long inImageIndex, ObjectIDType inObjectID)
+void TiledPatternContentContext::ScheduleImageWrite(const std::string& inImagePath, unsigned long inImageIndex, ObjectIDType inObjectID, const PDFParsingOptions& inParsingOptions)
 {
     mDocumentContext->RegisterTiledPatternEndWritingTask(
 													mObjectOfContext,
-													new TiledPatternImageWritingTask(inImagePath, inImageIndex, inObjectID));
+													new TiledPatternImageWritingTask(inImagePath, inImageIndex, inObjectID,inParsingOptions));
 
 }

@@ -24,6 +24,7 @@
 #include "ObjectsBasicTypes.h"
 #include "PDFEmbedParameterTypes.h"
 #include "PDFDocumentHandler.h"
+#include "PDFParsingOptions.h"
 
 #include <string>
 
@@ -50,18 +51,19 @@ public:
 	PDFHummus::EStatusCode Start(const std::string& inPDFFilePath,
 					  DocumentContext* inDocumentContext,
 					  ObjectsContext* inObjectsContext,
+				      const PDFParsingOptions& inOptions,
 					  IPDFParserExtender* inParserExtender);
 
 	PDFHummus::EStatusCode Start(IByteReaderWithPosition* inPDFStream,
 					  DocumentContext* inDocumentContext,
 					  ObjectsContext* inObjectsContext,
-					  IPDFParserExtender* inParserExtender);
+					const PDFParsingOptions& inOptions,
+					IPDFParserExtender* inParserExtender);
 
     
 	PDFHummus::EStatusCode Start(PDFParser* inPDFParser,
                                  DocumentContext* inDocumentContext,
-                                 ObjectsContext* inObjectsContext,
-                                 IPDFParserExtender* inParserExtender);
+                                 ObjectsContext* inObjectsContext);
 
 	EStatusCodeAndObjectIDType CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
 															 EPDFPageBox inPageBoxToUseAsFormBox,

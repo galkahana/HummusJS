@@ -37,6 +37,7 @@
 #include "GraphicStateStack.h"
 #include "GlyphUnicodeMapping.h"
 #include "ObjectsBasicTypes.h"
+#include "PDFParsingOptions.h"
 #include <string>
 #include <list>
 #include <set>
@@ -161,6 +162,7 @@ public:
 		double boundingBoxHeight;
 		bool fitProportional;
 		EFitPolicy fitPolicy;
+		PDFParsingOptions pdfParsingOptions;
 
 
 		ImageOptions()
@@ -353,7 +355,7 @@ private:
 	// Derived classes should optionally use this method if the stream needs updating (use calls to SetPDFStreamForWrite for this purpose)
 	virtual void RenewStreamConnection() {};
 	// Derived classes should implement this method for registering image writes
-	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID) = 0;
+	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID,const PDFParsingOptions& inParsingOptions) = 0;
 	PrimitiveObjectsWriter mPrimitiveWriter;
 
 	// graphic stack to monitor high-level graphic usage (now - fonts)

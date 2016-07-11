@@ -91,18 +91,40 @@ MD5Generator::~MD5Generator(void)
 {
 }
 
+EStatusCode MD5Generator::Accumulate(const std::string& inString) {
+	if (mIsFinalized)
+		return PDFHummus::eFailure;
 
-EStatusCode MD5Generator::Accumulate(const std::string& inString)
+	_Accumulate((const Byte*)inString.c_str(), (unsigned long)inString.length());
+	return PDFHummus::eSuccess;
+}
+
+EStatusCode MD5Generator::Accumulate(const ByteList& inString)
 {
 	if(mIsFinalized)
 		return PDFHummus::eFailure;
 
-	Accumulate((const uint1*)inString.c_str(),(unsigned long)inString.length());
+	Byte* buffer = new Byte[inString.size()];
+	Byte* itBuffer = buffer;
+	ByteList::const_iterator it = inString.begin();
+	for (; it != inString.end(); ++it,++itBuffer)
+		*itBuffer = *it;
+	
+	_Accumulate((const uint1*)buffer,(unsigned long)inString.size());
+	delete[] buffer;
 	return PDFHummus::eSuccess;
 
 }
 
-void MD5Generator::Accumulate(const uint1* inBlock,unsigned long inBlockSize)
+EStatusCode MD5Generator::Accumulate(const Byte* inArray, LongBufferSizeType inLength) {
+	if (mIsFinalized)
+		return PDFHummus::eFailure;
+
+	_Accumulate(inArray, (unsigned long)inLength);
+	return PDFHummus::eSuccess;
+}
+
+void MD5Generator::_Accumulate(const uint1* inBlock,unsigned long inBlockSize)
 {
   uint4 input_index, buffer_index;
   uint4 buffer_space;                // how much space is left in buffer
@@ -325,9 +347,27 @@ const MD5Generator::uint1 MD5Generator::PADDING[64]={
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-std::string MD5Generator::ToString()
+const std::string& MD5Generator::ToHexString()
 {
-	if(!mIsFinalized)
+	Finalize();
+	return MD5FinalHexString;
+}
+
+const ByteList& MD5Generator::ToString()
+{
+	Finalize();
+	return MD5FinalString;
+}
+
+const std::string& MD5Generator::ToStringAsString()
+{
+	Finalize();
+	return MD5FinalStringAsString;
+}
+
+
+void MD5Generator::Finalize() {
+	if (!mIsFinalized)
 	{
 		unsigned char bits[8];
 		unsigned int index, padLen;
@@ -336,12 +376,12 @@ std::string MD5Generator::ToString()
 		Encode(bits, mCount, 8);
 
 		// Pad out to 56 mod 64.
-		index = (uint4) ((mCount[0] >> 3) & 0x3f);
+		index = (uint4)((mCount[0] >> 3) & 0x3f);
 		padLen = (index < 56) ? (56 - index) : (120 - index);
 		Accumulate(PADDING, padLen);
 
 		// Append length (before padding)
-		Accumulate(bits,8);
+		Accumulate(bits, 8);
 
 		// Store state in digest
 		Encode(mDigest, mState, 16);
@@ -350,10 +390,8 @@ std::string MD5Generator::ToString()
 		memset(mBuffer, 0, sizeof(*mBuffer));
 
 		mIsFinalized = true;
-		SetFinalStringToHex();
+		PrepareFinalStrings();
 	}
-	
-	return MD5FinalString;
 }
 
 void MD5Generator::Encode(uint1 *output, uint4 *input, uint4 len) 
@@ -369,18 +407,21 @@ void MD5Generator::Encode(uint1 *output, uint4 *input, uint4 len)
   }
 }
 
-void MD5Generator::SetFinalStringToHex()
+void MD5Generator::PrepareFinalStrings()
 {
-	OutputStringBufferStream stringStream;
+	OutputStringBufferStream stringHexStream;
 	char formattedHex[3];
+	MD5FinalString.clear();
 	
 	
 	for (int i=0; i<16; i++)
 	{
 		SAFE_SPRINTF_1(formattedHex,3,"%02x",mDigest[i]);
-		stringStream.Write((const Byte*)formattedHex,2);
+		stringHexStream.Write((const Byte*)formattedHex,2);
+		MD5FinalString.push_back(mDigest[i]);
+		MD5FinalStringAsString.push_back((char)mDigest[i]);
 	}
 
-	MD5FinalString = stringStream.ToString();
+	MD5FinalHexString = stringHexStream.ToString();
 }
 

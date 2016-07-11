@@ -49,9 +49,47 @@ PDFObject::PDFObject(int inType)
 
 PDFObject::~PDFObject(void)
 {
+	StringToVoidP::iterator it = mMetadata.begin();
+	for (; it != mMetadata.end(); ++it) {
+		delete it->second;
+	}
+	mMetadata.clear();
 }
 
 PDFObject::EPDFObjectType PDFObject::GetType()
 {
 	return mType;
+}
+
+void PDFObject::SetMetadata(const std::string& inKey, void* inValue) {
+	// delete old metadata
+	DeleteMetadata(inKey);
+
+	mMetadata.insert(StringToVoidP::value_type(inKey, inValue));
+}
+
+void* PDFObject::GetMetadata(const std::string& inKey) {
+	StringToVoidP::iterator it = mMetadata.find(inKey);
+	
+	if (it == mMetadata.end()) 
+		return NULL;
+	else 
+		return it->second;
+}
+
+void* PDFObject::DetachMetadata(const std::string& inKey) {
+	StringToVoidP::iterator it = mMetadata.find(inKey);
+
+	if (it == mMetadata.end())
+		return NULL;
+	else {
+		void* result = it->second;
+		mMetadata.erase(it);
+		return result;
+	}
+}
+
+void PDFObject::DeleteMetadata(const std::string& inKey) {
+	void* result = DetachMetadata(inKey);
+	delete result;
 }

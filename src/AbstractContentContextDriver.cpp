@@ -2161,17 +2161,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
      if it's fitting, determine the fit (consider proportional), add to position
      gsave, apply determined transformation matrix, place image with do, grestore
      */
-    
-    unsigned long imageIndex = 0;
+
+    double x = args[0]->ToNumber()->Value();
+    double y = args[1]->ToNumber()->Value();
     std::string imagePath = *(String::Utf8Value(args[2]->ToString()));
-    double transformation[6] = {1,0,0,1,0,0};
+    AbstractContentContext::ImageOptions imageOptions;
     
     if(args.Length() >= 4)
     {
         Handle<Object> optionsObject = args[3]->ToObject();
         
         if(optionsObject->Has(NEW_STRING("index")))
-            imageIndex = optionsObject->Get(NEW_STRING("index"))->ToNumber()->Uint32Value();
+            imageOptions.imageIndex = optionsObject->Get(NEW_STRING("index"))->ToNumber()->Uint32Value();
         
         if(optionsObject->Has(NEW_STRING("transformation")))
         {
@@ -2183,70 +2184,38 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
                 
                 if(transformationValue->IsArray() && transformationObject->Get(NEW_STRING("length"))->ToNumber()->Value() == 6)
                 {
+                    imageOptions.transformationMethod = AbstractContentContext::eMatrix;
                     for(int i=0;i<6;++i)
-                        transformation[i] = transformationObject->Get(i)->ToNumber()->Value();
+                        imageOptions.matrix[i] = transformationObject->Get(i)->ToNumber()->Value();
                 }
                 else if(transformationValue->IsObject())
                 {
                     // fitting object, determine transformation according to image dimensions relation to width/height
-                    double constraintWidth = transformationObject->Get(NEW_STRING("width"))->ToNumber()->Value();
-                    double constraintheight = transformationObject->Get(NEW_STRING("height"))->ToNumber()->Value();
-                    bool proportional = transformationObject->Has(NEW_STRING("proportional")) ?
+                    imageOptions.transformationMethod = AbstractContentContext::eFit;
+                    imageOptions.boundingBoxWidth = transformationObject->Get(NEW_STRING("width"))->ToNumber()->Value();
+                    imageOptions.boundingBoxHeight = transformationObject->Get(NEW_STRING("height"))->ToNumber()->Value();
+                    imageOptions.fitProportional = transformationObject->Has(NEW_STRING("proportional")) ?
                                             transformationObject->Get(NEW_STRING("proportional"))->ToBoolean()->Value() :
                                             false;
-                    bool fitAlways = transformationObject->Has(NEW_STRING("fit")) ?
-                                    strcmp("always",*String::Utf8Value(transformationObject->Get(NEW_STRING("fit"))->ToString())) == 0:
-                                    false;
-                    
-                    // getting the image dimensions from the pdfwriter to allow optimization on image reads
-                    DoubleAndDoublePair imageDimensions = contentContext->GetPDFWriter()->GetImageDimensions(imagePath,imageIndex);
-                    
-                    double scaleX = 1;
-                    double scaleY = 1;
-                    
-                    if(fitAlways)
-                    {
-                        scaleX = constraintWidth / imageDimensions.first;
-                        scaleY = constraintheight / imageDimensions.second;
-                        
-
-                    }
-                    else if(imageDimensions.first > constraintWidth || imageDimensions.second > constraintheight) // overflow
-                    {
-                        scaleX = imageDimensions.first > constraintWidth ? constraintWidth / imageDimensions.first : 1;
-                        scaleY = imageDimensions.second > constraintheight ? constraintheight / imageDimensions.second : 1;
-                    }
-                    
-                    if(proportional)
-                    {
-                        scaleX = std::min(scaleX,scaleY);
-                        scaleY = scaleX;
-                    }
-                    
-                    transformation[0] = scaleX;
-                    transformation[3] = scaleY;
+                    imageOptions.fitPolicy = transformationObject->Has(NEW_STRING("fit")) ?
+                                    (strcmp("always",*String::Utf8Value(transformationObject->Get(NEW_STRING("fit"))->ToString())) == 0 ? AbstractContentContext::eAlways : AbstractContentContext::eOverflow):
+                                    AbstractContentContext::eOverflow;
                 }
                 
             }
         }
+
+        if(optionsObject->Has(NEW_STRING("password")) && optionsObject->Get(NEW_STRING("password"))->IsString())
+        {
+            imageOptions.pdfParsingOptions.Password = *String::Utf8Value(optionsObject->Get(NEW_STRING("password"))->ToString());
+        }        
+
     }
     
-    transformation[4]+= args[0]->ToNumber()->Value();
-    transformation[5]+= args[1]->ToNumber()->Value();
-   
-    
-    // registering the images at pdfwriter to allow optimization on image writes
-    ObjectIDTypeAndBool result = contentContext->GetPDFWriter()->RegisterImageForDrawing(imagePath,imageIndex);
-    if(result.second)
-    {
-        // if first usage, write the image
-        contentContext->ScheduleImageWrite(imagePath,imageIndex,result.first);
-    }
-    
-    contentContext->GetContext()->q();
-    contentContext->GetContext()->cm(transformation[0],transformation[1],transformation[2],transformation[3],transformation[4],transformation[5]);
-    contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(result.first));
-    contentContext->GetContext()->Q();
+    contentContext->GetContext()->DrawImage(x,
+                                            y,
+                                            imagePath,
+                                            imageOptions);    
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }

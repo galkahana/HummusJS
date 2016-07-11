@@ -32,6 +32,7 @@
 class PDFObject;
 class IByteReader;
 class IPDFParserExtender;
+class DecryptionHelper;
 
 
 
@@ -48,7 +49,7 @@ public:
 	// Assign the stream to read from (does not take ownership of the stream)
 	void SetReadStream(IByteReader* inSourceStream,IReadPositionProvider* inCurrentPositionProvider);
 
-	PDFObject* ParseNewObject(IPDFParserExtender* inParserExtender);
+	PDFObject* ParseNewObject();
 
 	// calls this when changing underlying stream position
 	void ResetReadState();
@@ -57,11 +58,19 @@ public:
 	// buffered characters
 	void ResetReadState(const PDFParserTokenizer& inExternalTokenizer);
 
+	void SetDecryptionHelper(DecryptionHelper* inDecryptionHelper);
+	void SetParserExtender(IPDFParserExtender* inParserExtender);
+
+	// helper method for others who need to parse encoded pdf data
+	std::string DecodeHexString(const std::string inStringToDecode);
+
 private:
 	PDFParserTokenizer mTokenizer;
 	StringList mTokenBuffer;
 	IByteReader* mStream;
 	IReadPositionProvider* mCurrentPositionProvider;
+	IPDFParserExtender* mParserExtender;
+	DecryptionHelper* mDecryptionHelper;
 
 	bool GetNextToken(std::string& outToken);
 	void SaveTokenToBuffer(std::string& inToken);
@@ -71,10 +80,10 @@ private:
 	PDFObject* ParseBoolean(const std::string& inToken);
 
 	bool IsLiteralString(const std::string& inToken);
-	PDFObject* ParseLiteralString(const std::string& inToken,IPDFParserExtender* inParserExtender);
+	PDFObject* ParseLiteralString(const std::string& inToken);
 
 	bool IsHexadecimalString(const std::string& inToken);
-	PDFObject* ParseHexadecimalString(const std::string& inToken,IPDFParserExtender* inParserExtender);
+	PDFObject* ParseHexadecimalString(const std::string& inToken);
 
 	bool IsNull(const std::string& inToken);
 
@@ -85,14 +94,16 @@ private:
 	PDFObject* ParseNumber(const std::string& inToken);
 
 	bool IsArray(const std::string& inToken);
-	PDFObject* ParseArray(IPDFParserExtender* inParserExtender);
+	PDFObject* ParseArray();
 
 	bool IsDictionary(const std::string& inToken);
-	PDFObject* ParseDictionary(IPDFParserExtender* inParserExtender);
+	PDFObject* ParseDictionary();
 
 	bool IsComment(const std::string& inToken);
 
 	BoolAndByte GetHexValue(IOBasicTypes::Byte inValue);
+
+	std::string MaybeDecryptString(const std::string& inString);
 
 
 };

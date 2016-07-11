@@ -34,9 +34,12 @@ CharStringType2Interpreter.cpp
 CharStringType2Tracer.cpp
 CIDFontWriter.cpp
 CMYKRGBColor.cpp
+DecryptionHelper.cpp
 DescendentFontWriter.cpp
 DictionaryContext.cpp
 DocumentContext.cpp
+EncryptionHelper.cpp
+EncryptionOptions.cpp
 FontDescriptorWriter.cpp
 FreeTypeFaceWrapper.cpp
 FreeTypeOpenTypeWrapper.cpp
@@ -55,6 +58,7 @@ InputFile.cpp
 InputFileStream.cpp
 InputFlateDecodeStream.cpp
 InputLimitedStream.cpp
+InputRC4XcodeStream.cpp
 InputPFBDecodeStream.cpp
 InputPredictorPNGAverageStream.cpp
 InputPredictorPNGNoneStream.cpp
@@ -65,19 +69,23 @@ InputPredictorPNGUpStream.cpp
 InputPredictorTIFFSubStream.cpp
 InputStreamSkipperStream.cpp
 InputStringBufferStream.cpp
+InputStringStream.cpp
 JPEGImageHandler.cpp
 JPEGImageInformation.cpp
 JPEGImageParser.cpp
 Log.cpp
 MD5Generator.cpp
+RC4.cpp
 ObjectsContext.cpp
 OpenTypeFileInput.cpp
 OpenTypePrimitiveReader.cpp
+OutputAESEncodeStream.cpp
 OutputBufferedStream.cpp
 OutputFile.cpp
 OutputFileStream.cpp
 OutputFlateDecodeStream.cpp
 OutputFlateEncodeStream.cpp
+OutputRC4XcodeStream.cpp
 OutputStreamTraits.cpp
 OutputStringBufferStream.cpp
 PageContentContext.cpp
@@ -110,6 +118,7 @@ PDFArrayIterator.cpp
 PDFPageMergingHelper.cpp
 PDFParser.cpp
 PDFParserTokenizer.cpp
+PDFParsingOptions.cpp
 PDFReal.cpp
 PDFRectangle.cpp
 PDFStream.cpp
@@ -146,7 +155,13 @@ UsedFontsRepository.cpp
 WinAnsiEncoding.cpp
 WrittenFontCFF.cpp
 WrittenFontTrueType.cpp
+XCryptionCommon.cpp
 XObjectContentContext.cpp
+aes_modes.c
+aes_ni.c
+aescrypt.c
+aeskey.c
+aestab.c
 
 #headers
 AbstractContentContext.h
@@ -172,6 +187,7 @@ CharStringType2Tracer.h
 CIDFontWriter.h
 CMYKRGBColor.h
 ContainerIterator.h
+DecryptionHelper.h
 DescendentFontWriter.h
 DictionaryContext.h
 DictOperand.h
@@ -179,6 +195,8 @@ DocumentContext.h
 DocumentContextExtenderAdapter.h
 EFontStretch.h
 EHummusImageType.h
+EncryptionHelper.h
+EncryptionOptions.h
 EPDFVersion.h
 EStatusCode.h
 ETokenSeparator.h
@@ -214,6 +232,7 @@ InputFile.h
 InputFileStream.h
 InputFlateDecodeStream.h
 InputLimitedStream.h
+InputRC4XcodeStream.h
 InputPFBDecodeStream.h
 InputPredictorPNGAverageStream.h
 InputPredictorPNGNoneStream.h
@@ -224,6 +243,7 @@ InputPredictorPNGUpStream.h
 InputPredictorTIFFSubStream.h
 InputStreamSkipperStream.h
 InputStringBufferStream.h
+InputStringStream.h
 IOBasicTypes.h
 IObjectsContextExtender.h
 IPageEndWritingTask.h
@@ -239,17 +259,20 @@ JPEGImageParser.h
 Log.h
 MapIterator.h
 MD5Generator.h
+RC4.h
 MyStringBuf.h
 ObjectsBasicTypes.h
 ObjectsContext.h
 ObjectsContextExtenderAdapter.h
 OpenTypeFileInput.h
 OpenTypePrimitiveReader.h
+OutputAESEncodeStream.h
 OutputBufferedStream.h
 OutputFile.h
 OutputFileStream.h
 OutputFlateDecodeStream.h
 OutputFlateEncodeStream.h
+OutputRC4XcodeStream.h
 OutputStreamTraits.h
 OutputStringBufferStream.h
 PageContentContext.h
@@ -284,6 +307,7 @@ PDFArrayIterator.h
 PDFPageMergingHelper.h
 PDFParser.h
 PDFParserTokenizer.h
+PDFParsingOptions.h
 PDFReal.h
 PDFRectangle.h
 PDFStream.h
@@ -326,8 +350,16 @@ WinAnsiEncoding.h
 WrittenFontCFF.h
 WrittenFontRepresentation.h
 WrittenFontTrueType.h
+XCryptionCommon.h
 XObjectContentContext.h
-
+aes.h
+aes_ni.h
+aes_via_ace.h
+aescpp.h
+aesopt.h
+aestab.h
+brg_endian.h
+brg_types.h
 )
 
 # groups definitions
@@ -421,6 +453,24 @@ WinAnsiEncoding.h
 source_group(Infrastructure\\Encryption FILES
 MD5Generator.cpp
 MD5Generator.h
+RC4.cpp
+RC4.h
+)
+
+source_group(Infrastructure\\Encryption\\AES FILES
+aes_modes.c
+aes_ni.c
+aescrypt.c
+aeskey.c
+aestab.c
+aes.h
+aes_ni.h
+aes_via_ace.h
+aescpp.h
+aesopt.h
+aestab.h
+brg_endian.h
+brg_types.h
 )
 
 source_group(Infrastructure\\IO FILES
@@ -445,12 +495,18 @@ InputFlateDecodeStream.cpp
 InputFlateDecodeStream.h
 InputLimitedStream.cpp
 InputLimitedStream.h
+InputRC4XcodeStream.cpp
+InputRC4XcodeStream.h
 InputStreamSkipperStream.cpp
 InputStreamSkipperStream.h
 InputStringBufferStream.cpp
 InputStringBufferStream.h
+InputStringStream.cpp
+InputStringStream.h
 IOBasicTypes.h
 IReadPositionProvider.h
+OutputAESEncodeStream.cpp
+OutputAESEncodeStream.h
 OutputBufferedStream.cpp
 OutputBufferedStream.h
 OutputFile.cpp
@@ -461,6 +517,8 @@ OutputFlateDecodeStream.cpp
 OutputFlateDecodeStream.h
 OutputFlateEncodeStream.cpp
 OutputFlateEncodeStream.h
+OutputRC4XcodeStream.cpp
+OutputRC4XcodeStream.h
 OutputStreamTraits.cpp
 OutputStreamTraits.h
 OutputStringBufferStream.cpp
@@ -590,6 +648,19 @@ PDFParser.cpp
 PDFParser.h
 PDFParserTokenizer.cpp
 PDFParserTokenizer.h
+PDFParsingOptions.cpp
+PDFParsingOptions.h
+)
+
+source_group("XCryption" FILES
+DecryptionHelper.cpp
+DecryptionHelper.h
+EncryptionHelper.cpp
+EncryptionHelper.h
+EncryptionOptions.cpp
+EncryptionOptions.h
+XCryptionCommon.cpp
+XCryptionCommon.h
 )
 
 source_group("State Serialization" FILES

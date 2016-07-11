@@ -202,7 +202,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetTrailer(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(PDFObjectDriver::CreateDriver(trailer));
 }
 
-PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(v8::Handle<v8::Object> inStreamObject)
+PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(v8::Handle<v8::Object> inStreamObject,const PDFParsingOptions& inParsingOptions)
 {
     if(!mPDFReader && !mOwnsParser)
     {
@@ -218,10 +218,10 @@ PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(v8::Handle<v8::Object> i
     mStartedWithStream = true;
     mReadStreamProxy = new ObjectByteReaderWithPosition(inStreamObject);
     mPDFReader->ResetParser();
-    return mPDFReader->StartPDFParsing(mReadStreamProxy);
+    return mPDFReader->StartPDFParsing(mReadStreamProxy,inParsingOptions);
 }
 
-PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(const std::string& inParsedFilePath)
+PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(const std::string& inParsedFilePath,const PDFParsingOptions& inParsingOptions)
 {
     if(!mPDFReader && !mOwnsParser)
     {
@@ -239,7 +239,7 @@ PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(const std::string& inPar
     mPDFReader->ResetParser();
     if(mPDFFile.OpenFile(inParsedFilePath) != PDFHummus::eSuccess)
         return PDFHummus::eFailure;
-    return mPDFReader->StartPDFParsing(mPDFFile.GetInputStream());
+    return mPDFReader->StartPDFParsing(mPDFFile.GetInputStream(),inParsingOptions);
 }
 
 void PDFReaderDriver::SetFromOwnedParser(PDFParser* inParser)

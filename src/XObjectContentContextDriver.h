@@ -37,21 +37,14 @@ public:
     static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
-    void SetPDFWriter(PDFWriterDriver* inPDFWriter);
-    
     XObjectContentContext* ContentContext;
     PDFFormXObject* FormOfContext;
     
-    virtual PDFWriterDriver* GetPDFWriter();
 private:
     XObjectContentContextDriver();
 
-    PDFWriterDriver* mPDFWriterDriver;
-   
     virtual AbstractContentContext* GetContext();
-    virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID);
 
-    
     static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
     

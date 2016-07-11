@@ -32,6 +32,8 @@
 #include "PDFRectangle.h"
 #include "TiffUsageParameters.h"
 #include "PDFEmbedParameterTypes.h"
+#include "PDFParsingOptions.h"
+#include "EncryptionOptions.h"
 
 #include <string>
 #include <utility>
@@ -56,8 +58,13 @@ struct PDFCreationSettings
 {
 	bool CompressStreams;
 	bool EmbedFonts;
+	EncryptionOptions DocumentEncryptionOptions;
 
-	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts){ CompressStreams = inCompressStreams; EmbedFonts = inEmbedFonts;}
+	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions){ 
+		CompressStreams = inCompressStreams; 
+		EmbedFonts = inEmbedFonts;
+		DocumentEncryptionOptions = inDocumentEncryptionOptions;
+	}
 
 	static const PDFCreationSettings DefaultPDFCreationSettings;
 };
@@ -185,60 +192,72 @@ public:
 															 const PDFPageRange& inPageRange,
 															 EPDFPageBox inPageBoxToUseAsFormBox,
 															 const double* inTransformationMatrix = NULL,
-															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															 const PDFPageRange& inPageRange,
 															 EPDFPageBox inPageBoxToUseAsFormBox,
 															 const double* inTransformationMatrix = NULL,
-															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 	
 	// CreateFormXObjectsFromPDF is an override to allow you to determine a custom crop for the page embed
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
 															 const PDFPageRange& inPageRange,
 															 const PDFRectangle& inCropBox,
 															 const double* inTransformationMatrix = NULL,
-															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															 const PDFPageRange& inPageRange,
 															 const PDFRectangle& inCropBox,
 															 const double* inTransformationMatrix = NULL,
-															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 	// AppendPDFPagesFromPDF is for simple appending of the input PDF pages
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(const std::string& inPDFFilePath,
 														const PDFPageRange& inPageRange,
-														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 	
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(IByteReaderWithPosition* inPDFStream,
 														const PDFPageRange& inPageRange,
-														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 	// MergePDFPagesToPage, merge PDF pages content to an input page. good for single-placement of a page content, cheaper than creating
 	// and XObject and later placing, when the intention is to use this graphic just once.
 	PDFHummus::EStatusCode MergePDFPagesToPage(PDFPage* inPage,
 									const std::string& inPDFFilePath,
 									const PDFPageRange& inPageRange,
-									const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+									const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+									const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 	PDFHummus::EStatusCode MergePDFPagesToPage(PDFPage* inPage,
 									IByteReaderWithPosition* inPDFStream,
 									const PDFPageRange& inPageRange,
-									const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
+									const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
+									const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 
 	// Copying context, allowing for a continous flow of copying from multiple sources PDFs (create one per source) to target PDF
-	PDFDocumentCopyingContext* CreatePDFCopyingContext(const std::string& inPDFFilePath);
-	PDFDocumentCopyingContext* CreatePDFCopyingContext(IByteReaderWithPosition* inPDFStream);
+	PDFDocumentCopyingContext* CreatePDFCopyingContext(
+		const std::string& inPDFFilePath, 
+		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+	PDFDocumentCopyingContext* CreatePDFCopyingContext(
+		IByteReaderWithPosition* inPDFStream, 
+		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
     
     // for modified file path, create a copying context for the modified file
     PDFDocumentCopyingContext* CreatePDFCopyingContextForModifiedFile();
 
 	// some public image info services, for users of hummus
-	DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0);
+	DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0, const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 	EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
-	unsigned long GetImagePagesCount(const std::string& inImageFile);
+	unsigned long GetImagePagesCount(const std::string& inImageFile, const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
 
 
 	// fonts [text], font index is provided for multi-font file packages (such as dfont and ttc), 0 the default is
@@ -259,6 +278,24 @@ public:
     // Extensibiility, for modified files workflow
     PDFParser& GetModifiedFileParser();
     InputFile& GetModifiedInputFile();
+
+
+	// Recryption statics. create new version of an existing document encrypted with new password or decrypted
+	static PDFHummus::EStatusCode RecryptPDF(
+		const std::string& inOriginalPDFPath,
+		const std::string& inOriginalPDFPassword,
+		const std::string& inNewPDFPath,
+		const LogConfiguration& inLogConfiguration,
+		const PDFCreationSettings& inPDFCreationSettings);
+
+	static PDFHummus::EStatusCode RecryptPDF(
+		IByteReaderWithPosition* inOriginalPDFStream,
+		const std::string& inOriginalPDFPassword,
+		IByteWriterWithPosition* inNewPDFStream,
+		const LogConfiguration& inLogConfiguration,
+		const PDFCreationSettings& inPDFCreationSettings);
+
+
 private:
 
 	ObjectsContext mObjectsContext;
@@ -281,7 +318,7 @@ private:
 	void ReleaseLog();
 	PDFHummus::EStatusCode SetupState(const std::string& inStateFilePath);
 	void Cleanup();
-    PDFHummus::EStatusCode SetupStateFromModifiedFile(const std::string& inModifiedFile,EPDFVersion inPDFVersion);
-    PDFHummus::EStatusCode SetupStateFromModifiedStream(IByteReaderWithPosition* inModifiedSourceStream,EPDFVersion inPDFVersion);
+    PDFHummus::EStatusCode SetupStateFromModifiedFile(const std::string& inModifiedFile,EPDFVersion inPDFVersion, const PDFCreationSettings& inPDFCreationSettings);
+    PDFHummus::EStatusCode SetupStateFromModifiedStream(IByteReaderWithPosition* inModifiedSourceStream,EPDFVersion inPDFVersion, const PDFCreationSettings& inPDFCreationSettings);
 
 };
