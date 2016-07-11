@@ -194,13 +194,15 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
 
-    if(args[1]->IsString() && !args[0]->IsString() || args[1]->IsObject() && !args[0]->IsObject()) {
+    if(
+        (args[1]->IsString() && !args[0]->IsString()) || 
+        (args[1]->IsObject() && !args[0]->IsObject())
+    ) {
 		THROW_EXCEPTION("Wrong arguments, please either provide two paths or two stream objects for the first two arguments");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
     }
     
 
-    EPDFVersion pdfVersion = ePDFVersion13;
     PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     std::string originalPassword;
@@ -208,17 +210,6 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     if(args.Length() == 3 && args[2]->IsObject())
     {
         Handle<Object> anObject = args[2]->ToObject();
-        if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
-        {
-            long pdfVersionValue = anObject->Get(NEW_STRING("version"))->ToNumber()->Int32Value();
-            
-            if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
-            {
-                THROW_EXCEPTION("Wrong argument for PDF version, please provide a valid PDF version");
-                SET_FUNCTION_RETURN_VALUE(UNDEFINED);
-            }
-            pdfVersion = (EPDFVersion)pdfVersionValue;
-        }
             
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
             pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();

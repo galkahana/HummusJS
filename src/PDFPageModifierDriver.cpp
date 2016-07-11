@@ -99,8 +99,9 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)
     if(
         args.Length() < 1 || 
         !args[0]->IsObject() ||
-        (args.Length() >= 2 && !args[1]->IsNumber() ||
-        (args.Length() >= 3 && !args[2]->IsBoolean()))) {
+        (args.Length() >= 2 && !args[1]->IsNumber()) ||
+        (args.Length() >= 3 && !args[2]->IsBoolean())
+    ) {
         THROW_EXCEPTION("Wrong arguments, perovide a: PDFWriter of the pdf that page you want modified, page index of that page, and boolean indicating if you want to ensure encapsulation. last one defaults to false");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
