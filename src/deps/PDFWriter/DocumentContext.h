@@ -343,6 +343,9 @@ namespace PDFHummus
 #ifndef PDFHUMMUS_NO_TIFF
         TIFFImageHandler&  GetTIFFImageHandler();
 #endif
+		
+		// get annotations, for complex scenarios where writing a page can happen outside of document context
+		ObjectIDTypeSet& GetAnnotations();
 
 	private:
 		ObjectsContext* mObjectsContext;

@@ -1,8 +1,8 @@
 /*
- Source File : PageContentContextDriver.h
+ Source File : PDFPageModifierDriver.h
  
  
- Copyright 2013 Gal Kahana HummusJS
+ Copyright 2016 Gal Kahana HummusJS
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,40 +15,38 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
- 
  */
+
 #pragma once
 
 #include "nodes.h"
 
-#include "AbstractContentContextDriver.h"
+class PDFModifiedPage;
+class PDFWriter;
 
-class PDFWriterDriver;
-class PageContentContext;
-
-class PageContentContextDriver : public AbstractContentContextDriver
+class PDFPageModifierDriver : public node::ObjectWrap
 {
 public:
+    virtual ~PDFPageModifierDriver();
     
-    virtual ~PageContentContextDriver();
-    
-    static void Init();
+    static void Init(v8::Handle<v8::Object> inExports); // to allow instantiation from the hummus object
 	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
-
-    PageContentContext* ContentContext;
-
-private:
     
-    PageContentContextDriver();
-
-    virtual AbstractContentContext* GetContext();
- 
+   
+private:
+    PDFPageModifierDriver(PDFWriter* inWriter,unsigned long inPageIndex,bool inEnsureContentEncapsulation = false);
+    
+    PDFModifiedPage* mModifierPageInstance;
+    
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
-	static METHOD_RETURN_TYPE GetCurrentPageContentStream(const ARGS_TYPE& args);
-	static METHOD_RETURN_TYPE GetAssociatedPage(const ARGS_TYPE& args);
-    
+	static METHOD_RETURN_TYPE StartContext(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetContext(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE EndContext(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE AttachURLLinktoCurrentPage(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE WritePage(const ARGS_TYPE& args);
+
 };
