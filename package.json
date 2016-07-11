@@ -8,7 +8,7 @@
   "main": "./hummus.js",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "mocha -R tap ./tests/*.js --timeout 15000"
+    "test": "mocha -R tap ./tests/*.js --timeout 5000"
   },
   "repository": {
     "type": "git",
