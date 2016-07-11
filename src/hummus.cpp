@@ -378,9 +378,9 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     
     
     EPDFVersion pdfVersion = ePDFVersion10;
-    bool compressStreams = true;
     std::string alternativePath;
     Handle<Value> alternativeStream;
+    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     int optionsObjectIndex = args[0]->IsString() ? 1:2;
@@ -401,7 +401,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
         }
         
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            compressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
             alternativePath = *String::Utf8Value(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
@@ -411,6 +411,25 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             logConfig.ShouldLog = true;
             logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
         }
+
+        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+        }
+
+        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        {
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+        }
+        else // default to print only
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
+        
     }
     
     EStatusCode status;
@@ -421,13 +440,13 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
                                    args[1]->ToObject(),
                                    pdfVersion,
                                    logConfig,
-                                   PDFCreationSettings(compressStreams,true));
+                                   pdfCreationSettings);
     }
     else
     {
         status = driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
                                pdfVersion,alternativePath,logConfig,
-                               PDFCreationSettings(compressStreams,true));
+                               pdfCreationSettings);
     }
     
     if(status != PDFHummus::eSuccess)
