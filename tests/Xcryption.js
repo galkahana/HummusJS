@@ -75,7 +75,7 @@ describe('Xcryption', function() {
 		});		
 	});
 
-	describe('Modify encrypted document', function() {
+	/*describe('Modify encrypted document', function() {
 		it('should complete without error', function() {
 			var pdfWriter = hummus.createWriterToModify(__dirname + '/TestMaterials/PDFWithPassword.PDF', {
 				modifiedFilePath: __dirname + '/output/PDFWithPasswordModified.pdf',
@@ -102,6 +102,6 @@ describe('Xcryption', function() {
 
 			pdfWriter.end();
 		});
-	});	
+	});*/	
 
 });
