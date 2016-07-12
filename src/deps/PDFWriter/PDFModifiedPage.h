@@ -20,6 +20,7 @@
 */
 
 #include "EStatusCode.h"
+#include "PDFRectangle.h"
 #include <vector>
 #include <string>
 
@@ -45,6 +46,9 @@ public:
 	PDFHummus::EStatusCode PauseContentContext();
 	PDFHummus::EStatusCode EndContentContext();
 	AbstractContentContext* GetContentContext();
+
+
+	PDFHummus::EStatusCode AttachURLLinktoCurrentPage(const std::string& inURL, const PDFRectangle& inLinkClickArea);
 
 	PDFHummus::EStatusCode WritePage();
 

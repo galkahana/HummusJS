@@ -262,9 +262,6 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
     contentContextDriver->SetResourcesDictionary(&(pageDriver->GetPage()->GetResourcesDictionary()));
     
-    // set pdf driver, so context can use it for central registry of the PDF
-    contentContextDriver->SetPDFWriter(pdfWriter);
-
     // save it also at page driver, so we can end the context when the page is written
     pageDriver->ContentContext = contentContextDriver->ContentContext;
     
@@ -329,8 +326,6 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
                                                                                          args[1]->ToNumber()->Value(),
                                                                                          args[2]->ToNumber()->Value(),
                                                                                          args[3]->ToNumber()->Value()));
-    // set pdf driver, so context can use it for central registry of the PDF
-    formXObjectDriver->SetPDFWriter(pdfWriter);
     SET_FUNCTION_RETURN_VALUE(newInstance);
 }
 

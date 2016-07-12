@@ -40,7 +40,7 @@ using namespace PDFHummus;
 
 const LogConfiguration LogConfiguration::DefaultLogConfiguration(false,false,"PDFWriterLog.txt");
 
-const PDFCreationSettings PDFCreationSettings::DefaultPDFCreationSettings(true,true);
+const PDFCreationSettings PDFCreationSettings::DefaultPDFCreationSettings(true,true,EncryptionOptions::DefaultEncryptionOptions);
 
 PDFWriter::PDFWriter(void)
 {

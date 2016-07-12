@@ -34,15 +34,7 @@ PageContentContextDriver::PageContentContextDriver()
 {
     // initially null, set by external pdfwriter
     ContentContext = NULL;
-    
-    
-    mPDFWriterDriver = NULL;
 }
-
-void PageContentContextDriver::SetPDFWriter(PDFWriterDriver* inDriver)
-{
-    mPDFWriterDriver = inDriver;
-};
 
 Persistent<Function> PageContentContextDriver::constructor;
 Persistent<FunctionTemplate> PageContentContextDriver::constructor_template;
@@ -126,9 +118,4 @@ METHOD_RETURN_TYPE PageContentContextDriver::GetAssociatedPage(const ARGS_TYPE& 
     
     PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
     SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(driver->ContentContext->GetAssociatedPage()));
-}
-
-PDFWriterDriver* PageContentContextDriver::GetPDFWriter()
-{
-    return mPDFWriterDriver;
 }

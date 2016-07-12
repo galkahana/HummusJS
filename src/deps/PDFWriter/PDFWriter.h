@@ -60,10 +60,9 @@ struct PDFCreationSettings
 	bool EmbedFonts;
 	EncryptionOptions DocumentEncryptionOptions;
 
-	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions){ 
+	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions):DocumentEncryptionOptions(inDocumentEncryptionOptions){ 
 		CompressStreams = inCompressStreams; 
 		EmbedFonts = inEmbedFonts;
-		DocumentEncryptionOptions = inDocumentEncryptionOptions;
 	}
 
 	static const PDFCreationSettings DefaultPDFCreationSettings;

@@ -29,17 +29,22 @@ struct EncryptionOptions
 	long long UserProtectionOptionsFlag;
 	std::string OwnerPassword;
 
-	// for no encryption scenarios
-	EncryptionOptions() {
-		ShouldEncrypt = false;
-		UserProtectionOptionsFlag = 0;
-	}
-
 	// for encryption scenarios
 	EncryptionOptions(const std::string& inUserPassword,
 					long long inUserProtectionOptionsFlag,
 					const std::string& inOwnerPassword) {
 		ShouldEncrypt = true;
+		UserPassword = inUserPassword;
+		UserProtectionOptionsFlag = inUserProtectionOptionsFlag;
+		OwnerPassword = inOwnerPassword;
+	}
+
+	// or if you feel like specifying in full (or provide false as first param to avoid encryption)
+	EncryptionOptions(bool ShouldEncrypt,
+					const std::string& inUserPassword,
+					long long inUserProtectionOptionsFlag,
+					const std::string& inOwnerPassword) {
+		ShouldEncrypt = ShouldEncrypt;
 		UserPassword = inUserPassword;
 		UserProtectionOptionsFlag = inUserProtectionOptionsFlag;
 		OwnerPassword = inOwnerPassword;
