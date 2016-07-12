@@ -89,7 +89,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 	}
     
     EPDFVersion pdfVersion = ePDFVersion13;
-    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
+    PDFCreationSettings pdfCreationSettings(true,true);
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     if(args.Length() == 2 && args[1]->IsObject())
@@ -200,7 +200,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     
 
     EPDFVersion pdfVersion = ePDFVersion13;
-    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
+    PDFCreationSettings pdfCreationSettings(true,true);
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     std::string originalPassword;
     
