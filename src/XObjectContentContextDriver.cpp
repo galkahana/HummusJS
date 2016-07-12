@@ -30,6 +30,7 @@ XObjectContentContextDriver::XObjectContentContextDriver()
     // initially null, set by external pdfwriter
     ContentContext = NULL;
     FormOfContext = NULL;
+    mPDFWriterDriver = NULL;
 }
 
 Persistent<Function> XObjectContentContextDriver::constructor;
@@ -80,3 +81,16 @@ AbstractContentContext* XObjectContentContextDriver::GetContext()
 {
     return ContentContext;
 }
+
+void XObjectContentContextDriver::SetPDFWriter(PDFWriterDriver* inPDFWriter)
+{
+    mPDFWriterDriver = inPDFWriter;
+}
+
+PDFWriterDriver* XObjectContentContextDriver::GetPDFWriter()
+{
+    return mPDFWriterDriver;
+}
+
+
+

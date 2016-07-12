@@ -38,9 +38,14 @@ public:
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFFormXObject* FormXObject;
-        
+    
+    // pass to content context
+    void SetPDFWriter(PDFWriterDriver* inPDFWriterDriver);
+    
 private:
     FormXObjectDriver();
+    
+    PDFWriterDriver* mPDFWriterDriver;
     
     static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;

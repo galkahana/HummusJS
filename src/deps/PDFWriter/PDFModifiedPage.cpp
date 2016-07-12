@@ -79,10 +79,6 @@ AbstractContentContext* PDFModifiedPage::GetContentContext()
 	return mCurrentContext ? mCurrentContext->GetContentContext():NULL;
 }
 
-PDFHummus::EStatusCode PDFModifiedPage::AttachURLLinktoCurrentPage(const std::string& inURL, const PDFRectangle& inLinkClickArea)
-{
-	return mWriter->GetDocumentContext().AttachURLLinktoCurrentPage(inURL, inLinkClickArea);
-}
 
 PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 {
@@ -106,46 +102,16 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
     objectContext.StartModifiedIndirectObject(pageObjectID);
     DictionaryContext* modifiedPageObject = mWriter->GetObjectsContext().StartDictionary();
         
-    // copy all elements of the page to the new page object, but the "Contents", "Resources" and "Annots" elements
+    // copy all elements of the page to the new page object, but the "Contents" and "Resources" elements
     while(pageDictionaryObjectIt.MoveNext())
     {
         if(pageDictionaryObjectIt.GetKey()->GetValue() != "Resources" &&
-			pageDictionaryObjectIt.GetKey()->GetValue() != "Contents" &&
-			pageDictionaryObjectIt.GetKey()->GetValue() != "Annots" )
+			pageDictionaryObjectIt.GetKey()->GetValue() != "Contents")
         {
             modifiedPageObject->WriteKey(pageDictionaryObjectIt.GetKey()->GetValue());
             copyingContext->CopyDirectObjectAsIs(pageDictionaryObjectIt.GetValue());
         }
     }   
-
-	// Write new annotations entry, joining existing annotations, and new ones (from links attaching or what not)
-	if (!!pageDictionaryObject->Exists("Annots") || mWriter->GetDocumentContext().GetAnnotations().size() > 0)
-	{
-		modifiedPageObject->WriteKey("Annots");
-		objectContext.StartArray();
-
-		// write old annots, if any exist
-		PDFObjectCastPtr<PDFArray> anArray(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(),"Annots"));
-		SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
-		PDFObjectCastPtr<PDFIndirectObjectReference> ref;
-		while (refs.MoveNext())
-		{
-			ref = refs.GetItem();
-			objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
-		}
-
-		// write new annots from links
-		ObjectIDTypeSet& annotations = mWriter->GetDocumentContext().GetAnnotations();
-		if (annotations.size() > 0)
-		{
-			ObjectIDTypeSet::iterator it = annotations.begin();
-			for (; it != annotations.end(); ++it)
-				objectContext.WriteNewIndirectObjectReference(*it);
-		}
-		annotations.clear();
-		objectContext.EndArray(eTokenSeparatorEndLine);
-
-	}
 
     // Write new contents entry, joining the existing contents with the new one. take care of various scenarios of the existing Contents
 	modifiedPageObject->WriteKey("Contents");

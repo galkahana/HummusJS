@@ -1268,6 +1268,7 @@ TIFFImageHandler& DocumentContext::GetTIFFImageHandler()
 	return mTIFFImageHandler;
 }
 
+
 PDFFormXObject* DocumentContext::CreateFormXObjectFromTIFFFile(	const std::string& inTIFFFilePath,
 																const TIFFUsageParameters& inTIFFUsageParameters)
 {
@@ -1943,11 +1944,6 @@ EStatusCodeAndObjectIDType DocumentContext::WriteAnnotationAndLinkForURL(const s
 void DocumentContext::RegisterAnnotationReferenceForNextPageWrite(ObjectIDType inAnnotationReference)
 {
 	mAnnotations.insert(inAnnotationReference);
-}
-
-ObjectIDTypeSet& DocumentContext::GetAnnotations()
-{
-	return mAnnotations;
 }
 
 EStatusCode DocumentContext::MergePDFPagesToPage(PDFPage* inPage,

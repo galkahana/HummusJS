@@ -56,6 +56,7 @@ public:
     
     void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
 
+    virtual PDFWriterDriver* GetPDFWriter() = 0;
 protected:
     AbstractContentContextDriver();
         
