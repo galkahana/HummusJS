@@ -301,7 +301,7 @@
                'PDFIndirectObjectReference.h',
                'PDFInteger.h',
                'PDFLiteralString.h',
-                'PDFModifiedPage.cpp',
+                'PDFModifiedPage.h',
                'PDFName.h',
                'PDFNull.h',
                'PDFObject.h',

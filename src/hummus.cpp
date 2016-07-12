@@ -379,8 +379,8 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     EPDFVersion pdfVersion = ePDFVersion10;
     std::string alternativePath;
     Handle<Value> alternativeStream;
-    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     int optionsObjectIndex = args[0]->IsString() ? 1:2;
     
