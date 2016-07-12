@@ -379,7 +379,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     EPDFVersion pdfVersion = ePDFVersion10;
     std::string alternativePath;
     Handle<Value> alternativeStream;
-    PDFCreationSettings pdfCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings;
+    PDFCreationSettings pdfCreationSettings(true,true);
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
     
     int optionsObjectIndex = args[0]->IsString() ? 1:2;
@@ -438,13 +438,13 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
                                    args[1]->ToObject(),
                                    pdfVersion,
                                    logConfig,
-                                   PDFCreationSettings(true,true));
+                                   pdfCreationSettings);
     }
     else
     {
         status = driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
                                pdfVersion,alternativePath,logConfig,
-                               PDFCreationSettings(true,true));
+                               pdfCreationSettings);
     }
     
     if(status != PDFHummus::eSuccess)
