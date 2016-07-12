@@ -1,6 +1,6 @@
 {
   "name": "hummus",
-  "version": "1.0.56",
+  "version": "1.0.55",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
   "license": "Apache-2.0",
@@ -8,7 +8,7 @@
   "main": "./hummus.js",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "mocha -R tap ./tests/*.js --timeout 5000"
+    "test": "mocha -R tap ./tests/*.js --timeout 15000"
   },
   "repository": {
     "type": "git",
