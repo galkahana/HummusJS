@@ -399,8 +399,8 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
         
-        /*if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();*/
+        if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
             alternativePath = *String::Utf8Value(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
@@ -411,7 +411,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
         }
 
-        /*if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
             pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
@@ -427,7 +427,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
         }
         else // default to print only
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;    */    
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;  
     }
     
     EStatusCode status;
@@ -438,13 +438,13 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
                                    args[1]->ToObject(),
                                    pdfVersion,
                                    logConfig,
-                                   pdfCreationSettings);
+                                   PDFCreationSettings(true,true));
     }
     else
     {
         status = driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
                                pdfVersion,alternativePath,logConfig,
-                               pdfCreationSettings);
+                               PDFCreationSettings(true,true));
     }
     
     if(status != PDFHummus::eSuccess)
