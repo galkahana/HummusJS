@@ -42,6 +42,7 @@
                 './src/AbstractContentContextDriver.cpp',
                 './src/PageContentContextDriver.cpp',
                 './src/PDFPageDriver.cpp',
+                './src/PDFPageModifierDriver.cpp',
                 './src/PDFWriterDriver.cpp',
                 './src/PDFPageInputDriver.cpp',
                 './src/InputFileDriver.cpp',
