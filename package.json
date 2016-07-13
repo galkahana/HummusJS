@@ -1,6 +1,6 @@
 {
   "name": "hummus",
-  "version": "1.0.56",
+  "version": "1.0.57",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
   "license": "Apache-2.0",
@@ -26,23 +26,25 @@
     "PDFStreamForResponse.js",
     "PDFWStreamForFile.js"
   ],
-  "dependencies"  : {
-      "node-pre-gyp": "^0.6.13"
-   },
-   "bundledDependencies":["node-pre-gyp"],
-   "devDependencies": {
-      "aws-sdk": "~2.0.0-rc.15",
-      "chai": "^3.4.0",
-      "mocha": "^2.3.3"
+  "dependencies": {
+    "node-pre-gyp": "^0.6.13"
+  },
+  "bundledDependencies": [
+    "node-pre-gyp"
+  ],
+  "devDependencies": {
+    "aws-sdk": "~2.0.0-rc.15",
+    "chai": "^3.4.0",
+    "mocha": "^2.3.3"
   },
   "binary": {
-      "module_name": "hummus",
-      "module_path": "./binding",
-      "remote_path": "./{module_name}/v{version}/{toolset}/",
-      "host": "https://hummus.s3-us-west-2.amazonaws.com",
-      "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
-    },
-   "publishConfig": {
-      "registry": "https://registry.npmjs.org/"
-   }  
+    "module_name": "hummus",
+    "module_path": "./binding",
+    "remote_path": "./{module_name}/v{version}/{toolset}/",
+    "host": "https://hummus.s3-us-west-2.amazonaws.com",
+    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }
