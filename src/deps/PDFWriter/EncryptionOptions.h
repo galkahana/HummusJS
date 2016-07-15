@@ -40,11 +40,11 @@ struct EncryptionOptions
 	}
 
 	// or if you feel like specifying in full (or provide false as first param to avoid encryption)
-	EncryptionOptions(bool ShouldEncrypt,
+	EncryptionOptions(bool inShouldEncrypt,
 					const std::string& inUserPassword,
 					long long inUserProtectionOptionsFlag,
 					const std::string& inOwnerPassword) {
-		ShouldEncrypt = ShouldEncrypt;
+		ShouldEncrypt = inShouldEncrypt;
 		UserPassword = inUserPassword;
 		UserProtectionOptionsFlag = inUserProtectionOptionsFlag;
 		OwnerPassword = inOwnerPassword;

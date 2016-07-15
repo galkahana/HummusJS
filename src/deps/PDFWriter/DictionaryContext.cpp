@@ -64,6 +64,10 @@ EStatusCode DictionaryContext::WriteKey(const std::string& inKey)
 	}
 }
 
+bool DictionaryContext::HasKey(const std::string& inKey) {
+	return mKeys.find(inKey) != mKeys.end();
+}
+
 static const Byte scTab[1] = {'\t'};
 void DictionaryContext::WriteIndents()
 {

@@ -39,7 +39,10 @@ public:
 	~DictionaryContext(void);
 
 	PDFHummus::EStatusCode WriteKey(const std::string& inKey);
-	
+
+	// returns true if key already written, false if not
+	bool HasKey(const std::string& inKey);
+
 	void WriteIntegerValue(long long inValue);
 	void WriteLiteralStringValue(const std::string& inValue);
 	void WriteHexStringValue(const std::string& inValue);

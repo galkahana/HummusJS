@@ -2148,11 +2148,18 @@ EStatusCode DocumentContext::SetupModifiedFile(PDFParser* inModifiedFileParser)
     return eSuccess;
 }
 
-class VersionUpdate : public DocumentContextExtenderAdapter
+class ModifiedDocCatalogWriterExtension : public DocumentContextExtenderAdapter
 {
 public:
-    VersionUpdate(EPDFVersion inPDFVersion){mPDFVersion = inPDFVersion;}
-    virtual ~VersionUpdate(){}
+	ModifiedDocCatalogWriterExtension(
+		PDFDocumentCopyingContext* inCopyingContext,
+		bool inRequiredVersionUpdate,
+		EPDFVersion inPDFVersion){
+		mModifiedDocumentCopyingContext = inCopyingContext;
+		mRequiresVersionUpdate = inRequiredVersionUpdate;
+		mPDFVersion = inPDFVersion;
+	}
+    virtual ~ModifiedDocCatalogWriterExtension(){}
     
     // IDocumentContextExtender implementation
 	virtual PDFHummus::EStatusCode OnCatalogWrite(
@@ -2161,16 +2168,42 @@ public:
             ObjectsContext* inPDFWriterObjectContext,
             PDFHummus::DocumentContext* inDocumentContext)
     {
-        inCatalogDictionaryContext->WriteKey("Version");
-        
-        // need to write as /1.4 (name, of float value)
-        inCatalogDictionaryContext->WriteNameValue(Double(((double)mPDFVersion)/10).ToString());
+
+		// update version
+		if (mRequiresVersionUpdate) {
+			inCatalogDictionaryContext->WriteKey("Version");
+
+			// need to write as /1.4 (name, of float value)
+			inCatalogDictionaryContext->WriteNameValue(Double(((double)mPDFVersion) / 10).ToString());
+		}
+
+		// now write all info that's not overriden by this implementation
+		PDFParser* modifiedDocumentParser = mModifiedDocumentCopyingContext->GetSourceDocumentParser();
+		PDFObjectCastPtr<PDFDictionary> catalogDict(modifiedDocumentParser->QueryDictionaryObject(modifiedDocumentParser->GetTrailer(),"Root"));
+		MapIterator<PDFNameToPDFObjectMap>  catalogDictIt = catalogDict->GetIterator();
+
+		if (!catalogDict) {
+			// no catalog. not cool but possible. call quits
+			return eSuccess;
+		}
+
+		// copy all elements that were not already written. in other words - overriden
+		while (catalogDictIt.MoveNext())
+		{
+			if (!inCatalogDictionaryContext->HasKey(catalogDictIt.GetKey()->GetValue()))
+			{
+				inCatalogDictionaryContext->WriteKey(catalogDictIt.GetKey()->GetValue());
+				mModifiedDocumentCopyingContext->CopyDirectObjectAsIs(catalogDictIt.GetValue());
+			}
+		}
+
         
         return eSuccess;
     }    
     
 private:
-    
+	PDFDocumentCopyingContext* mModifiedDocumentCopyingContext;
+	bool mRequiresVersionUpdate;
     EPDFVersion mPDFVersion;
 };
 
@@ -2230,19 +2263,14 @@ EStatusCode	DocumentContext::FinalizeModifiedPDF(PDFParser* inModifiedFileParser
         
         if(hasNewPageTreeRoot || requiresVersionUpdate || DoExtendersRequireCatalogUpdate(inModifiedFileParser))
         {
-            VersionUpdate* versionUpdate = NULL;
-            if(requiresVersionUpdate)
-            {
-                versionUpdate = new VersionUpdate(inModifiedPDFVersion);
-                AddDocumentContextExtender(versionUpdate);
-            }
+			// use an extender to copy original catalog elements and update version if required
+			PDFDocumentCopyingContext* copyingContext = CreatePDFCopyingContext(inModifiedFileParser);
+			ModifiedDocCatalogWriterExtension catalogUpdate(copyingContext,requiresVersionUpdate,inModifiedPDFVersion);
+            AddDocumentContextExtender(&catalogUpdate);
             status = WriteCatalogObject(finalPageRoot);
-            if(requiresVersionUpdate)
-            {
-                RemoveDocumentContextExtender(versionUpdate);
-                delete versionUpdate;
-            }
-            if(status != 0)
+            RemoveDocumentContextExtender(&catalogUpdate);
+			delete copyingContext;
+            if(status != eSuccess)
                 break;
         }
                 
