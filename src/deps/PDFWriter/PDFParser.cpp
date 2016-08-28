@@ -1929,7 +1929,7 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 																(IOBasicTypes::LongBufferSizeType)colors->GetValue() :
 																1,
 															 bitsPerComponent.GetPtr() ?
-																(IOBasicTypes::Byte)colors->GetValue() :
+																(IOBasicTypes::Byte)bitsPerComponent->GetValue() :
 																8,
 																columnsValue);
 					break;

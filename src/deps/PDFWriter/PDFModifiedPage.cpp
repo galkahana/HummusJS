@@ -28,11 +28,13 @@
 #include "PDFDictionary.h"
 #include "PDFDocumentCopyingContext.h"
 #include "PDFObjectCast.h"
+#include "RefCountPtr.h"
 #include "DictionaryContext.h"
 #include "PDFIndirectObjectReference.h"
 #include "PDFArray.h"
 #include "BoxingBase.h"
 #include "PDFStream.h"
+#include "PDFObject.h"
 
 #include <string>
 
@@ -127,12 +129,9 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 		// write old annots, if any exist
 		PDFObjectCastPtr<PDFArray> anArray(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(),"Annots"));
 		SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
-		PDFObjectCastPtr<PDFIndirectObjectReference> ref;
+		//PDFObjectCastPtr<PDFIndirectObjectReference> ref;
 		while (refs.MoveNext())
-		{
-			ref = refs.GetItem();
-			objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
-		}
+			copyingContext->CopyDirectObjectAsIs(refs.GetItem());
 
 		// write new annots from links
 		ObjectIDTypeSet& annotations = mWriter->GetDocumentContext().GetAnnotations();
@@ -162,25 +161,31 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 			objectContext.WriteNewIndirectObjectReference(newEncapsulatingObjectID);
 		}
 
-
-		PDFObjectCastPtr<PDFArray> anArray(pageDictionaryObject->QueryDirectObject("Contents"));
-		if(!anArray)
+		RefCountPtr<PDFObject> pageContent(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(), "Contents"));
+		if (pageContent->GetType() == PDFObject::ePDFObjectStream)
 		{
-			// single content stream
+			// single content stream. must be a refrence which points to it
 			PDFObjectCastPtr<PDFIndirectObjectReference> ref(pageDictionaryObject->QueryDirectObject("Contents"));
-			objectContext.WriteIndirectObjectReference(ref->mObjectID,ref->mVersion);
+			objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
 		}
-		else
+		else if (pageContent->GetType() == PDFObject::ePDFObjectArray)
 		{
+			PDFArray* anArray = (PDFArray*)pageContent.GetPtr();
+
 			// multiple content streams
 			SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
 			PDFObjectCastPtr<PDFIndirectObjectReference> ref;
-			while(refs.MoveNext())
+			while (refs.MoveNext())
 			{
 				ref = refs.GetItem();
-				objectContext.WriteIndirectObjectReference(ref->mObjectID,ref->mVersion);
+				objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
 			}
+
 		}
+		else {
+			// this basically means no content...or whatever. just ignore.
+		}
+
 		objectContext.WriteNewIndirectObjectReference(newContentObjectID);
 		objectContext.EndArray();
 		objectContext.EndLine();

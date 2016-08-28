@@ -65,7 +65,6 @@ struct PDFCreationSettings
 		EmbedFonts = inEmbedFonts;
 	}
 
-	static const PDFCreationSettings DefaultPDFCreationSettings;
 };
 
 class PageContentContext;
@@ -85,7 +84,7 @@ public:
 	PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
 							EPDFVersion inPDFVersion,
 							const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
-							const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings);
+							const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));
 
 	PDFHummus::EStatusCode EndPDF();
 
@@ -93,7 +92,7 @@ public:
 	PDFHummus::EStatusCode StartPDFForStream(IByteWriterWithPosition* inOutputStream,
 								  EPDFVersion inPDFVersion,
 								  const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
-								  const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings);
+								  const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));
 	PDFHummus::EStatusCode EndPDFForStream();
 
 	// in case of internal or external error, call this function to cleanup, in order to allow reuse of the PDFWriter class
@@ -105,14 +104,14 @@ public:
                                      EPDFVersion inPDFVersion,
                                      const std::string& inOptionalAlternativeOutputFile,
                                      const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
-                                     const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings);                                 
+                                     const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));                                 
     PDFHummus::EStatusCode ModifyPDFForStream(
                                     IByteReaderWithPosition* inModifiedSourceStream,
                                     IByteWriterWithPosition* inModifiedDestinationStream,
                                     bool inAppendOnly,
                                     EPDFVersion inPDFVersion,
                                     const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
-                                    const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings::DefaultPDFCreationSettings                                 
+                                    const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true)                                 
                                     );
     
 	// Ending and Restarting writing session (optional input file is for modification scenarios)

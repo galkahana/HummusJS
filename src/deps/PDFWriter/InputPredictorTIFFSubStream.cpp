@@ -56,7 +56,7 @@ LongBufferSizeType InputPredictorTIFFSubStream::Read(Byte* inBuffer,LongBufferSi
 	
 
 	// exhaust what's in the buffer currently
-	while(mReadColorsCount > (LongBufferSizeType)(mReadColorsIndex - mColors) && readBytes < inBufferSize)
+	while(mReadColorsCount > (LongBufferSizeType)(mReadColorsIndex - mReadColors) && readBytes < inBufferSize)
 	{
 		ReadByteFromColorsArray(inBuffer[readBytes]);
 		++readBytes;
@@ -73,7 +73,7 @@ LongBufferSizeType InputPredictorTIFFSubStream::Read(Byte* inBuffer,LongBufferSi
 		}
 		DecodeBufferToColors();
 
-		while(mReadColorsCount > (LongBufferSizeType)(mReadColorsIndex - mColors) && readBytes < inBufferSize)
+		while(mReadColorsCount > (LongBufferSizeType)(mReadColorsIndex - mReadColors) && readBytes < inBufferSize)
 		{
 			ReadByteFromColorsArray(inBuffer[readBytes]);
 			++readBytes;
@@ -102,7 +102,7 @@ void InputPredictorTIFFSubStream::Assign(IByteReader* inSourceStream,
 
 	mReadColorsCount = inColumns * inColors;
 	mReadColors = new unsigned short[mReadColorsCount];
-	mReadColorsIndex = mReadColors + mReadColorsCount;
+	mReadColorsIndex = mReadColors + mReadColorsCount; // assign to end of array so will know that should read new buffer
 	mIndexInColor = 0;
 
 	mBitMask = 0;

@@ -40,8 +40,6 @@ using namespace PDFHummus;
 
 const LogConfiguration LogConfiguration::DefaultLogConfiguration(false,false,"PDFWriterLog.txt");
 
-const PDFCreationSettings PDFCreationSettings::DefaultPDFCreationSettings(true,true,EncryptionOptions::DefaultEncryptionOptions);
-
 PDFWriter::PDFWriter(void)
 {
 	// Gal: some trick, already set reference to objects context. this does not mean that the document context can start doing something.

@@ -619,13 +619,6 @@ PDFObject* PDFObjectParser::ParseDictionary()
 			break;
 		}
 
-		// i'll consider duplicate keys as failure
-		if(aDictionary->Exists(aKey->GetValue()))
-		{
-			status = PDFHummus::eFailure;
-			TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse key for a dictionary, key already exists. key = %s",aKey->GetValue().c_str());
-			break;
-		}
 
 		// Parse Value
 		RefCountPtr<PDFObject> aValue = ParseNewObject();
@@ -636,8 +629,10 @@ PDFObject* PDFObjectParser::ParseDictionary()
 			break;
 		}
 	
-		// all well, add the two items to the dictionary
-		aDictionary->Insert(aKey.GetPtr(),aValue.GetPtr());
+
+		// all good. i'm gonna be forgiving here and allow skipping duplicate keys. cause it happens
+		if(!aDictionary->Exists(aKey->GetValue()))
+			aDictionary->Insert(aKey.GetPtr(),aValue.GetPtr());
 	}
 
 	if(dictionaryEndEncountered && PDFHummus::eSuccess == status)

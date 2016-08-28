@@ -47,6 +47,7 @@
 #include "IResourceWritingTask.h"
 #include "IFormEndWritingTask.h"
 #include "PDFPageInput.h"
+#include "IndirectObjectsReferenceRegistry.h"
 
 using namespace PDFHummus;
 
@@ -580,8 +581,17 @@ EStatusCode PDFDocumentHandler::CopyInDirectObject(ObjectIDType inSourceObjectID
 	RefCountPtr<PDFObject> sourceObject = mParser->ParseNewObject(inSourceObjectID);
 	if(!sourceObject)
 	{
-		TRACE_LOG1("PDFDocumentHandler::CopyInDirectObject, object not found. %ld",inSourceObjectID);
-		return PDFHummus::eFailure;
+		XrefEntryInput* xrefEntry = mParser->GetXrefEntry(inSourceObjectID);
+		if (xrefEntry->mType == eXrefEntryDelete) {
+			// if the object is deleted, replace with a deleted object
+			mObjectsContext->GetInDirectObjectsRegistry().DeleteObject(inTargetObjectID);
+			return PDFHummus::eSuccess;
+		}
+		else {
+			// fail
+			TRACE_LOG1("PDFDocumentHandler::CopyInDirectObject, object not found. %ld", inSourceObjectID);
+			return PDFHummus::eFailure;
+		}
 	}
 
 	mObjectsContext->StartNewIndirectObject(inTargetObjectID);
