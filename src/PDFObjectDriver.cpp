@@ -383,7 +383,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToString(const ARGS_TYPE& args)
             result = ((PDFBoolean*)anObject)->GetValue() ? "true":"false";
             break;
         default:
-            result = PDFObject::scPDFObjectTypeLabel[anObject->GetType()];
+            result = PDFObject::scPDFObjectTypeLabel(anObject->GetType());
     }
     SET_FUNCTION_RETURN_VALUE(NEW_STRING(result.c_str()));
 

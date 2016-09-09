@@ -42,7 +42,7 @@ struct TIFFBiLevelBWColorTreatment
 																					OneColor=inOneColor;}
 
 	// default treatment is AsImageMask = false
-	static const TIFFBiLevelBWColorTreatment DefaultTIFFBiLevelBWColorTreatment;
+	static const TIFFBiLevelBWColorTreatment& DefaultTIFFBiLevelBWColorTreatment();
 };
 
 struct TIFFBiLevelGrayscaleColorTreatment
@@ -64,7 +64,7 @@ struct TIFFBiLevelGrayscaleColorTreatment
 																					ZeroColor=inZeroColor;}
 
 	// default treatment is AsColorMap = false
-	static const TIFFBiLevelGrayscaleColorTreatment DefaultTIFFBiLevelGrayscaleColorTreatment;
+	static const TIFFBiLevelGrayscaleColorTreatment& DefaultTIFFBiLevelGrayscaleColorTreatment();
 };
 
 
@@ -80,7 +80,7 @@ struct TIFFUsageParameters
 	// Grayscale options
 	TIFFBiLevelGrayscaleColorTreatment GrayscaleTreatment;
 
-	TIFFUsageParameters():BWTreatment(TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment),GrayscaleTreatment(TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment)
+	TIFFUsageParameters():BWTreatment(TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment()),GrayscaleTreatment(TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment())
 						{PageIndex = 0;}
 
 	TIFFUsageParameters(unsigned int inPageIndex,
@@ -89,6 +89,6 @@ struct TIFFUsageParameters
 						{PageIndex = inPageIndex;}
 
 	// default treatment is 0 page index, and defaults for black & white and Grayscale
-	static const TIFFUsageParameters DefaultTIFFUsageParameters;
+	static const TIFFUsageParameters& DefaultTIFFUsageParameters();
 
 };

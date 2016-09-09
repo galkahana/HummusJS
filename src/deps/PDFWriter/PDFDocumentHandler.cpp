@@ -437,7 +437,7 @@ EStatusCode PDFDocumentHandler::WritePageContentToSingleStream(IByteWriter* inTa
 	}
 	else
 	{
-		TRACE_LOG1("PDFDocumentHandler::WritePageContentToSingleStream, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel[pageContent->GetType()]);
+		TRACE_LOG1("PDFDocumentHandler::WritePageContentToSingleStream, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel(pageContent->GetType()));
 		status = PDFHummus::eFailure;
 	}
 	
@@ -860,7 +860,7 @@ EStatusCode PDFDocumentHandler::CopyPageContentToTargetPagePassthrough(PDFPage* 
 	}
 	else
 	{
-		TRACE_LOG1("PDFDocumentHandler::CopyPageContentToTargetPagePassthrough, error copying page content, expected either array or stream, getting %s", PDFObject::scPDFObjectTypeLabel[pageContent->GetType()]);
+		TRACE_LOG1("PDFDocumentHandler::CopyPageContentToTargetPagePassthrough, error copying page content, expected either array or stream, getting %s", PDFObject::scPDFObjectTypeLabel(pageContent->GetType()));
 		status = PDFHummus::eFailure;
 	}
 
@@ -907,7 +907,7 @@ EStatusCode PDFDocumentHandler::CopyPageContentToTargetPageRecoded(PDFPage* inPa
 	}
 	else
 	{
-		TRACE_LOG1("PDFDocumentHandler::CopyPageContentToTargetPageRecoded, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel[pageContent->GetType()]);
+		TRACE_LOG1("PDFDocumentHandler::CopyPageContentToTargetPageRecoded, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel(pageContent->GetType()));
 		status = PDFHummus::eFailure;
 	}
 	
@@ -1594,7 +1594,7 @@ EStatusCode PDFDocumentHandler::MergePageContentToTargetPage(PDFPage* inTargetPa
 	}
 	else
 	{
-		TRACE_LOG1("PDFDocumentHandler::MergePageContentToTargetPage, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel[pageContent->GetType()]);
+		TRACE_LOG1("PDFDocumentHandler::MergePageContentToTargetPage, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel(pageContent->GetType()));
 		status = PDFHummus::eFailure;
 	}
 
@@ -2384,7 +2384,7 @@ EStatusCode PDFDocumentHandler::MergePageContentToTargetXObject(PDFFormXObject* 
 	}
 	else
 	{
-		TRACE_LOG1("PDFDocumentHandler::MergePageContentToTargetXObject, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel[pageContent->GetType()]);
+		TRACE_LOG1("PDFDocumentHandler::MergePageContentToTargetXObject, error copying page content, expected either array or stream, getting %s",PDFObject::scPDFObjectTypeLabel(pageContent->GetType()));
 		status = PDFHummus::eFailure;
 	}
 

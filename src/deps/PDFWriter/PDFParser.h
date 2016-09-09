@@ -81,7 +81,7 @@ public:
 	// sets the stream to parse, then parses for enough information to be able
 	// to parse objects later
 	PDFHummus::EStatusCode StartPDFParsing(IByteReaderWithPosition* inSourceStream, 
-											const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+											const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 	// get a parser that can parse objects
 	PDFObjectParser& GetObjectParser();

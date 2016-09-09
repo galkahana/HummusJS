@@ -890,7 +890,7 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 			{
 				if(it.GetItem()->GetType() != PDFObject::ePDFObjectIndirectObjectReference)
 				{
-					TRACE_LOG1("PDFParser::ParsePagesIDs, unexpected type for a Kids array object, type = %s",PDFObject::scPDFObjectTypeLabel[it.GetItem()->GetType()]);
+					TRACE_LOG1("PDFParser::ParsePagesIDs, unexpected type for a Kids array object, type = %s",PDFObject::scPDFObjectTypeLabel(it.GetItem()->GetType()));
 					status = PDFHummus::eFailure;
 					break;
 				}

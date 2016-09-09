@@ -363,7 +363,7 @@ void ReportWarning(const char* inModel, const char* inFormat, va_list inParamete
 
 	SAFE_VSPRINTF(buffer,5001,formatter.str().c_str(),inParametersList);
 
-    Trace::DefaultTrace.TraceToLog(buffer);
+    Trace::DefaultTrace().TraceToLog(buffer);
 }
 
 void ReportError(const char* inModel, const char* inFormat, va_list inParametersList)
@@ -374,10 +374,10 @@ void ReportError(const char* inModel, const char* inFormat, va_list inParameters
 
 	SAFE_VSPRINTF(buffer,5001,formatter.str().c_str(),inParametersList);
 
-	Trace::DefaultTrace.TraceToLog(buffer);
+	Trace::DefaultTrace().TraceToLog(buffer);
 }
 
-TIFFImageHandler::TIFFImageHandler():mUserParameters(TIFFUsageParameters::DefaultTIFFUsageParameters)
+TIFFImageHandler::TIFFImageHandler():mUserParameters(TIFFUsageParameters::DefaultTIFFUsageParameters())
 {
 	mT2p = NULL;
 	mExtender = NULL;
@@ -2865,6 +2865,7 @@ EStatusCode TIFFImageHandler::WriteImageData(PDFStream* inImageStream)
 					break;
 				}
 				bufferoffset+=read;
+				stripsize = (stripsize > mT2p->tiff_datasize - bufferoffset) ? (mT2p->tiff_datasize - bufferoffset) : stripsize;
 			}
 			if(status != PDFHummus::eSuccess)
 				break;
@@ -2979,6 +2980,7 @@ EStatusCode TIFFImageHandler::WriteImageData(PDFStream* inImageStream)
 					break;
 				}
 				bufferoffset+=read;
+				stripsize = (stripsize > mT2p->tiff_datasize - bufferoffset) ? (mT2p->tiff_datasize - bufferoffset) : stripsize;
 			}
 			if(status != PDFHummus::eSuccess)
 				break;

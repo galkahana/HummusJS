@@ -63,6 +63,7 @@ private:
 	bool mEnsureContentEncapsulation;
 	PDFFormXObject* mCurrentContext;
 	PDFFormXObjectVector mContenxts;
+	bool mIsDirty;
 
 	std::vector<std::string> WriteModifiedResourcesDict(PDFParser* inParser,PDFDictionary* inResourcesDictionary,ObjectsContext& inObjectContext,PDFDocumentCopyingContext* inCopyingContext);
 	unsigned char GetDifferentChar(unsigned char);

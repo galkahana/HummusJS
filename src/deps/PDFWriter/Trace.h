@@ -45,7 +45,7 @@ public:
 	void TraceToLog(const char* inFormat,...);
 	void TraceToLog(const char* inFormat,va_list inList);
 
-    static Trace DefaultTrace;
+    static Trace& DefaultTrace();
 
 private:
 	char mBuffer[5001];
@@ -62,12 +62,12 @@ private:
 
 
 // short cuts for logging formats strings
-#define TRACE_LOG(FORMAT) Trace::DefaultTrace.TraceToLog(FORMAT)
-#define TRACE_LOG1(FORMAT,ARG1) Trace::DefaultTrace.TraceToLog(FORMAT,ARG1)
-#define TRACE_LOG2(FORMAT,ARG1,ARG2) Trace::DefaultTrace.TraceToLog(FORMAT,ARG1,ARG2)
-#define TRACE_LOG3(FORMAT,ARG1,ARG2,ARG3) Trace::DefaultTrace.TraceToLog(FORMAT,ARG1,ARG2,ARG3)
-#define TRACE_LOG4(FORMAT,ARG1,ARG2,ARG3,ARG4) Trace::DefaultTrace.TraceToLog(FORMAT,ARG1,ARG2,ARG3,ARG4)
-#define TRACE_LOG5(FORMAT,ARG1,ARG2,ARG3,ARG4,ARG5) Trace::DefaultTrace.TraceToLog(FORMAT,ARG1,ARG2,ARG3,ARG4,ARG5)
+#define TRACE_LOG(FORMAT) Trace::DefaultTrace().TraceToLog(FORMAT)
+#define TRACE_LOG1(FORMAT,ARG1) Trace::DefaultTrace().TraceToLog(FORMAT,ARG1)
+#define TRACE_LOG2(FORMAT,ARG1,ARG2) Trace::DefaultTrace().TraceToLog(FORMAT,ARG1,ARG2)
+#define TRACE_LOG3(FORMAT,ARG1,ARG2,ARG3) Trace::DefaultTrace().TraceToLog(FORMAT,ARG1,ARG2,ARG3)
+#define TRACE_LOG4(FORMAT,ARG1,ARG2,ARG3,ARG4) Trace::DefaultTrace().TraceToLog(FORMAT,ARG1,ARG2,ARG3,ARG4)
+#define TRACE_LOG5(FORMAT,ARG1,ARG2,ARG3,ARG4,ARG5) Trace::DefaultTrace().TraceToLog(FORMAT,ARG1,ARG2,ARG3,ARG4,ARG5)
 
 
 

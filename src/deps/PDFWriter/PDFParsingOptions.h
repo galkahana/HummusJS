@@ -29,5 +29,5 @@ struct PDFParsingOptions
 	PDFParsingOptions() {}
 	PDFParsingOptions(std::string inPassword) { Password = inPassword; }
 
-	static const PDFParsingOptions DefaultPDFParsingOptions;
+	static const PDFParsingOptions& DefaultPDFParsingOptions();
 };

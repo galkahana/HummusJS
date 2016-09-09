@@ -53,7 +53,7 @@ public:
 
 	EPDFObjectType GetType();
     
-    static const char* scPDFObjectTypeLabel[];
+    static const char* scPDFObjectTypeLabel(int index);
 
 	/*
 		metadata will automatically be deleted when object is released

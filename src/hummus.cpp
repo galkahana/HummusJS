@@ -91,7 +91,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     
     EPDFVersion pdfVersion = ePDFVersion13;
     PDFCreationSettings pdfCreationSettings(true,true);
-    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
     
     if(args.Length() == 2 && args[1]->IsObject())
     {
@@ -202,7 +202,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
 
     EPDFVersion pdfVersion = ePDFVersion13;
     PDFCreationSettings pdfCreationSettings(true,true);
-    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
     std::string originalPassword;
     
     if(args.Length() == 3 && args[2]->IsObject())
@@ -301,7 +301,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
     
     std::string alternativePath;
     Handle<Object> alternativeStream;
-    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
    
     if(args.Length() == 2 && args[1]->IsObject())
     {
@@ -381,7 +381,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     std::string alternativePath;
     Handle<Value> alternativeStream;
     PDFCreationSettings pdfCreationSettings(true,true);
-    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration;
+    LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
     
     int optionsObjectIndex = args[0]->IsString() ? 1:2;
     
@@ -518,7 +518,7 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    Handle<Value> result = NEW_STRING(PDFObject::scPDFObjectTypeLabel[(PDFObject::EPDFObjectType)value]);
+    Handle<Value> result = NEW_STRING(PDFObject::scPDFObjectTypeLabel((PDFObject::EPDFObjectType)value));
     
     SET_FUNCTION_RETURN_VALUE(result);
 }

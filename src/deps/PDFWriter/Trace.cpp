@@ -25,7 +25,10 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-Trace Trace::DefaultTrace;
+Trace& Trace::DefaultTrace(){
+	static Trace default_trace;
+	return default_trace;
+}
 
 Trace::Trace(void)
 {

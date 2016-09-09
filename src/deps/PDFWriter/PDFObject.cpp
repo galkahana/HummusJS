@@ -20,20 +20,24 @@
 */
 #include "PDFObject.h"
 
-const char* PDFObject::scPDFObjectTypeLabel[] = 
+const char* PDFObject::scPDFObjectTypeLabel(int index) 
 {
-	"Boolean",
-	"LiteralString",
-	"HexString",
-	"Null",
-	"Name",
-	"Integer",
-	"Real",
-	"Array",
-	"Dictionary",
-	"IndirectObjectReference",
-	"Stream",
-	"Symbol"
+	static const char* labels[] =
+	{
+		"Boolean",
+		"LiteralString",
+		"HexString",
+		"Null",
+		"Name",
+		"Integer",
+		"Real",
+		"Array",
+		"Dictionary",
+		"IndirectObjectReference",
+		"Stream",
+		"Symbol"
+	};
+	return labels[index];
 };
 
 PDFObject::PDFObject(EPDFObjectType inType)

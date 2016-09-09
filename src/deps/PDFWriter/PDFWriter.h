@@ -51,7 +51,7 @@ struct LogConfiguration
 																							LogFileLocation=inLogFileLocation;LogStream = NULL;}
 	LogConfiguration(bool inShouldLog,IByteWriter* inLogStream){ShouldLog = inShouldLog;LogStream = inLogStream;StartWithBOM = false;}
 
-	static const LogConfiguration DefaultLogConfiguration;
+	static const LogConfiguration& DefaultLogConfiguration();
 };
 
 struct PDFCreationSettings
@@ -60,7 +60,7 @@ struct PDFCreationSettings
 	bool EmbedFonts;
 	EncryptionOptions DocumentEncryptionOptions;
 
-	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions):DocumentEncryptionOptions(inDocumentEncryptionOptions){ 
+	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions()):DocumentEncryptionOptions(inDocumentEncryptionOptions){ 
 		CompressStreams = inCompressStreams; 
 		EmbedFonts = inEmbedFonts;
 	}
@@ -83,7 +83,7 @@ public:
 	// output to file
 	PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
 							EPDFVersion inPDFVersion,
-							const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
+							const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration(),
 							const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));
 
 	PDFHummus::EStatusCode EndPDF();
@@ -91,7 +91,7 @@ public:
 	// output to stream
 	PDFHummus::EStatusCode StartPDFForStream(IByteWriterWithPosition* inOutputStream,
 								  EPDFVersion inPDFVersion,
-								  const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
+								  const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration(),
 								  const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));
 	PDFHummus::EStatusCode EndPDFForStream();
 
@@ -103,14 +103,14 @@ public:
     PDFHummus::EStatusCode ModifyPDF(const std::string& inModifiedFile,
                                      EPDFVersion inPDFVersion,
                                      const std::string& inOptionalAlternativeOutputFile,
-                                     const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
+                                     const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration(),
                                      const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));                                 
     PDFHummus::EStatusCode ModifyPDFForStream(
                                     IByteReaderWithPosition* inModifiedSourceStream,
                                     IByteWriterWithPosition* inModifiedDestinationStream,
                                     bool inAppendOnly,
                                     EPDFVersion inPDFVersion,
-                                    const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration,
+                                    const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration(),
                                     const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true)                                 
                                     );
     
@@ -119,12 +119,12 @@ public:
 	PDFHummus::EStatusCode ContinuePDF(const std::string& inOutputFilePath,
 							const std::string& inStateFilePath,
                             const std::string& inOptionalModifiedFile = "",
-							const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration);
+							const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration());
 	// Continue PDF in output stream workflow (optional input stream is for modification scenarios)
 	PDFHummus::EStatusCode ContinuePDFForStream(IByteWriterWithPosition* inOutputStream,
 									 const std::string& inStateFilePath,
                                      IByteReaderWithPosition* inModifiedSourceStream = NULL,
-				 					 const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration);
+				 					 const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration());
 
 	// Page context, for drwaing page content
 	PageContentContext* StartPageContentContext(PDFPage* inPage);
@@ -172,15 +172,15 @@ public:
 	// tiff
 #ifndef PDFHUMMUS_NO_TIFF
 	PDFFormXObject* CreateFormXObjectFromTIFFFile(	const std::string& inTIFFFilePath,
-													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters);
+													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters());
 	PDFFormXObject* CreateFormXObjectFromTIFFStream(IByteReaderWithPosition* inTIFFStream,
-													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters);
+													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters());
 	PDFFormXObject* CreateFormXObjectFromTIFFFile(	const std::string& inTIFFFilePath,
 													ObjectIDType inFormXObjectID,
-													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters);
+													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters());
 	PDFFormXObject* CreateFormXObjectFromTIFFStream(	IByteReaderWithPosition* inTIFFStream,
 													ObjectIDType inFormXObjectID,
-													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters);
+													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters());
 #endif
 	// PDF 
 
@@ -191,14 +191,14 @@ public:
 															 EPDFPageBox inPageBoxToUseAsFormBox,
 															 const double* inTransformationMatrix = NULL,
 															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															 const PDFPageRange& inPageRange,
 															 EPDFPageBox inPageBoxToUseAsFormBox,
 															 const double* inTransformationMatrix = NULL,
 															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 	
 	// CreateFormXObjectsFromPDF is an override to allow you to determine a custom crop for the page embed
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
@@ -206,25 +206,25 @@ public:
 															 const PDFRectangle& inCropBox,
 															 const double* inTransformationMatrix = NULL,
 															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															 const PDFPageRange& inPageRange,
 															 const PDFRectangle& inCropBox,
 															 const double* inTransformationMatrix = NULL,
 															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 	// AppendPDFPagesFromPDF is for simple appending of the input PDF pages
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(const std::string& inPDFFilePath,
 														const PDFPageRange& inPageRange,
 														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 	
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(IByteReaderWithPosition* inPDFStream,
 														const PDFPageRange& inPageRange,
 														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 	// MergePDFPagesToPage, merge PDF pages content to an input page. good for single-placement of a page content, cheaper than creating
 	// and XObject and later placing, when the intention is to use this graphic just once.
@@ -232,30 +232,30 @@ public:
 									const std::string& inPDFFilePath,
 									const PDFPageRange& inPageRange,
 									const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-									const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+									const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 	PDFHummus::EStatusCode MergePDFPagesToPage(PDFPage* inPage,
 									IByteReaderWithPosition* inPDFStream,
 									const PDFPageRange& inPageRange,
 									const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
-									const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+									const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 
 	// Copying context, allowing for a continous flow of copying from multiple sources PDFs (create one per source) to target PDF
 	PDFDocumentCopyingContext* CreatePDFCopyingContext(
 		const std::string& inPDFFilePath, 
-		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 	PDFDocumentCopyingContext* CreatePDFCopyingContext(
 		IByteReaderWithPosition* inPDFStream, 
-		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
     
     // for modified file path, create a copying context for the modified file
     PDFDocumentCopyingContext* CreatePDFCopyingContextForModifiedFile();
 
 	// some public image info services, for users of hummus
-	DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0, const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+	DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0, const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 	EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
-	unsigned long GetImagePagesCount(const std::string& inImageFile, const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions);
+	unsigned long GetImagePagesCount(const std::string& inImageFile, const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 
 	// fonts [text], font index is provided for multi-font file packages (such as dfont and ttc), 0 the default is

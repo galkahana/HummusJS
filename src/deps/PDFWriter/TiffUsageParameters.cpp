@@ -20,10 +20,23 @@
 */
 #include "TiffUsageParameters.h"
 
-const TIFFBiLevelBWColorTreatment TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment(false,CMYKRGBColor::CMYKBlack);
+const TIFFBiLevelBWColorTreatment& TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment()
+{
+	static TIFFBiLevelBWColorTreatment default_tiff_bilevel_bwcolor_treatment(false, CMYKRGBColor::CMYKBlack);
+	return default_tiff_bilevel_bwcolor_treatment;
+}
 
-const TIFFBiLevelGrayscaleColorTreatment TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment(false,CMYKRGBColor::CMYKBlack,CMYKRGBColor::CMYKWhite);
+const TIFFBiLevelGrayscaleColorTreatment& TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment()
+{
+	static TIFFBiLevelGrayscaleColorTreatment default_tiff_bilevel_grayscale_treatment(false, CMYKRGBColor::CMYKBlack, CMYKRGBColor::CMYKWhite);
+	return default_tiff_bilevel_grayscale_treatment;
 
-const TIFFUsageParameters TIFFUsageParameters::DefaultTIFFUsageParameters(	0,
-																			TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment,				
-																			TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment);
+}
+
+const TIFFUsageParameters& TIFFUsageParameters::DefaultTIFFUsageParameters()
+{
+	static TIFFUsageParameters default_tiff_usage_parameters(0,
+		TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment(),
+		TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment());
+	return default_tiff_usage_parameters;
+}

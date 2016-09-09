@@ -46,6 +46,7 @@ PDFModifiedPage::PDFModifiedPage(PDFWriter* inWriter,unsigned long inPageIndex,b
 	mPageIndex = inPageIndex;
 	mCurrentContext = NULL;
 	mEnsureContentEncapsulation = inEnsureContentEncapsulation;
+	mIsDirty = false;
 }
 
 PDFModifiedPage::~PDFModifiedPage(void)
@@ -70,10 +71,15 @@ PDFHummus::EStatusCode PDFModifiedPage::PauseContentContext()
 
 PDFHummus::EStatusCode PDFModifiedPage::EndContentContext()
 {
-	EStatusCode status = mWriter->EndFormXObject(mCurrentContext);
-	mContenxts.push_back(mCurrentContext);
-	mCurrentContext = NULL;
-	return status;
+	if (mCurrentContext) {
+		mIsDirty = true;
+		EStatusCode status = mWriter->EndFormXObject(mCurrentContext);
+		mContenxts.push_back(mCurrentContext);
+		mCurrentContext = NULL;
+		return status;
+	}
+	else
+		return eSuccess;
 }
 
 AbstractContentContext* PDFModifiedPage::GetContentContext()
@@ -83,219 +89,228 @@ AbstractContentContext* PDFModifiedPage::GetContentContext()
 
 PDFHummus::EStatusCode PDFModifiedPage::AttachURLLinktoCurrentPage(const std::string& inURL, const PDFRectangle& inLinkClickArea)
 {
+	mIsDirty = true;
 	return mWriter->GetDocumentContext().AttachURLLinktoCurrentPage(inURL, inLinkClickArea);
 }
 
 PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 {
-    // allocate an object ID for the new contents stream (for placing the form)
-    // we first create the modified page object, so that we can define a name for the new form xobject
-    // that is unique
-	ObjectsContext& objectContext  = mWriter->GetObjectsContext();
-	ObjectIDType newContentObjectID = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
-	ObjectIDType newEncapsulatingObjectID = 0;
+	EStatusCode status = EndContentContext(); // just in case someone forgot to close the latest content context
 
-
-    // create a copying context, so we can copy the page dictionary, and modify its contents + resources dict
-	PDFDocumentCopyingContext* copyingContext = mWriter->CreatePDFCopyingContextForModifiedFile();
-
-	// get the page object
-	ObjectIDType pageObjectID = copyingContext->GetSourceDocumentParser()->GetPageObjectID(mPageIndex);
-    PDFObjectCastPtr<PDFDictionary> pageDictionaryObject = copyingContext->GetSourceDocumentParser()->ParsePage(mPageIndex);
-    MapIterator<PDFNameToPDFObjectMap>  pageDictionaryObjectIt = pageDictionaryObject->GetIterator();
-        
-    // create modified page object
-    objectContext.StartModifiedIndirectObject(pageObjectID);
-    DictionaryContext* modifiedPageObject = mWriter->GetObjectsContext().StartDictionary();
-        
-    // copy all elements of the page to the new page object, but the "Contents", "Resources" and "Annots" elements
-    while(pageDictionaryObjectIt.MoveNext())
-    {
-        if(pageDictionaryObjectIt.GetKey()->GetValue() != "Resources" &&
-			pageDictionaryObjectIt.GetKey()->GetValue() != "Contents" &&
-			pageDictionaryObjectIt.GetKey()->GetValue() != "Annots" )
-        {
-            modifiedPageObject->WriteKey(pageDictionaryObjectIt.GetKey()->GetValue());
-            copyingContext->CopyDirectObjectAsIs(pageDictionaryObjectIt.GetValue());
-        }
-    }   
-
-	// Write new annotations entry, joining existing annotations, and new ones (from links attaching or what not)
-	if (!!pageDictionaryObject->Exists("Annots") || mWriter->GetDocumentContext().GetAnnotations().size() > 0)
-	{
-		modifiedPageObject->WriteKey("Annots");
-		objectContext.StartArray();
-
-		// write old annots, if any exist
-		PDFObjectCastPtr<PDFArray> anArray(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(),"Annots"));
-		SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
-		//PDFObjectCastPtr<PDFIndirectObjectReference> ref;
-		while (refs.MoveNext())
-			copyingContext->CopyDirectObjectAsIs(refs.GetItem());
-
-		// write new annots from links
-		ObjectIDTypeSet& annotations = mWriter->GetDocumentContext().GetAnnotations();
-		if (annotations.size() > 0)
-		{
-			ObjectIDTypeSet::iterator it = annotations.begin();
-			for (; it != annotations.end(); ++it)
-				objectContext.WriteNewIndirectObjectReference(*it);
-		}
-		annotations.clear();
-		objectContext.EndArray(eTokenSeparatorEndLine);
-
-	}
-
-    // Write new contents entry, joining the existing contents with the new one. take care of various scenarios of the existing Contents
-	modifiedPageObject->WriteKey("Contents");
-	if(!pageDictionaryObject->Exists("Contents"))
-	{	// no contents
-		objectContext.WriteIndirectObjectReference(newContentObjectID);
-	}
-	else
-	{
-		objectContext.StartArray();
-		if (mEnsureContentEncapsulation)
-		{
-			newEncapsulatingObjectID = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
-			objectContext.WriteNewIndirectObjectReference(newEncapsulatingObjectID);
+	do {
+		if (status != eSuccess || !mIsDirty) {
+			break;
 		}
 
-		RefCountPtr<PDFObject> pageContent(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(), "Contents"));
-		if (pageContent->GetType() == PDFObject::ePDFObjectStream)
-		{
-			// single content stream. must be a refrence which points to it
-			PDFObjectCastPtr<PDFIndirectObjectReference> ref(pageDictionaryObject->QueryDirectObject("Contents"));
-			objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
-		}
-		else if (pageContent->GetType() == PDFObject::ePDFObjectArray)
-		{
-			PDFArray* anArray = (PDFArray*)pageContent.GetPtr();
+		// allocate an object ID for the new contents stream (for placing the form)
+		// we first create the modified page object, so that we can define a name for the new form xobject
+		// that is unique
+		ObjectsContext& objectContext = mWriter->GetObjectsContext();
+		ObjectIDType newContentObjectID = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
+		ObjectIDType newEncapsulatingObjectID = 0;
 
-			// multiple content streams
-			SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
-			PDFObjectCastPtr<PDFIndirectObjectReference> ref;
-			while (refs.MoveNext())
+
+		// create a copying context, so we can copy the page dictionary, and modify its contents + resources dict
+		PDFDocumentCopyingContext* copyingContext = mWriter->CreatePDFCopyingContextForModifiedFile();
+
+		// get the page object
+		ObjectIDType pageObjectID = copyingContext->GetSourceDocumentParser()->GetPageObjectID(mPageIndex);
+		PDFObjectCastPtr<PDFDictionary> pageDictionaryObject = copyingContext->GetSourceDocumentParser()->ParsePage(mPageIndex);
+		MapIterator<PDFNameToPDFObjectMap>  pageDictionaryObjectIt = pageDictionaryObject->GetIterator();
+
+		// create modified page object
+		objectContext.StartModifiedIndirectObject(pageObjectID);
+		DictionaryContext* modifiedPageObject = mWriter->GetObjectsContext().StartDictionary();
+
+		// copy all elements of the page to the new page object, but the "Contents", "Resources" and "Annots" elements
+		while (pageDictionaryObjectIt.MoveNext())
+		{
+			if (pageDictionaryObjectIt.GetKey()->GetValue() != "Resources" &&
+				pageDictionaryObjectIt.GetKey()->GetValue() != "Contents" &&
+				pageDictionaryObjectIt.GetKey()->GetValue() != "Annots")
 			{
-				ref = refs.GetItem();
+				modifiedPageObject->WriteKey(pageDictionaryObjectIt.GetKey()->GetValue());
+				copyingContext->CopyDirectObjectAsIs(pageDictionaryObjectIt.GetValue());
+			}
+		}
+
+		// Write new annotations entry, joining existing annotations, and new ones (from links attaching or what not)
+		if (!!pageDictionaryObject->Exists("Annots") || mWriter->GetDocumentContext().GetAnnotations().size() > 0)
+		{
+			modifiedPageObject->WriteKey("Annots");
+			objectContext.StartArray();
+
+			// write old annots, if any exist
+			PDFObjectCastPtr<PDFArray> anArray(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(), "Annots"));
+			SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
+			//PDFObjectCastPtr<PDFIndirectObjectReference> ref;
+			while (refs.MoveNext())
+				copyingContext->CopyDirectObjectAsIs(refs.GetItem());
+
+			// write new annots from links
+			ObjectIDTypeSet& annotations = mWriter->GetDocumentContext().GetAnnotations();
+			if (annotations.size() > 0)
+			{
+				ObjectIDTypeSet::iterator it = annotations.begin();
+				for (; it != annotations.end(); ++it)
+					objectContext.WriteNewIndirectObjectReference(*it);
+			}
+			annotations.clear();
+			objectContext.EndArray(eTokenSeparatorEndLine);
+
+		}
+
+		// Write new contents entry, joining the existing contents with the new one. take care of various scenarios of the existing Contents
+		modifiedPageObject->WriteKey("Contents");
+		if (!pageDictionaryObject->Exists("Contents"))
+		{	// no contents
+			objectContext.WriteIndirectObjectReference(newContentObjectID);
+		}
+		else
+		{
+			objectContext.StartArray();
+			if (mEnsureContentEncapsulation)
+			{
+				newEncapsulatingObjectID = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
+				objectContext.WriteNewIndirectObjectReference(newEncapsulatingObjectID);
+			}
+
+			RefCountPtr<PDFObject> pageContent(copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(), "Contents"));
+			if (pageContent->GetType() == PDFObject::ePDFObjectStream)
+			{
+				// single content stream. must be a refrence which points to it
+				PDFObjectCastPtr<PDFIndirectObjectReference> ref(pageDictionaryObject->QueryDirectObject("Contents"));
 				objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
 			}
+			else if (pageContent->GetType() == PDFObject::ePDFObjectArray)
+			{
+				PDFArray* anArray = (PDFArray*)pageContent.GetPtr();
 
+				// multiple content streams
+				SingleValueContainerIterator<PDFObjectVector> refs = anArray->GetIterator();
+				PDFObjectCastPtr<PDFIndirectObjectReference> ref;
+				while (refs.MoveNext())
+				{
+					ref = refs.GetItem();
+					objectContext.WriteIndirectObjectReference(ref->mObjectID, ref->mVersion);
+				}
+
+			}
+			else {
+				// this basically means no content...or whatever. just ignore.
+			}
+
+			objectContext.WriteNewIndirectObjectReference(newContentObjectID);
+			objectContext.EndArray();
+			objectContext.EndLine();
 		}
-		else {
-			// this basically means no content...or whatever. just ignore.
-		}
 
-		objectContext.WriteNewIndirectObjectReference(newContentObjectID);
-		objectContext.EndArray();
-		objectContext.EndLine();
-	}
+		// Write a new resource entry. copy all but the "XObject" entry, which needs to be modified. Just for kicks i'm keeping the original 
+		// form (either direct dictionary, or indirect object)
+		ObjectIDType resourcesIndirect = 0;
+		ObjectIDType newResourcesIndirect = 0;
+		vector<string> formResourcesNames;
 
-    // Write a new resource entry. copy all but the "XObject" entry, which needs to be modified. Just for kicks i'm keeping the original 
-    // form (either direct dictionary, or indirect object)
-	ObjectIDType resourcesIndirect = 0;
-	ObjectIDType newResourcesIndirect = 0;
-	vector<string> formResourcesNames;
-
-	modifiedPageObject->WriteKey("Resources");
-	if(!pageDictionaryObject->Exists("Resources"))
-	{
-        // no existing resource dictionary, so write a new one
-		DictionaryContext*  dict = objectContext.StartDictionary();
-		dict->WriteKey("XObject");
-		DictionaryContext* xobjectDict = objectContext.StartDictionary();
-		for(unsigned long i=0;i<mContenxts.size();++i)
+		modifiedPageObject->WriteKey("Resources");
+		if (!pageDictionaryObject->Exists("Resources"))
 		{
-			string formObjectName = string("myForm_") + Int(i).ToString();
-            dict->WriteKey(formObjectName);
-            dict->WriteObjectReferenceValue(mContenxts[i]->GetObjectID());
-            formResourcesNames.push_back(formObjectName);
-		}
-		objectContext.EndDictionary(xobjectDict);
-		objectContext.EndDictionary(dict);
-	}
-	else
-	{
-        // resources may be direct, or indirect. if direct, write as is, adding the new form xobject, otherwise wait till page object ends and write then
-		PDFObjectCastPtr<PDFIndirectObjectReference> resourceDictRef(pageDictionaryObject->QueryDirectObject("Resources"));
-		if(!resourceDictRef)
-		{
-			PDFObjectCastPtr<PDFDictionary> resourceDict(pageDictionaryObject->QueryDirectObject("Resources"));
-			formResourcesNames = WriteModifiedResourcesDict(copyingContext->GetSourceDocumentParser(),resourceDict.GetPtr(),objectContext,copyingContext);
+			// no existing resource dictionary, so write a new one
+			DictionaryContext*  dict = objectContext.StartDictionary();
+			dict->WriteKey("XObject");
+			DictionaryContext* xobjectDict = objectContext.StartDictionary();
+			for (unsigned long i = 0; i<mContenxts.size(); ++i)
+			{
+				string formObjectName = string("myForm_") + Int(i).ToString();
+				dict->WriteKey(formObjectName);
+				dict->WriteObjectReferenceValue(mContenxts[i]->GetObjectID());
+				formResourcesNames.push_back(formObjectName);
+			}
+			objectContext.EndDictionary(xobjectDict);
+			objectContext.EndDictionary(dict);
 		}
 		else
 		{
-            resourcesIndirect = resourceDictRef->mObjectID;
-			// later will write a modified version of the resources dictionary, with the new form.
-			// only modify the resources dict object if wasn't already modified (can happen when sharing resources dict between multiple pages).
-			// in the case where it was alrady modified, create a new resources dictionary that's a copy, and use it instead, to avoid overwriting
-			// the previous modification
-			GetObjectWriteInformationResult res =  objectContext.GetInDirectObjectsRegistry().GetObjectWriteInformation(resourcesIndirect);
-			if(res.first && res.second.mIsDirty)
+			// resources may be direct, or indirect. if direct, write as is, adding the new form xobject, otherwise wait till page object ends and write then
+			PDFObjectCastPtr<PDFIndirectObjectReference> resourceDictRef(pageDictionaryObject->QueryDirectObject("Resources"));
+			if (!resourceDictRef)
 			{
-				newResourcesIndirect = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
-				modifiedPageObject->WriteObjectReferenceValue(newResourcesIndirect);
+				PDFObjectCastPtr<PDFDictionary> resourceDict(pageDictionaryObject->QueryDirectObject("Resources"));
+				formResourcesNames = WriteModifiedResourcesDict(copyingContext->GetSourceDocumentParser(), resourceDict.GetPtr(), objectContext, copyingContext);
 			}
 			else
-				modifiedPageObject->WriteObjectReferenceValue(resourcesIndirect);
+			{
+				resourcesIndirect = resourceDictRef->mObjectID;
+				// later will write a modified version of the resources dictionary, with the new form.
+				// only modify the resources dict object if wasn't already modified (can happen when sharing resources dict between multiple pages).
+				// in the case where it was alrady modified, create a new resources dictionary that's a copy, and use it instead, to avoid overwriting
+				// the previous modification
+				GetObjectWriteInformationResult res = objectContext.GetInDirectObjectsRegistry().GetObjectWriteInformation(resourcesIndirect);
+				if (res.first && res.second.mIsDirty)
+				{
+					newResourcesIndirect = objectContext.GetInDirectObjectsRegistry().AllocateNewObjectID();
+					modifiedPageObject->WriteObjectReferenceValue(newResourcesIndirect);
+				}
+				else
+					modifiedPageObject->WriteObjectReferenceValue(resourcesIndirect);
+			}
 		}
-	}
 
-	objectContext.EndDictionary(modifiedPageObject);
-	objectContext.EndIndirectObject();
-
-	if(resourcesIndirect!=0)
-	{
-		if(newResourcesIndirect != 0)
-			objectContext.StartNewIndirectObject(newResourcesIndirect);
-		else
-			objectContext.StartModifiedIndirectObject(resourcesIndirect);
-		PDFObjectCastPtr<PDFDictionary> resourceDict(copyingContext->GetSourceDocumentParser()->ParseNewObject(resourcesIndirect));
-		formResourcesNames =  WriteModifiedResourcesDict(copyingContext->GetSourceDocumentParser(),resourceDict.GetPtr(),objectContext,copyingContext);
+		objectContext.EndDictionary(modifiedPageObject);
 		objectContext.EndIndirectObject();
-	}
 
-	// if required write encapsulation code, so that new stream is independent of graphic context of original
-	PDFStream* newStream;
-	PrimitiveObjectsWriter primitivesWriter;
-	if (newEncapsulatingObjectID != 0)
-	{
-		objectContext.StartNewIndirectObject(newEncapsulatingObjectID);
+		if (resourcesIndirect != 0)
+		{
+			if (newResourcesIndirect != 0)
+				objectContext.StartNewIndirectObject(newResourcesIndirect);
+			else
+				objectContext.StartModifiedIndirectObject(resourcesIndirect);
+			PDFObjectCastPtr<PDFDictionary> resourceDict(copyingContext->GetSourceDocumentParser()->ParseNewObject(resourcesIndirect));
+			formResourcesNames = WriteModifiedResourcesDict(copyingContext->GetSourceDocumentParser(), resourceDict.GetPtr(), objectContext, copyingContext);
+			objectContext.EndIndirectObject();
+		}
+
+		// if required write encapsulation code, so that new stream is independent of graphic context of original
+		PDFStream* newStream;
+		PrimitiveObjectsWriter primitivesWriter;
+		if (newEncapsulatingObjectID != 0)
+		{
+			objectContext.StartNewIndirectObject(newEncapsulatingObjectID);
+			newStream = objectContext.StartPDFStream();
+			primitivesWriter.SetStreamForWriting(newStream->GetWriteStream());
+			primitivesWriter.WriteKeyword("q");
+			objectContext.EndPDFStream(newStream);
+
+		}
+
+		// last but not least, create the actual content stream object, placing the form
+		objectContext.StartNewIndirectObject(newContentObjectID);
 		newStream = objectContext.StartPDFStream();
 		primitivesWriter.SetStreamForWriting(newStream->GetWriteStream());
-		primitivesWriter.WriteKeyword("q");
+
+		if (newEncapsulatingObjectID != 0) {
+			primitivesWriter.WriteKeyword("Q");
+		}
+
+		vector<string>::iterator it = formResourcesNames.begin();
+		for (; it != formResourcesNames.end(); ++it)
+		{
+			primitivesWriter.WriteKeyword("q");
+			primitivesWriter.WriteInteger(1);
+			primitivesWriter.WriteInteger(0);
+			primitivesWriter.WriteInteger(0);
+			primitivesWriter.WriteInteger(1);
+			primitivesWriter.WriteInteger(0);
+			primitivesWriter.WriteInteger(0);
+			primitivesWriter.WriteKeyword("cm");
+			primitivesWriter.WriteName(*it);
+			primitivesWriter.WriteKeyword("Do");
+			primitivesWriter.WriteKeyword("Q");
+		}
+
 		objectContext.EndPDFStream(newStream);
+	} while (false);
 
-	}
-
-    // last but not least, create the actual content stream object, placing the form
-	objectContext.StartNewIndirectObject(newContentObjectID);
-	newStream = objectContext.StartPDFStream();
-	primitivesWriter.SetStreamForWriting(newStream->GetWriteStream());
-
-	if (newEncapsulatingObjectID != 0) {
-		primitivesWriter.WriteKeyword("Q");
-	}
-
-	vector<string>::iterator it = formResourcesNames.begin();
-	for(;it!=formResourcesNames.end();++it)
-	{
-		primitivesWriter.WriteKeyword("q");
-		primitivesWriter.WriteInteger(1);
-		primitivesWriter.WriteInteger(0);
-		primitivesWriter.WriteInteger(0);
-		primitivesWriter.WriteInteger(1);
-		primitivesWriter.WriteInteger(0);
-		primitivesWriter.WriteInteger(0);
-		primitivesWriter.WriteKeyword("cm");
-		primitivesWriter.WriteName(*it);
-		primitivesWriter.WriteKeyword("Do");
-		primitivesWriter.WriteKeyword("Q");
-	}
-
-	objectContext.EndPDFStream(newStream);
-
-	return eSuccess;
+	return status;
 }
 
 vector<string> PDFModifiedPage::WriteModifiedResourcesDict(PDFParser* inParser,PDFDictionary* inResourcesDictionary,ObjectsContext& inObjectContext,PDFDocumentCopyingContext* inCopyingContext)

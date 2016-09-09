@@ -20,4 +20,8 @@ limitations under the License.
 */
 #include "EncryptionOptions.h"
 
-const EncryptionOptions EncryptionOptions::DefaultEncryptionOptions(false,"",0,"");
+const EncryptionOptions& EncryptionOptions::DefaultEncryptionOptions()
+{
+	static const EncryptionOptions default_encrypt_options(false, "", 0, "");
+	return default_encrypt_options;
+}

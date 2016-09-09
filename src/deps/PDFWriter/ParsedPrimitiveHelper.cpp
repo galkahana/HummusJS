@@ -112,7 +112,7 @@ std::string ParsedPrimitiveHelper::ToString()
             result = ((PDFBoolean*)mWrappedObject)->GetValue() ? "true":"false";
             break;
         default:
-            result = PDFObject::scPDFObjectTypeLabel[mWrappedObject->GetType()];
+            result = PDFObject::scPDFObjectTypeLabel(mWrappedObject->GetType());
     }
     return result;
 }
