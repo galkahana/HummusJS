@@ -199,6 +199,9 @@ void PDFDate::SetToCurrentTime()
 	int status;
 #if defined(WIN32) && !defined(__MINGW32__) // (using MS methods)
 	status = _get_timezone(&timeZoneSecondsDifference);
+	long dstbias;
+	_get_dstbias(&dstbias);
+	timeZoneSecondsDifference += dstbias; // also dst shall be added to pure zone difference.
 #elif defined (__GNUC__)
 	struct tm *gmTime;
 
@@ -209,7 +212,7 @@ void PDFDate::SetToCurrentTime()
 
 	/* Using local time epoch get the GM Time */
 	gmTime = gmtime(&localEpoch);
-
+	gmTime->tm_isdst = -1;
 	/* Convert gm time in to epoch format */
 	gmEpoch = mktime(gmTime);
 
@@ -236,7 +239,7 @@ void PDFDate::SetToCurrentTime()
 		}
 		else
 		{
-			UTC = timeZoneSecondsDifference > 0 ? eLater:eEarlier;
+			UTC = timeZoneSecondsDifference > 0 ? eEarlier : eLater;
 			HourFromUTC = (int)(labs(timeZoneSecondsDifference) / 3600);
 			MinuteFromUTC = (int)((labs(timeZoneSecondsDifference) - (labs(timeZoneSecondsDifference) / 3600)*3600) / 60);
 		}

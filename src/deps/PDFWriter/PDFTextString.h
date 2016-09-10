@@ -57,7 +57,7 @@ public:
 	// set from encoded string
 	PDFTextString& operator=(const std::string& inString);
 
-	static const PDFTextString Empty;
+	static const PDFTextString& Empty();
 
 private:
 

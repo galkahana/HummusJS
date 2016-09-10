@@ -22,13 +22,13 @@
 
 const TIFFBiLevelBWColorTreatment& TIFFBiLevelBWColorTreatment::DefaultTIFFBiLevelBWColorTreatment()
 {
-	static TIFFBiLevelBWColorTreatment default_tiff_bilevel_bwcolor_treatment(false, CMYKRGBColor::CMYKBlack);
+	static TIFFBiLevelBWColorTreatment default_tiff_bilevel_bwcolor_treatment(false, CMYKRGBColor::CMYKBlack());
 	return default_tiff_bilevel_bwcolor_treatment;
 }
 
 const TIFFBiLevelGrayscaleColorTreatment& TIFFBiLevelGrayscaleColorTreatment::DefaultTIFFBiLevelGrayscaleColorTreatment()
 {
-	static TIFFBiLevelGrayscaleColorTreatment default_tiff_bilevel_grayscale_treatment(false, CMYKRGBColor::CMYKBlack, CMYKRGBColor::CMYKWhite);
+	static TIFFBiLevelGrayscaleColorTreatment default_tiff_bilevel_grayscale_treatment(false, CMYKRGBColor::CMYKBlack(), CMYKRGBColor::CMYKWhite());
 	return default_tiff_bilevel_grayscale_treatment;
 
 }

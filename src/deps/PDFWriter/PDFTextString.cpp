@@ -39,7 +39,10 @@ PDFTextString::~PDFTextString(void)
 {
 }
 
-const PDFTextString PDFTextString::Empty;
+const PDFTextString& PDFTextString::Empty(){
+	static PDFTextString pdf_text_string_empty;
+	return pdf_text_string_empty;
+};
 
 PDFTextString& PDFTextString::FromUTF8(const std::string& inString)
 {

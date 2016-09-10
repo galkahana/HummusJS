@@ -738,7 +738,7 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
     else
     {
         THROW_EXCEPTION("wrong input for color values. should be array of either 3 or 4 colors");
-        return CMYKRGBColor::CMYKBlack;
+        return CMYKRGBColor::CMYKBlack();
     }
 }
 

@@ -34,7 +34,7 @@ public:
 	unsigned char RGBComponents[3];
 	unsigned char CMYKComponents[4];
 
-	static const CMYKRGBColor CMYKBlack;
-	static const CMYKRGBColor CMYKWhite;
+	static const CMYKRGBColor& CMYKBlack();
+	static const CMYKRGBColor& CMYKWhite();
 };
 

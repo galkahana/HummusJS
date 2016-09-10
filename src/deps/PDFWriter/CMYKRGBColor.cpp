@@ -51,5 +51,11 @@ CMYKRGBColor::CMYKRGBColor(unsigned char inC,unsigned char inM, unsigned char in
 	RGBComponents[0] = RGBComponents[1] = RGBComponents[2] = 0;
 }
 
-const CMYKRGBColor CMYKRGBColor::CMYKBlack(0,0,0,255);
-const CMYKRGBColor CMYKRGBColor::CMYKWhite(0,0,0,0);
+const CMYKRGBColor& CMYKRGBColor::CMYKBlack(){
+	static CMYKRGBColor oCMYKBlack(0, 0, 0, 255);
+	return oCMYKBlack;
+};
+const CMYKRGBColor& CMYKRGBColor::CMYKWhite(){
+	static CMYKRGBColor oCMYKWhite(0, 0, 0, 0);
+	return oCMYKWhite;
+};

@@ -289,20 +289,34 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 					// if indeed there's a "stream", so the last buffer read should have been either CR or LF, which means (respectively)
 					// that we should either skip one more "LF" or do nothing (based on what was parsed)
 					
-					// verify that buffer is either CR or LF, and behave accordingly
-					if(scCR == buffer) // CR. should be CR-LF or CR alone
-					{
-						if(GetNextByteForToken(buffer) == PDFHummus::eSuccess)
-						{
-							// if CR-LF treat as a single line, otherwise put back token nicely cause CR is alone
-							if(buffer != scLF)
-								SaveTokenBuffer(buffer);
+					// verify that when whitespaces are finished buffer is either CR or LF, and behave accordingly
+					while(mStream->NotEnded()) {
+						if (!IsPDFWhiteSpace(buffer)) {
+							result.first = false; // something wrong! not whitespace
+							break;
 						}
-						result.first = true; 
+
+						if (scCR == buffer) // CR. should be CR-LF or CR alone
+						{
+							if (GetNextByteForToken(buffer) == PDFHummus::eSuccess)
+							{
+								// if CR-LF treat as a single line, otherwise put back token nicely cause CR is alone
+								if (buffer != scLF)
+									SaveTokenBuffer(buffer);
+							}
+							result.first = true;
+							break;
+						}
+						else if (scLF == buffer) {
+							result.first = true; 
+							break;
+						} // else - some other white space
+
+						if (GetNextByteForToken(buffer) != PDFHummus::eSuccess) {
+							result.first = false; //can't read but not eof. fail
+							break;
+						}
 					}
-					else
-						result.first = (scLF == buffer); // otherwise must be LF
-					
 				}
 				break;
 			}

@@ -292,13 +292,19 @@ PDFObject* PDFObjectParser::ParseLiteralString(const std::string& inToken)
 			++i;
 			if('0' <= *it && *it <= '7')
 			{
-				buffer = (*it - '0') * 64;
-				++it;
-				++i;
-				buffer += (*it - '0') * 8;
-				++it;
-				++i;
-				buffer += (*it - '0');
+				buffer = (*it - '0');
+				if (i+1 < inToken.size() && '0' <= *(it+1) && *(it+1) <= '7'){
+					++it;
+					++i;
+					buffer = buffer << 3;
+					buffer += (*it - '0');
+					if (i + 1 < inToken.size() && '0' <= *(it + 1) && *(it + 1) <= '7'){
+						++it;
+						++i;
+						buffer = buffer << 3;
+						buffer += (*it - '0');
+					}
+				}
 			}
 			else
 			{
@@ -392,21 +398,34 @@ PDFObject* PDFObjectParser::ParseHexadecimalString(const std::string& inToken)
 std::string PDFObjectParser::DecodeHexString(const std::string inStringToDecode) {
 	std::stringbuf stringBuffer;
 	std::string content = inStringToDecode;
-	Byte buffer;
 
-	// pad with ending 0
-	if (content.length() % 2 != 0)
-		content.push_back('0');
 
 	std::string::const_iterator it = content.begin();
-
+	BoolAndByte buffer(false, 0); // bool part = 'is first char in buffer?', Byte part = 'the first hex-decoded char'
 	for (; it != content.end(); ++it)
 	{
-		buffer = GetHexValue(*it).second * 16;
-		++it;
-		buffer += GetHexValue(*it).second;
-		stringBuffer.sputn((const char*)&buffer, 1);
+		BoolAndByte parse = GetHexValue(*it);
+		if (parse.first){
+			if (buffer.first){
+				Byte hexbyte = (buffer.second << 4) | parse.second;
+				buffer.first = false;
+				stringBuffer.sputn((const char*)&hexbyte, 1);
+			}
+			else{
+				buffer.first = true;
+				buffer.second = parse.second;
+			}
+		}
 	}
+
+	// pad with ending 0
+	if (buffer.first){
+		Byte hexbyte = buffer.second << 4;
+		stringBuffer.sputn((const char*)&hexbyte, 1);
+	}
+
+	// decode utf16 here?
+	// Gal: absolutely not! this is plain hex decode. doesn't necesserily mean text. in fact most of the times it doesn't. keep this low level
 
 	return stringBuffer.str();
 
@@ -663,8 +682,10 @@ BoolAndByte PDFObjectParser::GetHexValue(Byte inValue)
 		return BoolAndByte(true,inValue - 'a' + 10);
 	else
 	{
-		TRACE_LOG1("PDFObjectParser::GetHexValue, unrecongnized hex value - %c",inValue);
-		return BoolAndByte(false,inValue);
+		if (!isspace(inValue)){
+			TRACE_LOG1("PDFObjectParser::GetHexValue, unrecongnized hex value - %c", inValue);
+		}
+		return BoolAndByte(false, inValue);
 	}
 }
 

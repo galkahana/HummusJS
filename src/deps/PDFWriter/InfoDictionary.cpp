@@ -49,12 +49,12 @@ void InfoDictionary::Reset()
 {
 	mAdditionalInfoEntries.clear();
 	Trapped = EInfoTrappedUnknown;
-	Title = PDFTextString::Empty;
-	Author = PDFTextString::Empty;
-	Subject = PDFTextString::Empty;
-	Keywords = PDFTextString::Empty;
-	Creator = PDFTextString::Empty;
-	Producer = PDFTextString::Empty;
+	Title = PDFTextString::Empty();
+	Author = PDFTextString::Empty();
+	Subject = PDFTextString::Empty();
+	Keywords = PDFTextString::Empty();
+	Creator = PDFTextString::Empty();
+	Producer = PDFTextString::Empty();
 	CreationDate.SetTime(-1);
 	ModDate.SetTime(-1);
 }
@@ -85,7 +85,7 @@ PDFTextString InfoDictionary::GetAdditionalInfoEntry(const std::string& inKey)
 	StringToPDFTextString::iterator it = mAdditionalInfoEntries.find(inKey);
 
 	if(it == mAdditionalInfoEntries.end())
-		return PDFTextString::Empty;
+		return PDFTextString::Empty();
 	else
 		return it->second;
 }
