@@ -106,18 +106,30 @@ EStatusCode CIDFontWriter::WriteFont(FreeTypeFaceWrapper& inFontInfo,
 		CalculateCharacterEncodingArray(); // put the charachter in the order of encoding, for the ToUnicode map
 
 		// ToUnicode
-		fontContext->WriteKey(scToUnicode);
-		ObjectIDType toUnicodeMapObjectID = mObjectsContext->GetInDirectObjectsRegistry().AllocateNewObjectID();
-		fontContext->WriteNewObjectReferenceValue(toUnicodeMapObjectID);
-		
-		status = inObjectsContext->EndDictionary(fontContext);
-		if(status != PDFHummus::eSuccess)
-		{
-			TRACE_LOG("CIDFontWriter::WriteFont, unexpected failure. Failed to end dictionary in font write.");
-			break;
+		if (mCharactersVector.size() > 1) {
+			// make sure there's more than just the 0 char (which would make this an array of size of one
+			fontContext->WriteKey(scToUnicode);
+			ObjectIDType toUnicodeMapObjectID = mObjectsContext->GetInDirectObjectsRegistry().AllocateNewObjectID();
+			fontContext->WriteNewObjectReferenceValue(toUnicodeMapObjectID);
+
+			status = inObjectsContext->EndDictionary(fontContext);
+			if (status != PDFHummus::eSuccess)
+			{
+				TRACE_LOG("CIDFontWriter::WriteFont, unexpected failure. Failed to end dictionary in font write.");
+				break;
+			}
+			inObjectsContext->EndIndirectObject();
+			WriteToUnicodeMap(toUnicodeMapObjectID);
 		}
-		inObjectsContext->EndIndirectObject();
-		WriteToUnicodeMap(toUnicodeMapObjectID);
+		else {
+			// else just finish font writing (a bit of an edge case here...but should take care of, for cleanliness)
+			status = inObjectsContext->EndDictionary(fontContext);
+			if (status != PDFHummus::eSuccess)
+			{
+				TRACE_LOG("CIDFontWriter::WriteFont, unexpected failure. Failed to end dictionary in font write.");
+				break;
+			}
+		}
 
 		// Write the descendant font
 		status = inDescendentFontWriter->WriteFont(descendantFontID, fontName, *mFontInfo, mCharactersVector, mObjectsContext, inEmbedFont);

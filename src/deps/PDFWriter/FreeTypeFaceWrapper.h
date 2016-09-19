@@ -130,6 +130,7 @@ private:
 	bool mGlyphIsLoaded;
 	unsigned int mCurrentGlyph;
 	bool mDoesOwn;
+	bool mUsePUACodes;
 
 	BoolAndFTShort GetCapHeightInternal(); 
 	BoolAndFTShort GetxHeightInternal(); 
@@ -146,6 +147,8 @@ private:
 	bool IsSymbolic();
 	bool IsDefiningCharsNotInAdobeStandardLatin();
 	std::string NotDefGlyphName();
+
+	void SelectDefaultEncoding();
 
 public:
 	class IOutlineEnumerator {
