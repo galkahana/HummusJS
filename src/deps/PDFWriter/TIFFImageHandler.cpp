@@ -2266,7 +2266,6 @@ void TIFFImageHandler::WriteImageXObjectFilter(DictionaryContext* inImageDiction
 
 void TIFFImageHandler::CalculateTiffTileSize(int inTileIndex)
 {
-	uint32* tbc = NULL;
 	uint16 edge=0;
 
 	edge |= (uint16)TileIsRightEdge(inTileIndex);
@@ -2279,8 +2278,11 @@ void TIFFImageHandler::CalculateTiffTileSize(int inTileIndex)
 			mT2p->tiff_datasize=TIFFTileSize(mT2p->input);
 		} else 
 		{
+			// 	TIFFTAG_TILEBYTECOUNTS changed in tiff 4.0.0;
+
+			tsize_t_compat* tbc = NULL;
 			TIFFGetField(mT2p->input, TIFFTAG_TILEBYTECOUNTS, &tbc);
-			mT2p->tiff_datasize=tbc[inTileIndex];
+			mT2p->tiff_datasize=static_cast<tsize_t>(tbc[inTileIndex]);
 		}
 	}
 	else
@@ -2770,13 +2772,13 @@ void TIFFImageHandler::WriteCommonImageDictionaryProperties(DictionaryContext* i
 
 void TIFFImageHandler::CalculateTiffSizeNoTiles()
 {
-	uint32* sbc=NULL;
-
 	if(mT2p->pdf_transcode == T2P_TRANSCODE_RAW && 
 		(mT2p->pdf_compression == T2P_COMPRESS_G4 || mT2p->pdf_compression == T2P_COMPRESS_ZIP))
 	{
+		// TIFFTAG_STRIPBYTECOUNTS size changed in tiff 4.0.0
+		tsize_t_compat * sbc = NULL;
 		TIFFGetField(mT2p->input, TIFFTAG_STRIPBYTECOUNTS, &sbc);
-		mT2p->tiff_datasize=sbc[0];
+		mT2p->tiff_datasize = static_cast<tsize_t>(sbc[0]);
 	}
 	else
 	{

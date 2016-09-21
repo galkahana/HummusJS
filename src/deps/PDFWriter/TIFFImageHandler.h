@@ -121,20 +121,47 @@ it's not guaranteed that it will match the actual tiff headers...
 */
 
 #include <tiffio.h>
+#include <tiffvers.h>
 
-#else
+#if TIFFLIB_VERSION >= 20120218 // tiff 4.0.1 or above
+typedef uint64 tsize_t_compat;
+#else //  TIFFLIB_VERSION >= 20120218
+typedef uint32 tsize_t_compat;
+#endif //  TIFFLIB_VERSION >= 20120218
+
+
+#else //  _INCLUDE_TIFF_HEADER
 /*
 	if you still don't want to include tiff headers, but it's not int32,
 	you can set the required definition with this macro.
+	
 */
 #ifndef _USE_TIFF_TSIZE_AS_FOLLOWS
+
 typedef int32 tsize_t;          /* i/o size in bytes */
-#else
+typedef uint32 tsize_t_compat;
+
+#else // ! _USE_TIFF_TSIZE_AS_FOLLOWS
+
 typedef _USE_TIFF_TSIZE_AS_FOLLOWS tsize_t;          /* i/o size in bytes */
-#endif // #ifndef _USE_TIFF_TSIZE_AS_FOLLOWS
+/*
+	we also need an unsigned type for TIFFTAG_STRIPBYTECOUNTS, TIFFTAG_STRIPOFFSETS etc
+	which changed to 64bit in tiff 4.0.0
+	it will be 'unsigned _USE_TIFF_TSIZE_AS_FOLLOWS' prefix by default.
+	that's ugly and may not work or they are actually different size types, 
+	so and you can use _USE_TIFF_TSIZE_COMPAT_AS_FOLLOWS to define that.
+*/
+#ifndef _USE_TIFF_TSIZE_COMPAT_AS_FOLLOWS
+typedef unsigned _USE_TIFF_TSIZE_AS_FOLLOWS tsize_t_compat;
+#else // ! _USE_TIFF_TSIZE_COMPAT_AS_FOLLOWS
+typedef _USE_TIFF_TSIZE_COMPAT_AS_FOLLOWS tsize_t_compat;
+#endif // ! _USE_TIFF_TSIZE_COMPAT_AS_FOLLOWS
+
+#endif // ! _USE_TIFF_TSIZE_AS_FOLLOWS
+
 typedef void* tdata_t;          /* image data ref */
 
-#endif // #ifdef _INCLUDE_TIFF_HEADER
+#endif //  _INCLUDE_TIFF_HEADER
 
 typedef	tsize_t (*ImageSizeProc)(T2P* inT2p);
 

@@ -28,6 +28,7 @@
 #include "Trace.h"
 #include "Type1ToType2Converter.h"
 #include "FSType.h"
+#include "StandardEncoding.h"
 
 #include <algorithm>
 
@@ -379,6 +380,7 @@ EStatusCode Type1ToCFFEmbeddedFontWriter::AddDependentGlyphs(StringVector& ioSub
 EStatusCode Type1ToCFFEmbeddedFontWriter::AddComponentGlyphs(const std::string& inGlyphID,StringSet& ioComponents,bool &outFoundComponents)
 {
 	CharString1Dependencies dependencies;
+	StandardEncoding standardEncoding;
 	EStatusCode status = mType1Input.CalculateDependenciesForCharIndex(inGlyphID,dependencies);
 
 	if(PDFHummus::eSuccess == status && dependencies.mCharCodes.size() !=0)
@@ -387,7 +389,11 @@ EStatusCode Type1ToCFFEmbeddedFontWriter::AddComponentGlyphs(const std::string& 
 		for(; it != dependencies.mCharCodes.end() && PDFHummus::eSuccess == status; ++it)
 		{
 			bool dummyFound;
-			std::string glyphName = mType1Input.GetGlyphCharStringName(*it);
+			/*
+				Using standard encoding instead of the font encoding, because SEAC (the only operator to create glyph dependency in type 1)
+				relies on standard encoding indexes by definition.
+			*/
+			std::string glyphName = standardEncoding.GetEncodedGlyphName(*it);
 			ioComponents.insert(glyphName);
 			status = AddComponentGlyphs(glyphName,ioComponents,dummyFound);
 		}

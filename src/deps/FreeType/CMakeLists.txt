@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.6) 
 project(FreeType)
 
+set(FREETYPE_INCLUDE_DIRS ${FreeType_SOURCE_DIR}/include PARENT_SCOPE)
+set(FREETYPE_LDFLAGS FreeType PARENT_SCOPE)
+
 add_definitions(-DFT2_BUILD_LIBRARY=1)
 include_directories (${FreeType_SOURCE_DIR}/include)
 include_directories (${FreeType_SOURCE_DIR}/include/freetype)
