@@ -1,6 +1,9 @@
 cmake_minimum_required (VERSION 2.6) 
 project(LibTiff)
 
+set(LIBTIFF_INCLUDE_DIRS ${LibTiff_SOURCE_DIR} PARENT_SCOPE)
+set(LIBTIFF_LDFLAGS LibTiff PARENT_SCOPE)
+
 include_directories (${Zlib_SOURCE_DIR})
 
 add_definitions(

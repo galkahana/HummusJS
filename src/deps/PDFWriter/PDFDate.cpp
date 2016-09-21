@@ -195,14 +195,14 @@ void PDFDate::SetToCurrentTime()
 	Second = structuredLocalTime.tm_sec;
 
 	// if unsuccesful or method unknown don't provide UTC info (currently only knows for WIN32 and OSX
-#if defined (__MWERKS__) || defined (__GNUC__) || defined(WIN32)
+#if defined (__MWERKS__) || defined (__GNUC__)  || defined(_AIX32) || defined(WIN32)
 	int status;
 #if defined(WIN32) && !defined(__MINGW32__) // (using MS methods)
 	status = _get_timezone(&timeZoneSecondsDifference);
 	long dstbias;
 	_get_dstbias(&dstbias);
 	timeZoneSecondsDifference += dstbias; // also dst shall be added to pure zone difference.
-#elif defined (__GNUC__)
+#elif defined (__GNUC__)  || defined(_AIX32)
 	struct tm *gmTime;
 
 	time_t localEpoch, gmEpoch;
