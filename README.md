@@ -2,13 +2,12 @@
 [![NPM version](http://img.shields.io/npm/v/hummus.svg?style=flat)](https://www.npmjs.org/package/hummus)
 [![Build Status](https://travis-ci.org/galkahana/HummusJS.svg)](https://travis-ci.org/galkahana/HummusJS)
 
-Hummus JS is a PDF generation and parsing module.
-It is implemented as a NodeJS driver to the PDFHummus library.
+Welcome to HummusJS.   
+A Fast NodeJS Module for Creating, Parsing an Manipulating PDF Files and Streams.   
+Documentation is available [here](https://github.com/galkahana/HummusJS/wiki).   
+Project site is [here](http://www.pdfhummus.com).   
 
+If you are looking for a C++ Library go [here](https://github.com/galkahana/PDF-Writer).   
+If you prefer to create and manipulate PDFs using a cloud service, check [here](http://services.pdfhummus.com).   
+You can contact via the issues section in this project, or at [gal@pdfhummus.com](mailto:gal@pdfhummus.com). I provide  listening, consulting, and the occasional project assistance/implementation. 
 
-Check out the [wiki pages for documentation](https://github.com/galkahana/HummusJS/wiki).
-
-For announcements and examples, visit the HummusJS and PDFHummus blog at http://pdfhummus.com
-
-visit the Hummus JS git project in https://github.com/galkahana/HummusJS
-visit the PDFHummus git project in https://github.com/galkahana/pdf-writer
