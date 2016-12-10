@@ -174,7 +174,7 @@ private:
 
 	mStreamForWriting->Write((const IOBasicTypes::Byte *)(result.c_str()),sizeToWrite);
 	WriteTokenSeparator(inSeparate);
-}
+}*/
 
 size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& inString)
 {
@@ -198,7 +198,7 @@ size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& i
 	if(result > 0 && *fromEnd == '.')
 		--result;
 	return result;
-}*/
+}
 
 void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
@@ -212,7 +212,7 @@ void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator in
 	WriteTokenSeparator(inSeparate);
 }
 
-size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBufferWithDouble)
+/*size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBufferWithDouble)
 {
 	size_t result = strlen(inBufferWithDouble);
 
@@ -224,7 +224,7 @@ size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBuffer
 	if(result > 0 && inBufferWithDouble[result-1] == '.')
 		--result;
 	return result;
-}
+}*/
 
 static const IOBasicTypes::Byte scTrue[4] = {'t','r','u','e'};
 static const IOBasicTypes::Byte scFalse[5] = {'f','a','l','s','e'};
