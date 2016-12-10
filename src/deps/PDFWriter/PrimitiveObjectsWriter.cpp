@@ -141,31 +141,12 @@ void PrimitiveObjectsWriter::WriteLiteralString(const std::string& inString,ETok
 	WriteTokenSeparator(inSeparate);
 }
 
-// helper class for decimal dot writing
-template<typename CharT>
-class DecimalSeparator : public std::numpunct<CharT>
-{
-public:
-    DecimalSeparator(CharT Separator)
-    : m_Separator(Separator)
-    {}
-
-protected:
-    CharT do_decimal_point()const
-    {
-        return m_Separator;
-    }
-
-private:
-    CharT m_Separator;
-};
-
 void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
 	// make sure we get proper decimal point writing
 	std::stringstream s;
-	// note that DecimalSeparator will be released when stream is released automatically
-	s.imbue(std::locale(std::locale(""), new DecimalSeparator<char>('.')));
+	// use classic locale for no worries writing
+	s.imbue(locale::classic());
 	s<<std::fixed<<inDoubleToken;
 	std::string result = s.str();
 
@@ -198,32 +179,6 @@ size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& i
 		--result;
 	return result;
 }
-
-/*void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
-{
-	char buffer[512];
-
-	SAFE_SPRINTF_1(buffer,512,"%f",inDoubleToken);
-
-	LongBufferSizeType sizeToWrite = DetermineDoubleTrimmedLength(buffer);
-
-	mStreamForWriting->Write((const IOBasicTypes::Byte *)buffer,sizeToWrite);
-	WriteTokenSeparator(inSeparate);
-}*/
-
-/*size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBufferWithDouble)
-{
-	size_t result = strlen(inBufferWithDouble);
-
-	// remove all ending 0's
-	while(result > 0 && inBufferWithDouble[result-1] == '0')
-		--result;
-
-	// if it's actually an integer, remove also decimal point
-	if(result > 0 && inBufferWithDouble[result-1] == '.')
-		--result;
-	return result;
-}*/
 
 static const IOBasicTypes::Byte scTrue[4] = {'t','r','u','e'};
 static const IOBasicTypes::Byte scFalse[5] = {'f','a','l','s','e'};
