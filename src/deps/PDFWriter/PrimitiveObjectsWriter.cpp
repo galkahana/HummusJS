@@ -160,13 +160,13 @@ private:
     CharT m_Separator;
 };
 
-/*void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
+void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
 	// make sure we get proper decimal point writing
 	std::stringstream s;
 	// note that DecimalSeparator will be released when stream is released automatically
-	DecimalSeparator<char>* helper = new DecimalSeparator<char>('.'); 
-	s.imbue(std::locale(s.getloc(), helper));
+	//DecimalSeparator<char>* helper = new DecimalSeparator<char>('.'); 
+	//s.imbue(std::locale(s.getloc(), helper));
 	s<<std::fixed<<inDoubleToken;
 	std::string result = s.str();
 
@@ -174,7 +174,7 @@ private:
 
 	mStreamForWriting->Write((const IOBasicTypes::Byte *)(result.c_str()),sizeToWrite);
 	WriteTokenSeparator(inSeparate);
-}*/
+}
 
 size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& inString)
 {
@@ -200,7 +200,7 @@ size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& i
 	return result;
 }
 
-void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
+/*void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
 	char buffer[512];
 
@@ -210,7 +210,7 @@ void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator in
 
 	mStreamForWriting->Write((const IOBasicTypes::Byte *)buffer,sizeToWrite);
 	WriteTokenSeparator(inSeparate);
-}
+}*/
 
 /*size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBufferWithDouble)
 {
