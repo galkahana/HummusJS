@@ -160,7 +160,7 @@ private:
     CharT m_Separator;
 };
 
-void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
+/*void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
 	// make sure we get proper decimal point writing
 	std::stringstream s;
@@ -196,6 +196,32 @@ size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& i
 
 	// if it's actually an integer, remove also decimal point
 	if(result > 0 && *fromEnd == '.')
+		--result;
+	return result;
+}*/
+
+void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
+{
+	char buffer[512];
+
+	SAFE_SPRINTF_1(buffer,512,"%f",inDoubleToken);
+
+	LongBufferSizeType sizeToWrite = DetermineDoubleTrimmedLength(buffer);
+
+	mStreamForWriting->Write((const IOBasicTypes::Byte *)buffer,sizeToWrite);
+	WriteTokenSeparator(inSeparate);
+}
+
+size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBufferWithDouble)
+{
+	size_t result = strlen(inBufferWithDouble);
+
+	// remove all ending 0's
+	while(result > 0 && inBufferWithDouble[result-1] == '0')
+		--result;
+
+	// if it's actually an integer, remove also decimal point
+	if(result > 0 && inBufferWithDouble[result-1] == '.')
 		--result;
 	return result;
 }
