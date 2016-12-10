@@ -23,6 +23,7 @@
 #include "IByteWriter.h"
 #include <locale>
 #include <sstream>
+#include <iomanip>
 
 using namespace IOBasicTypes;
 
@@ -166,7 +167,7 @@ void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator in
 	// note that DecimalSeparator will be released when stream is released automatically
 	DecimalSeparator<char>* helper = new DecimalSeparator<char>('.'); 
 	s.imbue(std::locale(s.getloc(), helper));
-	s<<inDoubleToken;
+	s<<std::fixed<<inDoubleToken;
 	std::string result = s.str();
 
 	LongBufferSizeType sizeToWrite = DetermineDoubleTrimmedLength(result);
