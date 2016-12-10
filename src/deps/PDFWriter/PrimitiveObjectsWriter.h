@@ -60,5 +60,4 @@ private:
 	IByteWriter* mStreamForWriting;
 
 	size_t DetermineDoubleTrimmedLength(const std::string& inString);
-	//size_t DetermineDoubleTrimmedLength(const char* inBufferWithDouble);
 };
