@@ -146,7 +146,7 @@ void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator in
 	// make sure we get proper decimal point writing
 	std::stringstream s;
 	// use classic locale for no worries writing
-	s.imbue(locale::classic());
+	s.imbue(std::locale::classic());
 	s<<std::fixed<<inDoubleToken;
 	std::string result = s.str();
 
