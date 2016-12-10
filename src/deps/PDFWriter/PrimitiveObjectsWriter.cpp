@@ -165,7 +165,7 @@ void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator in
 	// make sure we get proper decimal point writing
 	std::stringstream s;
 	// note that DecimalSeparator will be released when stream is released automatically
-	s.imbue(std::locale(s.getloc(), new DecimalSeparator<char>('.')));
+	s.imbue(std::locale(std::locale(""), new DecimalSeparator<char>('.')));
 	s<<std::fixed<<inDoubleToken;
 	std::string result = s.str();
 
