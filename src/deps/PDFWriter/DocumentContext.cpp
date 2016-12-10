@@ -485,7 +485,7 @@ EStatusCode DocumentContext::WriteCatalogObjectOfNewPDF()
     
 }
 
-EStatusCode DocumentContext::WriteCatalogObject(const ObjectReference& inPageTreeRootObjectReference)
+EStatusCode DocumentContext::WriteCatalogObject(const ObjectReference& inPageTreeRootObjectReference,IDocumentContextExtender* inModifiedFileCopyContext)
 {
 	EStatusCode status = PDFHummus::eSuccess;
 	ObjectIDType catalogID = mObjectsContext->StartNewIndirectObject();
@@ -508,7 +508,13 @@ EStatusCode DocumentContext::WriteCatalogObject(const ObjectReference& inPageTre
 		if(status != PDFHummus::eSuccess)
 			TRACE_LOG("DocumentContext::WriteCatalogObject, unexpected failure. extender declared failure when writing catalog.");
 	}
-
+	
+	if (inModifiedFileCopyContext){
+		status = inModifiedFileCopyContext->OnCatalogWrite(&mCatalogInformation,catalogContext,mObjectsContext,this);
+		if(status != PDFHummus::eSuccess)
+			TRACE_LOG("DocumentContext::WriteCatalogObject, unexpected failure. Copying extender declared failure when writing catalog.");
+	}
+	
 	mObjectsContext->EndDictionary(catalogContext);
 	mObjectsContext->EndIndirectObject();
 	return status;
@@ -2266,9 +2272,7 @@ EStatusCode	DocumentContext::FinalizeModifiedPDF(PDFParser* inModifiedFileParser
 			// use an extender to copy original catalog elements and update version if required
 			PDFDocumentCopyingContext* copyingContext = CreatePDFCopyingContext(inModifiedFileParser);
 			ModifiedDocCatalogWriterExtension catalogUpdate(copyingContext,requiresVersionUpdate,inModifiedPDFVersion);
-            AddDocumentContextExtender(&catalogUpdate);
-            status = WriteCatalogObject(finalPageRoot);
-            RemoveDocumentContextExtender(&catalogUpdate);
+            status = WriteCatalogObject(finalPageRoot,&catalogUpdate);
 			delete copyingContext;
             if(status != eSuccess)
                 break;

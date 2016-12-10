@@ -21,6 +21,8 @@
 #include "PrimitiveObjectsWriter.h"
 #include "SafeBufferMacrosDefs.h"
 #include "IByteWriter.h"
+#include <locale>
+#include <sstream>
 
 using namespace IOBasicTypes;
 
@@ -138,28 +140,61 @@ void PrimitiveObjectsWriter::WriteLiteralString(const std::string& inString,ETok
 	WriteTokenSeparator(inSeparate);
 }
 
+// helper class for decimal dot writing
+template<typename CharT>
+class DecimalSeparator : public std::numpunct<CharT>
+{
+public:
+    DecimalSeparator(CharT Separator)
+    : m_Separator(Separator)
+    {}
+
+protected:
+    CharT do_decimal_point()const
+    {
+        return m_Separator;
+    }
+
+private:
+    CharT m_Separator;
+};
+
 void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
-	char buffer[512];
+	// make sure we get proper decimal point writing
+	std::stringstream s;
+	// note that DecimalSeparator will be released when stream is released automatically
+	DecimalSeparator<char>* helper = new DecimalSeparator<char>('.'); 
+	s.imbue(std::locale(s.getloc(), helper));
+	s<<inDoubleToken;
+	std::string result = s.str();
 
-	SAFE_SPRINTF_1(buffer,512,"%f",inDoubleToken);
+	LongBufferSizeType sizeToWrite = DetermineDoubleTrimmedLength(result);
 
-	LongBufferSizeType sizeToWrite = DetermineDoubleTrimmedLength(buffer);
-
-	mStreamForWriting->Write((const IOBasicTypes::Byte *)buffer,sizeToWrite);
+	mStreamForWriting->Write((const IOBasicTypes::Byte *)(result.c_str()),sizeToWrite);
 	WriteTokenSeparator(inSeparate);
 }
 
-size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const char* inBufferWithDouble)
+size_t PrimitiveObjectsWriter::DetermineDoubleTrimmedLength(const std::string& inString)
 {
-	size_t result = strlen(inBufferWithDouble);
+	size_t result = inString.length();
+
+	// check that we got decimal dot. if not...use original length. 
+	std::size_t found = inString.find(".");
+	if (found == std::string::npos)
+		return result;
+
+	// otherwise - trim trailing 0s and decimal dot
 
 	// remove all ending 0's
-	while(result > 0 && inBufferWithDouble[result-1] == '0')
+	std::string::const_reverse_iterator fromEnd = inString.rbegin();
+	while(result > 0 && *fromEnd == '0') {
+		++fromEnd;
 		--result;
+	}
 
 	// if it's actually an integer, remove also decimal point
-	if(result > 0 && inBufferWithDouble[result-1] == '.')
+	if(result > 0 && *fromEnd == '.')
 		--result;
 	return result;
 }

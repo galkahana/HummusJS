@@ -684,11 +684,20 @@ EStatusCode Type1Input::ParseSubrs()
 
 		mPFBDecoder.Read(mSubrs[subrIndex].Code,mSubrs[subrIndex].CodeLength);
 
-		// skip NP token
-		mPFBDecoder.GetNextToken();
+		// skip till next line or array end
+		while ( token.first )
+		{
+			token = mPFBDecoder.GetNextToken();
 
-		// skip dup or end array definition
-		mPFBDecoder.GetNextToken();
+			if ( 0 == token.second.compare("dup") )
+				break;
+			if ( 0 == token.second.compare("ND") )
+				break;
+			if ( 0 == token.second.compare("|-") ) // synonym for "ND"
+				break;
+			if ( 0 == token.second.compare("def") )
+				break;
+		}
 	}
 	if(!token.first)
 		return PDFHummus::eFailure;

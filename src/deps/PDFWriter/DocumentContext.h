@@ -376,7 +376,7 @@ namespace PDFHummus
 		void WriteHeaderComment(EPDFVersion inPDFVersion);
 		void Write4BinaryBytes();
 		PDFHummus::EStatusCode WriteCatalogObjectOfNewPDF();
-        PDFHummus::EStatusCode WriteCatalogObject(const ObjectReference& inPageTreeRootObjectReference);
+    PDFHummus::EStatusCode WriteCatalogObject(const ObjectReference& inPageTreeRootObjectReference,IDocumentContextExtender* inModifiedFileCopyContext = NULL);
 		PDFHummus::EStatusCode WriteTrailerDictionary();
         PDFHummus::EStatusCode WriteTrailerDictionaryValues(DictionaryContext* inDictionaryContext);
 		void WriteXrefReference(LongFilePositionType inXrefTablePosition);

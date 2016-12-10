@@ -204,7 +204,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 
 					tokenBuffer.Write(&buffer,1);
 
-					while(mStream->NotEnded())
+					while(mStream->NotEnded() && buffer != '>')
 					{
 						if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 						{	
@@ -214,8 +214,6 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 
 						if(!IsPDFWhiteSpace(buffer))
 							tokenBuffer.Write(&buffer,1);
-						if('>' == buffer)
-							break;
 					}
 				}
 				result.second = tokenBuffer.ToString();

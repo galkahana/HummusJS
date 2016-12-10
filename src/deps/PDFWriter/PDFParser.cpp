@@ -170,7 +170,7 @@ EStatusCode PDFParser::ParseHeaderLine()
 
 	if(tokenizerResult.second.compare(0,scPDFMagic.size(),scPDFMagic) != 0)
 	{
-		TRACE_LOG1("PDFParser::ParseHeaderLine, file does not begin as a PDF file. a PDF file should start with \"%PDF-\". file header = %s",tokenizerResult.second.c_str());
+		TRACE_LOG1("PDFParser::ParseHeaderLine, file does not begin as a PDF file. a PDF file should start with \"%%PDF-\". file header = %s",tokenizerResult.second.c_str());
 		return PDFHummus::eFailure;
 	}
 
@@ -201,7 +201,7 @@ EStatusCode PDFParser::ParseEOFLine()
 		}
 		else
 		{
-			TRACE_LOG("PDFParser::ParseEOFLine, failure, last line not %%EOF");
+			TRACE_LOG("PDFParser::ParseEOFLine, failure, last line not %%%%EOF");
 			return PDFHummus::eFailure;
 		}
 	}
