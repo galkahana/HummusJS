@@ -141,32 +141,12 @@ void PrimitiveObjectsWriter::WriteLiteralString(const std::string& inString,ETok
 	WriteTokenSeparator(inSeparate);
 }
 
-// helper class for decimal dot writing
-template<typename CharT>
-class DecimalSeparator : public std::numpunct<CharT>
-{
-public:
-    DecimalSeparator(CharT Separator)
-    : m_Separator(Separator)
-    {}
-
-protected:
-    CharT do_decimal_point()const
-    {
-        return m_Separator;
-    }
-
-private:
-    CharT m_Separator;
-};
-
 void PrimitiveObjectsWriter::WriteDouble(double inDoubleToken,ETokenSeparator inSeparate)
 {
 	// make sure we get proper decimal point writing
 	std::stringstream s;
-	// note that DecimalSeparator will be released when stream is released automatically
-	DecimalSeparator<char>* helper = new DecimalSeparator<char>('.'); 
-	s.imbue(std::locale(s.getloc(), helper));
+	// use classic locale for no worries writing
+	s.imbue(std::locale::classic());
 	s<<std::fixed<<inDoubleToken;
 	std::string result = s.str();
 
