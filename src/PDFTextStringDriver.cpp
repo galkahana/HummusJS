@@ -55,9 +55,9 @@ v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	if (args.Length() != 1 || !args[0]->IsString())
+	if (args.Length() == 1 && !args[0]->IsString() && !args[0]->IsArray())
 	{
-		THROW_EXCEPTION("Wrong arguments. Provide 1 argument which is a string");
+		THROW_EXCEPTION("Wrong arguments. Provide no arguments, or provide 1 argument which is a string or an array of bytes");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
 
@@ -74,8 +74,21 @@ METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     
     PDFTextStringDriver* element = new PDFTextStringDriver();
-    if(args.Length() > 0 && args[0]->IsString())
-        element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
+	if(args.Length() > 0) {
+		if(args[0]->IsString()) {
+			// text string, consider a plain unicode string
+	        element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
+		}
+		else if(args[0]->IsArray()) {
+			// bytes array, init as is
+			int bufferSize = args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value();
+			std::string buffer;
+
+			for(int i=0;i<bufferSize;++i)
+				buffer.push_back((char)(args[0]->ToObject()->Get(i)->ToObject()->Uint32Value()));
+			element->mTextString = buffer;
+		}
+	}
     
     element->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE( args.This());
