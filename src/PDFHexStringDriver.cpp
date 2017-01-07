@@ -33,6 +33,7 @@ void PDFHexStringDriver::Init()
 
 	t->SetClassName(NEW_STRING("PDFHexString"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
+	SET_PROTOTYPE_METHOD(t, "toText", ToText);
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
 	SET_CONSTRUCTOR(constructor, t);
@@ -88,4 +89,13 @@ METHOD_RETURN_TYPE PDFHexStringDriver::GetValue(Local<String> property, const PR
     SET_ACCESSOR_RETURN_VALUE(result);
 }
 
+METHOD_RETURN_TYPE PDFHexStringDriver::ToText(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    PDFHexStringDriver* driver = ObjectWrap::Unwrap<PDFHexStringDriver>(args.This());
 
+    
+    Handle<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
+    SET_FUNCTION_RETURN_VALUE(result);
+}
