@@ -19,6 +19,7 @@
  */
 #include "PDFHexStringDriver.h"
 #include "RefCountPtr.h"
+#include "PDFTextString.h"
 
 using namespace v8;
 
