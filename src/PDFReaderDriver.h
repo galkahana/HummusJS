@@ -62,8 +62,11 @@ private:
 	static METHOD_RETURN_TYPE GetXrefSize(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetXrefEntry(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetXrefPosition(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE GetParserStream(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE StartReadingFromStream(const ARGS_TYPE& args);
-	static METHOD_RETURN_TYPE  GetParserStream(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE StartReadingFromStreamForPlainCopying(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE StartReadingObjectsFromStream(const ARGS_TYPE& args);
+	
 
     
     bool mStartedWithStream;

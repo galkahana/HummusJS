@@ -53,12 +53,20 @@ PDFObjectParser::PDFObjectParser(void)
 
 PDFObjectParser::~PDFObjectParser(void)
 {
+	if(mOwnsStream)
+		delete mStream;
 }
 
 void PDFObjectParser::SetReadStream(IByteReader* inSourceStream,
-									IReadPositionProvider* inCurrentPositionProvider)
+									IReadPositionProvider* inCurrentPositionProvider,
+									bool inOwnsStream)
 {
+	if(mOwnsStream) {
+		delete mStream;
+	}
+
 	mStream = inSourceStream;
+	mOwnsStream = inOwnsStream;
 	mTokenizer.SetReadStream(inSourceStream);
 	mCurrentPositionProvider = inCurrentPositionProvider;
 	ResetReadState();

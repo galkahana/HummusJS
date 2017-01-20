@@ -46,8 +46,8 @@ public:
 	~PDFObjectParser(void);
 
 	
-	// Assign the stream to read from (does not take ownership of the stream)
-	void SetReadStream(IByteReader* inSourceStream,IReadPositionProvider* inCurrentPositionProvider);
+	// Assign the stream to read from (does not take ownership of the stream, unless told so)
+	void SetReadStream(IByteReader* inSourceStream,IReadPositionProvider* inCurrentPositionProvider,bool inOwnsStream=false);
 
 	PDFObject* ParseNewObject();
 
@@ -71,6 +71,7 @@ private:
 	IReadPositionProvider* mCurrentPositionProvider;
 	IPDFParserExtender* mParserExtender;
 	DecryptionHelper* mDecryptionHelper;
+	bool mOwnsStream;
 
 	bool GetNextToken(std::string& outToken);
 	void SaveTokenToBuffer(std::string& inToken);

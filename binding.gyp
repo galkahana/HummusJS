@@ -56,6 +56,7 @@
                 './src/ObjectByteReaderWithPosition.cpp',
                 './src/ObjectByteWriter.cpp',
                 './src/ObjectByteWriterWithPosition.cpp',
+                './src/PDFObjectParserDriver.cpp',
                 './src/hummus.cpp'
             ]
 

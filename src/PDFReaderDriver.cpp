@@ -21,6 +21,7 @@
 #include "PDFPageInputDriver.h"
 #include "PDFDictionaryDriver.h"
 #include "PDFObjectDriver.h"
+#include "PDFObjectParserDriver.h"
 #include "RefCountPtr.h"
 #include "PDFDictionary.h"
 #include "PDFArrayDriver.h"
@@ -75,6 +76,8 @@ void PDFReaderDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "getXrefEntry", GetXrefEntry);
 	SET_PROTOTYPE_METHOD(t, "getXrefPosition", GetXrefPosition);
 	SET_PROTOTYPE_METHOD(t, "startReadingFromStream", StartReadingFromStream);
+	SET_PROTOTYPE_METHOD(t, "startReadingFromStreamForPlainCopying", StartReadingFromStreamForPlainCopying);
+	SET_PROTOTYPE_METHOD(t, "startReadingObjectsFromStream", StartReadingObjectsFromStream);
 	SET_PROTOTYPE_METHOD(t, "getParserStream", GetParserStream);
 	SET_CONSTRUCTOR(constructor, t);
     SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);    
@@ -442,6 +445,50 @@ METHOD_RETURN_TYPE PDFReaderDriver::StartReadingFromStream(const ARGS_TYPE& args
     
     Handle<Value> driver = ByteReaderDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<ByteReaderDriver>(driver->ToObject())->SetStream(byteReader,true);
+    
+    SET_FUNCTION_RETURN_VALUE(driver);
+}
+
+METHOD_RETURN_TYPE PDFReaderDriver::StartReadingFromStreamForPlainCopying(const ARGS_TYPE& args) {
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    if(args.Length() != 1 ||
+       !PDFStreamInputDriver::HasInstance(args[0]))
+    {
+ 		THROW_EXCEPTION("Wrong arguments. provide a PDF stream input");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    PDFStreamInputDriver* streamInput = ObjectWrap::Unwrap<PDFStreamInputDriver>(args[0]->ToObject());
+    
+    IByteReader* byteReader = reader->mPDFReader->StartReadingFromStreamForPlainCopying(streamInput->TheObject.GetPtr());
+    
+    Handle<Value> driver = ByteReaderDriver::GetNewInstance(args);
+    ObjectWrap::Unwrap<ByteReaderDriver>(driver->ToObject())->SetStream(byteReader,true);
+    
+    SET_FUNCTION_RETURN_VALUE(driver);
+}
+	
+METHOD_RETURN_TYPE PDFReaderDriver::StartReadingObjectsFromStream(const ARGS_TYPE& args) {
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    if(args.Length() != 1 ||
+       !PDFStreamInputDriver::HasInstance(args[0]))
+    {
+ 		THROW_EXCEPTION("Wrong arguments. provide a PDF stream input");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    PDFStreamInputDriver* streamInput = ObjectWrap::Unwrap<PDFStreamInputDriver>(args[0]->ToObject());
+    
+    PDFObjectParser* objectReader = reader->mPDFReader->StartReadingObjectsFromStream(streamInput->TheObject.GetPtr());
+    
+    Handle<Value> driver = PDFObjectParserDriver::GetNewInstance(args);
+    ObjectWrap::Unwrap<PDFObjectParserDriver>(driver->ToObject())->PDFObjectParserInstance= objectReader;
     
     SET_FUNCTION_RETURN_VALUE(driver);
 }

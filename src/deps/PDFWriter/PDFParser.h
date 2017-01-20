@@ -133,6 +133,11 @@ public:
     // delete the result when done
     IByteReader* StartReadingFromStream(PDFStreamInput* inStream);
 
+	// creates a PDFObjectParser object that you can use for reading objects
+	// from the input stream. very userful for reading content streams for
+	// interpreting them
+	PDFObjectParser* StartReadingObjectsFromStream(PDFStreamInput* inStream);
+
 	/*
 		Same as above, but reading only decrypts, but does not defiler. ideal for copying
 	*/

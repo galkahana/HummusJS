@@ -67,6 +67,7 @@
 #include "ByteWriterWithPositionDriver.h"
 #include "PDFWriter.h"
 #include "PDFPageModifierDriver.h"
+#include "PDFObjectParserDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -563,6 +564,7 @@ void HummusInit(Handle<Object> exports) {
 	ByteReaderWithPositionDriver::Init();
 	ByteWriterWithPositionDriver::Init();
     PDFPageModifierDriver::Init(exports);
+    PDFObjectParserDriver::Init();
 
     
     // define methods
