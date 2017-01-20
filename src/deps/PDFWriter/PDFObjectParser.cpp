@@ -49,6 +49,8 @@ PDFObjectParser::PDFObjectParser(void)
 {
 	mParserExtender = NULL;
 	mDecryptionHelper = NULL;
+	mOwnsStream = false;
+	mStream = NULL;
 }
 
 PDFObjectParser::~PDFObjectParser(void)
