@@ -2020,6 +2020,20 @@ IByteReader* PDFParser::StartReadingFromStream(PDFStreamInput* inStream)
     return result;
 }
 
+PDFObjectParser* PDFParser::StartReadingObjectsFromStream(PDFStreamInput* inStream) {
+	IByteReader* readStream = StartReadingFromStream(inStream);
+	if(!readStream)
+		return NULL;
+	
+	PDFObjectParser* objectsParser = new PDFObjectParser();
+	InputStreamSkipperStream* source = new InputStreamSkipperStream(readStream);
+	objectsParser->SetReadStream(source,source,true);
+	objectsParser->SetDecryptionHelper(&mDecryptionHelper);
+	objectsParser->SetParserExtender(mParserExtender);
+
+	return objectsParser;
+}
+
 IByteReader* PDFParser::CreateInputStreamReaderForPlainCopying(PDFStreamInput* inStream) {
 	RefCountPtr<PDFDictionary> streamDictionary(inStream->QueryStreamDictionary());
 	IByteReader* result = NULL;

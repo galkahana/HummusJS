@@ -5,6 +5,7 @@ tests/output
 binding
 node_modules
 aws.json
+etc
 
 #all the binaries
 # Compiled source #
