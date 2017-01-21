@@ -36,6 +36,7 @@ void PDFLiteralStringDriver::Init()
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_PROTOTYPE_METHOD(t, "toText", ToText);
+	SET_PROTOTYPE_METHOD(t, "toBytesArray", ToBytesArray);
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
 	SET_CONSTRUCTOR(constructor, t);
@@ -104,5 +105,18 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::ToText(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(result);
 }
 
+METHOD_RETURN_TYPE PDFLiteralStringDriver::ToBytesArray(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+	std::string aString =  ObjectWrap::Unwrap<PDFLiteralStringDriver>(args.This())->TheObject->GetValue();
+
+	Local<Array> result = NEW_ARRAY(aString.length());
+
+	for(std::string::size_type i=0;i<aString.length();++i)
+		result->Set(NEW_NUMBER(i),NEW_NUMBER(aString[i]));
+
+	SET_FUNCTION_RETURN_VALUE(result);
+}
 
 

@@ -43,4 +43,5 @@ private:
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetValue(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
 	static METHOD_RETURN_TYPE ToText(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE ToBytesArray(const ARGS_TYPE& args);
 };

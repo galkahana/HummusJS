@@ -100,3 +100,17 @@ METHOD_RETURN_TYPE PDFHexStringDriver::ToText(const ARGS_TYPE& args)
     Handle<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
     SET_FUNCTION_RETURN_VALUE(result);
 }
+
+METHOD_RETURN_TYPE PDFHexStringDriver::ToBytesArray(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+	std::string aString =  ObjectWrap::Unwrap<PDFHexStringDriver>(args.This())->TheObject->GetValue();
+
+	Local<Array> result = NEW_ARRAY(aString.length());
+
+	for(std::string::size_type i=0;i<aString.length();++i)
+		result->Set(NEW_NUMBER(i),NEW_NUMBER(aString[i]));
+
+	SET_FUNCTION_RETURN_VALUE(result);
+}
