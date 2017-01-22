@@ -35,6 +35,7 @@ void PDFHexStringDriver::Init()
 	t->SetClassName(NEW_STRING("PDFHexString"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 	SET_PROTOTYPE_METHOD(t, "toText", ToText);
+	SET_PROTOTYPE_METHOD(t, "toBytesArray", ToBytesArray);
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
 	SET_CONSTRUCTOR(constructor, t);
