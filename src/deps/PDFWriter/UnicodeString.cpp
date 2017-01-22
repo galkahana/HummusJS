@@ -242,7 +242,7 @@ EStatusCode UnicodeString::FromUTF16BE(const unsigned char* inString, unsigned l
 
 			unsigned short lowSurrogate = buffer;
 
-			mUnicodeCharacters.push_back(0x10000 + ((highSurrogate - 0xD800) << 5) + (lowSurrogate - 0xDC00));
+			mUnicodeCharacters.push_back(0x10000 + ((highSurrogate - 0xD800) << 10) + (lowSurrogate - 0xDC00));
 		}
 		else
 			mUnicodeCharacters.push_back(buffer);		

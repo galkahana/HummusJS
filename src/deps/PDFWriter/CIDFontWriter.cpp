@@ -129,6 +129,7 @@ EStatusCode CIDFontWriter::WriteFont(FreeTypeFaceWrapper& inFontInfo,
 				TRACE_LOG("CIDFontWriter::WriteFont, unexpected failure. Failed to end dictionary in font write.");
 				break;
 			}
+			inObjectsContext->EndIndirectObject();
 		}
 
 		// Write the descendant font
