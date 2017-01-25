@@ -478,7 +478,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    if(args.Length() != 0 ||
+    if(args.Length() != 1 ||
        !args[0]->IsObject())
     {
  		THROW_EXCEPTION("Wrong arguments. provide 1 arugment, which is an object mapping source object ids to map to target object IDs");
