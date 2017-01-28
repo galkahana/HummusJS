@@ -1613,8 +1613,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
     
     // first, scan args to see if has arrays or lists, to realize which form of TJ to run
     bool hasStrings = false;
-    
-    for(int i=0;i<args.Length()-1 && !hasStrings;++i)
+    bool hasOptions = (args.Length()>0) && (!args[args.Length()-1]->IsString())
+                                        && (!args[args.Length()-1]->IsNumber())
+                                        && (args[args.Length()-1]->IsObject());
+    for(int i=0;i<args.Length() && !hasStrings;++i)
         hasStrings = args[i]->IsString();
     
     if(hasStrings)
@@ -1622,16 +1624,17 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
         StringOrDoubleList params;
 
         TextPlacingOptions options;
+        if(hasOptions)
+            options = ObjectToOptions(args[args.Length()-1]->ToObject());
         
         bool status = true;
-        for(int i=0; i < args.Length() - 1 && status; ++i)
+        int lengthButOptions = hasOptions ? (args.Length()-1) : args.Length();
+        for(int i=0; i < lengthButOptions && status; ++i)
         {
             if(args[i]->IsString())
                 params.push_back(StringOrDouble(*String::Utf8Value(args[i]->ToString())));
             else if(args[i]->IsNumber())
                 params.push_back(StringOrDouble(args[i]->ToNumber()->Value()));
-            else if((args.Length() - 1 == i) && args[i]->IsObject())
-                options = ObjectToOptions(args[i]->ToObject());
             else
                 status = false;
         }
@@ -1641,7 +1644,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
             THROW_EXCEPTION("Wrong arguments. please provide a variable number of elements each either string/glyphs list or number, and an optional final options object");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
-        
+
         
         switch(options.encoding)
         {
@@ -1660,7 +1663,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
         GlyphUnicodeMappingListOrDoubleList params;
 
         bool status = true;
-        for(int i=0; i < args.Length() - 1 && status; ++i)
+        for(int i=0; i < args.Length() && status; ++i)
         {
             if(args[i]->IsArray())
                 params.push_back(GlyphUnicodeMappingListOrDouble(ArrayToGlyphsList(args[i])));
