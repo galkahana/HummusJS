@@ -20,6 +20,7 @@
 #include "PDFHexStringDriver.h"
 #include "RefCountPtr.h"
 #include "PDFTextString.h"
+#include "IOBasicTypes.h"
 
 using namespace v8;
 
@@ -111,7 +112,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::ToBytesArray(const ARGS_TYPE& args)
 	Local<Array> result = NEW_ARRAY(aString.length());
 
 	for(std::string::size_type i=0;i<aString.length();++i)
-		result->Set(NEW_NUMBER(i),NEW_NUMBER(aString[i]));
+		result->Set(NEW_NUMBER(i),NEW_NUMBER((IOBasicTypes::Byte)(aString[i])));
 
 	SET_FUNCTION_RETURN_VALUE(result);
 }

@@ -49,3 +49,6 @@ _.swp
 ################
 xcode/Build
 xcode/DerivedData
+
+#Visual code unwanted
+.vscode
