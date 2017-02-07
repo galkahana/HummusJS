@@ -93,6 +93,44 @@ PDFHummus::EStatusCode PDFModifiedPage::AttachURLLinktoCurrentPage(const std::st
 	return mWriter->GetDocumentContext().AttachURLLinktoCurrentPage(inURL, inLinkClickArea);
 }
 
+vector<string> PDFModifiedPage::WriteNewResourcesDictionary(ObjectsContext& inObjectContext) {
+	vector<string> formResourcesNames;
+
+	// no existing resource dictionary, so write a new one
+	DictionaryContext*  dict = inObjectContext.StartDictionary();
+	dict->WriteKey("XObject");
+	DictionaryContext* xobjectDict = inObjectContext.StartDictionary();
+	for (unsigned long i = 0; i<mContenxts.size(); ++i)
+	{
+		string formObjectName = string("myForm_") + Int(i).ToString();
+		dict->WriteKey(formObjectName);
+		dict->WriteObjectReferenceValue(mContenxts[i]->GetObjectID());
+		formResourcesNames.push_back(formObjectName);
+	}
+	inObjectContext.EndDictionary(xobjectDict);
+	inObjectContext.EndDictionary(dict);
+	return formResourcesNames;	
+}
+
+PDFObject* PDFModifiedPage::findInheritedResources(PDFParser* inParser,PDFDictionary* inDictionary) {
+	if(inDictionary->Exists("Resources")) {
+		return inParser->QueryDictionaryObject(inDictionary, "Resources");
+	}
+	else {
+		PDFObjectCastPtr<PDFDictionary> parentDict(
+			inDictionary->Exists("Parent") ? 
+				inParser->QueryDictionaryObject(inDictionary, "Parent"): 
+				NULL);
+		if(!parentDict) {
+			return NULL;
+		}
+		else {
+			return findInheritedResources(inParser,parentDict.GetPtr());
+		}
+		
+	}
+}
+
 PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 {
 	EStatusCode status = EndContentContext(); // just in case someone forgot to close the latest content context
@@ -214,19 +252,22 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 		modifiedPageObject->WriteKey("Resources");
 		if (!pageDictionaryObject->Exists("Resources"))
 		{
-			// no existing resource dictionary, so write a new one
-			DictionaryContext*  dict = objectContext.StartDictionary();
-			dict->WriteKey("XObject");
-			DictionaryContext* xobjectDict = objectContext.StartDictionary();
-			for (unsigned long i = 0; i<mContenxts.size(); ++i)
-			{
-				string formObjectName = string("myForm_") + Int(i).ToString();
-				dict->WriteKey(formObjectName);
-				dict->WriteObjectReferenceValue(mContenxts[i]->GetObjectID());
-				formResourcesNames.push_back(formObjectName);
+			// check if there's inherited dict. if so - write directly as a modified version
+			PDFObjectCastPtr<PDFDictionary> parentDict(
+				pageDictionaryObject->Exists("Parent") ? 
+					copyingContext->GetSourceDocumentParser()->QueryDictionaryObject(pageDictionaryObject.GetPtr(), "Parent"): 
+					NULL);
+			if(!parentDict) {
+				formResourcesNames = WriteNewResourcesDictionary(objectContext);
 			}
-			objectContext.EndDictionary(xobjectDict);
-			objectContext.EndDictionary(dict);
+			else {
+				PDFObjectCastPtr<PDFDictionary> inheritedResources = findInheritedResources(copyingContext->GetSourceDocumentParser(),parentDict.GetPtr());
+				if(!inheritedResources) {
+					formResourcesNames = WriteNewResourcesDictionary(objectContext);
+				} else {
+					formResourcesNames = WriteModifiedResourcesDict(copyingContext->GetSourceDocumentParser(), inheritedResources.GetPtr(), objectContext, copyingContext);
+				}
+			}
 		}
 		else
 		{
