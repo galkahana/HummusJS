@@ -294,7 +294,7 @@ EStatusCode UnicodeString::FromUTF16LE(const unsigned char* inString, unsigned l
 
 			unsigned short lowSurrogate = buffer;
 
-			mUnicodeCharacters.push_back(0x10000 + ((highSurrogate - 0xD800) << 5) + (lowSurrogate - 0xDC00));
+			mUnicodeCharacters.push_back(0x10000 + ((highSurrogate - 0xD800) << 10) + (lowSurrogate - 0xDC00));
 		}
 		else
 			mUnicodeCharacters.push_back(buffer);		
@@ -328,7 +328,7 @@ EStatusCode UnicodeString::FromUTF16UShort(const unsigned short* inShorts, unsig
 				break;
 			}
 
-			mUnicodeCharacters.push_back(0x10000 + ((inShorts[i-1] - 0xD800) << 5) + (inShorts[i] - 0xDC00));
+			mUnicodeCharacters.push_back(0x10000 + ((inShorts[i-1] - 0xD800) << 10) + (inShorts[i] - 0xDC00));
 		}
 		else
 			mUnicodeCharacters.push_back(inShorts[i]);		
