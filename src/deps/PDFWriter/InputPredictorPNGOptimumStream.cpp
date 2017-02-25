@@ -70,15 +70,17 @@ LongBufferSizeType InputPredictorPNGOptimumStream::Read(Byte* inBuffer,LongBuffe
 	while(readBytes < inBufferSize && mSourceStream->NotEnded())
 	{
 		memcpy(mUpValues,mBuffer,mBufferSize);
-
-		if(mSourceStream->Read(mBuffer,mBufferSize) != mBufferSize)
+		LongBufferSizeType readFromSource = mSourceStream->Read(mBuffer, mBufferSize);
+		if (readFromSource == 0) {
+			break; // a belated end. must be flate
+		}
+		if(readFromSource != mBufferSize)
 		{
 			TRACE_LOG("InputPredictorPNGOptimumStream::Read, problem, expected columns number read. didn't make it");
-			readBytes = 0;
 			break;
 		}
-		mFunctionType = *mIndex;
-		*mIndex = 0; // so i can use this as "left" value...we don't care about this one...it's just a tag
+		mFunctionType = *mBuffer;
+		*mBuffer = 0; // so i can use this as "left" value...we don't care about this one...it's just a tag
 		mIndex = mBuffer+1; // skip the first tag
 
 		while(mBufferSize > (LongBufferSizeType)(mIndex - mBuffer) && readBytes < inBufferSize)
@@ -104,7 +106,7 @@ void InputPredictorPNGOptimumStream::DecodeNextByte(Byte& outDecodedByte)
 			outDecodedByte = *mIndex;
 			break;
 		case 1:
-			outDecodedByte = (Byte)((char)mBuffer[mIndex-mBuffer - 1] + (char)*mIndex);
+			outDecodedByte = (Byte)((char)*(mIndex-1) + (char)*mIndex);
 			break;
 		case 2:
 			outDecodedByte = (Byte)((char)mUpValues[mIndex-mBuffer] + (char)*mIndex);
@@ -134,7 +136,6 @@ void InputPredictorPNGOptimumStream::Assign(IByteReader* inSourceStream,IOBasicT
 	memset(mUpValues,0,mBufferSize); // that's less important
 	mIndex = mBuffer + mBufferSize;
 	mFunctionType = 0;
-
 }
 
 char InputPredictorPNGOptimumStream::PaethPredictor(char inLeft,char inUp,char inUpLeft)

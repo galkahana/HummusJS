@@ -186,30 +186,31 @@ EStatusCode PDFParser::ParseEOFLine()
 	   in which case it'd be part of the comment. in any case - if it's not exactly EOF, there will be a failure. but i am allowing 
 	   extra empty lines after %%EOF
 	*/
-	if(GoBackTillToken())
-	{
-		GoBackTillLineStart();
-		mStream->SetPositionFromEnd(GetCurrentPositionFromEnd());
 
-		PDFParserTokenizer aTokenizer;
-		aTokenizer.SetReadStream(mStream);
-		BoolAndString token = aTokenizer.GetNextToken();
-
-		if(token.first && (token.second.substr(0,scEOF.length()) == scEOF))
+	bool foundEOF = false,canRead = true;
+	while (!foundEOF && canRead) {
+		if (GoBackTillToken())
 		{
-			return PDFHummus::eSuccess;
+			GoBackTillLineStart();
+			mStream->SetPositionFromEnd(GetCurrentPositionFromEnd());
+
+			PDFParserTokenizer aTokenizer;
+			aTokenizer.SetReadStream(mStream);
+			BoolAndString token = aTokenizer.GetNextToken();
+
+			if (token.first && (token.second.substr(0, scEOF.length()) == scEOF))
+			{
+				foundEOF = true;
+			}
 		}
 		else
 		{
-			TRACE_LOG("PDFParser::ParseEOFLine, failure, last line not %%%%EOF");
-			return PDFHummus::eFailure;
+			TRACE_LOG("PDFParser::ParseEOFLine, Couldn't find tokens in file");
+			canRead = false;
 		}
 	}
-	else
-	{
-		TRACE_LOG("PDFParser::ParseEOFLine, Couldn't find tokens in file");
-		return PDFHummus::eFailure;
-	}
+
+	return foundEOF ? PDFHummus::eSuccess : PDFHummus::eFailure;
 }
 
 LongBufferSizeType PDFParser::GetCurrentPositionFromEnd()

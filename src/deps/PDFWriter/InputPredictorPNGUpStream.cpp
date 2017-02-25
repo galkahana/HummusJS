@@ -71,10 +71,13 @@ LongBufferSizeType InputPredictorPNGUpStream::Read(Byte* inBuffer,LongBufferSize
 	{
 		memcpy(mUpValues,mBuffer,mBufferSize);
 
-		if(mSourceStream->Read(mBuffer,mBufferSize) != mBufferSize)
+		LongBufferSizeType readFromSource = mSourceStream->Read(mBuffer, mBufferSize);
+		if (readFromSource == 0) {
+			break; // a belated end. must be flate
+		}
+		if (readFromSource != mBufferSize)
 		{
-			TRACE_LOG("InputPredictorPNGUpStream::Read, problem, expected columns number read. didn't make it");
-			readBytes = 0;
+			TRACE_LOG("InputPredictorPNGOptimumStream::Read, problem, expected columns number read. didn't make it");
 			break;
 		}
 		mIndex = mBuffer+1; // skip the first tag
