@@ -16,7 +16,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   
+
 */
 #include "InputAscii85DecodeStream.h"
 
@@ -101,6 +101,7 @@ void InputAscii85DecodeStream::ReadNextBuffer()
 		{
 			// z - special case
 			buffer[readIndex] = aByte;
+			++readIndex;
 			break;
 		}
 		else if(aByte == 126)
@@ -114,7 +115,7 @@ void InputAscii85DecodeStream::ReadNextBuffer()
 			}
 		}
 		// else, continue to next character, skipping space and invalid
-			
+
 	}
 
 	// if there's anything to encode

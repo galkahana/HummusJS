@@ -16,7 +16,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   
+
 */
 #pragma once
 
@@ -27,7 +27,10 @@ class InputPredictorPNGOptimumStream : public IByteReader
 public:
 	InputPredictorPNGOptimumStream(void);
 	// Takes ownership (use Assign(NULL,0) to unassign)
-	InputPredictorPNGOptimumStream(IByteReader* inSourceStream,IOBasicTypes::LongBufferSizeType inColumns);
+	InputPredictorPNGOptimumStream(IByteReader* inSourceStream,
+								   IOBasicTypes::LongBufferSizeType inColors,
+								   IOBasicTypes::Byte inBitsPerComponent,
+								   IOBasicTypes::LongBufferSizeType inColumns);
 	virtual ~InputPredictorPNGOptimumStream(void);
 
 	virtual IOBasicTypes::LongBufferSizeType Read(IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inBufferSize);
@@ -35,11 +38,15 @@ public:
 	virtual bool NotEnded();
 
 	// Takes ownership (use Assign(NULL,0) to unassign)
-	void Assign(IByteReader* inSourceStream,IOBasicTypes::LongBufferSizeType inColumns);
+	void Assign(IByteReader* inSourceStream,
+				IOBasicTypes::LongBufferSizeType inColors,
+				IOBasicTypes::Byte inBitsPerComponent,
+				IOBasicTypes::LongBufferSizeType inColumns);
 
 private:
 	IByteReader* mSourceStream;
 	IOBasicTypes::Byte* mBuffer;
+	IOBasicTypes::LongBufferSizeType mBytesPerPixel;
 	IOBasicTypes::LongBufferSizeType mBufferSize;
 	IOBasicTypes::Byte* mIndex;
 	IOBasicTypes::Byte mFunctionType;

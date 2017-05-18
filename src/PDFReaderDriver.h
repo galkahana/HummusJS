@@ -66,8 +66,7 @@ private:
 	static METHOD_RETURN_TYPE StartReadingFromStream(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE StartReadingFromStreamForPlainCopying(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE StartReadingObjectsFromStream(const ARGS_TYPE& args);
-	
-
+	static METHOD_RETURN_TYPE StartReadingObjectsFromStreams(const ARGS_TYPE& args);
     
     bool mStartedWithStream;
     ObjectByteReaderWithPosition* mReadStreamProxy;

@@ -78,6 +78,7 @@ void PDFReaderDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "startReadingFromStream", StartReadingFromStream);
 	SET_PROTOTYPE_METHOD(t, "startReadingFromStreamForPlainCopying", StartReadingFromStreamForPlainCopying);
 	SET_PROTOTYPE_METHOD(t, "startReadingObjectsFromStream", StartReadingObjectsFromStream);
+	SET_PROTOTYPE_METHOD(t, "startReadingObjectsFromStreams", StartReadingObjectsFromStreams);
 	SET_PROTOTYPE_METHOD(t, "getParserStream", GetParserStream);
 	SET_CONSTRUCTOR(constructor, t);
     SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);    
@@ -486,6 +487,28 @@ METHOD_RETURN_TYPE PDFReaderDriver::StartReadingObjectsFromStream(const ARGS_TYP
     PDFStreamInputDriver* streamInput = ObjectWrap::Unwrap<PDFStreamInputDriver>(args[0]->ToObject());
     
     PDFObjectParser* objectReader = reader->mPDFReader->StartReadingObjectsFromStream(streamInput->TheObject.GetPtr());
+    
+    Handle<Value> driver = PDFObjectParserDriver::GetNewInstance(args);
+    ObjectWrap::Unwrap<PDFObjectParserDriver>(driver->ToObject())->PDFObjectParserInstance= objectReader;
+    
+    SET_FUNCTION_RETURN_VALUE(driver);
+}
+
+METHOD_RETURN_TYPE PDFReaderDriver::StartReadingObjectsFromStreams(const ARGS_TYPE& args) {
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    if(args.Length() != 1 ||
+       !PDFArrayDriver::HasInstance(args[0]))
+    {
+ 		THROW_EXCEPTION("Wrong arguments. provide a PDF array");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
+    PDFArrayDriver* arrayInput = ObjectWrap::Unwrap<PDFArrayDriver>(args[0]->ToObject());
+    
+    PDFObjectParser* objectReader = reader->mPDFReader->StartReadingObjectsFromStreams(arrayInput->TheObject.GetPtr());
     
     Handle<Value> driver = PDFObjectParserDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<PDFObjectParserDriver>(driver->ToObject())->PDFObjectParserInstance= objectReader;

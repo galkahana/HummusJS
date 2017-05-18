@@ -107,7 +107,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 				{
 					if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 					{	
-						result.first = false;
+						result.first = !mStream->NotEnded();
 						break;
 					}
 					if(0xD == buffer|| 0xA == buffer)
@@ -127,7 +127,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 				{
 					if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 					{	
-						result.first = false;
+						result.first = !mStream->NotEnded();
 						break;
 					}
 			
@@ -142,7 +142,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 							{
 								if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 								{
-									result.first = false;
+									result.first = !mStream->NotEnded();
 									break;
 								}
 								if(buffer != 0xA)
@@ -187,7 +187,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 
 				if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 				{	
-						result.first = false;
+						result.first = !mStream->NotEnded();
 						break;
 				}
 
@@ -208,7 +208,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 					{
 						if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 						{	
-							result.first = false;
+							result.first = !mStream->NotEnded();
 							break;
 						}
 
@@ -235,7 +235,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 
 				if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 				{	
-					result.first = false;
+					result.first = !mStream->NotEnded();
 					break;
 				}
 
@@ -262,7 +262,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 				{
 					if(GetNextByteForToken(buffer) != PDFHummus::eSuccess)
 					{	
-						result.first = false;
+						result.first = !mStream->NotEnded();
 						break;
 					}
 					if(IsPDFWhiteSpace(buffer))
@@ -290,7 +290,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 					// verify that when whitespaces are finished buffer is either CR or LF, and behave accordingly
 					while(mStream->NotEnded()) {
 						if (!IsPDFWhiteSpace(buffer)) {
-							result.first = false; // something wrong! not whitespace
+							result.first = !mStream->NotEnded(); // something wrong! not whitespace
 							break;
 						}
 
@@ -311,7 +311,7 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 						} // else - some other white space
 
 						if (GetNextByteForToken(buffer) != PDFHummus::eSuccess) {
-							result.first = false; //can't read but not eof. fail
+							result.first = !mStream->NotEnded(); //can't read but not eof. fail
 							break;
 						}
 					}

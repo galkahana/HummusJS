@@ -34,7 +34,6 @@
 #include <map>
 #include <utility>
 
-
 class PDFArray;
 class PDFStreamInput;
 class PDFDictionary;
@@ -137,6 +136,8 @@ public:
 	// from the input stream. very userful for reading content streams for
 	// interpreting them
 	PDFObjectParser* StartReadingObjectsFromStream(PDFStreamInput* inStream);
+	// same, but for an array of streams, in case of page contents that are arrays. need to count as one
+	PDFObjectParser* StartReadingObjectsFromStreams(PDFArray* inArrayOfStreams);
 
 	/*
 		Same as above, but reading only decrypts, but does not defiler. ideal for copying

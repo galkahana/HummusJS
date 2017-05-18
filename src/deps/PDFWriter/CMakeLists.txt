@@ -31,6 +31,7 @@ AbstractContentContext.cpp
 AbstractWrittenFont.cpp
 ANSIFontWriter.cpp
 Ascii7Encoding.cpp
+ArrayOfInputStreamsStream.cpp
 CatalogInformation.cpp
 CFFANSIFontWriter.cpp
 CFFDescendentFontWriter.cpp
@@ -175,6 +176,7 @@ AbstractWrittenFont.h
 AdapterIByteReaderWithPositionToIReadPositionProvider.h
 ANSIFontWriter.h
 Ascii7Encoding.h
+ArrayOfInputStreamsStream.h
 BetweenIncluding.h
 BoxingBase.h
 CatalogInformation.h
@@ -645,6 +647,8 @@ InputPredictorTIFFSubStream.h
 )
 
 source_group("PDF Embedding" FILES
+ArrayOfInputStreamsStream.cpp
+ArrayOfInputStreamsStream.h
 IPDFParserExtender.h
 PDFDocumentCopyingContext.cpp
 PDFDocumentCopyingContext.h
