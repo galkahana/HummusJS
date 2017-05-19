@@ -14,6 +14,10 @@ PDFObjectParserDriver::PDFObjectParserDriver()
     PDFObjectParserInstance = NULL;
 }
 
+PDFObjectParserDriver::~PDFObjectParserDriver() {
+	delete PDFObjectParserInstance;
+}
+
 void PDFObjectParserDriver::Init()
 {
 	CREATE_ISOLATE_CONTEXT;
