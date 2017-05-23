@@ -307,14 +307,19 @@ bool PDFParser::ReadNextBufferFromEnd()
 	}
 	else
 	{
-		mStream->SetPositionFromEnd(mLastReadPositionFromEnd + LINE_BUFFER_SIZE);
-		LongBufferSizeType readAmount = mStream->Read(mLinesBuffer,LINE_BUFFER_SIZE);
+		mStream->SetPositionFromEnd(mLastReadPositionFromEnd); // last known position that worked.
+		LongFilePositionType positionBefore = mStream->GetCurrentPosition();
+		mStream->SetPositionFromEnd(mLastReadPositionFromEnd + LINE_BUFFER_SIZE); // try earlier one
+		LongFilePositionType positionAfter = mStream->GetCurrentPosition();
+		LongBufferSizeType readAmount = positionBefore - positionAfter; // check if got to start by testing position
+		if(readAmount != 0)
+			readAmount = mStream->Read(mLinesBuffer,readAmount);
+		mEncounteredFileStart = readAmount < LINE_BUFFER_SIZE;
 		if(0 == readAmount)
 			return false;
 		mLastAvailableIndex = mLinesBuffer + readAmount;
 		mCurrentBufferIndex = mLastAvailableIndex;
 		mLastReadPositionFromEnd+= readAmount;
-		mEncounteredFileStart = readAmount < LINE_BUFFER_SIZE;
 		return true;
 	}
 }
