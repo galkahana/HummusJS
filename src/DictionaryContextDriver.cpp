@@ -44,6 +44,7 @@ void DictionaryContextDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "writeLiteralStringValue", WriteLiteralStringValue);
 	SET_PROTOTYPE_METHOD(t, "writeBooleanValue", WriteBooleanValue);
 	SET_PROTOTYPE_METHOD(t, "writeObjectReferenceValue", WriteObjectReferenceValue);
+    SET_PROTOTYPE_METHOD(t, "writeIntegerValue", WriteIntegerValue);
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
@@ -288,6 +289,31 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS
     }
     
     driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)args[0]->ToNumber()->Uint32Value());
+    
+    SET_FUNCTION_RETURN_VALUE(args.This());
+}
+
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteIntegerValue(const ARGS_TYPE& args)
+{
+	CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+
+    if(!(args.Length() == 1) ||
+       !args[0]->IsNumber())
+    {
+		THROW_EXCEPTION("Wrong arguments, provide a number to write");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        
+    }
+    DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args.This());
+    
+    if(!driver->DictionaryContextInstance)
+    {
+		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    driver->DictionaryContextInstance->WriteIntegerValue(args[0]->ToNumber()->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
