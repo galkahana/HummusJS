@@ -6,7 +6,6 @@ binding
 node_modules
 aws.json
 etc
-.keep
 
 #all the binaries
 # Compiled source #
