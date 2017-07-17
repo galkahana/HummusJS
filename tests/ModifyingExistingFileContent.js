@@ -75,7 +75,7 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment) {
 		.writeKey('Name')
 		.writeNameValue('Comment')
 		.writeKey('F')
-        .writeIntegerValue(getFlagBitNumberByName(inComment.flag));
+        .writeNumberValue(getFlagBitNumberByName(inComment.flag));
 
 	objectsContext
 		.endDictionary(dictionaryContext)
@@ -159,7 +159,7 @@ describe('ModifyingExistingFileContent', function() {
 				'someone',
 				[100,500,200,600],
 				[255,0,0],
-				'locked'
+				'noview'
 				);
 			commentWriter.writeCommentTree(aComment);
 			var bComment = new PDFComment(

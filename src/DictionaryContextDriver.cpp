@@ -44,7 +44,7 @@ void DictionaryContextDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "writeLiteralStringValue", WriteLiteralStringValue);
 	SET_PROTOTYPE_METHOD(t, "writeBooleanValue", WriteBooleanValue);
 	SET_PROTOTYPE_METHOD(t, "writeObjectReferenceValue", WriteObjectReferenceValue);
-    SET_PROTOTYPE_METHOD(t, "writeIntegerValue", WriteIntegerValue);
+    SET_PROTOTYPE_METHOD(t, "writeNumberValue", WriteNumberValue);
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
@@ -293,7 +293,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
-METHOD_RETURN_TYPE DictionaryContextDriver::WriteIntegerValue(const ARGS_TYPE& args)
+METHOD_RETURN_TYPE DictionaryContextDriver::WriteNumberValue(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -313,7 +313,12 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteIntegerValue(const ARGS_TYPE& a
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    driver->DictionaryContextInstance->WriteIntegerValue(args[0]->ToNumber()->Value());
+    if(args[0]->IsUint32())
+        driver->DictionaryContextInstance->WriteIntegerValue(args[0]->ToUint32()->Uint32Value());
+    else if(args[0]->IsInt32())
+        driver->DictionaryContextInstance->WriteIntegerValue(args[0]->ToInt32()->Int32Value());
+    else
+        driver->DictionaryContextInstance->WriteDoubleValue(args[0]->ToNumber()->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
