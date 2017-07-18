@@ -2,7 +2,7 @@ var hummus = require('../hummus');
 
 // [look...not gonna write it 100% right...you JS experts can probably write this better]
 // PDFComment object
-function PDFComment(inText,inCommentator,inPosition,inColor,inReplyTo) {
+function PDFComment(inText,inCommentator,inPosition,inColor,flag,inReplyTo) {
 	this.time = new Date();
 	this.text = inText;
 	this.commentator = inCommentator;
@@ -10,6 +10,7 @@ function PDFComment(inText,inCommentator,inPosition,inColor,inReplyTo) {
 	this.color = inColor;
 	this.replyTo = inReplyTo;
 	this.objectID = 0;
+	this.flag = flag;
 }
 
 // PDFCommentWriter object
@@ -72,7 +73,9 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment) {
 		.writeKey('Open')
 		.writeBooleanValue(false)
 		.writeKey('Name')
-		.writeNameValue('Comment');
+		.writeNameValue('Comment')
+		.writeKey('F')
+        .writeNumberValue(getFlagBitNumberByName(inComment.flag));
 
 	objectsContext
 		.endDictionary(dictionaryContext)
@@ -82,6 +85,35 @@ PDFCommentWriter.prototype._writeCommentsTree = function(inComment) {
 	return result;
 }
 
+function getFlagBitNumberByName(name) {
+	name = name || '';
+    // 12.5.3 Annotation Flags
+    switch (name.toLowerCase()) {
+        case 'invisible':
+            return 1;
+        case 'hidden':
+            return 2;
+        case 'print':
+            return 4;
+        case 'nozoom':
+            return 8;
+        case 'norotate':
+            return 16;
+        case 'noview':
+            return 32;
+        case 'readonly':
+            return 64;
+        case 'locked':
+            return 128;
+        case 'togglenoview':
+            return 256;
+            // 1.7+
+            // case 'lockedcontents':
+            //     return 512;
+        default:
+            return 0;
+    }
+}
 
 describe('ModifyingExistingFileContent', function() {
 	var inPDFWriter;
@@ -126,18 +158,22 @@ describe('ModifyingExistingFileContent', function() {
 				'a very important text',
 				'someone',
 				[100,500,200,600],
-				[255,0,0]);
+				[255,0,0],
+				'noview'
+				);
 			commentWriter.writeCommentTree(aComment);
 			var bComment = new PDFComment(
 				'I have nothing to say about this',
 				'someone',
 				[100,100,200,200],
-				[255,0,0]);
+				[255,0,0],
+				'readOnly');
 			var cComment = new PDFComment(
 				'yeah. me too. it\'s just perfect',
 				'Someone else',
 				[150,150,250,250],
 				[0,255,0],
+				'nozoom',
 				bComment);
 			commentWriter.writeCommentTree(cComment);
 

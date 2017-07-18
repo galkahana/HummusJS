@@ -49,4 +49,5 @@ private:
     static METHOD_RETURN_TYPE WriteLiteralStringValue(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE WriteBooleanValue(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE WriteObjectReferenceValue(const ARGS_TYPE& args);
+    static METHOD_RETURN_TYPE WriteNumberValue(const ARGS_TYPE& args);
 };
