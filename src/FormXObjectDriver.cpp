@@ -47,6 +47,7 @@ void FormXObjectDriver::Init()
 
 	SET_ACCESSOR_METHOD(t,"id", GetID);
 	SET_PROTOTYPE_METHOD(t, "getContentContext", GetContentContext);
+    SET_PROTOTYPE_METHOD(t, "getResourcesDictinary", GetResourcesDictionary);
 	SET_PROTOTYPE_METHOD(t, "getResourcesDictionary", GetResourcesDictionary);
 	SET_PROTOTYPE_METHOD(t, "getContentStream", GetContentStream);
 
