@@ -22,6 +22,7 @@
 #include "UnicodeString.h"
 #include <list>
 
+#include FT_SIZES_H
 #include FT_GLYPH_H
 
 using namespace v8;
@@ -44,6 +45,7 @@ void UsedFontDriver::Init()
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_PROTOTYPE_METHOD(t, "calculateTextDimensions", CalculateTextDimensions);
+    SET_PROTOTYPE_METHOD(t, "getFontMetrics", GetFontMetrics);
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
@@ -82,6 +84,70 @@ METHOD_RETURN_TYPE UsedFontDriver::New(const ARGS_TYPE& args)
     UsedFontDriver* usedFont = new UsedFontDriver();
     usedFont->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This());
+}
+
+METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
+{
+    // There are "global" metrics of a font which are necessary to do any real
+    // text formatting
+    CREATE_ISOLATE_CONTEXT;
+    CREATE_ESCAPABLE_SCOPE;
+    long fontSize;
+
+    if(args.Length() > 1 || (args.Length() && !args[0]->IsNumber()))
+    {
+        THROW_EXCEPTION("Wrong arguments, optionally provide a font size");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+
+    if (args.Length())
+        fontSize = args[0]->ToNumber()->Uint32Value();
+    else
+        fontSize = 1;
+    
+    PDFUsedFont* theFont =  ObjectWrap::Unwrap<UsedFontDriver>(args.This())->UsedFont;
+    FreeTypeFaceWrapper* ftWrapper = theFont->GetFreeTypeFont();
+    FT_Face ftFont = (*ftWrapper).operator->();
+    FT_BBox bbox = ftFont->bbox;
+
+    FT_Size oldSize = ftFont->size;
+    FT_Size newSize;
+    #define HANDLE_FTERROR(_m) { FT_Error _err = _m; if (_err) { \
+        FT_Activate_Size(oldSize); \
+        THROW_EXCEPTION("Unknown font error"); \
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED); \
+    } }
+
+    HANDLE_FTERROR(FT_New_Size(ftFont, &newSize));
+    HANDLE_FTERROR(FT_Activate_Size(newSize));
+    HANDLE_FTERROR(
+        FT_Set_Char_Size(
+            ftFont,
+            0,
+            64*fontSize, // units are 1/64 point, a point is 1 PDF pixel
+            72, 72
+        )
+    );
+    
+    Handle<Object> result = NEW_OBJECT;
+    Handle<Object> pixelsPerEm = NEW_OBJECT;
+
+    pixelsPerEm->Set(NEW_STRING("x"),NEW_NUMBER(newSize->metrics.x_ppem));
+    pixelsPerEm->Set(NEW_STRING("y"),NEW_NUMBER(newSize->metrics.y_ppem));
+    pixelsPerEm->Set(NEW_STRING("xScale"),NEW_NUMBER(newSize->metrics.x_scale));
+    pixelsPerEm->Set(NEW_STRING("yScale"),NEW_NUMBER(newSize->metrics.y_scale));
+
+    result->Set(NEW_STRING("pixelsPerEm"), pixelsPerEm);
+    result->Set(NEW_STRING("ascender"), NEW_NUMBER(newSize->metrics.ascender));
+    result->Set(NEW_STRING("descender"), NEW_NUMBER(newSize->metrics.descender));
+    result->Set(NEW_STRING("height"), NEW_NUMBER(newSize->metrics.height));
+    result->Set(NEW_STRING("max_advance"), NEW_NUMBER(newSize->metrics.max_advance));
+    
+    HANDLE_FTERROR(FT_Activate_Size(oldSize));
+    HANDLE_FTERROR(FT_Done_Size(newSize));
+
+    SET_FUNCTION_RETURN_VALUE(result);
+    #undef HANDLE_FTERROR
 }
 
 METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args)
