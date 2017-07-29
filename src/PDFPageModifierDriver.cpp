@@ -139,20 +139,23 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::StartContext(const ARGS_TYPE& args)
  
     PDFPageModifierDriver* driver = ObjectWrap::Unwrap<PDFPageModifierDriver>(args.This());
 
-    
-    if(!driver)
-    {
-		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
-        return; 
-    }
+    do {
+        if(!driver)
+        {
+            THROW_EXCEPTION("no driver created...please create one through Hummus");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            break;       
+        }
 
-    if(!driver->mModifierPageInstance->StartContentContext()) {
-		THROW_EXCEPTION("context not created, page index is either wrong, or page is null");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
-        return;
-    }
-    SET_FUNCTION_RETURN_VALUE(args.This());
+        if(!driver->mModifierPageInstance->StartContentContext()) {
+            THROW_EXCEPTION("context not created, page index is either wrong, or page is null");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED); 
+            break;       
+        }
+        SET_FUNCTION_RETURN_VALUE(args.This());
+    }while(false);
+    
+
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
@@ -163,29 +166,32 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
     PDFPageModifierDriver* driver = ObjectWrap::Unwrap<PDFPageModifierDriver>(args.This());
 
     
-    if(!driver)
-    {
-		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
-        return;
-    }
+    do {
+        if(!driver)
+        {
+            THROW_EXCEPTION("no driver created...please create one through Hummus");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            break;
+        }
 
-    if(!driver->mModifierPageInstance->GetCurrentFormContext()) {
-		THROW_EXCEPTION("No context created, please create one with startContext");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
-        return;
-    }
+        if(!driver->mModifierPageInstance->GetCurrentFormContext()) {
+            THROW_EXCEPTION("No context created, please create one with startContext");
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+            break;
 
-    Handle<Value> newInstance = XObjectContentContextDriver::GetNewInstance(args);
-    XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->ToObject());
-    contentContextDriver->ContentContext = 
-        driver->mModifierPageInstance->GetCurrentFormContext() ? 
-            driver->mModifierPageInstance->GetCurrentFormContext()->GetContentContext():
-            NULL;
-    contentContextDriver->FormOfContext = driver->mModifierPageInstance->GetCurrentFormContext();
-    contentContextDriver->SetResourcesDictionary(driver->mModifierPageInstance->GetCurrentResourcesDictionary());
+        }
 
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+        Handle<Value> newInstance = XObjectContentContextDriver::GetNewInstance(args);
+        XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->ToObject());
+        contentContextDriver->ContentContext = 
+            driver->mModifierPageInstance->GetCurrentFormContext() ? 
+                driver->mModifierPageInstance->GetCurrentFormContext()->GetContentContext():
+                NULL;
+        contentContextDriver->FormOfContext = driver->mModifierPageInstance->GetCurrentFormContext();
+        contentContextDriver->SetResourcesDictionary(driver->mModifierPageInstance->GetCurrentResourcesDictionary());
+
+        SET_FUNCTION_RETURN_VALUE(newInstance);
+    }while(false);
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::EndContext(const ARGS_TYPE& args)
