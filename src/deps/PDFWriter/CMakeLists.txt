@@ -72,12 +72,7 @@ InputFlateDecodeStream.cpp
 InputLimitedStream.cpp
 InputRC4XcodeStream.cpp
 InputPFBDecodeStream.cpp
-InputPredictorPNGAverageStream.cpp
-InputPredictorPNGNoneStream.cpp
 InputPredictorPNGOptimumStream.cpp
-InputPredictorPNGPaethStream.cpp
-InputPredictorPNGSubStream.cpp
-InputPredictorPNGUpStream.cpp
 InputPredictorTIFFSubStream.cpp
 InputStreamSkipperStream.cpp
 InputStringBufferStream.cpp
@@ -242,12 +237,7 @@ InputFlateDecodeStream.h
 InputLimitedStream.h
 InputRC4XcodeStream.h
 InputPFBDecodeStream.h
-InputPredictorPNGAverageStream.h
-InputPredictorPNGNoneStream.h
 InputPredictorPNGOptimumStream.h
-InputPredictorPNGPaethStream.h
-InputPredictorPNGSubStream.h
-InputPredictorPNGUpStream.h
 InputPredictorTIFFSubStream.h
 InputStreamSkipperStream.h
 InputStringBufferStream.h
@@ -630,18 +620,8 @@ PDFArrayIterator.h
 )
 
 source_group("PDF Embedding\\PredictionFilters" FILES
-InputPredictorPNGAverageStream.cpp
-InputPredictorPNGAverageStream.h
-InputPredictorPNGNoneStream.cpp
-InputPredictorPNGNoneStream.h
 InputPredictorPNGOptimumStream.cpp
 InputPredictorPNGOptimumStream.h
-InputPredictorPNGPaethStream.cpp
-InputPredictorPNGPaethStream.h
-InputPredictorPNGSubStream.cpp
-InputPredictorPNGSubStream.h
-InputPredictorPNGUpStream.cpp
-InputPredictorPNGUpStream.h
 InputPredictorTIFFSubStream.cpp
 InputPredictorTIFFSubStream.h
 )

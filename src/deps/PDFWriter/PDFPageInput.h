@@ -58,7 +58,7 @@ public:
  
     bool operator!();
     
-    unsigned int GetRotate();
+    int GetRotate();
     PDFRectangle GetMediaBox();
     PDFRectangle GetCropBox();
     PDFRectangle GetTrimBox();

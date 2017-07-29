@@ -23,6 +23,11 @@
 #include "Trace.h"
 #include <stdlib.h>
 
+/*
+	Note from Gal: Note that optimum also implements the others. this is because PNG compression requires that the first byte in the line holds the algo -
+	even if the whole stream is declared as a single algo.
+*/
+
 using namespace IOBasicTypes;
 
 InputPredictorPNGOptimumStream::InputPredictorPNGOptimumStream(void)

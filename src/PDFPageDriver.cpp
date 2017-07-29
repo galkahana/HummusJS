@@ -293,7 +293,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPER
 
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(info.Holder());
     
-    BoolAndUnsignedInt rotate = pageDriver->mPDFPage->GetRotate();
+    BoolAndInt rotate = pageDriver->mPDFPage->GetRotate();
     
     if(rotate.first) 
     {

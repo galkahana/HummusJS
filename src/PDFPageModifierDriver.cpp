@@ -144,10 +144,14 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::StartContext(const ARGS_TYPE& args)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
-        
+        return; 
     }
 
-    driver->mModifierPageInstance->StartContentContext();    
+    if(!driver->mModifierPageInstance->StartContentContext()) {
+		THROW_EXCEPTION("context not created, page index is either wrong, or page is null");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+        return;
+    }
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -163,7 +167,13 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
-        
+        return;
+    }
+
+    if(!driver->mModifierPageInstance->GetCurrentFormContext()) {
+		THROW_EXCEPTION("No context created, please create one with startContext");
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+        return;
     }
 
     Handle<Value> newInstance = XObjectContentContextDriver::GetNewInstance(args);

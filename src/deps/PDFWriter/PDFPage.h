@@ -29,7 +29,7 @@
 #include <utility>
 
 typedef std::pair<bool,PDFRectangle> BoolAndPDFRectangle;
-typedef std::pair<bool,unsigned int> BoolAndUnsignedInt;
+typedef std::pair<bool,int> BoolAndInt;
 
 class PageContentContext;
 
@@ -45,9 +45,9 @@ public:
 	const PDFRectangle& GetMediaBox() const;
     
 	// sets page rotation factor (optional, must be multiple of 90)
-	void SetRotate( unsigned int inRotate );
+	void SetRotate( int inRotate );
     // returns indicator for wheather rotation was set, and its value
-	const BoolAndUnsignedInt& GetRotate() const;
+	const BoolAndInt& GetRotate() const;
     
     // crop box, defaults to MediaBox
     // bleed box, defaults to crop box
@@ -83,7 +83,7 @@ public:
 
 private:
 	PDFRectangle mMediaBox;
-	BoolAndUnsignedInt mRotate;
+	BoolAndInt mRotate;
     BoolAndPDFRectangle mTrimBox;
     BoolAndPDFRectangle mArtBox;
     BoolAndPDFRectangle mCropBox;

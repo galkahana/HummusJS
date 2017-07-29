@@ -328,8 +328,9 @@ METHOD_RETURN_TYPE PDFReaderDriver::ParsePageDictionary(const ARGS_TYPE& args)
  		THROW_EXCEPTION("Unable to read page, parhaps page index is wrong");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
-    
-    SET_FUNCTION_RETURN_VALUE(PDFObjectDriver::CreateDriver(newObject.GetPtr()));
+    else {
+        SET_FUNCTION_RETURN_VALUE(PDFObjectDriver::CreateDriver(newObject.GetPtr()));
+    }
 }
 
 METHOD_RETURN_TYPE PDFReaderDriver::ParsePage(const ARGS_TYPE& args)
@@ -350,14 +351,15 @@ METHOD_RETURN_TYPE PDFReaderDriver::ParsePage(const ARGS_TYPE& args)
     
     if(!newObject)
     {
- 		THROW_EXCEPTION("Unable to read page, parhaps page index is wrong");
+ 		THROW_EXCEPTION("Unable to read page, page index is wrong or page is null");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
-    
-    Handle<Value> newInstance = PDFPageInputDriver::GetNewInstance();
-    ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->ToObject())->PageInput = new PDFPageInput(reader->mPDFReader,newObject);
-    ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->ToObject())->PageInputDictionary = newObject.GetPtr();
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    else {
+        Handle<Value> newInstance = PDFPageInputDriver::GetNewInstance();
+        ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->ToObject())->PageInput = new PDFPageInput(reader->mPDFReader,newObject);
+        ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->ToObject())->PageInputDictionary = newObject.GetPtr();
+        SET_FUNCTION_RETURN_VALUE(newInstance);
+    }
 }
 
 METHOD_RETURN_TYPE PDFReaderDriver::GetObjectsCount(const ARGS_TYPE& args)
@@ -404,7 +406,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetXrefEntry(const ARGS_TYPE& args)
     XrefEntryInput* xrefEntry = reader->mPDFReader->GetXrefEntry(args[0]->ToNumber()->Uint32Value());
     if(!xrefEntry)
     {
- 		THROW_EXCEPTION("Unable to read object xref entry, parhaps page index is wrong");
+ 		THROW_EXCEPTION("Unable to read object xref entry, page index is wrong or page is null");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);   
     }
     

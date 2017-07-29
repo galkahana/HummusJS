@@ -46,7 +46,7 @@ const PDFRectangle& PDFPage::GetMediaBox() const
 	return mMediaBox;
 }
 
-void PDFPage::SetRotate( unsigned int inRotate )
+void PDFPage::SetRotate( int inRotate )
 {
 	if ( inRotate % 90 )
 	{ 
@@ -57,7 +57,7 @@ void PDFPage::SetRotate( unsigned int inRotate )
 	mRotate.second = inRotate;
 }
 
-const BoolAndUnsignedInt& PDFPage::GetRotate() const
+const BoolAndInt& PDFPage::GetRotate() const
 {
 	return mRotate;
 }

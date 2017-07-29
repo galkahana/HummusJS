@@ -35,6 +35,7 @@
 #include "BoxingBase.h"
 #include "PDFStream.h"
 #include "PDFObject.h"
+#include "Trace.h"
 
 #include <string>
 
@@ -57,7 +58,12 @@ AbstractContentContext* PDFModifiedPage::StartContentContext()
 {
 	if(!mCurrentContext)
 	{
-		PDFRectangle mediaBox = PDFPageInput(&mWriter->GetModifiedFileParser(),mWriter->GetModifiedFileParser().ParsePage(mPageIndex)).GetMediaBox();
+		PDFObject* page = mWriter->GetModifiedFileParser().ParsePage(mPageIndex);
+		if (!page) {
+			TRACE_LOG("AbstractContentContext::PDFModifiedPage, null page object");
+			return NULL;
+		}
+		PDFRectangle mediaBox = PDFPageInput(&mWriter->GetModifiedFileParser(), page).GetMediaBox();
 		mCurrentContext = mWriter->StartFormXObject(mediaBox);
 	}
 	return mCurrentContext->GetContentContext();

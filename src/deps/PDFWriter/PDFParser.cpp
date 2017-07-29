@@ -37,11 +37,6 @@
 #include "InputLimitedStream.h"
 #include "InputFlateDecodeStream.h"
 #include "InputStreamSkipperStream.h"
-#include "InputPredictorPNGUpStream.h"
-#include "InputPredictorPNGNoneStream.h"
-#include "InputPredictorPNGSubStream.h"
-#include "InputPredictorPNGAverageStream.h"
-#include "InputPredictorPNGPaethStream.h"
 #include "InputPredictorPNGOptimumStream.h"
 #include "InputPredictorTIFFSubStream.h"
 #include "InputAscii85DecodeStream.h"
@@ -660,7 +655,11 @@ EStatusCode PDFParser::ReadNextXrefEntry(Byte inBuffer[20]) {
 		TRACE_LOG("PDFParser::ReadNextXrefEntry, failed to read xref entry");
 		status = PDFHummus::eFailure;
 	}
-
+	// set position if the EOL is 1 char instead of 2 (some documents may not follow the standard!)
+	if ((inBuffer[19] != scLN && inBuffer[19] != scCR) && (inBuffer[18] == scLN || inBuffer[18] == scCR))
+	{
+		mStream->SetPosition(mStream->GetCurrentPosition() - 1);
+	}
 	return status;
 }
 
@@ -883,7 +882,10 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 		else if(scPages == objectType->GetValue())
 		{
 			// a Page tree node
-			PDFObjectCastPtr<PDFArray> kidsObject(inPageNode->QueryDirectObject("Kids"));
+			PDFObject* pKids= inPageNode->QueryDirectObject("Kids");
+			if (pKids && pKids->GetType() == PDFObject::ePDFObjectIndirectObjectReference)
+				pKids= ParseExistingInDirectObject(((PDFIndirectObjectReference*)pKids)->mObjectID);
+			PDFObjectCastPtr<PDFArray> kidsObject(pKids);
 			if(!kidsObject)
 			{
 				TRACE_LOG("PDFParser::ParsePagesIDs, unable to find page kids array");
@@ -895,6 +897,13 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 
 			while(it.MoveNext() && PDFHummus::eSuccess == status)
 			{
+				if (it.GetItem()->GetType() == PDFObject::ePDFObjectNull) {
+					// null pointer. mark as empty page
+					mPagesObjectIDs[ioCurrentPageIndex] = 0;
+					++ioCurrentPageIndex;
+					continue;
+				}
+
 				if(it.GetItem()->GetType() != PDFObject::ePDFObjectIndirectObjectReference)
 				{
 					TRACE_LOG1("PDFParser::ParsePagesIDs, unexpected type for a Kids array object, type = %s",PDFObject::scPDFObjectTypeLabel(it.GetItem()->GetType()));
@@ -942,6 +951,11 @@ PDFDictionary* PDFParser::ParsePage(unsigned long inPageIndex)
 {
 	if(mPagesCount <= inPageIndex)
 		return NULL;
+
+	if (mPagesObjectIDs[inPageIndex] == 0) {
+		TRACE_LOG1("PDFParser::ParsePage, page marked as null at index %ld", inPageIndex);
+		return NULL;
+	}
 
 	PDFObjectCastPtr<PDFDictionary> pageObject(ParseNewObject(mPagesObjectIDs[inPageIndex]));
 
@@ -1944,34 +1958,14 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 					break;
 				}
 				case 10:
-				{
-					result = new InputPredictorPNGNoneStream(result,columnsValue);
-					break;
-				}
 				case 11:
-				{
-					result = new InputPredictorPNGSubStream(result,columnsValue);
-					break;
-				}
 				case 12:
-				{
-
-					result =  new InputPredictorPNGUpStream(result,columnsValue);
-					break;
-				}
 				case 13:
-				{
-
-					result =  new InputPredictorPNGAverageStream(result,columnsValue);
-					break;
-				}
 				case 14:
-				{
-					result =  new InputPredictorPNGPaethStream(result,columnsValue);
-					break;
-				}
 				case 15:
 				{
+					// Gal: optimum can handle all presets, because non-optimum presets still require a function sign flag
+					// at line start...so optimum can handle them.
 					result =  new InputPredictorPNGOptimumStream(result,
 																 colorsValue,
 																 bitsPerComponentValue,

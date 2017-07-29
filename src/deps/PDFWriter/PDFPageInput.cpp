@@ -75,9 +75,9 @@ bool PDFPageInput::operator!()
     return !mPageObject;
 }
 
-unsigned int PDFPageInput::GetRotate()
+int PDFPageInput::GetRotate()
 {
-	unsigned int result = 0;
+	int result = 0;
     RefCountPtr<PDFObject> rotation(QueryInheritedValue(mPageObject.GetPtr(),"Rotate"));
 	if (!rotation)
 		return result;
@@ -89,7 +89,7 @@ unsigned int PDFPageInput::GetRotate()
 	}
 	else
 	{
-		result = static_cast<unsigned int>(helper.GetAsInteger());
+		result = static_cast<int>(helper.GetAsInteger());
 		if (result % 90)
 		{
 			TRACE_LOG("PDFPageInput::GetRotate, Exception, pdf page rotation must be a multiple of 90. defaulting to 0");
