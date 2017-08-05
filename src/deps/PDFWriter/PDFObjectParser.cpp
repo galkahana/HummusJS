@@ -290,7 +290,7 @@ PDFObject* PDFObjectParser::ParseLiteralString(const std::string& inToken)
 	// verify that last character is ')'
 	if(inToken.at(inToken.size()-1) != scRightParanthesis)
 	{
-		TRACE_LOG1("PDFObjectParser::ParseLiteralString, exception in parsing literal string, no closing paranthesis, Expression: %s",inToken.c_str());
+		TRACE_LOG1("PDFObjectParser::ParseLiteralString, exception in parsing literal string, no closing paranthesis, Expression: %s",inToken.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		return NULL;
 	}
 
@@ -398,7 +398,7 @@ PDFObject* PDFObjectParser::ParseHexadecimalString(const std::string& inToken)
 	// verify that last character is '>'
 	if(inToken.at(inToken.size()-1) != scRightAngle)
 	{
-		TRACE_LOG1("PDFObjectParser::ParseHexadecimalString, exception in parsing hexadecimal string, no closing angle, Expression: %s",inToken.c_str());
+		TRACE_LOG1("PDFObjectParser::ParseHexadecimalString, exception in parsing hexadecimal string, no closing angle, Expression: %s",inToken.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		return NULL;
 	}
 
@@ -471,14 +471,14 @@ PDFObject* PDFObjectParser::ParseName(const std::string& inToken)
 			++it;
 			if(it == inToken.end())
 			{
-				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.c_str());
+				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
 				break;
 			}
 			hexResult = GetHexValue(*it);
 			if(!hexResult.first)
 			{
-				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.c_str());
+				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
 				break;
 			}
@@ -486,14 +486,14 @@ PDFObject* PDFObjectParser::ParseName(const std::string& inToken)
 			++it;
 			if(it == inToken.end())
 			{
-				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.c_str());
+				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
 				break;
 			}
 			hexResult = GetHexValue(*it);
 			if(!hexResult.first)
 			{
-				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.c_str());
+				TRACE_LOG1("PDFObjectParser::ParseName, exception in parsing hex value for a name token. token = %s",inToken.substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
 				break;
 			}
@@ -587,7 +587,7 @@ PDFObject* PDFObjectParser::ParseArray()
 		if(!anObject)
 		{
 			status = PDFHummus::eFailure;
-			TRACE_LOG1("PDFObjectParser::ParseArray, failure to parse array, failed to parse a member object. token = %s",token.c_str());
+			TRACE_LOG1("PDFObjectParser::ParseArray, failure to parse array, failed to parse a member object. token = %s",token.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		}
 		else
 		{
@@ -602,7 +602,7 @@ PDFObject* PDFObjectParser::ParseArray()
 	else
 	{
 		delete anArray;
-		TRACE_LOG1("PDFObjectParser::ParseArray, failure to parse array, didn't find end of array or failure to parse array member object. token = %s",token.c_str());
+		TRACE_LOG1("PDFObjectParser::ParseArray, failure to parse array, didn't find end of array or failure to parse array member object. token = %s",token.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		return NULL;
 	}
 }
@@ -644,7 +644,7 @@ PDFObject* PDFObjectParser::ParseDictionary()
 		if(!aKey)
 		{
 			status = PDFHummus::eFailure;
-			TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse key for a dictionary. token = %s",token.c_str());
+			TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse key for a dictionary. token = %s",token.substr(0, MAX_TRACE_SIZE - 200).c_str());
 			break;
 		}
 
@@ -654,7 +654,7 @@ PDFObject* PDFObjectParser::ParseDictionary()
 		if(!aValue)
 		{
 			status = PDFHummus::eFailure;
-			TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse value for a dictionary. token = %s",token.c_str());
+			TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse value for a dictionary. token = %s",token.substr(0, MAX_TRACE_SIZE - 200).c_str());
 			break;
 		}
 	
@@ -671,7 +671,7 @@ PDFObject* PDFObjectParser::ParseDictionary()
 	else
 	{
 		delete aDictionary;
-		TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse dictionary, didn't find end of array or failure to parse dictionary member object. token = %s",token.c_str());
+		TRACE_LOG1("PDFObjectParser::ParseDictionary, failure to parse dictionary, didn't find end of array or failure to parse dictionary member object. token = %s",token.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		return NULL;
 	}
 }

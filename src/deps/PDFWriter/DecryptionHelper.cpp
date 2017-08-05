@@ -75,7 +75,7 @@ EStatusCode DecryptionHelper::Setup(PDFParser* inParser, const std::string& inPa
 			if(!filter)
 				TRACE_LOG("DecryptionHelper::Setup, no filter defined");
 			else
-				TRACE_LOG1("DecryptionHelper::Setup, Only Standard encryption filter is supported. Unsupported filter encountered - %s",filter->GetValue().c_str());
+				TRACE_LOG1("DecryptionHelper::Setup, Only Standard encryption filter is supported. Unsupported filter encountered - %s",filter->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 			break;
 		}
 

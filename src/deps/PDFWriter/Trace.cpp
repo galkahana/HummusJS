@@ -87,7 +87,7 @@ void Trace::TraceToLog(const char* inFormat,...)
 		va_list argptr;
 		va_start(argptr, inFormat);
 
-		SAFE_VSPRINTF(mBuffer,5001,inFormat,argptr);
+		SAFE_VSPRINTF(mBuffer, MAX_TRACE_SIZE,inFormat,argptr);
 		va_end(argptr);
 
 		mLog->LogEntry(std::string(mBuffer));
@@ -106,7 +106,7 @@ void Trace::TraceToLog(const char* inFormat,va_list inList)
 				mLog = new Log(mLogFilePath,mPlaceUTF8Bom);
 		}
 
-		SAFE_VSPRINTF(mBuffer,5001,inFormat,inList);
+		SAFE_VSPRINTF(mBuffer, MAX_TRACE_SIZE,inFormat,inList);
 
 		mLog->LogEntry(std::string(mBuffer));
 	}

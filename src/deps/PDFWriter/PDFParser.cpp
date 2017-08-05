@@ -166,7 +166,7 @@ EStatusCode PDFParser::ParseHeaderLine()
 
 	if(tokenizerResult.second.compare(0,scPDFMagic.size(),scPDFMagic) != 0)
 	{
-		TRACE_LOG1("PDFParser::ParseHeaderLine, file does not begin as a PDF file. a PDF file should start with \"%%PDF-\". file header = %s",tokenizerResult.second.c_str());
+		TRACE_LOG1("PDFParser::ParseHeaderLine, file does not begin as a PDF file. a PDF file should start with \"%%PDF-\". file header = %s",tokenizerResult.second.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		return PDFHummus::eFailure;
 	}
 
@@ -566,7 +566,7 @@ EStatusCode PDFParser::ParseXrefFromXrefTable(XrefEntryInput* inXrefTable,
 		token = tokenizer.GetNextToken();
 		if(!token.first || token.second != scXref)
 		{
-			TRACE_LOG1("PDFParser::ParseXref, error in parsing xref, expected to find \"xref\" keyword, found = %s",token.second.c_str());
+			TRACE_LOG1("PDFParser::ParseXref, error in parsing xref, expected to find \"xref\" keyword, found = %s",token.second.substr(0, MAX_TRACE_SIZE - 200).c_str());
 			status = PDFHummus::eFailure;
 			break;
 		}
@@ -761,7 +761,7 @@ PDFObject* PDFParser::ParseExistingInDirectObject(ObjectIDType inObjectID)
 		if(objKeyword->GetValue() != scObj)
 		{
 			TRACE_LOG1("PDFParser::ParseExistingInDirectObject, failed to read object declaration, expected obj keyword found %s",
-				objKeyword->GetValue().c_str());
+				objKeyword->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 			break;
 		}
 
@@ -924,7 +924,7 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 		}
 		else
 		{
-			TRACE_LOG1("PDFParser::ParsePagesIDs, unexpected object type. should be either Page or Pages, found %s",objectType->GetValue().c_str());
+			TRACE_LOG1("PDFParser::ParsePagesIDs, unexpected object type. should be either Page or Pages, found %s",objectType->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 			status = PDFHummus::eFailure;
 			break;
 		}
@@ -1157,7 +1157,7 @@ EStatusCode PDFParser::ParseDirectory(LongFilePositionType inXrefPosition,
 			if(objKeyword->GetValue() != scObj)
 			{
 				TRACE_LOG1("PDFParser::ParseDirectory, failed to read xref object declaration, expected obj keyword found %s",
-					objKeyword->GetValue().c_str());
+					objKeyword->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
 				break;
 			}
@@ -1291,7 +1291,7 @@ EStatusCode PDFParser::BuildXrefTableAndTrailerFromXrefStream(long long inXrefSt
 		if(objKeyword->GetValue() != scObj)
 		{
 			TRACE_LOG1("PDFParser::BuildXrefTableAndTrailerFromXrefStream, failed to read xref object declaration, expected obj keyword found %s",
-				objKeyword->GetValue().c_str());
+				objKeyword->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 			status = PDFHummus::eFailure;
 			break;
 		}
@@ -1392,7 +1392,7 @@ EStatusCode PDFParser::ParseXrefFromXrefStream(XrefEntryInput* inXrefTable,
 		if(objKeyword->GetValue() != scObj)
 		{
 			TRACE_LOG1("PDFParser::ParseXrefFromXrefStream, failed to read xref object declaration, expected obj keyword found %s",
-				objKeyword->GetValue().c_str());
+				objKeyword->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 			status = PDFHummus::eFailure;
 			break;
 		}
@@ -1996,7 +1996,7 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 			result = mParserExtender->CreateFilterForStream(inStream,inFilterName,inDecodeParams);
 			if(result == inStream)
 			{
-				TRACE_LOG1("PDFParser::CreateFilterForStream, filter is not supported by extender - %s",inFilterName->GetValue().c_str());
+				TRACE_LOG1("PDFParser::CreateFilterForStream, filter is not supported by extender - %s",inFilterName->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
 				break;
 			}

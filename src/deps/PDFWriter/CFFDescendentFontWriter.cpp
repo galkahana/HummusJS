@@ -62,7 +62,7 @@ EStatusCode CFFDescendentFontWriter::WriteFont(	ObjectIDType inDecendentObjectID
 	const char* fontType = inFontInfo.GetTypeString();
 	if(strcmp(scType1,fontType) == 0)
 	{
-		TRACE_LOG1("CFFDescendentFontWriter::WriteFont, Exception. identified type1 font when writing CFF CID font, font name - %s. type 1 CIDs are not supported.",inFontName.c_str());
+		TRACE_LOG1("CFFDescendentFontWriter::WriteFont, Exception. identified type1 font when writing CFF CID font, font name - %s. type 1 CIDs are not supported.",inFontName.substr(0, MAX_TRACE_SIZE - 200).c_str());
 		return PDFHummus::eFailure;
 	}
 

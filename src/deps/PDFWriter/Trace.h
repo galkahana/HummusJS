@@ -33,6 +33,8 @@
 class Log;
 class IByteWriter;
 
+#define MAX_TRACE_SIZE 50001
+
 class Trace
 {
 public:
@@ -48,7 +50,7 @@ public:
     static Trace& DefaultTrace();
 
 private:
-	char mBuffer[5001];
+	char mBuffer[MAX_TRACE_SIZE];
 	Log* mLog;
 
 	std::string mLogFilePath;

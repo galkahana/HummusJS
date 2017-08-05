@@ -59,7 +59,7 @@ EStatusCode Type1ToType2Converter::WriteConvertedFontProgram(const std::string& 
 		Type1CharString* charString = inType1Input->GetGlyphCharString(inGlyphName);
 		if(!charString)
 		{
-			TRACE_LOG1("Type1ToType2Converter::WriteConvertedFontProgram, Exception, cannot find glyph name %s",inGlyphName.c_str());
+			TRACE_LOG1("Type1ToType2Converter::WriteConvertedFontProgram, Exception, cannot find glyph name %s",inGlyphName.substr(0, MAX_TRACE_SIZE - 200).c_str());
 			status = PDFHummus::eFailure;
 			break;
 		}
