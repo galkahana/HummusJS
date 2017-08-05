@@ -884,7 +884,7 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 			// a Page tree node
 			PDFObject* pKids= inPageNode->QueryDirectObject("Kids");
 			if (pKids && pKids->GetType() == PDFObject::ePDFObjectIndirectObjectReference)
-				pKids= ParseExistingInDirectObject(((PDFIndirectObjectReference*)pKids)->mObjectID);
+				pKids= ParseNewObject(((PDFIndirectObjectReference*)pKids)->mObjectID);
 			PDFObjectCastPtr<PDFArray> kidsObject(pKids);
 			if(!kidsObject)
 			{
