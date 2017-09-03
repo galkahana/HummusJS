@@ -73,7 +73,12 @@ EStatusCode CFFDescendentFontWriter::WriteFont(	ObjectIDType inDecendentObjectID
 		UIntVector orderedGlyphs;
 		UShortVector cidMapping;
 
-		sort(encodedGlyphs.begin(), encodedGlyphs.end(), sEncodedGlypsSort);
+		// Gal: the following sort completely ruins everything.
+		// the order of the glyphs should be maintained per the ENCODED characthers
+		// which is how the input is recieved. IMPORTANT - the order is critical
+		// for the success of the embedding, as the order determines the order of the glyphs
+		// in the subset font and so their GID which MUST match the encoded char.
+		//sort(encodedGlyphs.begin(), encodedGlyphs.end(), sEncodedGlypsSort);
 
 		for (UIntAndGlyphEncodingInfoVector::const_iterator it = encodedGlyphs.begin();
 			it != encodedGlyphs.end();

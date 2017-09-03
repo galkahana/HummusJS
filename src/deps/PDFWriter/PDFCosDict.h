@@ -161,11 +161,12 @@ public:
 
 private:
     friend class PDFCosArray;
-    bool               m_DidEnd;
+    std::string        m_Name;
     ObjectsContext&    m_DocumentContext;
+    bool               m_DidEnd;
     DictionaryContext* m_DictonaryContext;
     ObjectIDType       m_ObjID;
-    std::string        m_Name;
 
 };
+
 

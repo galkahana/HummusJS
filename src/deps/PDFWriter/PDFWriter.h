@@ -299,9 +299,6 @@ private:
 	ObjectsContext mObjectsContext;
 	PDFHummus::DocumentContext mDocumentContext;
 
-	// options
-	bool mEmbedFonts;
-
 	// for output file workflow, this will be the valid output [stream workflow does not have a file]
 	OutputFile mOutputFile;
     

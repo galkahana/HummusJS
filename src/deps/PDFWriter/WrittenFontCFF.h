@@ -33,7 +33,7 @@ typedef std::list<UCharAndUChar> UCharAndUCharList;
 class WrittenFontCFF : public AbstractWrittenFont
 {
 public:
-	WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID);
+	WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID, bool inFontWillBeEmbedded);
 	virtual ~WrittenFontCFF(void);
 
 
@@ -49,6 +49,8 @@ private:
 	virtual bool AddToANSIRepresentation(const GlyphUnicodeMappingListList& inGlyphsList,
 										UShortListList& outEncodedCharacters);
 
+	virtual unsigned short EncodeCIDGlyph(unsigned int inGlyphId);
+
 	bool HasEnoughSpaceForGlyphs(const GlyphUnicodeMappingList& inGlyphsList);
 	unsigned short EncodeGlyph(unsigned int inGlyph,const ULongVector& inCharacters);
 	void RemoveFromFreeList(unsigned char inAllocatedPosition);
@@ -60,4 +62,5 @@ private:
 	bool mAssignedPositionsAvailable[256];
 	unsigned int mAssignedPositions[256];
 	bool mIsCID;
+	bool mFontWillBeEmbedded;
 };

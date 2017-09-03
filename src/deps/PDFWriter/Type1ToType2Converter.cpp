@@ -158,12 +158,12 @@ EStatusCode Type1ToType2Converter::CallOtherSubr(const LongList& inOperandList,L
 }
 
 
-EStatusCode Type1ToType2Converter::Type1Pop(const LongList& inOperandList,const LongList& inPostScriptOperandStack){return PDFHummus::eSuccess;}
-EStatusCode Type1ToType2Converter::Type1SetCurrentPoint(const LongList& inOperandList){return PDFHummus::eSuccess;}
-EStatusCode Type1ToType2Converter::Type1InterpretNumber(long inOperand){return PDFHummus::eSuccess;}
-EStatusCode Type1ToType2Converter::Type1Div(const LongList& inOperandList){return PDFHummus::eSuccess;}
-EStatusCode Type1ToType2Converter::Type1DotSection(const LongList& inOperandList){return PDFHummus::eSuccess;}
-EStatusCode Type1ToType2Converter::Type1Return(const LongList& inOperandList){return PDFHummus::eSuccess;}
+EStatusCode Type1ToType2Converter::Type1Pop(const LongList& inOperandList,const LongList& inPostScriptOperandStack){(void) inOperandList; (void) inPostScriptOperandStack; return PDFHummus::eSuccess;}
+EStatusCode Type1ToType2Converter::Type1SetCurrentPoint(const LongList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+EStatusCode Type1ToType2Converter::Type1InterpretNumber(long inOperand){(void) inOperand;return PDFHummus::eSuccess;}
+EStatusCode Type1ToType2Converter::Type1Div(const LongList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+EStatusCode Type1ToType2Converter::Type1DotSection(const LongList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+EStatusCode Type1ToType2Converter::Type1Return(const LongList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
 
 void Type1ToType2Converter::RecordOperatorMarker(unsigned short inMarkerType)
 {
@@ -390,11 +390,13 @@ EStatusCode Type1ToType2Converter::Type1HVCurveto(const LongList& inOperandList)
 EStatusCode Type1ToType2Converter::Type1ClosePath(const LongList& inOperandList)
 {
 	// IMPORTANT - apparently closepath was removed for type 2. didn't notice it till now
+        (void) inOperandList;
 	return PDFHummus::eSuccess;	
 }
 
 EStatusCode Type1ToType2Converter::Type1Endchar(const LongList& inOperandList)
 {
+        (void) inOperandList;
 	RecordOperatorMarker(14);
 	return PDFHummus::eSuccess;	
 }

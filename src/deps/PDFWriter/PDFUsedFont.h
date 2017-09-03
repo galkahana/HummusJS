@@ -86,7 +86,8 @@ public:
 				const std::string& inFontFilePath,
 				const std::string& inAdditionalMetricsFontFilePath,
                 long inFontIndex,
-				ObjectsContext* inObjectsContext);
+				ObjectsContext* inObjectsContext,
+				bool inEmbedFont);
 	virtual ~PDFUsedFont(void);
 
 	bool IsValid();
@@ -110,7 +111,7 @@ public:
 										UShortListList& outCharactersToUse,
 										bool& outTreatCharactersAsCID);
 
-	PDFHummus::EStatusCode WriteFontDefinition(bool inEmbedFont);
+	PDFHummus::EStatusCode WriteFontDefinition();
 
 	// use this method to translate text to glyphs and unicode mapping, to be later used for EncodeStringForShowing
 	PDFHummus::EStatusCode TranslateStringToGlyphs(const std::string& inText,GlyphUnicodeMappingList& outGlyphsUnicodeMapping);
@@ -139,6 +140,7 @@ private:
     IWrittenFont* mWrittenFont;
 	ObjectsContext* mObjectsContext;
 	std::map<unsigned int, FT_Pos> mAdvanceCache;
+	bool mEmbedFont;
 
 
 };

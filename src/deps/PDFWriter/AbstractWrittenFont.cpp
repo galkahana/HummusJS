@@ -141,7 +141,7 @@ void AbstractWrittenFont::AddToCIDRepresentation(const GlyphUnicodeMappingList& 
 
 	// for the first time, add also 0,0 mapping
 	if(mCIDRepresentation->mGlyphIDToEncodedChar.size() == 0)
-		mCIDRepresentation->mGlyphIDToEncodedChar.insert(UIntToGlyphEncodingInfoMap::value_type(0,GlyphEncodingInfo(0,0)));
+		mCIDRepresentation->mGlyphIDToEncodedChar.insert(UIntToGlyphEncodingInfoMap::value_type(0,GlyphEncodingInfo(EncodeCIDGlyph(0),0)));
 
 
 	GlyphUnicodeMappingList::const_iterator it=inGlyphsList.begin();
@@ -153,7 +153,7 @@ void AbstractWrittenFont::AddToCIDRepresentation(const GlyphUnicodeMappingList& 
 		if(itEncoding == mCIDRepresentation->mGlyphIDToEncodedChar.end())
 		{
 			itEncoding = mCIDRepresentation->mGlyphIDToEncodedChar.insert(
-				UIntToGlyphEncodingInfoMap::value_type(it->mGlyphCode,GlyphEncodingInfo(it->mGlyphCode,it->mUnicodeValues))).first;
+				UIntToGlyphEncodingInfoMap::value_type(it->mGlyphCode,GlyphEncodingInfo(EncodeCIDGlyph(it->mGlyphCode),it->mUnicodeValues))).first;
 
 		}
 		outEncodedCharacters.push_back(itEncoding->second.mEncodedCharacter);
@@ -267,7 +267,7 @@ void AbstractWrittenFont::AddToCIDRepresentation(	const GlyphUnicodeMappingListL
 
 	// for the first time, add also 0,0 mapping
 	if(mCIDRepresentation->mGlyphIDToEncodedChar.size() == 0)
-		mCIDRepresentation->mGlyphIDToEncodedChar.insert(UIntToGlyphEncodingInfoMap::value_type(0,GlyphEncodingInfo(0,0)));
+		mCIDRepresentation->mGlyphIDToEncodedChar.insert(UIntToGlyphEncodingInfoMap::value_type(0,GlyphEncodingInfo(EncodeCIDGlyph(0),0)));
 
 
 	GlyphUnicodeMappingListList::const_iterator itList = inGlyphsList.begin();
@@ -284,7 +284,7 @@ void AbstractWrittenFont::AddToCIDRepresentation(	const GlyphUnicodeMappingListL
 			if(itEncoding == mCIDRepresentation->mGlyphIDToEncodedChar.end())
 			{
 				itEncoding = mCIDRepresentation->mGlyphIDToEncodedChar.insert(
-					UIntToGlyphEncodingInfoMap::value_type(it->mGlyphCode,GlyphEncodingInfo(it->mGlyphCode,it->mUnicodeValues))).first;
+					UIntToGlyphEncodingInfoMap::value_type(it->mGlyphCode,GlyphEncodingInfo(EncodeCIDGlyph(it->mGlyphCode),it->mUnicodeValues))).first;
 			}
 			encodedCharacters.push_back(itEncoding->second.mEncodedCharacter);
 		}

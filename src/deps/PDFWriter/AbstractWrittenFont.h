@@ -77,6 +77,12 @@ private:
 									const GlyphUnicodeMappingListList& inGlyphsList,
 									UShortListList& outEncodedCharacters) = 0;
 
+	// Gal 26/8/2017: Most of the times, the glyph IDs are CIDs. this is to retain a few requirements of True type fonts, and the case of fonts when they are not embedded.
+	// However, when CFF fonts are embedded, the matching code actually recreates a font from just the subset, and renumbers them based on the order
+	// of them joining the font. Hence, we need a slight difference for this case, and an override is provided
+	virtual unsigned short EncodeCIDGlyph(unsigned int inGlyphId) = 0;
+
+
 	PDFHummus::EStatusCode WriteWrittenFontState(WrittenFontRepresentation* inRepresentation,ObjectsContext* inStateWriter,ObjectIDType inObjectID);
 	void WriteGlyphEncodingInfoState(ObjectsContext* inStateWriter,
 									 ObjectIDType inObjectId,

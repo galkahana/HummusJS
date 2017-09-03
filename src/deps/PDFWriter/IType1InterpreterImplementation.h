@@ -75,32 +75,32 @@ class Type1InterpreterImplementationAdapter : public IType1InterpreterImplementa
 {
 public:
 
-	virtual PDFHummus::EStatusCode Type1Hstem(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Vstem(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1VMoveto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1RLineto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1HLineto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1VLineto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1RRCurveto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1ClosePath(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual Type1CharString* GetSubr(long inSubrIndex) {return NULL;}
-	virtual PDFHummus::EStatusCode Type1Return(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Hsbw(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Endchar(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1RMoveto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1HMoveto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1VHCurveto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1HVCurveto(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1DotSection(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1VStem3(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1HStem3(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Seac(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Sbw(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Div(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual bool IsOtherSubrSupported(long inOtherSubrsIndex) {return false;}
-	virtual PDFHummus::EStatusCode CallOtherSubr(const LongList& inOperandList,LongList& outPostScriptOperandStack) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1Pop(const LongList& inOperandList,const LongList& inPostScriptOperandStack) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1SetCurrentPoint(const LongList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type1InterpretNumber(long inOperand) {return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1Hstem(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1Vstem(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1VMoveto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1RLineto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1HLineto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1VLineto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1RRCurveto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual PDFHummus::EStatusCode Type1ClosePath(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+  virtual Type1CharString* GetSubr(long inSubrIndex) {(void) inSubrIndex; return NULL;}
+	virtual PDFHummus::EStatusCode Type1Return(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1Hsbw(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1Endchar(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1RMoveto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1HMoveto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1VHCurveto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1HVCurveto(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1DotSection(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1VStem3(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1HStem3(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1Seac(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1Sbw(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1Div(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual bool IsOtherSubrSupported(long inOtherSubrsIndex) {(void) inOtherSubrsIndex; return false;}
+	virtual PDFHummus::EStatusCode CallOtherSubr(const LongList& inOperandList,LongList& outPostScriptOperandStack) {(void) inOperandList; (void) outPostScriptOperandStack; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1Pop(const LongList& inOperandList,const LongList& inPostScriptOperandStack) {(void) inOperandList; (void) inPostScriptOperandStack; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1SetCurrentPoint(const LongList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type1InterpretNumber(long inOperand) {(void) inOperand; return PDFHummus::eSuccess;}
 	virtual unsigned long GetLenIV() {return 4;}
 };

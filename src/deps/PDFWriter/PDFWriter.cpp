@@ -50,7 +50,6 @@ PDFWriter::PDFWriter(void)
 	// the first decision (level) about the PDF can be the result of parsing
 	mDocumentContext.SetObjectsContext(&mObjectsContext);
     mIsModified = false;
-	mEmbedFonts = true;
 }
 
 PDFWriter::~PDFWriter(void)
@@ -93,9 +92,9 @@ EStatusCode PDFWriter::EndPDF()
 	do
 	{
         if(mIsModified)
-            status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion,mEmbedFonts);
+            status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion);
         else    
-            status = mDocumentContext.FinalizeNewPDF(mEmbedFonts);
+            status = mDocumentContext.FinalizeNewPDF();
 		if(status != eSuccess)
 		{
 			TRACE_LOG("PDFWriter::EndPDF, Could not end PDF");
@@ -170,7 +169,7 @@ void PDFWriter::SetupLog(const LogConfiguration& inLogConfiguration)
 void PDFWriter::SetupCreationSettings(const PDFCreationSettings& inPDFCreationSettings)
 {
 	mObjectsContext.SetCompressStreams(inPDFCreationSettings.CompressStreams);
-	mEmbedFonts = inPDFCreationSettings.EmbedFonts;
+	mDocumentContext.SetEmbedFonts(inPDFCreationSettings.EmbedFonts);
 }
 
 void PDFWriter::ReleaseLog()
@@ -359,8 +358,6 @@ EStatusCode PDFWriter::Shutdown(const std::string& inStateFilePath)
         pdfWriterDictionary->WriteKey("mIsModified");
         pdfWriterDictionary->WriteBooleanValue(mIsModified);
 
-		pdfWriterDictionary->WriteKey("mEmbedFonts");
-		pdfWriterDictionary->WriteBooleanValue(mEmbedFonts);
 
         if(mIsModified)
         {
@@ -458,10 +455,6 @@ EStatusCode PDFWriter::SetupState(const std::string& inStateFilePath)
             mModifiedFileVersion = (EPDFVersion)(isModifiedFileVersionObject->GetValue());
         }
 
-		PDFObjectCastPtr<PDFBoolean> embedFontsObject(pdfWriterDictionary->QueryDirectObject("mEmbedFonts"));
-		mEmbedFonts = embedFontsObject->GetValue();
-
-
 		PDFObjectCastPtr<PDFIndirectObjectReference> objectsContextObject(pdfWriterDictionary->QueryDirectObject("mObjectsContext"));
 		status = mObjectsContext.ReadState(reader.GetObjectsReader(),objectsContextObject->mObjectID);
 		if(status!= eSuccess)
@@ -545,9 +538,9 @@ EStatusCode PDFWriter::EndPDFForStream()
     EStatusCode status;
     
     if(mIsModified)
-        status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion,mEmbedFonts);
+        status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion);
     else    
-        status = mDocumentContext.FinalizeNewPDF(mEmbedFonts);
+        status = mDocumentContext.FinalizeNewPDF();
     mModifiedFileParser.ResetParser();
 	Cleanup();
 	return status;

@@ -248,6 +248,12 @@ void CIDFontWriter::WriteGlyphEntry(IByteWriter* inWriter,unsigned short inEncod
 			EStatusCodeAndUShortList utf16Result = unicode.ToUTF16UShort();
 			unicode.GetUnicodeList().clear();
 
+			if (utf16Result.first == eFailure || utf16Result.second.size() == 0) {
+				TRACE_LOG1("CIDFontWriter::WriteGlyphEntry, got invalid glyph value. saving as 0. value = ", *it);
+				utf16Result.second.clear();
+				utf16Result.second.push_back(0);
+			}
+
 			if(utf16Result.second.size() == 2)
 			{
 				SAFE_SPRINTF_2(formattingBuffer,17,"%04x%04x",

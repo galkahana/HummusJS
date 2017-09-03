@@ -81,12 +81,12 @@ public:
 	// these would be flags for the font as a whole. if subsetting, match to the character set
 	unsigned int GetFontFlags();
 	const char* GetTypeString();
-    std::string GetGlyphName(unsigned int inGlyphIndex);
+	std::string GetGlyphName(unsigned int inGlyphIndex, bool safe= false);
     FT_Pos GetGlyphWidth(unsigned int inGlyphIndex);
 	bool GetGlyphOutline(unsigned int inGlyphIndex, IOutlineEnumerator& inEnumerator);
 
 	// Create the written font object, matching to write this font in the best way.
-	IWrittenFont* CreateWrittenFontObject(ObjectsContext* inObjectsContext);
+	IWrittenFont* CreateWrittenFontObject(ObjectsContext* inObjectsContext, bool inFontIsToBeEmbedded);
 
 
 	// flags determining values
@@ -184,4 +184,5 @@ public:
 		FT_Vector mToLast;
 	};
 };
+
 

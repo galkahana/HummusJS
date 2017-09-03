@@ -86,16 +86,12 @@ std::string FreeTypeFaceWrapper::NotDefGlyphName()
 		{
 			char* aString = (char*)".notdef";
 			if(FT_Get_Name_Index(mFace,aString) == 0) {
-				FT_ULong  charcode;
 				FT_UInt   gindex;
-				charcode = FT_Get_First_Char( mFace, &gindex ); 
-				mNotDefGlyphName = GetGlyphName(gindex);
-				// WARNING: it can happen that (mNotDefGlyphName == "")
+				FT_Get_First_Char( mFace, &gindex ); 
+				if (gindex != 0)
+				  mNotDefGlyphName = GetGlyphName(gindex, true);
 			}
-			else
-				mNotDefGlyphName = ".notdef";
 		}
-  
 		if (mNotDefGlyphName == "")  mNotDefGlyphName = ".notdef";
 	}
 	return mNotDefGlyphName;
@@ -560,12 +556,12 @@ std::string FreeTypeFaceWrapper::GetPostscriptName()
 	return name;
 }
 
-std::string FreeTypeFaceWrapper::GetGlyphName(unsigned int inGlyphIndex)
+std::string FreeTypeFaceWrapper::GetGlyphName(unsigned int inGlyphIndex, bool safe)
 {
     if(mFormatParticularWrapper && mFormatParticularWrapper->HasPrivateEncoding())
     {
         std::string glyphName = mFormatParticularWrapper->GetPrivateGlyphName(inGlyphIndex);
-        if(glyphName == ".notdef")
+        if(glyphName == ".notdef" && !safe)
             return NotDefGlyphName(); // handling fonts that don't have notdef
         else
             return glyphName;
@@ -636,7 +632,7 @@ EStatusCode FreeTypeFaceWrapper::GetGlyphsForUnicodeText(const ULongListList& in
 	return status;	
 }
 
-IWrittenFont* FreeTypeFaceWrapper::CreateWrittenFontObject(ObjectsContext* inObjectsContext)
+IWrittenFont* FreeTypeFaceWrapper::CreateWrittenFontObject(ObjectsContext* inObjectsContext, bool inFontIsToBeEmbedded)
 {
 	if(mFace)
 	{
@@ -651,7 +647,7 @@ IWrittenFont* FreeTypeFaceWrapper::CreateWrittenFontObject(ObjectsContext* inObj
 			if(FT_Get_CID_Is_Internally_CID_Keyed(mFace,&isCID) != 0)
 				isCID = false;	
 
-			result = new WrittenFontCFF(inObjectsContext,isCID != 0);
+			result = new WrittenFontCFF(inObjectsContext,isCID != 0, inFontIsToBeEmbedded); // CFF fonts should know if font is to be embedded, as the embedding code involves re-encoding of glyphs
 		}
 		else if(strcmp(fontFormat,scTrueType) == 0)
 		{
@@ -849,3 +845,10 @@ void FreeTypeFaceWrapper::IOutlineEnumerator::FTEnd()
 		Close();
 	mToLastValid = false;
 }
+
+
+
+
+
+
+

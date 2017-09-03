@@ -111,9 +111,10 @@ namespace PDFHummus
 
 		void SetObjectsContext(ObjectsContext* inObjectsContext);
 		void SetOutputFileInformation(OutputFile* inOutputFile);
+		void SetEmbedFonts(bool inEmbedFonts);
 		PDFHummus::EStatusCode	WriteHeader(EPDFVersion inPDFVersion);
-		PDFHummus::EStatusCode	FinalizeNewPDF(bool inEmbedFonts);
-        PDFHummus::EStatusCode	FinalizeModifiedPDF(PDFParser* inModifiedFileParser,EPDFVersion inModifiedPDFVersion,bool inEmbedFonts);
+		PDFHummus::EStatusCode	FinalizeNewPDF();
+        PDFHummus::EStatusCode	FinalizeModifiedPDF(PDFParser* inModifiedFileParser,EPDFVersion inModifiedPDFVersion);
 
 		TrailerInformation& GetTrailerInformation();
 		CatalogInformation& GetCatalogInformation();
@@ -151,8 +152,8 @@ namespace PDFHummus
 		void RegisterAnnotationReferenceForNextPageWrite(ObjectIDType inAnnotationReference);
 
 		// Form XObject creation and finalization
-		PDFFormXObject* StartFormXObject(const PDFRectangle& inBoundingBox,const double* inMatrix = NULL);
-		PDFFormXObject* StartFormXObject(const PDFRectangle& inBoundingBox,ObjectIDType inFormXObjectID,const double* inMatrix = NULL);
+		PDFFormXObject* StartFormXObject(const PDFRectangle& inBoundingBox,const double* inMatrix = NULL,const bool inUseTransparencyGroup = false);
+		PDFFormXObject* StartFormXObject(const PDFRectangle& inBoundingBox,ObjectIDType inFormXObjectID,const double* inMatrix = NULL,const bool inUseTransparencyGroup = false);
 		PDFHummus::EStatusCode EndFormXObject(PDFFormXObject* inFormXObject);
 		PDFHummus::EStatusCode EndFormXObjectAndRelease(PDFFormXObject* inFormXObject);
 
@@ -392,7 +393,7 @@ namespace PDFHummus
                                                        const std::string& inResourceDictionaryLabel,
                                                        MapIterator<ObjectIDTypeToStringMap> inMapping);
 		bool IsIdentityMatrix(const double* inMatrix);
-		PDFHummus::EStatusCode WriteUsedFontsDefinitions(bool inEmbedFonts);
+		PDFHummus::EStatusCode WriteUsedFontsDefinitions();
 		EStatusCodeAndObjectIDType WriteAnnotationAndLinkForURL(const std::string& inURL,const PDFRectangle& inLinkClickArea);
 
 		void WriteTrailerState(ObjectsContext* inStateWriter,ObjectIDType inObjectID);

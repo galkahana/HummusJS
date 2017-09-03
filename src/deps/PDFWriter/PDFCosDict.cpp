@@ -17,9 +17,8 @@ PDFCosDict::PDFCosDict(PDFCosDict &parentDict, std::string name) :
    
 PDFCosDict::PDFCosDict(PDFCosArray &parentArr) : 
     m_DocumentContext(parentArr.m_DocumentContext), 
-    m_ObjID(0),
-    m_DidEnd(false)
-
+    m_DidEnd(false),
+    m_ObjID(0)
 {
 	m_DictonaryContext = m_DocumentContext.StartDictionary();
 }
@@ -32,3 +31,10 @@ PDFCosDict& PDFCosDict::operator+=(const PDFCosArray &rhs)
     m_DictonaryContext->WriteObjectReferenceValue(rhs.m_ObjID);
     return *this;
 }
+
+
+
+
+
+
+

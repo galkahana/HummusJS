@@ -89,56 +89,59 @@ class Type2InterpreterImplementationAdapter : public IType2InterpreterImplementa
 public:
 	virtual PDFHummus::EStatusCode ReadCharString(LongFilePositionType inCharStringStart,
 							   LongFilePositionType inCharStringEnd,
-							   Byte** outCharString){return PDFHummus::eFailure;}	
+							   Byte** outCharString){
+	  (void) inCharStringStart;
+	  (void) inCharStringEnd;
+	  return PDFHummus::eFailure;}	
 
-	virtual PDFHummus::EStatusCode Type2InterpretNumber(const CharStringOperand& inOperand) {return PDFHummus::eSuccess;};
-	virtual PDFHummus::EStatusCode Type2Hstem(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Vstem(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Vmoveto(const CharStringOperandList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Rlineto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hlineto(const CharStringOperandList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Vlineto(const CharStringOperandList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2RRCurveto(const CharStringOperandList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Return(const CharStringOperandList& inOperandList) {return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Endchar(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hstemhm(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hintmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter){return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2InterpretNumber(const CharStringOperand& inOperand) {(void) inOperand; return PDFHummus::eSuccess;};
+	virtual PDFHummus::EStatusCode Type2Hstem(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Vstem(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Vmoveto(const CharStringOperandList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Rlineto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hlineto(const CharStringOperandList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Vlineto(const CharStringOperandList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2RRCurveto(const CharStringOperandList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Return(const CharStringOperandList& inOperandList) {(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Endchar(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hstemhm(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hintmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter){(void) inOperandList; (void) (void) inOperandList; return PDFHummus::eSuccess;}
 	virtual PDFHummus::EStatusCode Type2Cntrmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Rmoveto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hmoveto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Vstemhm(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Rcurveline(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Rlinecurve(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Vvcurveto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hvcurveto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hhcurveto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Vhcurveto(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hflex(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Hflex1(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Flex(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Flex1(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Rmoveto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hmoveto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Vstemhm(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Rcurveline(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Rlinecurve(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Vvcurveto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hvcurveto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hhcurveto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Vhcurveto(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hflex(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Hflex1(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Flex(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Flex1(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
 
-	virtual PDFHummus::EStatusCode Type2And(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Or(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Not(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Abs(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Add(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Sub(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Div(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Neg(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Eq(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Drop(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Put(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Get(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Ifelse(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Random(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Mul(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Sqrt(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Dup(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Exch(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Index(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}
-	virtual PDFHummus::EStatusCode Type2Roll(const CharStringOperandList& inOperandList){return PDFHummus::eSuccess;}	
+	virtual PDFHummus::EStatusCode Type2And(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Or(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Not(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Abs(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Add(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Sub(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Div(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Neg(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Eq(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Drop(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Put(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Get(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Ifelse(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Random(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Mul(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Sqrt(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Dup(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Exch(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Index(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}
+	virtual PDFHummus::EStatusCode Type2Roll(const CharStringOperandList& inOperandList){(void) inOperandList; return PDFHummus::eSuccess;}	
 	
-	virtual CharString* GetLocalSubr(long inSubrIndex) {return NULL;}
-	virtual CharString* GetGlobalSubr(long inSubrIndex){return NULL;}
+	virtual CharString* GetLocalSubr(long inSubrIndex) {(void) inSubrIndex; return NULL;}
+	virtual CharString* GetGlobalSubr(long inSubrIndex){(void) inSubrIndex; return NULL;}
 };

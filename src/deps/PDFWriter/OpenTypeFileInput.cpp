@@ -287,7 +287,7 @@ EStatusCode OpenTypeFileInput::ReadOpenTypeSFNTFromDfont()
     // see: https://developer.apple.com/legacy/mac/library/documentation/mac/pdf/MoreMacintoshToolbox.pdf
 
     unsigned long rdata_pos, map_pos, rdata_len, map_offset;
-
+    (void) rdata_len; // suppress compilation warning
     // verify that the header is composed as expected
     {
         Byte head[16], head2[16];
@@ -814,3 +814,10 @@ EOpenTypeInputType OpenTypeFileInput::GetOpenTypeFontType()
 {
 	return mFontType;
 }
+
+
+
+
+
+
+

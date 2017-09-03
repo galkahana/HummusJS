@@ -45,12 +45,14 @@ public:
 	~UsedFontsRepository(void);
 
 	void SetObjectsContext(ObjectsContext* inObjectsContext);
+	void SetEmbedFonts(bool inEmbedFonts);
+
 
 	PDFUsedFont* GetFontForFile(const std::string& inFontFilePath,long inFontIndex);
 	// second overload is for type 1, when an additional metrics file is available
 	PDFUsedFont* GetFontForFile(const std::string& inFontFilePath,const std::string& inOptionalMetricsFile,long inFontIndex);
 
-	PDFHummus::EStatusCode WriteUsedFontsDefinitions(bool inEmbedFonts);
+	PDFHummus::EStatusCode WriteUsedFontsDefinitions();
 
 	PDFHummus::EStatusCode WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectID);
 	PDFHummus::EStatusCode ReadState(PDFParser* inStateReader,ObjectIDType inObjectID);
@@ -63,4 +65,5 @@ private:
 	FreeTypeWrapper* mInputFontsInformation;
 	StringAndLongToPDFUsedFontMap mUsedFonts;
 	StringToStringMap mOptionaMetricsFiles;
+	bool mEmbedFonts;
 };

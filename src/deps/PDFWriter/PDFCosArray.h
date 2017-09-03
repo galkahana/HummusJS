@@ -115,10 +115,11 @@ public:
 
 private:
     friend class PDFCosDict;
-    bool               m_DidEnd;
-    ObjectsContext&    m_DocumentContext;
-    ObjectIDType       m_ObjID;
     std::string        m_Name;
+    ObjectsContext&    m_DocumentContext;
+    bool               m_DidEnd;
+    ObjectIDType       m_ObjID;
 
 };
+
 

@@ -52,6 +52,16 @@ public:
 	CFFEmbeddedFontWriter(void);
 	~CFFEmbeddedFontWriter(void);
 
+
+	/*
+	*	Gal 26/8/2017. Important. The font created by this code is a subset of the original CFF code.
+	*	The code recreates a subset of the font where the glyphs are ordered from 0 to inSubsetGlyphIDs.size().
+	*	It does NOT retain the GID codes of the original font! as such, when using this embedded version
+	*	and Identity-Y/V the codes used should be 0 to inSubsetGlyphIDs.size().
+	*	This is unrelated to the note below - the IDs still keep their attachment to the original font glyph names
+	*	and single character encoding, per the internal charset and encoding vectors.
+	*/
+
 	PDFHummus::EStatusCode WriteEmbeddedFont(	FreeTypeFaceWrapper& inFontInfo,
 									const UIntVector& inSubsetGlyphIDs,
 									const std::string& inFontFile3SubType,

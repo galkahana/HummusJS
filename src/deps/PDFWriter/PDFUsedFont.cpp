@@ -37,10 +37,12 @@ PDFUsedFont::PDFUsedFont(FT_Face inInputFace,
 						 const std::string& inFontFilePath,
 						 const std::string& inAdditionalMetricsFontFilePath,
                          long inFontIndex,
-						 ObjectsContext* inObjectsContext):mFaceWrapper(inInputFace,inFontFilePath,inAdditionalMetricsFontFilePath,inFontIndex)
+						 ObjectsContext* inObjectsContext,
+						 bool inEmbedFont):mFaceWrapper(inInputFace,inFontFilePath,inAdditionalMetricsFontFilePath,inFontIndex)
 {
 	mObjectsContext = inObjectsContext;
 	mWrittenFont = NULL;
+	mEmbedFont = inEmbedFont;
 }
 
 PDFUsedFont::~PDFUsedFont(void)
@@ -65,7 +67,7 @@ EStatusCode PDFUsedFont::EncodeStringForShowing(const GlyphUnicodeMappingList& i
 	}
 
 	if(!mWrittenFont)
-		mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext);
+		mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext,mEmbedFont);
 
 	mWrittenFont->AppendGlyphs(inText,outCharactersToUse,outTreatCharactersAsCID,outFontObjectToUse);
 
@@ -105,20 +107,20 @@ EStatusCode PDFUsedFont::EncodeStringsForShowing(const GlyphUnicodeMappingListLi
 	}
 
 	if(!mWrittenFont)
-		mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext);
+		mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext,mEmbedFont);
 
 	mWrittenFont->AppendGlyphs(inText,outCharactersToUse,outTreatCharactersAsCID,outFontObjectToUse);
 
 	return PDFHummus::eSuccess;
 }
 
-EStatusCode PDFUsedFont::WriteFontDefinition(bool inEmbedFont)
+EStatusCode PDFUsedFont::WriteFontDefinition()
 {
     // note that written font may be empty, in case no glyphs were used for this font! in the empty case, just dont write the def
     if(!mWrittenFont)
         return eSuccess;
     else
-        return mWrittenFont->WriteFontDefinition(mFaceWrapper,inEmbedFont);
+        return mWrittenFont->WriteFontDefinition(mFaceWrapper, mEmbedFont);
 }
 
 EStatusCode PDFUsedFont::WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectID)
@@ -160,7 +162,7 @@ EStatusCode PDFUsedFont::ReadState(PDFParser* inStateReader,ObjectIDType inObjec
 	if(mWrittenFont)
 		delete mWrittenFont;
 
-	mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext);
+	mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext,mEmbedFont);
 	if(!mWrittenFont)
 		return PDFHummus::eFailure;
 
@@ -262,12 +264,12 @@ PDFUsedFont::TextMeasures PDFUsedFont::CalculateTextDimensions(const UIntList& i
 
 	PDFUsedFont::TextMeasures result;
 
-	result.xMin = bbox.xMin*inFontSize/1000;
-	result.yMin = bbox.yMin*inFontSize/1000;
-	result.xMax = bbox.xMax*inFontSize/1000;
-	result.yMax = bbox.yMax*inFontSize/1000;
-	result.width = (bbox.xMax-bbox.xMin)*inFontSize/1000;
-	result.height = (bbox.yMax-bbox.yMin)*inFontSize/1000;
+	result.xMin = bbox.xMin * static_cast<double>(inFontSize) / 1000.0;
+	result.yMin = bbox.yMin * static_cast<double>(inFontSize) / 1000.0;
+	result.xMax = bbox.xMax * static_cast<double>(inFontSize) / 1000.0;
+	result.yMax = bbox.yMax * static_cast<double>(inFontSize) / 1000.0;
+	result.width = (bbox.xMax - bbox.xMin) * static_cast<double>(inFontSize) / 1000.0;
+	result.height = (bbox.yMax - bbox.yMin) * static_cast<double>(inFontSize) / 1000.0;
 
 	return result;
 }

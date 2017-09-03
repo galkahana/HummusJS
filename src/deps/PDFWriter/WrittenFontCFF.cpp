@@ -34,7 +34,7 @@
 
 using namespace PDFHummus;
 
-WrittenFontCFF::WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID):AbstractWrittenFont(inObjectsContext)
+WrittenFontCFF::WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID, bool inFontWillBeEmbedded):AbstractWrittenFont(inObjectsContext)
 {
 	mAvailablePositionsCount = 255;
 	mFreeList.push_back(UCharAndUChar(1,255)); 
@@ -45,6 +45,7 @@ WrittenFontCFF::WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID):Ab
 		mAssignedPositionsAvailable[i] = true;
 	}
 	mIsCID = inIsCID;
+	mFontWillBeEmbedded = inFontWillBeEmbedded;
 }
 
 WrittenFontCFF::~WrittenFontCFF(void)
@@ -343,4 +344,14 @@ EStatusCode WrittenFontCFF::ReadState(PDFParser* inStateReader,ObjectIDType inOb
 	mIsCID = isCIDState->GetValue();
 
 	return AbstractWrittenFont::ReadStateFromObject(inStateReader,writtenFontState.GetPtr());
+}
+
+unsigned short WrittenFontCFF::EncodeCIDGlyph(unsigned int inGlyphId) {
+	// Gal 26/8/2017: Most of the times, the glyph IDs are CIDs. this is to retain a few requirements of True type fonts, and the case of fonts when they are not embedded.
+	// However, when CFF fonts are embedded, the matching code actually recreates a font from just the subset, and renumbers them based on the order
+	// of them joining the font. Hence, we need a slight difference for this case, and an override is provided	
+	if (mFontWillBeEmbedded)
+		return 	mCIDRepresentation->mGlyphIDToEncodedChar.size();
+	else 
+		return (unsigned short)inGlyphId;
 }

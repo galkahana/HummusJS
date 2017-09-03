@@ -42,4 +42,6 @@ private:
 											UShortListList& outEncodedCharacters);
 
 
+	virtual unsigned short EncodeCIDGlyph(unsigned int inGlyphId);
+
 };
