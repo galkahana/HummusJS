@@ -38,6 +38,7 @@
 #include "png.h"
 
 #include <list>
+#include <stdlib.h> 
 
 using namespace PDFHummus;
 using namespace std;
@@ -89,7 +90,6 @@ PDFImageXObject* CreateImageXObjectForData(png_structp png_ptr, png_infop info_p
 		}
 
 		// get info
-		png_size_t transformed_rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 		png_uint_32 transformed_width = png_get_image_width(png_ptr, info_ptr);
 		png_uint_32 transformed_height = png_get_image_height(png_ptr, info_ptr);
 		png_byte transformed_color_type = png_get_color_type(png_ptr, info_ptr);
