@@ -182,6 +182,15 @@ public:
 													ObjectIDType inFormXObjectID,
 													const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters());
 #endif
+
+	// png
+#ifndef PDFHUMMUS_NO_PNG
+	PDFFormXObject* CreateFormXObjectFromPNGFile(const std::string& inPNGFilePath);
+	PDFFormXObject* CreateFormXObjectFromPNGFile(const std::string& inPNGFilePath, ObjectIDType inFormXObjectID);
+	PDFFormXObject* CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream);
+	PDFFormXObject* CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream, ObjectIDType inFormXObjectID);
+#endif
+
 	// PDF 
 
 	// CreateFormXObjectsFromPDF is for using input PDF pages as objects in one page or more. you can used the returned IDs to place the 

@@ -201,7 +201,8 @@ private:
     static METHOD_RETURN_TYPE GetFontForFile(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE AttachURLLinktoCurrentPage(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE Shutdown(const ARGS_TYPE& args);
-    static METHOD_RETURN_TYPE CreateFormXObjectFromTIFF(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CreateFormXObjectFromTIFF(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE CreateFormXObjectFromPNG(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE GetObjectsContext(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE AppendPDFPagesFromPDF(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE MergePDFPagesToPage(const ARGS_TYPE& args);

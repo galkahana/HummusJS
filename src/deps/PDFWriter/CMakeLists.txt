@@ -25,6 +25,15 @@ else(NOT PDFHUMMUS_NO_TIFF)
 endif(NOT PDFHUMMUS_NO_TIFF)
 
 include_directories (${FREETYPE_INCLUDE_DIRS})
+
+if(NOT PDFHUMMUS_NO_PNG)
+	include_directories (${LIBPNG_INCLUDE_DIRS})
+else(NOT PDFHUMMUS_NO_PNG)
+	add_definitions(-DPDFHUMMUS_NO_PNG=1)
+endif(NOT PDFHUMMUS_NO_PNG)
+
+
+
 add_library (PDFWriter 
 #sources
 AbstractContentContext.cpp
@@ -135,6 +144,7 @@ PDFTextString.cpp
 PDFUsedFont.cpp
 PDFWriter.cpp
 PFMFileReader.cpp
+PNGImageHandler.cpp
 PrimitiveObjectsWriter.cpp
 PSBool.cpp
 RefCountObject.cpp
@@ -315,6 +325,7 @@ PDFTextString.h
 PDFUsedFont.h
 PDFWriter.h
 PFMFileReader.h
+PNGImageHandler.h
 PrimitiveObjectsWriter.h
 ProcsetResourcesConstants.h
 PSBool.h
@@ -427,6 +438,11 @@ TIFFImageHandler.cpp
 TIFFImageHandler.h
 TiffUsageParameters.cpp
 TiffUsageParameters.h
+)
+
+source_group(Images\\PNG FILES
+PNGImageHandler.cpp
+PNGImageHandler.h
 )
 
 source_group(Infrastructure\\Basics FILES

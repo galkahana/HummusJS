@@ -75,6 +75,9 @@ void DocumentContext::SetObjectsContext(ObjectsContext* inObjectsContext)
 #ifndef PDFHUMMUS_NO_TIFF
 	mTIFFImageHandler.SetOperationsContexts(this,mObjectsContext);
 #endif
+#ifndef PDFHUMMUS_NO_PNG
+	mPNGImageHandler.SetOperationsContexts(this, mObjectsContext);
+#endif
 }
 
 void DocumentContext::SetEmbedFonts(bool inEmbedFonts) {
@@ -1270,6 +1273,13 @@ PDFFormXObject* DocumentContext::CreateFormXObjectFromJPGFile(const std::string&
 {
 	return mJPEGImageHandler.CreateFormXObjectFromJPGFile(inJPGFilePath);
 }
+
+#ifndef PDFHUMMUS_NO_PNG
+PDFFormXObject* DocumentContext::CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream, ObjectIDType inFormXObjectId)
+{
+	return mPNGImageHandler.CreateFormXObjectFromPNGStream(inPNGStream, inFormXObjectId);
+}
+#endif
 
 JPEGImageHandler& DocumentContext::GetJPEGImageHandler()
 {
@@ -2737,6 +2747,24 @@ DoubleAndDoublePair DocumentContext::GetImageDimensions(
 				break;
 			}
 #endif
+#ifndef PDFHUMMUS_NO_PNG
+			case ePNG:
+			{
+				PNGImageHandler hummusPngHandler;
+
+				InputFile file;
+				if (file.OpenFile(inImageFile) != eSuccess)
+				{
+					break;
+				}
+
+				DoubleAndDoublePair dimensions = hummusPngHandler.ReadImageDimensions(file.GetInputStream());
+
+				imageWidth = dimensions.first;
+				imageHeight = dimensions.second;
+				break;
+			}
+#endif
 			default:
 			{
 				// just avoding uninteresting compiler warnings. meaning...if you can't get the image type or unsupported, do nothing
@@ -2756,6 +2784,7 @@ static const Byte scMagicTIFFBigEndianTiff[] = {0x4D,0x4D,0x00,0x2A};
 static const Byte scMagicTIFFBigEndianBigTiff[] = {0x4D,0x4D,0x00,0x2B};
 static const Byte scMagicTIFFLittleEndianTiff[] = {0x49,0x49,0x2A,0x00};
 static const Byte scMagicTIFFLittleEndianBigTiff[] = {0x49,0x49,0x2B,0x00};
+static const Byte scMagicPng[] = { 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a };
 
 
 PDFHummus::EHummusImageType DocumentContext::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
@@ -2771,11 +2800,12 @@ PDFHummus::EHummusImageType DocumentContext::GetImageType(const std::string& inI
 		// JPG will start with "0xff,0xd8"
 		// TIFF will start with "0x49,0x49" (little endian) or "0x4D,0x4D" (big endian)
 		// then either 42 or 43 (tiff or big tiff respectively) written in 2 bytes, as either big or little endian
+		// PNG will start with 89 50 4e 47 0d 0a 1a 0a
         
-		// so just read the first 4 bytes and it should be enough to recognize a known format
+		// so just read the first 8 bytes and it should be enough to recognize a known format
         
-		Byte magic[4];
-		unsigned long readLength = 4;
+		Byte magic[8];
+		unsigned long readLength = 8;
 		InputFile inputFile;
 		PDFHummus::EHummusImageType imageType;
 		if(inputFile.OpenFile(inImageFile) == eSuccess)
@@ -2794,6 +2824,8 @@ PDFHummus::EHummusImageType DocumentContext::GetImageType(const std::string& inI
 				imageType = PDFHummus::eTIFF;
 			else if(readLength >= 4 && memcmp(scMagicTIFFLittleEndianBigTiff,magic,4) == 0)
 				imageType = PDFHummus::eTIFF;
+			else if (readLength >= 8 && memcmp(scMagicPng, magic, 8) == 0)
+				imageType = PDFHummus::ePNG;
 			else
 				imageType = PDFHummus::eUndefined;
 		}
@@ -2830,6 +2862,9 @@ unsigned long DocumentContext::GetImagePagesCount(
 			result = pdfParser.GetPagesCount();
 			break;
 		}
+#ifndef PDFHUMMUS_NO_PNG
+		case ePNG:
+#endif
 		case eJPG:
 		{
 			result = 1;
@@ -2921,11 +2956,25 @@ EStatusCode DocumentContext::WriteFormForImage(
             break;
         }
 #endif
+#ifndef PDFHUMMUS_NO_PNG
+		case ePNG:
+		{
+			InputFile inputFile;
+			if (inputFile.OpenFile(inImagePath) != eSuccess) {
+				break;
+			}
+			PDFFormXObject* form = CreateFormXObjectFromPNGStream(inputFile.GetInputStream(), inObjectID);
+			status = (form ? eSuccess : eFailure);
+			delete form;
+			break;
+		}
+
 		default:
         {
             status = eFailure;
         }
     }
+#endif
     return status;
 }
 

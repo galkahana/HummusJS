@@ -27,6 +27,7 @@ namespace PDFHummus
 		eUndefined,
 		ePDF,
 		eJPG,
-		eTIFF
+		eTIFF,
+		ePNG
 	};
 }

@@ -263,6 +263,30 @@ PDFFormXObject* PDFWriter::CreateFormXObjectFromTIFFStream(IByteReaderWithPositi
 
 #endif
 
+PDFFormXObject* PDFWriter::CreateFormXObjectFromPNGFile(const std::string& inPNGFilePath) {
+	return CreateFormXObjectFromPNGFile(inPNGFilePath, mObjectsContext.GetInDirectObjectsRegistry().AllocateNewObjectID());
+}
+
+PDFFormXObject* PDFWriter::CreateFormXObjectFromPNGFile(const std::string& inPNGFilePath, ObjectIDType inFormXObjectId) {
+	InputFile inputFile;
+	if (inputFile.OpenFile(inPNGFilePath) != eSuccess) {
+		return NULL;
+	}
+
+	return CreateFormXObjectFromPNGStream(inputFile.GetInputStream(), inFormXObjectId);
+}
+
+
+PDFFormXObject* PDFWriter::CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream) {
+	return CreateFormXObjectFromPNGStream(inPNGStream , mObjectsContext.GetInDirectObjectsRegistry().AllocateNewObjectID());
+}
+
+PDFFormXObject* PDFWriter::CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream, ObjectIDType inFormXObjectId) {
+	return mDocumentContext.CreateFormXObjectFromPNGStream(inPNGStream, inFormXObjectId);
+}
+
+
+
 PDFImageXObject* PDFWriter::CreateImageXObjectFromJPGFile(const std::string& inJPGFilePath,ObjectIDType inImageXObjectID)
 {
 	return mDocumentContext.CreateImageXObjectFromJPGFile(inJPGFilePath,inImageXObjectID); 
