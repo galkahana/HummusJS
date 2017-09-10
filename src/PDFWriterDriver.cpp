@@ -87,6 +87,7 @@ void PDFWriterDriver::Init(Handle<Object> inExports)
 	SET_PROTOTYPE_METHOD(t, "shutdown", Shutdown);
 	SET_PROTOTYPE_METHOD(t, "createFormXObjectFromTIFF", CreateFormXObjectFromTIFF);
 	SET_PROTOTYPE_METHOD(t, "createImageXObjectFromJPG", CreateImageXObjectFromJPG);
+	SET_PROTOTYPE_METHOD(t, "createFormXObjectFromPNG", CreateFormXObjectFromPNG);
 	SET_PROTOTYPE_METHOD(t, "retrieveJPGImageInformation", RetrieveJPGImageInformation);
 	SET_PROTOTYPE_METHOD(t, "getObjectsContext", GetObjectsContext);
 	SET_PROTOTYPE_METHOD(t, "getDocumentContext", GetDocumentContext);
@@ -363,7 +364,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     
     if((args.Length() != 1  && args.Length() != 2 ) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
     {
-		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image. Optionally pass an object ID for a forward reference image");
+		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image or an image stream. Optionally pass an object ID for a forward reference image");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
@@ -447,6 +448,49 @@ METHOD_RETURN_TYPE PDFWriterDriver::RetrieveJPGImageInformation(const ARGS_TYPE&
     }
 
     SET_FUNCTION_RETURN_VALUE(result);
+}
+
+METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+	CREATE_ESCAPABLE_SCOPE;
+    
+    if((args.Length() != 1  && args.Length() != 2 ) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
+    {
+		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image or an image stream. Optionally pass an object ID for a forward reference image");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+    
+    PDFFormXObject* formXObject;
+    
+    if(args[0]->IsObject())
+    {
+        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        
+        formXObject =
+        args.Length() == 2 ?
+        pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy,(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy);
+        
+    }
+    else
+    {
+        formXObject =
+            args.Length() == 2 ?
+            pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*String::Utf8Value(args[0]->ToString()));
+    }
+    if(!formXObject)
+    {
+		THROW_EXCEPTION("unable to create form xobject. verify that the target is an existing png file/stream");
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    }
+    
+    Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
+    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
+    SET_FUNCTION_RETURN_VALUE(newInstance);
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
@@ -1347,6 +1391,11 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageType(const ARGS_TYPE& args) {
         case PDFHummus::eTIFF:
         {
             SET_FUNCTION_RETURN_VALUE(NEW_STRING("TIFF"));
+            break;
+        }
+        case PDFHummus::ePNG:
+        {
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("PNG"));
             break;
         }
         default:

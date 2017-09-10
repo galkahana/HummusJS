@@ -17,14 +17,16 @@
                '<(module_root_dir)/src/deps/FreeType/binding.gyp:freetype',
                '<(module_root_dir)/src/deps/LibJpeg/binding.gyp:libjpeg',
                '<(module_root_dir)/src/deps/ZLib/binding.gyp:zlib',
-               '<(module_root_dir)/src/deps/LibTiff/binding.gyp:libtiff'
+               '<(module_root_dir)/src/deps/LibTiff/binding.gyp:libtiff',
+               '<(module_root_dir)/src/deps/LibPng/binding.gyp:libpng'
             ],
             'include_dirs': [
                 '<(module_root_dir)/src/deps/LibAesgm',
                 '<(module_root_dir)/src/deps/FreeType/include',
                 '<(module_root_dir)/src/deps/LibTiff',
                 '<(module_root_dir)/src/deps/ZLib',
-                '<(module_root_dir)/src/deps/LibJpeg'
+                '<(module_root_dir)/src/deps/LibJpeg',
+                '<(module_root_dir)/src/deps/LibPng'
             ],
            'sources': [
                'AbstractContentContext.cpp',
@@ -133,6 +135,7 @@
                'PDFUsedFont.cpp',
                'PDFWriter.cpp',
                'PFMFileReader.cpp',
+               'PNGImageHandler.cpp',
                'PrimitiveObjectsWriter.cpp',
                'PSBool.cpp',
                'RC4.cpp',
@@ -312,6 +315,7 @@
                'PDFUsedFont.h',
                'PDFWriter.h',
                'PFMFileReader.h',
+               'PNGImageHandler.cpp',
                'PrimitiveObjectsWriter.h',
                'ProcsetResourcesConstants.h',
                'PSBool.h',

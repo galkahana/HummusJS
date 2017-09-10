@@ -36,6 +36,7 @@
 #include "PDFParsingOptions.h"
 #include "EncryptionOptions.h"
 #include "EncryptionHelper.h"
+#include "PNGImageHandler.h"
 
 #include <string>
 #include <set>
@@ -210,6 +211,11 @@ namespace PDFHummus
 														ObjectIDType inFormXObjectID,
 														const TIFFUsageParameters& inTIFFUsageParameters = TIFFUsageParameters::DefaultTIFFUsageParameters());
 #endif
+#ifndef PDFHUMMUS_NO_PNG
+		// PNG
+		PDFFormXObject* CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream, ObjectIDType inFormXObjectID);
+#endif
+
 		// PDF
 		// CreateFormXObjectsFromPDF is for using input PDF pages as objects in one page or more. you can used the returned IDs to place the 
 		// created form xobjects
@@ -357,6 +363,9 @@ namespace PDFHummus
 		JPEGImageHandler mJPEGImageHandler;
 #ifndef PDFHUMMUS_NO_TIFF
 		TIFFImageHandler mTIFFImageHandler;
+#endif
+#ifndef PDFHUMMUS_NO_PNG
+		PNGImageHandler mPNGImageHandler;
 #endif
 		PDFDocumentHandler mPDFDocumentHandler;
 		UsedFontsRepository mUsedFontsRepository;
