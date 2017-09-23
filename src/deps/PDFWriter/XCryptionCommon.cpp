@@ -40,14 +40,8 @@ XCryptionCommon::~XCryptionCommon(void)
 {
 }
 
-bool XCryptionCommon::Setup(bool inUsingAES) {
+void XCryptionCommon::Setup(bool inUsingAES) {
 	mUsingAES = inUsingAES;
-	mCanXCrypt = true;
-	return CanXCrypt();
-}
-
-bool XCryptionCommon::CanXCrypt() {
-	return mCanXCrypt;
 }
 
 void XCryptionCommon::SetupInitialEncryptionKey(const std::string& inUserPassword,
@@ -143,7 +137,7 @@ std::string XCryptionCommon::ByteListToString(const ByteList& inByteList) {
 	return buffer;
 }
 
-const Byte scAESSuffix[] = { 0x73, 0x41, 0x63, 0x54 };
+const Byte scAESSuffix[] = { 0x73, 0x41, 0x6C, 0x54 };
 ByteList XCryptionCommon::algorithm3_1(ObjectIDType inObjectNumber,
 	unsigned long inGenerationNumber,
 	const ByteList& inEncryptionKey,
@@ -376,4 +370,8 @@ bool XCryptionCommon::algorithm3_7(unsigned int inRevision,
 		inFileIDPart1,
 		inEncryptMetaData,
 		inU);
+}
+
+bool XCryptionCommon::IsUsingAES() {
+	return mUsingAES;
 }

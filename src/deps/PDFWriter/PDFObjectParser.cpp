@@ -367,7 +367,7 @@ PDFObject* PDFObjectParser::ParseLiteralString(const std::string& inToken)
 */
 
 std::string PDFObjectParser::MaybeDecryptString(const std::string& inString) {
-	if (mDecryptionHelper->IsEncrypted()) {
+	if (mDecryptionHelper && mDecryptionHelper->IsEncrypted()) {
 
 		if (mDecryptionHelper->CanDecryptDocument())
 			return mDecryptionHelper->DecryptString(inString);

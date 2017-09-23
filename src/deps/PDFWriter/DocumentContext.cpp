@@ -2300,7 +2300,7 @@ EStatusCode	DocumentContext::FinalizeModifiedPDF(PDFParser* inModifiedFileParser
 		WriteInfoDictionary();
 
 		// write encryption dictionary, if encrypting
-		WriteEncryptionDictionary();
+		CopyEncryptionDictionary(inModifiedFileParser);
         
         if(RequiresXrefStream(inModifiedFileParser))
         {
@@ -2515,6 +2515,34 @@ bool DocumentContext::DoExtendersRequireCatalogUpdate(PDFParser* inModifiedFileP
     return isUpdateRequired;
 }
 
+void DocumentContext::CopyEncryptionDictionary(PDFParser* inModifiedFileParser) 
+{
+	// Reuse original encryption dict for new modified trailer. for sake of simplicity (with trailer using ref for encrypt), make it indirect if not already
+	RefCountPtr<PDFObject> encrypt(inModifiedFileParser->GetTrailer()->QueryDirectObject("Encrypt"));
+	if (encrypt.GetPtr() == NULL)
+		return;
+
+	if (encrypt->GetType() == PDFObject::ePDFObjectIndirectObjectReference)
+	{
+		// just set the reference to the object
+		mTrailerInformation.SetEncrypt(((PDFIndirectObjectReference*)encrypt.GetPtr())->mObjectID);
+	}
+	else
+	{
+		// copy to indirect object and set refrence
+		mEncryptionHelper.PauseEncryption();
+		ObjectIDType encryptionDictionaryID = mObjectsContext->StartNewIndirectObject();
+		// copying context, write as is
+		PDFDocumentCopyingContext* copyingContext = CreatePDFCopyingContext(inModifiedFileParser);
+		copyingContext->CopyDirectObjectAsIs(encrypt.GetPtr());
+		delete copyingContext;
+		mObjectsContext->EndIndirectObject();
+		mEncryptionHelper.ReleaseEncryption();
+
+		mTrailerInformation.SetEncrypt(encryptionDictionaryID);
+	}
+}
+
 bool DocumentContext::RequiresXrefStream(PDFParser* inModifiedFileParser)
 {
     // modification requires xref stream if the original document uses one...so just ask trailer
@@ -2537,6 +2565,7 @@ EStatusCode DocumentContext::WriteXrefStream(LongFilePositionType& outXrefPositi
     
     do 
     {
+		mEncryptionHelper.PauseEncryption(); // don't encrypt while writing xref stream
         // get the position by accessing the free context of the underlying objects stream
  
         // an Xref stream is a beast that is both trailer and the xref
@@ -2546,8 +2575,6 @@ EStatusCode DocumentContext::WriteXrefStream(LongFilePositionType& outXrefPositi
         outXrefPosition = mObjectsContext->GetCurrentPosition();
         mObjectsContext->StartNewIndirectObject();
  
-        mObjectsContext->EndFreeContext();
-       
         DictionaryContext* xrefDictionary = mObjectsContext->StartDictionary();
         
         xrefDictionary->WriteKey("Type");
@@ -2559,6 +2586,8 @@ EStatusCode DocumentContext::WriteXrefStream(LongFilePositionType& outXrefPositi
 
         // k. now for the xref table itself
         status = mObjectsContext->WriteXrefStream(xrefDictionary);
+
+		mEncryptionHelper.ReleaseEncryption();
         
     } 
     while (false);
@@ -2973,8 +3002,8 @@ EStatusCode DocumentContext::WriteFormForImage(
         {
             status = eFailure;
         }
-    }
 #endif
+	}
     return status;
 }
 

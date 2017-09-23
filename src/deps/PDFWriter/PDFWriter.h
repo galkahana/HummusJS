@@ -293,14 +293,16 @@ public:
 		const std::string& inOriginalPDFPassword,
 		const std::string& inNewPDFPath,
 		const LogConfiguration& inLogConfiguration,
-		const PDFCreationSettings& inPDFCreationSettings);
+		const PDFCreationSettings& inPDFCreationSettings,
+		EPDFVersion inOveridePDFVersion = ePDFVersionUndefined);
 
 	static PDFHummus::EStatusCode RecryptPDF(
 		IByteReaderWithPosition* inOriginalPDFStream,
 		const std::string& inOriginalPDFPassword,
 		IByteWriterWithPosition* inNewPDFStream,
 		const LogConfiguration& inLogConfiguration,
-		const PDFCreationSettings& inPDFCreationSettings);
+		const PDFCreationSettings& inPDFCreationSettings,
+		EPDFVersion inOveridePDFVersion = ePDFVersionUndefined);
 
 
 private:

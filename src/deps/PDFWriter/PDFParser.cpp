@@ -1729,9 +1729,11 @@ PDFObject* PDFParser::ParseExistingInDirectStreamObject(ObjectIDType inObjectId)
 			mObjectParser.ResetReadState();
 		}
 
+		mDecryptionHelper.PauseDecryption(); // objects within objects stream already enjoy the object stream protection, and so are no longer encrypted
 		NotifyIndirectObjectStart(inObjectId,0);
 		anObject = mObjectParser.ParseNewObject();
 		NotifyIndirectObjectEnd(anObject);
+		mDecryptionHelper.ReleaseDecryption();
 
 	}while(false);
 
@@ -1788,13 +1790,13 @@ EStatusCode PDFParser::ParseObjectStreamHeader(ObjectStreamHeaderEntry* inHeader
 IByteReader* PDFParser::WrapWithDecryptionFilter(PDFStreamInput* inStream, IByteReader* inToWrapStream) {
 	if (IsEncrypted() && IsEncryptionSupported()) {
 		// try with decryption helper
-		IByteReader*  result = 	mDecryptionHelper.CreateDecryptionFilterForStream(inStream, inToWrapStream);
+		IByteReader*  result = 	mDecryptionHelper.CreateDefaultDecryptionFilterForStream(inStream, inToWrapStream);
 		if (result)
 			return result;
 
 		// try with extender
 		if(mParserExtender)
-			result = mParserExtender->CreateDecryptionFilterForStream(inStream, inToWrapStream);
+			result = mParserExtender->CreateDefaultDecryptionFilterForStream(inStream, inToWrapStream);
 
 		if (result)
 			return result;
@@ -1852,13 +1854,13 @@ IByteReader* PDFParser::CreateInputStreamReader(PDFStreamInput* inStream)
 				EStatusCodeAndIByteReader createStatus;
 				if(!decodeParams)
 				{
-					 createStatus = CreateFilterForStream(result,filterObjectItem.GetPtr(), NULL);
+					 createStatus = CreateFilterForStream(result,filterObjectItem.GetPtr(), NULL, inStream);
 				}
 				else
 				{
 					PDFObjectCastPtr<PDFDictionary> decodeParamsItem(QueryArrayObject(decodeParams.GetPtr(),i));
 
-					createStatus = CreateFilterForStream(result,(PDFName*)filterObject.GetPtr(), !decodeParamsItem ? NULL: decodeParamsItem.GetPtr());
+					createStatus = CreateFilterForStream(result,(PDFName*)filterObject.GetPtr(), !decodeParamsItem ? NULL: decodeParamsItem.GetPtr(), inStream);
 				}
 
 				if(createStatus.first != eSuccess)
@@ -1874,7 +1876,7 @@ IByteReader* PDFParser::CreateInputStreamReader(PDFStreamInput* inStream)
 		{
 			PDFObjectCastPtr<PDFDictionary> decodeParams(QueryDictionaryObject(streamDictionary.GetPtr(),"DecodeParms"));
 
-			EStatusCodeAndIByteReader createStatus = CreateFilterForStream(result,(PDFName*)filterObject.GetPtr(), !decodeParams ? NULL: decodeParams.GetPtr());
+			EStatusCodeAndIByteReader createStatus = CreateFilterForStream(result,(PDFName*)filterObject.GetPtr(), !decodeParams ? NULL: decodeParams.GetPtr(), inStream);
 			if(createStatus.first != eSuccess)
 			{
 				status = PDFHummus::eFailure;
@@ -1902,7 +1904,7 @@ IByteReader* PDFParser::CreateInputStreamReader(PDFStreamInput* inStream)
 	return result;
 }
 
-EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream,PDFName* inFilterName,PDFDictionary* inDecodeParams)
+EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream,PDFName* inFilterName,PDFDictionary* inDecodeParams, PDFStreamInput* inPDFStream)
 {
 	EStatusCode status = eSuccess;
 	IByteReader* result = NULL;
@@ -1991,9 +1993,15 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
             result = new InputDCTDecodeStream(inStream);
         }
 #endif
+		else if (inFilterName->GetValue() == "Crypt")
+		{
+			PDFObjectCastPtr<PDFName> cryptFilterName(QueryDictionaryObject(inDecodeParams, "Name"));
+
+			result = mDecryptionHelper.CreateDecryptionFilterForStream(inPDFStream, inStream, cryptFilterName->GetValue());
+		}
 		else if(mParserExtender)
 		{
-			result = mParserExtender->CreateFilterForStream(inStream,inFilterName,inDecodeParams);
+			result = mParserExtender->CreateFilterForStream(inStream,inFilterName,inDecodeParams, inPDFStream);
 			if(result == inStream)
 			{
 				TRACE_LOG1("PDFParser::CreateFilterForStream, filter is not supported by extender - %s",inFilterName->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
@@ -2034,7 +2042,7 @@ PDFObjectParser* PDFParser::StartReadingObjectsFromStream(PDFStreamInput* inStre
 	PDFObjectParser* objectsParser = new PDFObjectParser();
 	InputStreamSkipperStream* source = new InputStreamSkipperStream(readStream);
 	objectsParser->SetReadStream(source,source,true);
-	objectsParser->SetDecryptionHelper(&mDecryptionHelper);
+	// Not setting decryption filter cause shuoldnt decrypt at lower level. if at all - the stream is encrypted already
 	objectsParser->SetParserExtender(mParserExtender);
 
 	return objectsParser;
@@ -2046,7 +2054,7 @@ PDFObjectParser* PDFParser::StartReadingObjectsFromStreams(PDFArray* inArrayOfSt
 	PDFObjectParser* objectsParser = new PDFObjectParser();
 	InputStreamSkipperStream* source = new InputStreamSkipperStream(readStream);
 	objectsParser->SetReadStream(source, source, true);
-	objectsParser->SetDecryptionHelper(&mDecryptionHelper);
+	// Not setting decryption filter cause shuoldnt decrypt at lower level. if at all - the stream is encrypted already
 	objectsParser->SetParserExtender(mParserExtender);
 
 	return objectsParser;

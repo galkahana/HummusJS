@@ -400,6 +400,7 @@ PDFStream* ObjectsContext::StartPDFStream(DictionaryContext* inStreamDictionary,
 		streamDictionaryContext->WriteNameValue(scFlateDecode);
 	}
 
+	PDFStream* result = NULL;
     if(!inForceDirectExtentObject)
     {
     
@@ -414,11 +415,16 @@ PDFStream* ObjectsContext::StartPDFStream(DictionaryContext* inStreamDictionary,
         // Write Stream Content
         WriteKeyword(scStream);
         
-        return new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,lengthObjectID,mExtender);
+		result = new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,lengthObjectID,mExtender);
     }
     else
-        return new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,streamDictionaryContext,mExtender);
-	
+		result = new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,streamDictionaryContext,mExtender);
+
+	// break encryption, if any, when writing a stream, cause if encryption is desired, only top level elements should be encrypted. hence - the stream itself is, but its contents do not re-encrypt
+	if (mEncryptionHelper)
+		mEncryptionHelper->PauseEncryption();
+
+	return result;
 }
 
 PDFStream* ObjectsContext::StartUnfilteredPDFStream(DictionaryContext* inStreamDictionary)
@@ -441,13 +447,23 @@ PDFStream* ObjectsContext::StartUnfilteredPDFStream(DictionaryContext* inStreamD
 	WriteKeyword(scStream);
 
 	// now begin the stream itself
-	return new PDFStream(false,mOutputStream, mEncryptionHelper,lengthObjectID,NULL);
+	PDFStream* result = new PDFStream(false,mOutputStream, mEncryptionHelper,lengthObjectID,NULL);
+
+	// break encryption, if any, when writing a stream, cause if encryption is desired, only top level elements should be encrypted. hence - the stream itself is, but its contents do not re-encrypt
+	if(mEncryptionHelper)
+		mEncryptionHelper->PauseEncryption();
+
+	return result;
 }
 
 void ObjectsContext::EndPDFStream(PDFStream* inStream)
 {
 	// finalize the stream write to end stream context and calculate length
 	inStream->FinalizeStreamWrite();
+
+	// bring back encryption, if exists
+	if (mEncryptionHelper)
+		mEncryptionHelper->ReleaseEncryption();
 
 	if(inStream->GetExtentObjectID() == 0)
     {

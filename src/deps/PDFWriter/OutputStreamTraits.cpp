@@ -45,6 +45,9 @@ EStatusCode OutputStreamTraits::CopyToOutputStream(IByteReader* inInputStream)
 		readBytes = inInputStream->Read(buffer,TENMEGS);
 		writeBytes = mOutputStream->Write(buffer,readBytes);
 		status = (readBytes == writeBytes) ? PDFHummus::eSuccess:PDFHummus::eFailure;
+		if (readBytes == 0) {
+			break; // for whatever reason notEnded is not reached...dont want this to interfere
+		}
 	}
 	delete[] buffer;
 	return status;

@@ -42,6 +42,8 @@ private:
 	bool mOwnsStream;
 	IByteWriterWithPosition* mTargetStream;
 
+	bool mWroteIV;
+
 
 	// inEncryptionKey in array form, for aes
 	unsigned char* mEncryptionKey;

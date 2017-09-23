@@ -22,6 +22,7 @@
 
 enum EPDFVersion
 {
+	ePDFVersionUndefined = 0,
 	ePDFVersion10 = 10,
 	ePDFVersion11 = 11,
 	ePDFVersion12 = 12,

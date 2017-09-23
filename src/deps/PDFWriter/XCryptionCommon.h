@@ -25,9 +25,13 @@ limitations under the License.
 
 #include <list>
 #include <string>
+#include <map>
+
+class XCryptionCommon;
 
 typedef std::list<IOBasicTypes::Byte> ByteList;
 typedef std::list<ByteList> ByteListList;
+typedef std::map<std::string, XCryptionCommon*> StringToXCryptionCommonMap;
 
 
 class XCryptionCommon {
@@ -47,8 +51,8 @@ public:
 		4. now you can call all methods freely
 	*/
 
-	// call this whenever you first can. this sets some internal behavior based on the input elements
-	bool Setup(bool inUsingAES);
+	// call this whenever you first can. 
+	void Setup(bool inUsingAES);
 
 	void SetupInitialEncryptionKey(const std::string& inUserPassword,
 		unsigned int inRevision,
@@ -61,9 +65,6 @@ public:
 	// Setup key directly
 	void SetupInitialEncryptionKey(const ByteList& inEncryptionKey);
 
-	// Queries (same as initial setup)
-	bool CanXCrypt();
-
 
 	// Call on object start, will recompute a key for the new object (returns, so you can use if makes sense)
 	const ByteList& OnObjectStart(long long inObjectID, long long inGenerationNumber);
@@ -74,12 +75,12 @@ public:
 	// get original encryption key (without particular object additions)
 	const ByteList& GetInitialEncryptionKey() const;
 
-	// bytelist operations
-	ByteList stringToByteList(const std::string& inString);
-	ByteList substr(const ByteList& inList, IOBasicTypes::LongBufferSizeType inStart, IOBasicTypes::LongBufferSizeType inEnd);
-	void append(ByteList& ioTargetList, const ByteList& inSource);
-	ByteList add(const ByteList& inA, const ByteList& inB);
-	std::string ByteListToString(const ByteList& inByteList);
+	// bytelist operations (class methods)
+	static ByteList stringToByteList(const std::string& inString);
+	static ByteList substr(const ByteList& inList, IOBasicTypes::LongBufferSizeType inStart, IOBasicTypes::LongBufferSizeType inEnd);
+	static void append(ByteList& ioTargetList, const ByteList& inSource);
+	static ByteList add(const ByteList& inA, const ByteList& inB);
+	static std::string ByteListToString(const ByteList& inByteList);
 
 	// PDF xcryption algorithms (Important! length must be passed in bytes and not in bits. which normally means - the PDF value / 8)
 	ByteList algorithm3_1(ObjectIDType inObjectNumber,
@@ -127,6 +128,7 @@ public:
 		bool inEncryptMetaData,
 		const ByteList inU);
 
+	bool IsUsingAES();
 
 private:
 	ByteList mPaddingFiller;

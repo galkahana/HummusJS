@@ -64,6 +64,32 @@ describe('Xcryption', function() {
 		});
 	});	
 
+	describe('Create a PDF With a Password, encrypted with AES', function() {
+		it('should complete without error', function() {
+			var pdfWriter = hummus.createWriter(
+				__dirname + '/output/PDFWithPasswordAES.pdf',
+				{
+					userPassword: 'user',
+					ownerPassword: 'owner',
+					userProtectionFlag: 4,
+					version: hummus.ePDFVersion16				
+				});
+			var page = pdfWriter.createPage(0,0,595,842);
+
+			pdfWriter.startPageContentContext(page)
+				.drawImage(10,100, __dirname + '/TestMaterials/images/soundcloud_logo.jpg')
+				.writeText('Hello',10,50,{
+					font: pdfWriter.getFontForFile(__dirname + '/TestMaterials/fonts/arial.ttf'),
+					size: 14,
+					colorspace: 'gray',
+					color: 0x00
+				});
+
+			pdfWriter.writePage(page);
+			pdfWriter.end();			
+		});
+	});	
+
 	describe('Decrypt PDF via Appending Pages to New PDF',function() {
 		it('should complete without error', function() {
 			var pdfWriter = hummus.createWriter(__dirname + '/output/PDFWithPasswordDecrypted.pdf');

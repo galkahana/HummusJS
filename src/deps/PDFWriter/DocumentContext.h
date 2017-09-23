@@ -426,7 +426,8 @@ namespace PDFHummus
         ObjectIDType WriteCombinedPageTree(PDFParser* inModifiedFileParser);
         bool IsRequiredVersionHigherThanPDFVersion(PDFParser* inModifiedFileParser,EPDFVersion inModifiedPDFVersion);
         bool DoExtendersRequireCatalogUpdate(PDFParser* inModifiedFileParser);
-        bool RequiresXrefStream(PDFParser* inModifiedFileParser);
+		void CopyEncryptionDictionary(PDFParser* inModifiedFileParser);
+		bool RequiresXrefStream(PDFParser* inModifiedFileParser);
         PDFHummus::EStatusCode WriteXrefStream(LongFilePositionType& outXrefPosition);
 		HummusImageInformation& GetImageInformationStructFor(const std::string& inImageFile,unsigned long inImageIndex);
 	};

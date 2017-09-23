@@ -70,6 +70,7 @@ GraphicState.cpp
 GraphicStateStack.cpp
 IndirectObjectsReferenceRegistry.cpp
 InfoDictionary.cpp
+InputAESDecodeStream.cpp
 InputAscii85DecodeStream.cpp
 InputBufferedStream.cpp
 InputByteArrayStream.cpp
@@ -236,6 +237,7 @@ ITiledPatternEndWritingTask.h
 IFreeTypeFaceExtender.h
 IndirectObjectsReferenceRegistry.h
 InfoDictionary.h
+InputAESDecodeStream.h
 InputAscii85DecodeStream.h
 InputBufferedStream.h
 InputByteArrayStream.h
@@ -498,6 +500,8 @@ IByteReader.h
 IByteReaderWithPosition.h
 IByteWriter.h
 IByteWriterWithPosition.h
+InputAESDecodeStream.cpp
+InputAESDecodeStream.h
 InputAscii85DecodeStream.cpp
 InputAscii85DecodeStream.h
 InputBufferedStream.cpp

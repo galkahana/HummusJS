@@ -30,6 +30,7 @@ OutputAESEncodeStream::OutputAESEncodeStream(void)
 {
 	mTargetStream = NULL;
 	mOwnsStream = false;
+	mWroteIV = false;
 }
 
 OutputAESEncodeStream::~OutputAESEncodeStream(void)
@@ -59,17 +60,9 @@ OutputAESEncodeStream::OutputAESEncodeStream(IByteWriterWithPosition* inTargetSt
 	for (; it != inEncryptionKey.end(); ++i, ++it)
 		mEncryptionKey[i] = *it;
 	mEncrypt.key(mEncryptionKey, mEncryptionKeyLength);
+	
+	mWroteIV = false;
 
-	// create IV and write it to output file [use existing PDFDate]
-	MD5Generator md5;
-	// encode current time
-	PDFDate currentTime;
-	currentTime.SetToCurrentTime();
-	md5.Accumulate(currentTime.ToString());
-	memcpy(mIV, (const unsigned char*)md5.ToStringAsString().c_str(),AES_BLOCK_SIZE); // md5 should give us the desired 16 bytes
-
-	// now write mIV to the output stream
-	mTargetStream->Write(mIV, AES_BLOCK_SIZE);
 }
 
 LongFilePositionType OutputAESEncodeStream::GetCurrentPosition() 
@@ -84,6 +77,22 @@ LongBufferSizeType OutputAESEncodeStream::Write(const IOBasicTypes::Byte* inBuff
 {
 	if (!mTargetStream)
 		return 0;
+
+	// write IV if didn't write yet
+	if (!mWroteIV) {
+		// create IV and write it to output file [use existing PDFDate]
+		MD5Generator md5;
+		// encode current time
+		PDFDate currentTime;
+		currentTime.SetToCurrentTime();
+		md5.Accumulate(currentTime.ToString());
+		memcpy(mIV, (const unsigned char*)md5.ToStringAsString().c_str(), AES_BLOCK_SIZE); // md5 should give us the desired 16 bytes
+
+																						   // now write mIV to the output stream
+		mTargetStream->Write(mIV, AES_BLOCK_SIZE);
+		mWroteIV = true;
+	}
+
 
 	// input and existing buffer sizes smaller than block size, so just copy and return
 

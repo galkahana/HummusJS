@@ -90,7 +90,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    EPDFVersion pdfVersion = ePDFVersion13;
+    EPDFVersion pdfVersion = ePDFVersion14;
     PDFCreationSettings pdfCreationSettings(true,true);
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
     
@@ -201,7 +201,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     }
     
 
-    EPDFVersion pdfVersion = ePDFVersion13;
+    EPDFVersion pdfVersion = ePDFVersionUndefined;
     PDFCreationSettings pdfCreationSettings(true,true);
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
     std::string originalPassword;
@@ -213,7 +213,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
         {
             long pdfVersionValue = anObject->Get(NEW_STRING("version"))->ToNumber()->Int32Value();
             
-            if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
+            if(pdfVersionValue != ePDFVersionUndefined && (pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue))
             {
                 THROW_EXCEPTION("Wrong argument for PDF version, please provide a valid PDF version");
                 SET_FUNCTION_RETURN_VALUE(UNDEFINED);
@@ -264,7 +264,8 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
                                     originalPassword,
                                     &writeStreamProxy,
                                     logConfig,
-                                    pdfCreationSettings);
+                                    pdfCreationSettings,
+                                    pdfVersion);
     }
     else
     {
@@ -272,7 +273,8 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
                                     originalPassword,
                                     std::string(*String::Utf8Value(args[1]->ToString())),
                                     logConfig,
-                                    pdfCreationSettings);
+                                    pdfCreationSettings,
+                                    pdfVersion);
     }
     
     if(status != PDFHummus::eSuccess)
@@ -583,6 +585,7 @@ void HummusInit(Handle<Object> exports) {
     exports->Set(NEW_SYMBOL("ePDFVersion15"),NEW_NUMBER(ePDFVersion15));
     exports->Set(NEW_SYMBOL("ePDFVersion16"),NEW_NUMBER(ePDFVersion16));
     exports->Set(NEW_SYMBOL("ePDFVersion17"),NEW_NUMBER(ePDFVersion17));
+    exports->Set(NEW_SYMBOL("ePDFVersionUndefined"),NEW_NUMBER(ePDFVersionUndefined));
     
     // procsets for resource inclusion
     exports->Set(NEW_SYMBOL("KProcsetImageB"),NEW_STRING(KProcsetImageB.c_str()));

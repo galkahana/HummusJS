@@ -99,13 +99,22 @@ public:
 	PDFHummus::EStatusCode ReadState(PDFParser* inStateReader, ObjectIDType inObjectID);
 
 private:
-	XCryptionCommon mXcryption;
+	// named xcrypts, for V4
+	StringToXCryptionCommonMap mXcrypts;
+	// xcrypt to use for streams
+	XCryptionCommon* mXcryptStreams;
+	// xcrypt to use for strings
+	XCryptionCommon* mXcryptStrings;
+	// xcrypt to use for password authentication
+	XCryptionCommon* mXcryptAuthentication;
+
 
 	bool mIsDocumentEncrypted;
 	int mEncryptionPauseLevel;
 	bool mSupportsEncryption;
 
-	IByteWriterWithPosition* CreateEncryptionWriter(IByteWriterWithPosition* inToWrapStream, const ByteList& inEncryptionKey);
+	IByteWriterWithPosition* CreateEncryptionWriter(IByteWriterWithPosition* inToWrapStream, const ByteList& inEncryptionKey, bool inUsingAES);
+	void Release();
 
 	// Generic encryption
 	unsigned int mV;
@@ -119,5 +128,4 @@ private:
 	long long mP;
 	bool mEncryptMetaData;
 	ByteList mFileIDPart1;
-	bool mUsingAES;
 };
