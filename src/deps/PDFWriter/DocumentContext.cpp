@@ -155,6 +155,7 @@ void DocumentContext::WriteHeaderComment(EPDFVersion inPDFVersion)
 			mObjectsContext->WriteComment(scPDFVersion13);
 			break;
 		case ePDFVersion14:
+		case ePDFVersionUndefined:
 			mObjectsContext->WriteComment(scPDFVersion14);
 			break;
 		case ePDFVersion15:

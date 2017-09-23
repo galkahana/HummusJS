@@ -19,8 +19,11 @@ limitations under the License.
 
 #include "InputAESDecodeStream.h"
 
-using namespace IOBasicTypes;
 #include <algorithm>
+#include <string.h>
+
+using namespace IOBasicTypes;
+
 
 InputAESDecodeStream::InputAESDecodeStream()
 {
