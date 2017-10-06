@@ -67,10 +67,12 @@ public:
 
 	EStatusCodeAndObjectIDType CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
 															 EPDFPageBox inPageBoxToUseAsFormBox,
-															 const double* inTransformationMatrix = NULL);
+															 const double* inTransformationMatrix = NULL,
+															 ObjectIDType inPredefinedFormId = 0);
 	EStatusCodeAndObjectIDType CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
-															 const PDFRectangle& inCropBox,
-															 const double* inTransformationMatrix = NULL);
+																const PDFRectangle& inCropBox,
+																const double* inTransformationMatrix = NULL,
+																ObjectIDType inPredefinedFormId = 0);
 	EStatusCodeAndObjectIDType AppendPDFPageFromPDF(unsigned long inPageIndex);
 	PDFHummus::EStatusCode MergePDFPageToPage(PDFPage* inTargetPage,unsigned long inSourcePageIndex);
     

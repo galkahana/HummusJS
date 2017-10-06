@@ -123,28 +123,32 @@ public:
 																const PDFPageRange& inPageRange,
 																EPDFPageBox inPageBoxToUseAsFormBox,
 																const double* inTransformationMatrix,
-																const ObjectIDTypeList& inCopyAdditionalObjects);
+																const ObjectIDTypeList& inCopyAdditionalObjects,
+																const ObjectIDTypeList& inPredefinedFormIDs);
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															const PDFParsingOptions& inParsingOptions,
 															const PDFPageRange& inPageRange,
 															 EPDFPageBox inPageBoxToUseAsFormBox,
 															 const double* inTransformationMatrix,
-															 const ObjectIDTypeList& inCopyAdditionalObjects);
+															 const ObjectIDTypeList& inCopyAdditionalObjects,
+															 const ObjectIDTypeList& inPredefinedFormIDs);
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF( const std::string& inPDFFilePath,
 																const PDFParsingOptions& inParsingOptions,
 																const PDFPageRange& inPageRange,
 																const PDFRectangle& inCropBox,
 																const double* inTransformationMatrix,
-																const ObjectIDTypeList& inCopyAdditionalObjects);
+																const ObjectIDTypeList& inCopyAdditionalObjects,
+																const ObjectIDTypeList& inPredefinedFormIDs);
 
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															const PDFParsingOptions& inParsingOptions,
 															const PDFPageRange& inPageRange,
 															const PDFRectangle& inCropBox,
 															 const double* inTransformationMatrix,
-															 const ObjectIDTypeList& inCopyAdditionalObjects);
+															 const ObjectIDTypeList& inCopyAdditionalObjects,
+															 const ObjectIDTypeList& inPredefinedFormIDs);
 	
 	// appends pages from source PDF to the written PDF. returns object ID for the created pages
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(const std::string& inPDFFilePath,
@@ -189,10 +193,12 @@ public:
 	PDFHummus::EStatusCode StartParserCopyingContext(PDFParser* inPDFParser);
 	EStatusCodeAndObjectIDType CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
 														 EPDFPageBox inPageBoxToUseAsFormBox,
-														 const double* inTransformationMatrix);
+														 const double* inTransformationMatrix,
+														 ObjectIDType inPredefinedFormId);
 	EStatusCodeAndObjectIDType CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
 														 const PDFRectangle& inCropBox,
-														 const double* inTransformationMatrix);
+														 const double* inTransformationMatrix,
+														ObjectIDType inPredefinedFormId);
 	EStatusCodeAndObjectIDType AppendPDFPageFromPDF(unsigned long inPageIndex);
 	PDFHummus::EStatusCode MergePDFPageToPage(PDFPage* inTargetPage,unsigned long inSourcePageIndex);
     PDFHummus::EStatusCode MergePDFPageToFormXObject(PDFFormXObject* inTargetFormXObject,unsigned long inSourcePageIndex);
@@ -210,10 +216,12 @@ public:
 	// Internal implementation. do not use directly
 	PDFFormXObject* CreatePDFFormXObjectForPage(unsigned long inPageIndex,
 												EPDFPageBox inPageBoxToUseAsFormBox,
-												const double* inTransformationMatrix);
+												const double* inTransformationMatrix,
+												ObjectIDType inPredefinedObjectId);
 	PDFFormXObject* CreatePDFFormXObjectForPage(unsigned long inPageIndex,
 												const PDFRectangle& inCropBox,
-												const double* inTransformationMatrix);
+												const double* inTransformationMatrix,
+												ObjectIDType inPredefinedObjectId);
     void RegisterFormRelatedObjects(PDFFormXObject* inFormXObject,const ObjectIDTypeList& inObjectsToWrite);
 
 	// Extendibility
@@ -247,10 +255,12 @@ private:
 															const PDFPageRange& inPageRange,
 															IPageEmbedInFormCommand* inPageEmbedCommand,
 															const double* inTransformationMatrix,
-															const ObjectIDTypeList& inCopyAdditionalObjects);
+															const ObjectIDTypeList& inCopyAdditionalObjects,
+															const ObjectIDTypeList& inPredefinedFormIDs);
 	PDFFormXObject* CreatePDFFormXObjectForPage(PDFDictionary* inPageObject,
 												const PDFRectangle& inCropBox,
-												const double* inTransformationMatrix);
+												const double* inTransformationMatrix,
+												ObjectIDType inPredefinedObjectId);
 	PDFHummus::EStatusCode CopyInDirectObject(ObjectIDType inSourceObjectID,ObjectIDType inTargetObjectID);
 
 	PDFHummus::EStatusCode WriteObjectByType(PDFObject* inObject, ETokenSeparator inSeparator,IObjectWritePolicy* inWritePolicy);
@@ -282,13 +292,15 @@ private:
 																		const PDFPageRange& inPageRange,
 																		IPageEmbedInFormCommand* inPageEmbedCommand,
 																		const double* inTransformationMatrix,
-																		const ObjectIDTypeList& inCopyAdditionalObjects);
+																		const ObjectIDTypeList& inCopyAdditionalObjects,
+																		const ObjectIDTypeList& inPredefinedFormIDs);
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(IByteReaderWithPosition* inPDFStream,
 															const PDFParsingOptions& inParsingOptions,
 															const PDFPageRange& inPageRange,
 															IPageEmbedInFormCommand* inPageEmbedCommand,
 															const double* inTransformationMatrix,
-															const ObjectIDTypeList& inCopyAdditionalObjects);
+															const ObjectIDTypeList& inCopyAdditionalObjects,
+															const ObjectIDTypeList& inPredefinedFormIDs);
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDFInContext(const PDFPageRange& inPageRange,
 																  const ObjectIDTypeList& inCopyAdditionalObjects);
 	PDFHummus::EStatusCode MergePDFPagesToPageInContext(PDFPage* inPage,

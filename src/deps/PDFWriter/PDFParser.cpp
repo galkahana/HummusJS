@@ -40,6 +40,7 @@
 #include "InputPredictorPNGOptimumStream.h"
 #include "InputPredictorTIFFSubStream.h"
 #include "InputAscii85DecodeStream.h"
+#include "InputAsciiHexDecodeStream.h"
 #include "IPDFParserExtender.h"
 #include "InputDCTDecodeStream.h"
 #include "ArrayOfInputStreamsStream.h"
@@ -1982,6 +1983,10 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 				}
 			}
 			flateStream->Assign(inStream);
+		}
+		else if (inFilterName->GetValue() == "ASCIIHexDecode")
+		{
+			result = new InputAsciiHexDecodeStream(inStream);
 		}
 		else if(inFilterName->GetValue() == "ASCII85Decode")
 		{

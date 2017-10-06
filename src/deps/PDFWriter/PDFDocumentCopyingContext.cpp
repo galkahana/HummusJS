@@ -75,16 +75,18 @@ PDFHummus::EStatusCode PDFDocumentCopyingContext::Start(PDFParser* inPDFParser,
 
 EStatusCodeAndObjectIDType PDFDocumentCopyingContext::CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
 																					EPDFPageBox inPageBoxToUseAsFormBox,
-																					const double* inTransformationMatrix)
+																					const double* inTransformationMatrix,
+																					ObjectIDType inPredefinedFormId)
 {
-	return mDocumentHandler.CreateFormXObjectFromPDFPage(inPageIndex,inPageBoxToUseAsFormBox,inTransformationMatrix);
+	return mDocumentHandler.CreateFormXObjectFromPDFPage(inPageIndex,inPageBoxToUseAsFormBox,inTransformationMatrix, inPredefinedFormId);
 }
 
 EStatusCodeAndObjectIDType PDFDocumentCopyingContext::CreateFormXObjectFromPDFPage(unsigned long inPageIndex,
 																					 const PDFRectangle& inCropBox,
-																					 const double* inTransformationMatrix)
+																					 const double* inTransformationMatrix,
+																					ObjectIDType inPredefinedFormId)
 {
-	return mDocumentHandler.CreateFormXObjectFromPDFPage(inPageIndex,inCropBox,inTransformationMatrix);	
+	return mDocumentHandler.CreateFormXObjectFromPDFPage(inPageIndex,inCropBox,inTransformationMatrix, inPredefinedFormId);
 }
 
 

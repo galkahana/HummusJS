@@ -72,6 +72,7 @@ IndirectObjectsReferenceRegistry.cpp
 InfoDictionary.cpp
 InputAESDecodeStream.cpp
 InputAscii85DecodeStream.cpp
+InputAsciiHexDecodeStream.cpp
 InputBufferedStream.cpp
 InputByteArrayStream.cpp
 InputCharStringDecodeStream.cpp
@@ -150,6 +151,7 @@ PrimitiveObjectsWriter.cpp
 PSBool.cpp
 RefCountObject.cpp
 ResourcesDictionary.cpp
+SimpleStringTokenizer.cpp
 StandardEncoding.cpp
 StateReader.cpp
 StateWriter.cpp
@@ -239,6 +241,7 @@ IndirectObjectsReferenceRegistry.h
 InfoDictionary.h
 InputAESDecodeStream.h
 InputAscii85DecodeStream.h
+InputAsciiHexDecodeStream.h
 InputBufferedStream.h
 InputByteArrayStream.h
 InputCharStringDecodeStream.h
@@ -335,6 +338,7 @@ RefCountObject.h
 RefCountPtr.h
 ResourcesDictionary.h
 SafeBufferMacrosDefs.h
+SimpleStringTokenizer.h
 Singleton.h
 SingleValueContainerIterator.h
 StandardEncoding.h
@@ -504,6 +508,8 @@ InputAESDecodeStream.cpp
 InputAESDecodeStream.h
 InputAscii85DecodeStream.cpp
 InputAscii85DecodeStream.h
+InputAsciiHexDecodeStream.cpp
+InputAsciiHexDecodeStream.h
 InputBufferedStream.cpp
 InputBufferedStream.h
 InputByteArrayStream.cpp
@@ -665,6 +671,8 @@ PDFParserTokenizer.cpp
 PDFParserTokenizer.h
 PDFParsingOptions.cpp
 PDFParsingOptions.h
+SimpleStringTokenizer.cpp
+SimpleStringTokenizer.h
 )
 
 source_group("XCryption" FILES
