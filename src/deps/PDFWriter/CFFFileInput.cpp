@@ -138,7 +138,7 @@ void CFFFileInput::FreeData()
 	mNameToIndex.clear();
 	if(mTopDictIndex != NULL)
 	{
-		for(unsigned short i=0; i < mFontsCount;++i)
+		for(unsigned long i=0; i < mFontsCount;++i)
 		{
 			delete[] mTopDictIndex[i].mFDArray;
 			delete[] mTopDictIndex[i].mFDSelect;
@@ -148,7 +148,7 @@ void CFFFileInput::FreeData()
 	}
 	if(mStrings != NULL)
 	{
-		for(unsigned short i =0 ; i <mStringsCount; ++ i)
+		for(unsigned long i =0 ; i <mStringsCount; ++ i)
 			delete[] mStrings[i];
 		delete[] mStrings;
 		mStrings = NULL;
@@ -158,7 +158,7 @@ void CFFFileInput::FreeData()
 	mGlobalSubrs.mCharStringsIndex = NULL;
 	if(mCharStrings != NULL)
 	{
-		for(unsigned short i=0; i < mFontsCount; ++i)
+		for(unsigned long i=0; i < mFontsCount; ++i)
 			delete[] mCharStrings[i].mCharStringsIndex;
 		delete mCharStrings;
 		mCharStrings = NULL;
@@ -323,9 +323,11 @@ EStatusCode CFFFileInput::ReadIndexHeader(unsigned long** outOffsets,unsigned sh
 	mPrimitivesReader.SetOffSize(offSizeForIndex);
 	*outOffsets = new unsigned long[outItemsCount + 1];
 
-	for(unsigned short i=0; i <= outItemsCount; ++ i)
-		mPrimitivesReader.ReadOffset((*outOffsets)[i]);
+	for(unsigned long i = 0; i <= outItemsCount && status == eSuccess; ++ i)
+		status = mPrimitivesReader.ReadOffset((*outOffsets)[i]);
 
+	if (status != eSuccess)
+		return status;
 	return mPrimitivesReader.GetInternalState();
 }
 
@@ -345,7 +347,7 @@ EStatusCode CFFFileInput::ReadNameIndex()
 		if(offsets[0] != 1)
 			mPrimitivesReader.Skip(offsets[0] - 1);
 
-		for(unsigned short i = 0; i < mFontsCount; ++i)
+		for(unsigned long i = 0; i < mFontsCount; ++i)
 		{
 			buffer = new Byte[offsets[i+1] - offsets[i]];
 			mPrimitivesReader.Read(buffer,offsets[i+1] - offsets[i]);
@@ -393,7 +395,7 @@ EStatusCode CFFFileInput::ReadTopDictIndex()
 
 		mTopDictIndex = new TopDictInfo[dictionariesCount];
 
-		for(unsigned short i = 0; i < dictionariesCount && (PDFHummus::eSuccess == status); ++i)
+		for(unsigned long i = 0; i < dictionariesCount && (PDFHummus::eSuccess == status); ++i)
 			status = ReadDict(offsets[i+1] - offsets[i],mTopDictIndex[i].mTopDict);
 
 	}while(false);
@@ -464,7 +466,7 @@ EStatusCode CFFFileInput::ReadStringIndex()
 
 		mStrings = new char*[mStringsCount];
 
-		unsigned short i;
+		unsigned long i;
 		for(i = 0; i < mStringsCount && (PDFHummus::eSuccess == status); ++i)
 		{
 			mStrings[i] = new char[offsets[i+1] - offsets[i]+1];
@@ -535,7 +537,7 @@ EStatusCode CFFFileInput::ReadSubrsFromIndex(unsigned short& outSubrsCount,
 		
 		LongFilePositionType dataStartPosition = mPrimitivesReader.GetCurrentPosition();
 
-		for(unsigned short i = 0; i < outSubrsCount; ++i)
+		for(unsigned long i = 0; i < outSubrsCount; ++i)
 		{
 			(*outSubrsIndex)[i].mStartPosition = dataStartPosition + offsets[i] - 1;
 			(*outSubrsIndex)[i].mEndPosition = dataStartPosition + offsets[i+1] - 1;
@@ -559,7 +561,7 @@ EStatusCode CFFFileInput::ReadCharStrings()
 	mCharStrings = new CharStrings[mFontsCount];
 	EStatusCode status = PDFHummus::eSuccess;
 
-	for(unsigned short i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
+	for(unsigned long i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
 	{
 		LongFilePositionType  charStringsPosition = GetCharStringsPosition(i);	
 		mCharStrings[i].mCharStringsType = (Byte)GetCharStringType(i);
@@ -617,7 +619,7 @@ EStatusCode CFFFileInput::ReadPrivateDicts()
 	mPrivateDicts = new PrivateDictInfo[mFontsCount];
 	EStatusCode status = PDFHummus::eSuccess;
 
-	for(unsigned short i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
+	for(unsigned long i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
 		status = ReadPrivateDict(mTopDictIndex[i].mTopDict,mPrivateDicts + i);
 
 	if(status != PDFHummus::eSuccess)
@@ -656,7 +658,7 @@ EStatusCode CFFFileInput::ReadLocalSubrs()
 	// scan all subrs of all included fonts
 	EStatusCode status = PDFHummus::eSuccess;
 
-	for(unsigned short i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
+	for(unsigned long i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
 		status = ReadLocalSubrsForPrivateDict(mPrivateDicts+i,(Byte)GetCharStringType(i));
 
 	if(status != PDFHummus::eSuccess)
@@ -705,7 +707,7 @@ EStatusCode CFFFileInput::ReadCharsets()
 	LongFilePositionTypeToCharSetInfoMap offsetToIndex;
 	LongFilePositionTypeToCharSetInfoMap::iterator it;
 
-	for(unsigned short i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
+	for(unsigned long i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
 	{
 		LongFilePositionType charsetPosition = GetCharsetPosition(i);
 		it = offsetToIndex.find(charsetPosition);
@@ -766,7 +768,7 @@ EStatusCode CFFFileInput::ReadEncodings()
 	LongFilePositionTypeToEncodingsInfoMap offsetToEncoding;
 	LongFilePositionTypeToEncodingsInfoMap::iterator it;
 
-	for(unsigned short i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
+	for(unsigned long i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
 	{
 		LongFilePositionType encodingPosition = GetEncodingPosition(i);
 		it = offsetToEncoding.find(encodingPosition);
@@ -922,7 +924,7 @@ EStatusCode CFFFileInput::ReadFormat1Charset(bool inIsCID,
 		ioGlyphMap.insert(UShortToCharStringMap::value_type(0,inCharStrings.mCharStringsIndex));
 	*inSIDArray = new unsigned short[inCharStrings.mCharStringsCount];
 	(*inSIDArray)[0] = 0;
-	unsigned short glyphIndex = 1;
+	unsigned long glyphIndex = 1;
 	unsigned short sid;
 	Byte left;
 	
@@ -932,7 +934,7 @@ EStatusCode CFFFileInput::ReadFormat1Charset(bool inIsCID,
 		{
 			mPrimitivesReader.ReadSID(sid);
 			mPrimitivesReader.ReadCard8(left);
-			for(unsigned short i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
+			for(unsigned long i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
 				(*inSIDArray)[glyphIndex] = sid+i;
 		}
 	}
@@ -942,7 +944,7 @@ EStatusCode CFFFileInput::ReadFormat1Charset(bool inIsCID,
 		{
 			mPrimitivesReader.ReadSID(sid);
 			mPrimitivesReader.ReadCard8(left);
-			for(unsigned short i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
+			for(unsigned long i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
 			{
 				ioGlyphMap.insert(
 					UShortToCharStringMap::value_type(sid+i,inCharStrings.mCharStringsIndex + glyphIndex));
@@ -972,7 +974,7 @@ EStatusCode CFFFileInput::ReadFormat2Charset(bool inIsCID,
 		{
 			mPrimitivesReader.ReadSID(sid);
 			mPrimitivesReader.ReadCard16(left);
-			for(unsigned short i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
+			for(unsigned long i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
 				(*inSIDArray)[glyphIndex] = sid+i;
 		}
 	}
@@ -982,7 +984,7 @@ EStatusCode CFFFileInput::ReadFormat2Charset(bool inIsCID,
 		{
 			mPrimitivesReader.ReadSID(sid);
 			mPrimitivesReader.ReadCard16(left);
-			for(unsigned short i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
+			for(unsigned long i=0; i <= left && glyphIndex < inCharStrings.mCharStringsCount;++i,++glyphIndex)
 			{
 				ioGlyphMap.insert(
 					UShortToCharStringMap::value_type(sid+i,inCharStrings.mCharStringsIndex + glyphIndex));
@@ -1201,7 +1203,7 @@ EStatusCode CFFFileInput::ReadCIDInformation()
 {
 	EStatusCode status = PDFHummus::eSuccess;
 
-	for(unsigned short i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
+	for(unsigned long i=0; i < mFontsCount && (PDFHummus::eSuccess == status); ++i)
 	{
 		// CID font will be identified by the existance of the ROS entry
 		if(mTopDictIndex[i].mTopDict.find(scROS) != mTopDictIndex[i].mTopDict.end())
@@ -1238,7 +1240,7 @@ EStatusCode CFFFileInput::ReadFDArray(unsigned short inFontIndex)
 	
 	unsigned long* offsets;
 	unsigned short dictionariesCount;
-	unsigned short i;
+	unsigned long i;
 	EStatusCode status = ReadIndexHeader(&offsets,dictionariesCount);
 	
 	do
@@ -1307,7 +1309,7 @@ EStatusCode CFFFileInput::ReadFDSelect(unsigned short inFontIndex)
 	{
 		Byte fdIndex;
 
-		for(unsigned short i=0; i < glyphCount && PDFHummus::eSuccess == status; ++i)
+		for(unsigned long i=0; i < glyphCount && PDFHummus::eSuccess == status; ++i)
 		{
 			status = mPrimitivesReader.ReadCard8(fdIndex);
 			if(status != PDFHummus::eFailure)
@@ -1325,7 +1327,7 @@ EStatusCode CFFFileInput::ReadFDSelect(unsigned short inFontIndex)
 		if(status != PDFHummus::eFailure)
 		{
 			status = mPrimitivesReader.ReadCard16(firstGlyphIndex);
-			for(unsigned short i=0; i < rangesCount && PDFHummus::eSuccess == status;++i)
+			for(unsigned long i=0; i < rangesCount && PDFHummus::eSuccess == status;++i)
 			{
 				mPrimitivesReader.ReadCard8(fdIndex);
 				mPrimitivesReader.ReadCard16(nextRangeGlyphIndex);
