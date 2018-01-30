@@ -55,7 +55,7 @@ PDFWriterDriver::PDFWriterDriver()
     mWriteStreamProxy = NULL;
     mReadStreamProxy = NULL;
     mStartedWithStream = false;
-    
+    mIsCatalogUpdateRequired = false;
 }
 
 PDFWriterDriver::~PDFWriterDriver()
@@ -105,6 +105,7 @@ void PDFWriterDriver::Init(Handle<Object> inExports)
 	SET_PROTOTYPE_METHOD(t, "getModifiedInputFile", GetModifiedInputFile);
 	SET_PROTOTYPE_METHOD(t, "getOutputFile", GetOutputFile);
 	SET_PROTOTYPE_METHOD(t, "registerAnnotationReferenceForNextPageWrite", RegisterAnnotationReferenceForNextPageWrite);
+    SET_PROTOTYPE_METHOD(t, "requireCatalogUpdate", RequireCatalogUpdate);    
 
 	SET_CONSTRUCTOR(constructor, t);
     SET_CONSTRUCTOR_EXPORT(inExports, "PDFWriter", t);
@@ -1481,6 +1482,18 @@ METHOD_RETURN_TYPE PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
+METHOD_RETURN_TYPE PDFWriterDriver::RequireCatalogUpdate(const ARGS_TYPE& args)
+{
+    CREATE_ISOLATE_CONTEXT;
+    CREATE_ESCAPABLE_SCOPE;
+
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    pdfWriter->mIsCatalogUpdateRequired = true;
+
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+}
+
 /*
     From now on, extensions event triggers.
     got the following events for now:
@@ -1674,7 +1687,7 @@ PDFHummus::EStatusCode PDFWriterDriver::OnPDFCopyingComplete(
 }
 bool PDFWriterDriver::IsCatalogUpdateRequiredForModifiedFile(PDFParser* inModifiderFileParser) {
     
-    return false;
+    return mIsCatalogUpdateRequired;
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::setupListenerIfOK(PDFHummus::EStatusCode inCode) {
