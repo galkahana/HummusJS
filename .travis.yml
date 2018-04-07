@@ -25,7 +25,7 @@ env:
   - secure: OFo+Aqvq/FJLey1wXN8IrRw42aoccTIX90d9DFrpIieJ436WDpBdl3QgzPuCrJiBW9VxCdgzF1xvkFm1+VwzqvqXgAZfTJeJ2AhDjltzHtN+QzJx7SwQcsMAEbSgdLbboGJuyf1yeCs5x95792U+CXm3xy+zLkKw9XO9682WaO6uAp6mVX0wD7Z6u8qLbwMI6YXcY99rptiEtQ4TzKWHQI4m5dSHkCISmNGtBOuOZEF8v3FJ8TzEmjEJ1FNRrjAcwFcTgIwoHudmrs/GGaWBpwyq24XmBG8cavDeKaezmL80vBbGJaOR9IdVwYKNaeslNZBCxGoq3Cy1ReB2cECPw2yhFUktlHqr4SzzCt8JgMgtH8dLajQTdpznJssJesGfz4kwBu+IKGxrIqkh6/YEtYJFEUaaVBjyt7uyuXefZpoz19E63ZzqtrtHRFhdru4aEaUk6CibfljMMaLnxnvdkhQljz5SAhgh55aAUCejh1mgFIR5O3W4AD/3zrIL6HDOLEbYmFbDAsYIoPqp5g+9oiJ6sPyO75wtlFo4ciaw5K7o1y4NTh9BCB7j0P3FYAMqf2Z/wT2kU6W0MKFyo6AmOL4w7uwT/OAgYbWn1hgG2toAtatFrXnUu5CQTBwxel4uTiLkJIa1Zoy53BJxzDUVGgDvs/+sjV3lIr5J09B2kmA=
 matrix:
   allow_failures:
-  - env: NODE_NVM_VERSION="0.12"
+  - env: NODE_NVM_VERSION="0.12.18"
 before_install:
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
