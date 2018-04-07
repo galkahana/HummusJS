@@ -482,7 +482,7 @@ EStatusCode PDFDocumentHandler::CopyResourcesIndirectObjects(PDFDictionary* inPa
 	// if indirect, run CopyInDirectObject on it (passing its ID and a new ID at the target PDF (just allocate as you go))
 	// if direct, let go.
 
-	PDFObjectCastPtr<PDFDictionary> resources(mParser->QueryDictionaryObject(inPage,"Resources"));
+	PDFObjectCastPtr<PDFDictionary> resources(FindPageResources(mParser, inPage));
 
 	// k. no resources...as wierd as that might be...or just wrong...i'll let it be
 	if(!resources)
@@ -629,7 +629,7 @@ EStatusCode PDFDocumentHandler::OnResourcesWrite(
 	// Writing resources dictionary. simply loop internal elements and copy. nicely enough, i can use read methods, trusting
 	// that no new objects need be written
 	
-	PDFObjectCastPtr<PDFDictionary> resources(mParser->QueryDictionaryObject(mWrittenPage,"Resources"));
+	PDFObjectCastPtr<PDFDictionary> resources(FindPageResources(mParser, mWrittenPage));
 	ObjectIDTypeList dummyObjectList; // this one should remain empty...
 
 	// k. no resources...as wierd as that might be...or just wrong...i'll let it be
@@ -1343,7 +1343,7 @@ EStatusCode PDFDocumentHandler::MergeResourcesToPage(PDFPage* inTargetPage,PDFDi
 {
 	// parse each individual resources dictionary separately and copy the resources. the output parameter should be used for old vs. new names
 	
-	PDFObjectCastPtr<PDFDictionary> resources(mParser->QueryDictionaryObject(inPage,"Resources"));
+	PDFObjectCastPtr<PDFDictionary> resources(FindPageResources(mParser, inPage));
 
 	// k. no resources...as wierd as that might be...or just wrong...i'll let it be
 	if(!resources)
@@ -2219,7 +2219,7 @@ EStatusCode PDFDocumentHandler::RegisterResourcesForForm(PDFFormXObject* inTarge
     
     do 
     {
-        PDFObjectCastPtr<PDFDictionary> resources(mParser->QueryDictionaryObject(inPageObject,"Resources"));
+		PDFObjectCastPtr<PDFDictionary> resources(FindPageResources(mParser, inPageObject));
         
         // k. no resources...as wierd as that might be...or just wrong...i'll let it be
         if(!resources)
@@ -2440,4 +2440,23 @@ private:
 void PDFDocumentHandler::RegisterFormRelatedObjects(PDFFormXObject* inFormXObject,const ObjectIDTypeList& inObjectsToWrite)
 {
     mDocumentContext->RegisterFormEndWritingTask(inFormXObject,new ObjectsCopyingTask(this,inObjectsToWrite));
+}
+
+PDFObject* PDFDocumentHandler::FindPageResources(PDFParser* inParser, PDFDictionary* inDictionary) {
+	if(inDictionary->Exists("Resources")) {
+		return inParser->QueryDictionaryObject(inDictionary, "Resources");
+	}
+	else {
+		PDFObjectCastPtr<PDFDictionary> parentDict(
+			inDictionary->Exists("Parent") ? 
+				inParser->QueryDictionaryObject(inDictionary, "Parent"): 
+				NULL);
+		if(!parentDict) {
+			return NULL;
+		}
+		else {
+			return FindPageResources(inParser,parentDict.GetPtr());
+		}
+		
+	}	
 }
