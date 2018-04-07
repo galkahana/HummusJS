@@ -99,7 +99,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
         Handle<Object> anObject = args[1]->ToObject();
         if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
         {
-            long pdfVersionValue = anObject->Get(NEW_STRING("version"))->ToNumber()->Int32Value();
+            long pdfVersionValue = TO_NUMBER(anObject->Get(NEW_STRING("version")))->Int32Value();
             
             if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
             {
@@ -131,7 +131,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 
         if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_NUMBER(anObject->Get(NEW_STRING("userProtectionFlag")))->Int32Value();
         }
         else // default to print only
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
@@ -195,7 +195,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
 
-    if(args[1]->IsString() && !args[0]->IsString() || args[1]->IsObject() && !args[0]->IsObject()) {
+    if((args[1]->IsString() && !args[0]->IsString()) || (args[1]->IsObject() && !args[0]->IsObject())) {
 		THROW_EXCEPTION("Wrong arguments, please either provide two paths or two stream objects for the first two arguments");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
     }
@@ -211,7 +211,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
         Handle<Object> anObject = args[2]->ToObject();
         if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
         {
-            long pdfVersionValue = anObject->Get(NEW_STRING("version"))->ToNumber()->Int32Value();
+            long pdfVersionValue = TO_NUMBER(anObject->Get(NEW_STRING("version")))->Int32Value();
             
             if(pdfVersionValue != ePDFVersionUndefined && (pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue))
             {
@@ -248,7 +248,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
 
         if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_NUMBER(anObject->Get(NEW_STRING("userProtectionFlag")))->Int32Value();
         }
         else // default to print only
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
@@ -393,7 +393,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
         Handle<Object> anObject = args[optionsObjectIndex]->ToObject();
         if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsString())
         {
-            long pdfVersionValue = anObject->Get(NEW_STRING("version"))->ToNumber()->Int32Value();
+            long pdfVersionValue = TO_NUMBER(anObject->Get(NEW_STRING("version")))->Int32Value();
             
             if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
             {
@@ -428,7 +428,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
 
         if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = anObject->Get(NEW_STRING("userProtectionFlag"))->ToNumber()->Int32Value();
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_NUMBER(anObject->Get(NEW_STRING("userProtectionFlag")))->Int32Value();
         }
         else // default to print only
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;  
@@ -513,7 +513,7 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    unsigned long value = args[0]->ToNumber()->Uint32Value();
+    unsigned long value = TO_NUMBER(args[0])->Uint32Value();
     
     if(value > PDFObject::ePDFObjectSymbol)
     {

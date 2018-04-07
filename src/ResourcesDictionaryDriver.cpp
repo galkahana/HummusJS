@@ -107,7 +107,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFormXObjectMapping(const ARGS_T
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddFormXObjectMapping(
-                                                                                                        (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                        (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
     
@@ -140,7 +140,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddImageXObjectMapping(const ARGS_
     {
         Local<String> name = NEW_STRING(
                                          resourcesDictionaryDriver->ResourcesDictionaryInstance->AddImageXObjectMapping(
-                                                                                                                       (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                                       (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
         
         SET_FUNCTION_RETURN_VALUE(name);
     }
@@ -185,7 +185,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddExtGStateMapping(const ARGS_TYP
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddExtGStateMapping(
-                                                                                                                   (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                                   (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }
@@ -205,7 +205,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFontMapping(const ARGS_TYPE& ar
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddFontMapping(
-                                                                                                                 (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                                 (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }
@@ -225,7 +225,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddColorSpaceMapping(const ARGS_TY
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddColorSpaceMapping(
-                                                                                                            (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                            (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }
@@ -245,7 +245,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPatternMapping(const ARGS_TYPE&
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddPatternMapping(
-                                                                                                                  (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                                  (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }
@@ -265,7 +265,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPropertyMapping(const ARGS_TYPE
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddPropertyMapping(
-                                                                                                               (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                               (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }
@@ -285,7 +285,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddXObjectMapping(const ARGS_TYPE&
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddXObjectMapping(
-                                                                                                                (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                                (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }
@@ -305,7 +305,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddShadingMapping(const ARGS_TYPE&
     
     Local<String> name = NEW_STRING(
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddShadingMapping(
-                                                                                                               (ObjectIDType)(args[0]->ToUint32()->Value())).c_str());
+                                                                                                               (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
     SET_FUNCTION_RETURN_VALUE(name);
 }

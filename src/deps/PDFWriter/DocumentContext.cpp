@@ -2970,6 +2970,7 @@ EStatusCode DocumentContext::WriteFormForImage(
 		{
 			InputFile inputFile;
 			if (inputFile.OpenFile(inImagePath) != eSuccess) {
+				status = eFailure;
 				break;
 			}
 			PDFFormXObject* form = CreateFormXObjectFromPNGStream(inputFile.GetInputStream(), inObjectID);

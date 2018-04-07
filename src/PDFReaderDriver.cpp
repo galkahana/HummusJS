@@ -184,7 +184,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::QueryArrayObject(const ARGS_TYPE& args)
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     PDFArrayDriver* driver = ObjectWrap::Unwrap<PDFArrayDriver>(args[0]->ToObject());
     
-    RefCountPtr<PDFObject> object = reader->mPDFReader->QueryArrayObject(driver->TheObject.GetPtr(),args[1]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFObject> object = reader->mPDFReader->QueryArrayObject(driver->TheObject.GetPtr(),TO_NUMBER(args[1])->Uint32Value());
     if(!object)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     
@@ -278,7 +278,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::ParseNewObject(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     
-    RefCountPtr<PDFObject> newObject = reader->mPDFReader->ParseNewObject(args[0]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFObject> newObject = reader->mPDFReader->ParseNewObject(TO_NUMBER(args[0])->Uint32Value());
     
     if(!newObject)
     {
@@ -303,7 +303,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetPageObjectID(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(reader->mPDFReader->GetPageObjectID(args[0]->ToNumber()->Uint32Value())));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(reader->mPDFReader->GetPageObjectID(TO_NUMBER(args[0])->Uint32Value())));
 }
 
 
@@ -321,7 +321,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::ParsePageDictionary(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     
-    RefCountPtr<PDFDictionary> newObject = reader->mPDFReader->ParsePage(args[0]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFDictionary> newObject = reader->mPDFReader->ParsePage(TO_NUMBER(args[0])->Uint32Value());
     
     if(!newObject)
     {
@@ -347,7 +347,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::ParsePage(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     
-    RefCountPtr<PDFDictionary> newObject = reader->mPDFReader->ParsePage(args[0]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFDictionary> newObject = reader->mPDFReader->ParsePage(TO_NUMBER(args[0])->Uint32Value());
     
     if(!newObject)
     {
@@ -403,7 +403,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetXrefEntry(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
     
-    XrefEntryInput* xrefEntry = reader->mPDFReader->GetXrefEntry(args[0]->ToNumber()->Uint32Value());
+    XrefEntryInput* xrefEntry = reader->mPDFReader->GetXrefEntry(TO_NUMBER(args[0])->Uint32Value());
     if(!xrefEntry)
     {
  		THROW_EXCEPTION("Unable to read object xref entry, page index is wrong or page is null");

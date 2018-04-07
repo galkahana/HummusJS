@@ -317,16 +317,16 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
     formXObjectDriver->FormXObject =
                         args.Length() == 5 ?
                                             pdfWriter->mPDFWriter.StartFormXObject(
-                                                                            PDFRectangle(args[0]->ToNumber()->Value(),
-                                                                                         args[1]->ToNumber()->Value(),
-                                                                                         args[2]->ToNumber()->Value(),
-                                                                                         args[3]->ToNumber()->Value()),
-                                                                                        (ObjectIDType)args[4]->ToNumber()->Value()):
+                                                                            PDFRectangle(TO_NUMBER(args[0])->Value(),
+                                                                                         TO_NUMBER(args[1])->Value(),
+                                                                                         TO_NUMBER(args[2])->Value(),
+                                                                                         TO_NUMBER(args[3])->Value()),
+                                                                                        (ObjectIDType)TO_NUMBER(args[4])->Value()):
                                             pdfWriter->mPDFWriter.StartFormXObject(
-                                                                            PDFRectangle(args[0]->ToNumber()->Value(),
-                                                                                         args[1]->ToNumber()->Value(),
-                                                                                         args[2]->ToNumber()->Value(),
-                                                                                         args[3]->ToNumber()->Value()));
+                                                                            PDFRectangle(TO_NUMBER(args[0])->Value(),
+                                                                                         TO_NUMBER(args[1])->Value(),
+                                                                                         TO_NUMBER(args[2])->Value(),
+                                                                                         TO_NUMBER(args[3])->Value()));
     SET_FUNCTION_RETURN_VALUE(newInstance);
 }
 
@@ -378,7 +378,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
         
         formXObject =
         args.Length() == 2 ?
-        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy,(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy,(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
         pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy);
         
     }
@@ -386,7 +386,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     {
         formXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
             pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
     }
     if(!formXObject)
@@ -471,7 +471,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
         
         formXObject =
         args.Length() == 2 ?
-        pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy,(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy,(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
         pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy);
         
     }
@@ -479,7 +479,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
     {
         formXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
             pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*String::Utf8Value(args[0]->ToString()));
     }
     if(!formXObject)
@@ -515,7 +515,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
     {
         usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()),
                                                         *String::Utf8Value(args[1]->ToString()),
-                                                        args[0]->ToNumber()->Uint32Value());
+                                                        TO_NUMBER(args[0])->Uint32Value());
     }
     else if(args.Length() == 2)
     {
@@ -524,7 +524,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
                                                             *String::Utf8Value(args[1]->ToString()));
         else
             usedFont = pdfWriter->mPDFWriter.GetFontForFile(*String::Utf8Value(args[0]->ToString()),
-                                                            args[1]->ToNumber()->Uint32Value());
+                                                            TO_NUMBER(args[1])->Uint32Value());
     }
     else // length is 1
     {
@@ -561,10 +561,10 @@ METHOD_RETURN_TYPE PDFWriterDriver::AttachURLLinktoCurrentPage(const ARGS_TYPE& 
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
     EStatusCode status = pdfWriter->mPDFWriter.AttachURLLinktoCurrentPage(*String::Utf8Value(args[0]->ToString()),
-                                                                             PDFRectangle(args[1]->ToNumber()->Value(),
-                                                                             args[2]->ToNumber()->Value(),
-                                                                             args[3]->ToNumber()->Value(),
-                                                                             args[4]->ToNumber()->Value()));
+                                                                             PDFRectangle(TO_NUMBER(args[1])->Value(),
+                                                                             TO_NUMBER(args[2])->Value(),
+                                                                             TO_NUMBER(args[3])->Value(),
+                                                                             TO_NUMBER(args[4])->Value()));
     if(status != eSuccess)
     {
 		THROW_EXCEPTION("unable to attach link to current page. will happen if the input URL may not be encoded to ascii7");
@@ -698,7 +698,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
             
             // page index parameters
             if(anObject->Has(NEW_STRING("pageIndex")) && anObject->Get(NEW_STRING("pageIndex"))->IsNumber())
-                tiffUsageParameters.PageIndex = (unsigned int)anObject->Get(NEW_STRING("pageIndex"))->ToNumber()->Value();
+                tiffUsageParameters.PageIndex = (unsigned int)TO_NUMBER(anObject->Get(NEW_STRING("pageIndex")))->Value();
             
             if(anObject->Has(NEW_STRING("bwTreatment")) && anObject->Get(NEW_STRING("bwTreatment"))->IsObject())
             {
@@ -724,7 +724,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
         }
         else // number
         {
-            objectID = args[1]->ToNumber()->Int32Value();
+            objectID = TO_NUMBER(args[1])->Int32Value();
         }
 
     }
@@ -766,18 +766,18 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
     if(inArray->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value() == 4)
     {
         // cmyk color
-        return CMYKRGBColor((unsigned char)inArray->ToObject()->Get(0)->ToNumber()->Value(),
-                            (unsigned char)inArray->ToObject()->Get(1)->ToNumber()->Value(),
-                            (unsigned char)inArray->ToObject()->Get(2)->ToNumber()->Value(),
-                            (unsigned char)inArray->ToObject()->Get(3)->ToNumber()->Value());
+        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->ToObject()->Get(0))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(1))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(2))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(3))->Value());
         
     }
     else if(inArray->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() == 3)
     {
         // rgb color
-        return CMYKRGBColor((unsigned char)inArray->ToObject()->Get(0)->ToNumber()->Value(),
-                            (unsigned char)inArray->ToObject()->Get(1)->ToNumber()->Value(),
-                            (unsigned char)inArray->ToObject()->Get(2)->ToNumber()->Value());
+        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->ToObject()->Get(0))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(1))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(2))->Value());
     }
     else
     {
@@ -808,14 +808,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
         
         imageXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy,(ObjectIDType)args[1]->ToNumber()->Int32Value()) :
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy,(ObjectIDType)TO_NUMBER(args[1])->Int32Value()) :
             pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy);
     }
     else
     {
         imageXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)args[1]->ToNumber()->Int32Value()) :
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()),(ObjectIDType)TO_NUMBER(args[1])->Int32Value()) :
             pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*String::Utf8Value(args[0]->ToString()));
     }
     if(!imageXObject)
@@ -929,17 +929,17 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
         
     if(inObject->Has(NEW_STRING("type")) && inObject->Get(NEW_STRING("type"))->IsNumber())
     {
-        pageRange.mType = (PDFPageRange::ERangeType)(inObject->Get(NEW_STRING("type"))->ToNumber()->Uint32Value());
+        pageRange.mType = (PDFPageRange::ERangeType)(TO_NUMBER(inObject->Get(NEW_STRING("type")))->Uint32Value());
     }
 
     if(inObject->Has(NEW_STRING("specificRanges")) && inObject->Get(NEW_STRING("specificRanges"))->IsArray())
     {
         Local<Object> anArray = inObject->Get(NEW_STRING("specificRanges"))->ToObject();
-        unsigned int length = anArray->Get(v8::NEW_STRING("length"))->ToNumber()->Uint32Value();
+        unsigned int length = TO_NUMBER(anArray->Get(NEW_STRING("length")))->Uint32Value();
         for(unsigned int i=0; i < length; ++i)
         {
             if(!anArray->Get(i)->IsArray() ||
-               anArray->Get(i)->ToObject()->Get(v8::NEW_STRING("length"))->ToNumber()->Uint32Value() != 2)
+               TO_NUMBER(anArray->Get(i)->ToObject()->Get(NEW_STRING("length")))->Uint32Value() != 2)
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
                 break;
@@ -951,8 +951,8 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
                 break;
             }
             pageRange.mSpecificRanges.push_back(ULongAndULong(
-                                                              item->Get(0)->ToNumber()->Uint32Value(),
-                                                              item->Get(1)->ToNumber()->Uint32Value()));
+                                                              TO_NUMBER(item->Get(0))->Uint32Value(),
+                                                              TO_NUMBER(item->Get(1))->Uint32Value()));
             
         }
     }
@@ -1188,7 +1188,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         }
         
         for(int i=0;i<6;++i)
-            matrixBuffer[i] = matrixArray->Get(i)->ToNumber()->Value();
+            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(i))->Value();
         transformationMatrix = matrixBuffer;
     }
     
@@ -1198,7 +1198,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         Handle<Object> objectsIDsArray = args[4]->ToObject();
         unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
         for(unsigned int i=0;i<arrayLength;++i)
-            extraObjectsList.push_back((ObjectIDType)(objectsIDsArray->Get(i)->ToNumber()->Uint32Value()));
+            extraObjectsList.push_back((ObjectIDType)(TO_NUMBER(objectsIDsArray->Get(i))->Uint32Value()));
             
     }
     
@@ -1211,10 +1211,10 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
             SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
-        PDFRectangle box(boxArray->Get(0)->ToNumber()->Value(),
-                            boxArray->Get(1)->ToNumber()->Value(),
-                            boxArray->Get(2)->ToNumber()->Value(),
-                            boxArray->Get(3)->ToNumber()->Value());
+        PDFRectangle box(TO_NUMBER(boxArray->Get(0))->Value(),
+                            TO_NUMBER(boxArray->Get(1))->Value(),
+                            TO_NUMBER(boxArray->Get(2))->Value(),
+                            TO_NUMBER(boxArray->Get(3))->Value());
         
         result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
                                                                  *String::Utf8Value(args[0]->ToString()),
@@ -1229,7 +1229,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
                                                                 *String::Utf8Value(args[0]->ToString()),
                                                                 pageRange,
-                                                                (EPDFPageBox)args[1]->ToNumber()->Uint32Value(),
+                                                                (EPDFPageBox)TO_NUMBER(args[1])->Uint32Value(),
                                                                  transformationMatrix,
                                                                  extraObjectsList,
                                                                  parsingOptions);
@@ -1320,7 +1320,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
 
     DoubleAndDoublePair dimensions = pdfWriter->mPDFWriter.GetImageDimensions(
                                   *String::Utf8Value(args[0]->ToString()),
-                                  args.Length() >= 2 ? args[1]->ToNumber()->Uint32Value() : 0,
+                                  args.Length() >= 2 ? TO_NUMBER(args[1])->Uint32Value() : 0,
                                   parsingOptions);
     
     Handle<Object> newObject = NEW_OBJECT;
@@ -1476,7 +1476,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(
 
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(args[0]->ToNumber()->Uint32Value());
+    pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(TO_NUMBER(args[0])->Uint32Value());
 
     SET_FUNCTION_RETURN_VALUE(args.This());
 }

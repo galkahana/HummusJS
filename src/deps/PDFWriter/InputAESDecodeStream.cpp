@@ -66,7 +66,7 @@ void InputAESDecodeStream::Assign(IByteReader* inSourceReader, const ByteList& i
 
 bool InputAESDecodeStream::NotEnded()
 {
-	return mSourceStream && mSourceStream->NotEnded() || !mHitEnd || ((mOutIndex - mOut) < mReadBlockSize);
+	return (mSourceStream && mSourceStream->NotEnded()) || !mHitEnd || ((mOutIndex - mOut) < mReadBlockSize);
 }
 
 LongBufferSizeType InputAESDecodeStream::Read(IOBasicTypes::Byte* inBuffer, LongBufferSizeType inSize)

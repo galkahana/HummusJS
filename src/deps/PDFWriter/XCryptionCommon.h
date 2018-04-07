@@ -135,7 +135,6 @@ private:
 	ByteListList mEncryptionKeysStack;
 	bool mUsingAES;
 	ByteList mEncryptionKey;
-	bool mCanXCrypt;
 
 	ByteList RC4Encode(const ByteList& inKey, const ByteList& inToEncode);
 	ByteList ComputeEncryptionKeyForObject(ObjectIDType inObjectNumber, unsigned long inGenerationNumber); // with algorithm3_1

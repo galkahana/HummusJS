@@ -127,13 +127,13 @@ METHOD_RETURN_TYPE PDFArrayDriver::QueryObject(const ARGS_TYPE& args)
     }
     
     PDFArrayDriver* arrayDriver = ObjectWrap::Unwrap<PDFArrayDriver>(args.This());
-    if(args[0]->ToNumber()->Uint32Value() >= arrayDriver->TheObject->GetLength())
+    if(TO_NUMBER(args[0])->Uint32Value() >= arrayDriver->TheObject->GetLength())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is a valid index in the array");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    RefCountPtr<PDFObject> anObject = arrayDriver->TheObject->QueryObject(args[0]->ToNumber()->Uint32Value());
+    RefCountPtr<PDFObject> anObject = arrayDriver->TheObject->QueryObject(TO_NUMBER(args[0])->Uint32Value());
     Handle<Value> result = PDFObjectDriver::CreateDriver(anObject.GetPtr());
     
     SET_FUNCTION_RETURN_VALUE(result);

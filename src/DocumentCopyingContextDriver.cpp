@@ -133,7 +133,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
         }
         
         for(int i=0;i<6;++i)
-            matrixBuffer[i] = matrixArray->Get(i)->ToNumber()->Value();
+            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(i))->Value();
         transformationMatrix = matrixBuffer;
     }
     
@@ -142,8 +142,8 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     
     if(args[0]->IsNumber())
     {
-        result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(args[0]->ToNumber()->Uint32Value(),
-                                                                       (EPDFPageBox)args[1]->ToNumber()->Uint32Value(),
+        result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(TO_NUMBER(args[0])->Uint32Value(),
+                                                                       (EPDFPageBox)TO_NUMBER(args[1])->Uint32Value(),
                                                                                     transformationMatrix);
     }
     else
@@ -155,12 +155,12 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
             SET_FUNCTION_RETURN_VALUE(UNDEFINED);
         }
         
-        PDFRectangle box(boxArray->Get(0)->ToNumber()->Value(),
-                         boxArray->Get(1)->ToNumber()->Value(),
-                         boxArray->Get(2)->ToNumber()->Value(),
-                         boxArray->Get(3)->ToNumber()->Value());
+        PDFRectangle box(TO_NUMBER(boxArray->Get(0))->Value(),
+                         TO_NUMBER(boxArray->Get(1))->Value(),
+                         TO_NUMBER(boxArray->Get(2))->Value(),
+                         TO_NUMBER(boxArray->Get(3))->Value());
         
-        result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(args[0]->ToNumber()->Uint32Value(),
+        result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(TO_NUMBER(args[0])->Uint32Value(),
                                                                                     box,
                                                                                     transformationMatrix);
 
@@ -201,7 +201,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToPage(const ARGS_T
     
     EStatusCode status = copyingContextDriver->CopyingContext->MergePDFPageToPage(
                                                                                   ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject())->GetPage(),
-                                                                                  args[1]->ToNumber()->Uint32Value());
+                                                                                  TO_NUMBER(args[1])->Uint32Value());
     
     if(status != eSuccess)
 		THROW_EXCEPTION("Unable to merge page index to page. parhaps the page index is wrong");
@@ -229,7 +229,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::AppendPDFPageFromPDF(const ARGS
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->AppendPDFPageFromPDF(args[0]->ToNumber()->Uint32Value());
+    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->AppendPDFPageFromPDF(TO_NUMBER(args[0])->Uint32Value());
     
     if(result.first != eSuccess)
     {
@@ -265,7 +265,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToFormXObject(const
     
     EStatusCode status = copyingContextDriver->CopyingContext->MergePDFPageToFormXObject(
                                                                                   ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject())->FormXObject,
-                                                                                  args[1]->ToNumber()->Uint32Value());
+                                                                                  TO_NUMBER(args[1])->Uint32Value());
     
     if(status != eSuccess)
 		THROW_EXCEPTION("Unable to merge page index to form. parhaps the page index is wrong");
@@ -331,7 +331,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyObject(const ARGS_TYPE& arg
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->CopyObject(args[0]->ToNumber()->Uint32Value());
+    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->CopyObject(TO_NUMBER(args[0])->Uint32Value());
  
      if(result.first != eSuccess)
 		THROW_EXCEPTION("unable to copy the object. object id may be wrong");
@@ -399,7 +399,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(c
     unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
     
     for(unsigned int i=0;i <length;++i)
-        objectIDs.push_back(objectIDsArray->Get(i)->ToNumber()->Uint32Value());
+        objectIDs.push_back(TO_NUMBER(objectIDsArray->Get(i))->Uint32Value());
     
     EStatusCode status = copyingContextDriver->CopyingContext->CopyNewObjectsForDirectObject(objectIDs);
     if(status != eSuccess)
@@ -430,7 +430,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetCopiedObjectID(const ARGS_TY
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
         
-    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->GetCopiedObjectID(args[0]->ToNumber()->Uint32Value());
+    EStatusCodeAndObjectIDType result = copyingContextDriver->CopyingContext->GetCopiedObjectID(TO_NUMBER(args[0])->Uint32Value());
     if(result.first != eSuccess)
 		THROW_EXCEPTION("Unable to find element");
     SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result.second));
@@ -497,7 +497,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
         Handle<String> key  = objectKeys->Get(NEW_NUMBER(0))->ToString();
         Handle<Value> value = anObject->Get(key);
         
-        resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*String::Utf8Value(key)),value->ToNumber()->Uint32Value()));
+        resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*String::Utf8Value(key)),TO_NUMBER(value)->Uint32Value()));
         
     }
     

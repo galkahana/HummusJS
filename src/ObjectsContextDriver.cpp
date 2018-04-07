@@ -135,7 +135,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::DeleteObject(const ARGS_TYPE& args)
     
     ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
-    objectsContextDriver->ObjectsContextInstance->GetInDirectObjectsRegistry().DeleteObject(args[0]->ToNumber()->Uint32Value());
+    objectsContextDriver->ObjectsContextInstance->GetInDirectObjectsRegistry().DeleteObject(TO_NUMBER(args[0])->Uint32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
     
@@ -179,11 +179,11 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteNumber(const ARGS_TYPE& args)
     }
     
     if(args[0]->IsUint32())
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(args[0]->ToUint32()->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(TO_UINT32(args[0])->Uint32Value());
     else if(args[0]->IsInt32())
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(args[0]->ToInt32()->Int32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(TO_INT32(args[0])->Int32Value());
     else
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteDouble(args[0]->ToNumber()->Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteDouble(TO_NUMBER(args[0])->Value());
 
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -204,7 +204,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::EndArray(const ARGS_TYPE& args)
     if(args.Length() == 0)
         ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndArray();
     else
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndArray((ETokenSeparator)(args[0]->ToNumber()->Uint32Value()));
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndArray((ETokenSeparator)(TO_NUMBER(args[0])->Uint32Value()));
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -266,10 +266,10 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteIndirectObjectReference(const ARGS
     }
 
     if(args.Length() == 1)
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(args[0]->ToNumber()->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(TO_NUMBER(args[0])->Uint32Value());
     else
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(args[0]->ToNumber()->Uint32Value(),
-                                                                                                                    args[1]->ToNumber()->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(TO_NUMBER(args[0])->Uint32Value(),
+                                                                                                                    TO_NUMBER(args[1])->Uint32Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -297,7 +297,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartNewIndirectObject(const ARGS_TYPE&
     {
         // version that writes a know indirect object id, allow chaining
     
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartNewIndirectObject(args[0]->ToUint32()->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartNewIndirectObject(TO_UINT32(args[0])->Uint32Value());
     
         SET_FUNCTION_RETURN_VALUE(args.This());
     }
@@ -316,7 +316,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartModifiedIndirectObject(const ARGS_
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartModifiedIndirectObject(args[0]->ToUint32()->Uint32Value());
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartModifiedIndirectObject(TO_UINT32(args[0])->Uint32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -358,7 +358,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteLiteralString(const ARGS_TYPE& arg
 		std::string string;
 		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::NEW_STRING("length")))->ToObject()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)args[0]->ToObject()->Get(i)->ToNumber()->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->ToObject()->Get(i))->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(string);
 	}
 	else
@@ -388,7 +388,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteHexString(const ARGS_TYPE& args)
 		std::string string;
 		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::NEW_STRING("length")))->ToObject()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)args[0]->ToObject()->Get(i)->ToNumber()->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->ToObject()->Get(i))->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(string);
 	}
 	else
