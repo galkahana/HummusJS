@@ -61,7 +61,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     }
     else if(result->IsNumber())
     {
-        return result->ToNumber()->Uint32Value();
+        return TO_NUMBER(result)->Uint32Value();
     }
     else
     {
@@ -80,5 +80,5 @@ IOBasicTypes::LongFilePositionType ObjectByteWriterWithPosition::GetCurrentPosit
         return true;
     Handle<Function> func = Handle<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->ToNumber()->Value());
+	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL))->Value();
 }

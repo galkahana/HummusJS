@@ -48,9 +48,11 @@ PDFRStreamForFile.prototype.getCurrentPosition = function()
     return this.rposition;
 }
 
+function noop() {}
+
 PDFRStreamForFile.prototype.close = function(inCallback)
 {
-    fs.close(this.rs,inCallback);
+    fs.close(this.rs,inCallback ? inCallback : noop);
 };
 
 module.exports = PDFRStreamForFile;

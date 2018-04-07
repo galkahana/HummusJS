@@ -53,7 +53,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReaderWithPosition::Read(IOBasicTypes
     
     IOBasicTypes::LongBufferSizeType bufferLength = result->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
-        inBuffer[i] = (IOBasicTypes::Byte)(result->ToObject()->Get((uint32_t)i)->ToNumber()->Uint32Value());
+        inBuffer[i] = (IOBasicTypes::Byte)(TO_NUMBER(result->ToObject()->Get((uint32_t)i))->Uint32Value());
     
     return bufferLength;
     
@@ -112,7 +112,7 @@ LongFilePositionType ObjectByteReaderWithPosition::GetCurrentPosition()
         return true;
     Handle<Function> func = Handle<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->ToNumber()->Value());
+	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL))->Value();
 }
 
 void ObjectByteReaderWithPosition::Skip(LongBufferSizeType inSkipSize)

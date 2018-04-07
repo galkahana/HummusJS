@@ -117,7 +117,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)
 
     if(args.Length() >= 2)
     {
-        pageIndex = (unsigned long)args[1]->ToNumber()->Value();
+        pageIndex = (unsigned long)TO_NUMBER(args[1])->Value();
     }
 
     if(args.Length() >= 3)
@@ -232,10 +232,10 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::AttachURLLinktoCurrentPage(const ARGS_
     PDFPageModifierDriver* driver = ObjectWrap::Unwrap<PDFPageModifierDriver>(args.This());
     
     EStatusCode status = driver->mModifierPageInstance->AttachURLLinktoCurrentPage(*String::Utf8Value(args[0]->ToString()),
-                                                                             PDFRectangle(args[1]->ToNumber()->Value(),
-                                                                             args[2]->ToNumber()->Value(),
-                                                                             args[3]->ToNumber()->Value(),
-                                                                             args[4]->ToNumber()->Value()));
+                                                                             PDFRectangle(TO_NUMBER(args[1])->Value(),
+                                                                             TO_NUMBER(args[2])->Value(),
+                                                                             TO_NUMBER(args[3])->Value(),
+                                                                             TO_NUMBER(args[4])->Value()));
     if(status != eSuccess)
     {
 		THROW_EXCEPTION("unable to attach link to current page. will happen if the input URL may not be encoded to ascii7");

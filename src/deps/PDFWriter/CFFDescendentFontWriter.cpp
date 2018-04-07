@@ -37,10 +37,10 @@ CFFDescendentFontWriter::~CFFDescendentFontWriter(void)
 {
 }
 
-static bool sEncodedGlypsSort(const UIntAndGlyphEncodingInfo& inLeft, const UIntAndGlyphEncodingInfo& inRight)
+/*static bool sEncodedGlypsSort(const UIntAndGlyphEncodingInfo& inLeft, const UIntAndGlyphEncodingInfo& inRight)
 {
 	return inLeft.first < inRight.first;
-}
+}*/
 
 static const std::string scCIDFontType0C = "CIDFontType0C";
 static const char* scType1 = "Type 1";

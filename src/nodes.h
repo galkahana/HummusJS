@@ -4,6 +4,7 @@
 
 
 #define NODE_0_10_MODULE_VERSION 11
+#define NODE_2_5_0_MODULE_VERSION 44
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
 #include <node_object_wrap.h>
@@ -29,8 +30,6 @@
 #define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
 #define CREATE_SCOPE HandleScope scope(isolate)
 #define CREATE_ESCAPABLE_SCOPE v8::EscapableHandleScope scope(isolate)
-#define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance()
-#define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(argc,argv)
 #define SET_FUNCTION_RETURN_VALUE(v) args.GetReturnValue().Set(v)
 #define SET_ACCESSOR_RETURN_VALUE(v) info.GetReturnValue().Set(v)
 #define HAS_INSTANCE(c,o) Local<FunctionTemplate>::New(isolate, c)->HasInstance(o->ToObject())
@@ -42,6 +41,26 @@
 #define CLOSE_SCOPE(v) scope.Escape(v)
 #define ESCAPABLE_HANDLE(v) Local<v>
 #define THIS_HANDLE (this->handle())
+
+
+#if NODE_MODULE_VERSION > NODE_2_5_0_MODULE_VERSION
+
+#define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT,argc,argv).ToLocalChecked()
+#define TO_NUMBER(x) x->ToNumber(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
+
+#else 
+
+#define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance()
+#define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(argc,argv)
+#define TO_NUMBER(x) x->ToNumber()
+#define TO_UINT32(x) x->ToUint32()
+#define TO_INT32(x) x->ToInt32()
+
+#endif
+
 
 #else
 
@@ -79,6 +98,9 @@
 #define CLOSE_SCOPE(v) scope.Close(v)
 #define ESCAPABLE_HANDLE(v) Handle<v>
 #define THIS_HANDLE v8::Local<v8::Object>::New(this->handle_)
+#define TO_NUMBER(x) x->ToNumber()
+#define TO_UINT32(x) x->ToUint32()
+#define TO_INT32(x) x->ToInt32()
 #endif
 
 #define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)

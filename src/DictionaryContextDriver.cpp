@@ -161,20 +161,20 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
         }
         
         driver->DictionaryContextInstance->WriteRectangleValue(PDFRectangle(
-                                                      args[0]->ToObject()->Get(0)->ToNumber()->Value(),
-                                                      args[0]->ToObject()->Get(1)->ToNumber()->Value(),
-                                                      args[0]->ToObject()->Get(2)->ToNumber()->Value(),
-                                                      args[0]->ToObject()->Get(3)->ToNumber()->Value()));
+                                                      TO_NUMBER(args[0]->ToObject()->Get(0))->Value(),
+                                                      TO_NUMBER(args[0]->ToObject()->Get(1))->Value(),
+                                                      TO_NUMBER(args[0]->ToObject()->Get(2))->Value(),
+                                                      TO_NUMBER(args[0]->ToObject()->Get(3))->Value()));
         
     }
     else
     {
         // 4 numbers version
         driver->DictionaryContextInstance->WriteRectangleValue(PDFRectangle(
-                                                                            args[0]->ToNumber()->Value(),
-                                                                            args[1]->ToNumber()->Value(),
-                                                                            args[2]->ToNumber()->Value(),
-                                                                            args[3]->ToNumber()->Value()));
+                                                                            TO_NUMBER(args[0])->Value(),
+                                                                            TO_NUMBER(args[1])->Value(),
+                                                                            TO_NUMBER(args[2])->Value(),
+                                                                            TO_NUMBER(args[3])->Value()));
     }
     
     
@@ -233,7 +233,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
 		std::string string;
 		unsigned long arrayLength = (args[0]->ToObject()->Get(NEW_STRING("length")))->ToObject()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)args[0]->ToObject()->Get(i)->ToNumber()->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->ToObject()->Get(i))->Value());
 		driver->DictionaryContextInstance->WriteLiteralStringValue(string);
 	}
 	else
@@ -288,7 +288,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS
         SET_FUNCTION_RETURN_VALUE(UNDEFINED);
     }
     
-    driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)args[0]->ToNumber()->Uint32Value());
+    driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)TO_NUMBER(args[0])->Uint32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -314,11 +314,11 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNumberValue(const ARGS_TYPE& ar
     }
     
     if(args[0]->IsUint32())
-        driver->DictionaryContextInstance->WriteIntegerValue(args[0]->ToUint32()->Uint32Value());
+        driver->DictionaryContextInstance->WriteIntegerValue(TO_UINT32(args[0])->Uint32Value());
     else if(args[0]->IsInt32())
-        driver->DictionaryContextInstance->WriteIntegerValue(args[0]->ToInt32()->Int32Value());
+        driver->DictionaryContextInstance->WriteIntegerValue(TO_INT32(args[0])->Int32Value());
     else
-        driver->DictionaryContextInstance->WriteDoubleValue(args[0]->ToNumber()->Value());
+        driver->DictionaryContextInstance->WriteDoubleValue(TO_NUMBER(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }

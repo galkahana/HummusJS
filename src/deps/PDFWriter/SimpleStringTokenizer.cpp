@@ -57,10 +57,10 @@ void SimpleStringTokenizer::ResetReadState(const SimpleStringTokenizer& inExtern
 	mRecentTokenPosition = inExternalTokenizer.mRecentTokenPosition;
 }
 
-static const Byte scBackSlash[] = {'\\'};
+//static const Byte scBackSlash[] = {'\\'};
 static const std::string scStream = "stream";
-static const char scCR = '\r';
-static const char scLF = '\n';
+//static const char scCR = '\r';
+//static const char scLF = '\n';
 BoolAndString SimpleStringTokenizer::GetNextToken()
 {
 	BoolAndString result;

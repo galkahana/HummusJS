@@ -47,6 +47,7 @@ class IPageEmbedInFormCommand;
 class IPDFParserExtender;
 class ICategoryServicesCommand;
 class PDFIndirectObjectReference;
+class PDFObject;
 
 
 namespace PDFHummus
@@ -322,6 +323,7 @@ private:
     PDFHummus::EStatusCode MergePageContentToTargetXObject(PDFFormXObject* inTargetFormXObject,
                                                            PDFDictionary* inSourcePage,
                                                            const StringToStringMap& inMappedResourcesNames);
+	PDFObject* FindPageResources(PDFParser* inParser, PDFDictionary* inDictionary);
 
 
 };

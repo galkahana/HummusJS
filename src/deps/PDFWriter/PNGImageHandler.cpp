@@ -266,7 +266,7 @@ void ReadDataFromStream(png_structp png_ptr, png_bytep data, png_size_t length)
 	IByteReaderWithPosition* reader = (IByteReaderWithPosition*)png_get_io_ptr(png_ptr);
 	IOBasicTypes::LongFilePositionType readBytes = reader->Read((IOBasicTypes::Byte*)(data), length);
 
-	if (readBytes != length)
+	if (readBytes != (IOBasicTypes::LongFilePositionType)length)
 		png_error(png_ptr, "Read Error");
 }
 

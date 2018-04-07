@@ -314,7 +314,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::m(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->m(args[0]->ToNumber()->Value(),args[1]->ToNumber()->Value());
+    contentContext->GetContext()->m(TO_NUMBER(args[0])->Value(),TO_NUMBER(args[1])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -337,7 +337,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::l(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->l(args[0]->ToNumber()->Value(),args[1]->ToNumber()->Value());
+    contentContext->GetContext()->l(TO_NUMBER(args[0])->Value(),TO_NUMBER(args[1])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -366,12 +366,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::c(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->c(args[0]->ToNumber()->Value(),
-                                    args[1]->ToNumber()->Value(),
-                                    args[2]->ToNumber()->Value(),
-                                    args[3]->ToNumber()->Value(),
-                                    args[4]->ToNumber()->Value(),
-                                    args[5]->ToNumber()->Value());
+    contentContext->GetContext()->c(TO_NUMBER(args[0])->Value(),
+                                    TO_NUMBER(args[1])->Value(),
+                                    TO_NUMBER(args[2])->Value(),
+                                    TO_NUMBER(args[3])->Value(),
+                                    TO_NUMBER(args[4])->Value(),
+                                    TO_NUMBER(args[5])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -398,10 +398,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::v(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->v(args[0]->ToNumber()->Value(),
-                                    args[1]->ToNumber()->Value(),
-                                    args[2]->ToNumber()->Value(),
-                                    args[3]->ToNumber()->Value());
+    contentContext->GetContext()->v(TO_NUMBER(args[0])->Value(),
+                                    TO_NUMBER(args[1])->Value(),
+                                    TO_NUMBER(args[2])->Value(),
+                                    TO_NUMBER(args[3])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -428,10 +428,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::y(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->y(args[0]->ToNumber()->Value(),
-                                    args[1]->ToNumber()->Value(),
-                                    args[2]->ToNumber()->Value(),
-                                    args[3]->ToNumber()->Value());
+    contentContext->GetContext()->y(TO_NUMBER(args[0])->Value(),
+                                    TO_NUMBER(args[1])->Value(),
+                                    TO_NUMBER(args[2])->Value(),
+                                    TO_NUMBER(args[3])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -470,10 +470,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::re(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->re(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value(),
-                                     args[2]->ToNumber()->Value(),
-                                     args[3]->ToNumber()->Value());
+    contentContext->GetContext()->re(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value(),
+                                     TO_NUMBER(args[2])->Value(),
+                                     TO_NUMBER(args[3])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -528,12 +528,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::cm(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->cm(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value(),
-                                     args[2]->ToNumber()->Value(),
-                                     args[3]->ToNumber()->Value(),
-                                     args[4]->ToNumber()->Value(),
-                                     args[5]->ToNumber()->Value());
+    contentContext->GetContext()->cm(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value(),
+                                     TO_NUMBER(args[2])->Value(),
+                                     TO_NUMBER(args[3])->Value(),
+                                     TO_NUMBER(args[4])->Value(),
+                                     TO_NUMBER(args[5])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -555,7 +555,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::w(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->w(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->w(TO_NUMBER(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -578,7 +578,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::J(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->J(args[0]->ToNumber()->Int32Value());
+    contentContext->GetContext()->J(TO_NUMBER(args[0])->Int32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -601,7 +601,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::j(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->j(args[0]->ToNumber()->Int32Value());
+    contentContext->GetContext()->j(TO_NUMBER(args[0])->Int32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -624,7 +624,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::M(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->M(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->M(TO_NUMBER(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -649,12 +649,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
 
-    int dashArrayLength = args[0]->ToObject()->Get(NEW_STRING("length"))->ToNumber()->Int32Value();
+    int dashArrayLength = TO_NUMBER(args[0]->ToObject()->Get(NEW_STRING("length")))->Int32Value();
     double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
-        dashArray[i] = args[0]->ToObject()->Get(i)->ToNumber()->Int32Value();
+        dashArray[i] = TO_NUMBER(args[0]->ToObject()->Get(i))->Int32Value();
     
-    contentContext->GetContext()->d(dashArray,dashArrayLength,args[1]->ToNumber()->Int32Value());
+    contentContext->GetContext()->d(dashArray,dashArrayLength,TO_NUMBER(args[1])->Int32Value());
     
     delete[] dashArray;
                              
@@ -701,7 +701,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::i(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->i(args[0]->ToNumber()->Int32Value());
+    contentContext->GetContext()->i(TO_NUMBER(args[0])->Int32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -795,7 +795,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SC(const ARGS_TYPE& args)
     
     double* components = new double[args.Length()];
     for(int i = 0; i < args.Length(); ++i)
-        components[i] = args[i]->ToNumber()->Value();
+        components[i] = TO_NUMBER(args[i])->Value();
     
     contentContext->GetContext()->SC(components,args.Length());
     
@@ -827,7 +827,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SCN(const ARGS_TYPE& args)
     
     double* components = new double[componentsLength];
     for(int i = 0; i < componentsLength; ++i)
-        components[i] = args[i]->ToNumber()->Value();
+        components[i] = TO_NUMBER(args[i])->Value();
     
     if(hasPatternArgument)
         contentContext->GetContext()->SCN(components,componentsLength,*String::Utf8Value(args[args.Length()-1]->ToString()));
@@ -859,7 +859,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::sc(const ARGS_TYPE& args)
     
     double* components = new double[args.Length()];
     for(int i = 0; i < args.Length(); ++i)
-        components[i] = args[i]->ToNumber()->Value();
+        components[i] = TO_NUMBER(args[i])->Value();
     
     contentContext->GetContext()->sc(components,args.Length());
     
@@ -891,7 +891,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::scn(const ARGS_TYPE& args)
     
     double* components = new double[componentsLength];
     for(int i = 0; i < componentsLength; ++i)
-        components[i] = args[i]->ToNumber()->Value();
+        components[i] = TO_NUMBER(args[i])->Value();
     
     if(hasPatternArgument)
         contentContext->GetContext()->scn(components,componentsLength,*String::Utf8Value(args[args.Length()-1]->ToString()));
@@ -920,7 +920,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::G(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->G(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->G(TO_NUMBER(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -943,7 +943,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::g(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->g(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->g(TO_NUMBER(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -969,9 +969,9 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::RG(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->RG(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value(),
-                                     args[2]->ToNumber()->Value());
+    contentContext->GetContext()->RG(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value(),
+                                     TO_NUMBER(args[2])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -996,9 +996,9 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::rg(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->rg(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value(),
-                                     args[2]->ToNumber()->Value());
+    contentContext->GetContext()->rg(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value(),
+                                     TO_NUMBER(args[2])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -1020,10 +1020,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::K(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->K(args[0]->ToNumber()->Value(),
-                                    args[1]->ToNumber()->Value(),
-                                    args[2]->ToNumber()->Value(),
-                                    args[3]->ToNumber()->Value());
+    contentContext->GetContext()->K(TO_NUMBER(args[0])->Value(),
+                                    TO_NUMBER(args[1])->Value(),
+                                    TO_NUMBER(args[2])->Value(),
+                                    TO_NUMBER(args[3])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -1045,10 +1045,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::k(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->k(args[0]->ToNumber()->Value(),
-                                    args[1]->ToNumber()->Value(),
-                                    args[2]->ToNumber()->Value(),
-                                    args[3]->ToNumber()->Value());
+    contentContext->GetContext()->k(TO_NUMBER(args[0])->Value(),
+                                    TO_NUMBER(args[1])->Value(),
+                                    TO_NUMBER(args[2])->Value(),
+                                    TO_NUMBER(args[3])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -1163,7 +1163,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tc(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Tc(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->Tc(TO_NUMBER(args[0])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1187,7 +1187,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tw(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Tw(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->Tw(TO_NUMBER(args[0])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1211,7 +1211,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tz(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Tz(args[0]->ToNumber()->Int32Value());
+    contentContext->GetContext()->Tz(TO_NUMBER(args[0])->Int32Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1235,7 +1235,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TL(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->TL(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->TL(TO_NUMBER(args[0])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1259,7 +1259,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tr(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Tr(args[0]->ToNumber()->Int32Value());
+    contentContext->GetContext()->Tr(TO_NUMBER(args[0])->Int32Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1283,7 +1283,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Ts(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Ts(args[0]->ToNumber()->Value());
+    contentContext->GetContext()->Ts(TO_NUMBER(args[0])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1336,8 +1336,8 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Td(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Td(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value());
+    contentContext->GetContext()->Td(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -1361,8 +1361,8 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TD(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->TD(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value());
+    contentContext->GetContext()->TD(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -1390,12 +1390,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tm(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
 	}
     
-    contentContext->GetContext()->Tm(args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value(),
-                                     args[2]->ToNumber()->Value(),
-                                     args[3]->ToNumber()->Value(),
-                                     args[4]->ToNumber()->Value(),
-                                     args[5]->ToNumber()->Value());
+    contentContext->GetContext()->Tm(TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value(),
+                                     TO_NUMBER(args[2])->Value(),
+                                     TO_NUMBER(args[3])->Value(),
+                                     TO_NUMBER(args[4])->Value(),
+                                     TO_NUMBER(args[5])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
 
@@ -1440,11 +1440,11 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
     if(args[0]->IsString())
         contentContext->GetContext()->TfLow(
                                          *String::Utf8Value(args[0]->ToString()),
-                                         args[1]->ToNumber()->Value());
+                                         TO_NUMBER(args[1])->Value());
     else
         contentContext->GetContext()->Tf(
                                      ObjectWrap::Unwrap<UsedFontDriver>(args[0]->ToObject())->UsedFont,
-                                     args[1]->ToNumber()->Value());
+                                     TO_NUMBER(args[1])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This());
     
 }
@@ -1565,8 +1565,8 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
     
     if(args[2]->IsArray())
     {
-        contentContext->GetContext()->DoubleQuote(args[0]->ToNumber()->Value(),
-                                                  args[1]->ToNumber()->Value(),
+        contentContext->GetContext()->DoubleQuote(TO_NUMBER(args[0])->Value(),
+                                                  TO_NUMBER(args[1])->Value(),
                                                   ArrayToGlyphsList(args[2]));
     }
     else
@@ -1579,18 +1579,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
         switch(options.encoding)
         {
             case TextPlacingOptions::EEncodingCode:
-                contentContext->GetContext()->DoubleQuoteLow(args[0]->ToNumber()->Value(),
-                                                          args[1]->ToNumber()->Value(),
+                contentContext->GetContext()->DoubleQuoteLow(TO_NUMBER(args[0])->Value(),
+                                                          TO_NUMBER(args[1])->Value(),
                                                           *String::Utf8Value(args[2]->ToString()));
                 break;
             case TextPlacingOptions::EEncodingHex:
-                contentContext->GetContext()->DoubleQuoteHexLow(args[0]->ToNumber()->Value(),
-                                                          args[1]->ToNumber()->Value(),
+                contentContext->GetContext()->DoubleQuoteHexLow(TO_NUMBER(args[0])->Value(),
+                                                          TO_NUMBER(args[1])->Value(),
                                                           *String::Utf8Value(args[2]->ToString()));
                 break;
             default:
-                contentContext->GetContext()->DoubleQuote(args[0]->ToNumber()->Value(),
-                                                          args[1]->ToNumber()->Value(),
+                contentContext->GetContext()->DoubleQuote(TO_NUMBER(args[0])->Value(),
+                                                          TO_NUMBER(args[1])->Value(),
                                                           *String::Utf8Value(args[2]->ToString()));
         }
     }
@@ -1634,7 +1634,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
             if(args[i]->IsString())
                 params.push_back(StringOrDouble(*String::Utf8Value(args[i]->ToString())));
             else if(args[i]->IsNumber())
-                params.push_back(StringOrDouble(args[i]->ToNumber()->Value()));
+                params.push_back(StringOrDouble(TO_NUMBER(args[i])->Value()));
             else
                 status = false;
         }
@@ -1668,7 +1668,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
             if(args[i]->IsArray())
                 params.push_back(GlyphUnicodeMappingListOrDouble(ArrayToGlyphsList(args[i])));
             else if(args[i]->IsNumber())
-                params.push_back(GlyphUnicodeMappingListOrDouble(args[i]->ToNumber()->Value()));
+                params.push_back(GlyphUnicodeMappingListOrDouble(TO_NUMBER(args[i])->Value()));
             else
                 status = false;
         }
@@ -1710,7 +1710,7 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
 	
 	GlyphUnicodeMappingList glyphList;
 
-    int arrayLength =inArray->ToObject()->Get(NEW_STRING("length"))->ToNumber()->Int32Value();
+    int arrayLength =TO_NUMBER(inArray->ToObject()->Get(NEW_STRING("length")))->Int32Value();
     Local<Object> arrayObject = inArray->ToObject();
 
     for(int i=0; i < arrayLength; ++i)
@@ -1718,15 +1718,15 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
         if(!arrayObject->Get(i)->IsArray())
             continue;
         
-        int itemLength = arrayObject->Get(i)->ToObject()->Get(NEW_STRING("length"))->ToNumber()->Int32Value();
+        int itemLength = TO_NUMBER(arrayObject->Get(i)->ToObject()->Get(NEW_STRING("length")))->Int32Value();
         if(0 == itemLength)
             continue;
         
         GlyphUnicodeMapping mapping;
         
-        mapping.mGlyphCode = arrayObject->Get(i)->ToObject()->Get(0)->ToNumber()->Uint32Value();
+        mapping.mGlyphCode = TO_NUMBER(arrayObject->Get(i)->ToObject()->Get(0))->Uint32Value();
         for(int j=1; j < itemLength;++j)
-            mapping.mUnicodeValues.push_back(arrayObject->Get(i)->ToObject()->Get(j)->ToNumber()->Uint32Value());
+            mapping.mUnicodeValues.push_back(TO_NUMBER(arrayObject->Get(i)->ToObject()->Get(j))->Uint32Value());
 			
 		glyphList.push_back(mapping);
     }
@@ -1780,12 +1780,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawPath(const ARGS_TYPE& args)
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
     
-    contentContext->GetContext()->m(args[0]->ToNumber()->Value(),args[1]->ToNumber()->Value());
+    contentContext->GetContext()->m(TO_NUMBER(args[0])->Value(),TO_NUMBER(args[1])->Value());
     for(int i=2;i<args.Length()-1;i+=2)
     {
         if(!args[i]->IsNumber()) // options object, stop
             break;
-        contentContext->GetContext()->l(args[i]->ToNumber()->Value(),args[i+1]->ToNumber()->Value());
+        contentContext->GetContext()->l(TO_NUMBER(args[i])->Value(),TO_NUMBER(args[i+1])->Value());
     }
     
     contentContext->FinishPath(args[args.Length() - 1]);
@@ -1807,7 +1807,7 @@ void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& i
     SetColor(inMaybeOptions,isStroke);
     
     if(isStroke && options->Has(NEW_STRING("width")))
-        GetContext()->w(options->Get(NEW_STRING("width"))->ToNumber()->Uint32Value());
+        GetContext()->w(TO_NUMBER(options->Get(NEW_STRING("width")))->Uint32Value());
 }
 
 void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,bool inIsStroke)
@@ -1936,9 +1936,9 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawCircle(const ARGS_TYPE& arg
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
     
     const double magic = 0.551784;
-    double x = args[0]->ToNumber()->Value();
-    double y = args[1]->ToNumber()->Value();
-    double r = args[2]->ToNumber()->Value();
+    double x = TO_NUMBER(args[0])->Value();
+    double y = TO_NUMBER(args[1])->Value();
+    double r = TO_NUMBER(args[2])->Value();
     double rmagic = r * magic;
     
     contentContext->GetContext()->m(x-r,y);
@@ -1985,10 +1985,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawSquare(const ARGS_TYPE& arg
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
     contentContext->GetContext()->re(
-        args[0]->ToNumber()->Value(),
-        args[1]->ToNumber()->Value(),
-        args[2]->ToNumber()->Value(),
-        args[2]->ToNumber()->Value()
+        TO_NUMBER(args[0])->Value(),
+        TO_NUMBER(args[1])->Value(),
+        TO_NUMBER(args[2])->Value(),
+        TO_NUMBER(args[2])->Value()
     );
 
     contentContext->FinishPath(args[args.Length() - 1]);
@@ -2017,10 +2017,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawRectangle(const ARGS_TYPE& 
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
     contentContext->GetContext()->re(
-                                     args[0]->ToNumber()->Value(),
-                                     args[1]->ToNumber()->Value(),
-                                     args[2]->ToNumber()->Value(),
-                                     args[3]->ToNumber()->Value()
+                                     TO_NUMBER(args[0])->Value(),
+                                     TO_NUMBER(args[1])->Value(),
+                                     TO_NUMBER(args[2])->Value(),
+                                     TO_NUMBER(args[3])->Value()
                                      );
     
     contentContext->FinishPath(args[args.Length() - 1]);
@@ -2084,8 +2084,8 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 	}
 
 	std::string text = *String::Utf8Value(args[0]->ToString());
-	double xPos = args[1]->ToNumber()->Value();
-	double yPos = args[2]->ToNumber()->Value();
+	double xPos = TO_NUMBER(args[1])->Value();
+	double yPos = TO_NUMBER(args[2])->Value();
 
     contentContext->GetContext()->Tm(1,0,0,1,xPos,yPos);
     contentContext->GetContext()->Tj(text);
@@ -2101,7 +2101,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 				UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
 		{
 			// draw underline. use font data for position and thickness
-			double fontSize = options->Has(NEW_STRING("size")) ? options->Get(NEW_STRING("size"))->ToNumber()->Value():1;
+			double fontSize = options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1;
 
 			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->ToObject())->UsedFont;
 			FreeTypeFaceWrapper*  ftWrapper = font->GetFreeTypeFont();
@@ -2130,7 +2130,7 @@ void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeO
     if(options->Has(NEW_STRING("font")) &&
        UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
         GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->ToObject())->UsedFont,
-                         options->Has(NEW_STRING("size")) ? options->Get(NEW_STRING("size"))->ToNumber()->Value():1);
+                         options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1);
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args)
@@ -2165,8 +2165,8 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
      gsave, apply determined transformation matrix, place image with do, grestore
      */
 
-    double x = args[0]->ToNumber()->Value();
-    double y = args[1]->ToNumber()->Value();
+    double x = TO_NUMBER(args[0])->Value();
+    double y = TO_NUMBER(args[1])->Value();
     std::string imagePath = *(String::Utf8Value(args[2]->ToString()));
     AbstractContentContext::ImageOptions imageOptions;
     
@@ -2175,7 +2175,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
         Handle<Object> optionsObject = args[3]->ToObject();
         
         if(optionsObject->Has(NEW_STRING("index")))
-            imageOptions.imageIndex = optionsObject->Get(NEW_STRING("index"))->ToNumber()->Uint32Value();
+            imageOptions.imageIndex = TO_NUMBER(optionsObject->Get(NEW_STRING("index")))->Uint32Value();
         
         if(optionsObject->Has(NEW_STRING("transformation")))
         {
@@ -2185,18 +2185,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
             {
                 Handle<Object> transformationObject = transformationValue->ToObject();
                 
-                if(transformationValue->IsArray() && transformationObject->Get(NEW_STRING("length"))->ToNumber()->Value() == 6)
+                if(transformationValue->IsArray() && TO_NUMBER(transformationObject->Get(NEW_STRING("length")))->Value() == 6)
                 {
                     imageOptions.transformationMethod = AbstractContentContext::eMatrix;
                     for(int i=0;i<6;++i)
-                        imageOptions.matrix[i] = transformationObject->Get(i)->ToNumber()->Value();
+                        imageOptions.matrix[i] = TO_NUMBER(transformationObject->Get(i))->Value();
                 }
                 else if(transformationValue->IsObject())
                 {
                     // fitting object, determine transformation according to image dimensions relation to width/height
                     imageOptions.transformationMethod = AbstractContentContext::eFit;
-                    imageOptions.boundingBoxWidth = transformationObject->Get(NEW_STRING("width"))->ToNumber()->Value();
-                    imageOptions.boundingBoxHeight = transformationObject->Get(NEW_STRING("height"))->ToNumber()->Value();
+                    imageOptions.boundingBoxWidth = TO_NUMBER(transformationObject->Get(NEW_STRING("width")))->Value();
+                    imageOptions.boundingBoxHeight = TO_NUMBER(transformationObject->Get(NEW_STRING("height")))->Value();
                     imageOptions.fitProportional = transformationObject->Has(NEW_STRING("proportional")) ?
                                             transformationObject->Get(NEW_STRING("proportional"))->ToBoolean()->Value() :
                                             false;

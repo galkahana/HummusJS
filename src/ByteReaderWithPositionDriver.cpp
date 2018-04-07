@@ -127,7 +127,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Read(const ARGS_TYPE& args)
     }
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
-    IOBasicTypes::LongBufferSizeType bufferSize = args[0]->ToNumber()->Uint32Value();
+    IOBasicTypes::LongBufferSizeType bufferSize = TO_NUMBER(args[0])->Uint32Value();
     IOBasicTypes::Byte* buffer = new IOBasicTypes::Byte[bufferSize];
     
     bufferSize = element->mInstance->Read(buffer,(int)bufferSize); // reading int cause that's the maximum that can read (use should read till notended anyways)
@@ -174,7 +174,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Skip(const ARGS_TYPE& args)
 
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
-    element->mInstance->Skip(args[0]->ToNumber()->Uint32Value());
+    element->mInstance->Skip(TO_NUMBER(args[0])->Uint32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -193,7 +193,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPosition(const ARGS_TYPE& ar
     
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
-    element->mInstance->SetPosition(args[0]->ToNumber()->Uint32Value());
+    element->mInstance->SetPosition(TO_NUMBER(args[0])->Uint32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
@@ -212,7 +212,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPositionFromEnd(const ARGS_T
     
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
-    element->mInstance->SetPositionFromEnd(args[0]->ToNumber()->Uint32Value());
+    element->mInstance->SetPositionFromEnd(TO_NUMBER(args[0])->Uint32Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This());
 }
