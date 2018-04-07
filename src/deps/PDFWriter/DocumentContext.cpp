@@ -952,6 +952,10 @@ static const std::string scXObject = "XObject";
 static const std::string scSubType = "Subtype";
 static const std::string scForm = "Form";
 static const std::string scFormType = "FormType";
+static const std::string scGroup = "Group";
+static const std::string scS = "S";
+static const std::string scTransparency = "Transparency";
+
 PDFFormXObject* DocumentContext::StartFormXObject(const PDFRectangle& inBoundingBox,ObjectIDType inFormXObjectID,const double* inMatrix,const bool inUseTransparencyGroup)
 {
 	PDFFormXObject* aFormXObject = NULL;
@@ -986,8 +990,11 @@ PDFFormXObject* DocumentContext::StartFormXObject(const PDFRectangle& inBounding
 			mObjectsContext->EndArray(eTokenSeparatorEndLine);
 		}
         if (inUseTransparencyGroup) {
-          xobjectContext->WriteKey("Group");
-          xobjectContext->WriteHexStringValue("</S /Transparency>");
+          xobjectContext->WriteKey(scGroup);
+	  DictionaryContext* groupContext = mObjectsContext->StartDictionary();
+	  groupContext->WriteKey(scS);
+	  groupContext->WriteNameValue(scTransparency);
+	  mObjectsContext->EndDictionary(groupContext);
         }
 
 		// Resource dict 
@@ -1897,7 +1904,6 @@ static const std::string scW = "W";
 static const std::string scA = "A";
 static const std::string scBS = "BS";
 static const std::string scAction = "Action";
-static const std::string scS = "S";
 static const std::string scURI = "URI";
 EStatusCodeAndObjectIDType DocumentContext::WriteAnnotationAndLinkForURL(const std::string& inURL,const PDFRectangle& inLinkClickArea)
 {
@@ -2932,7 +2938,7 @@ EStatusCode DocumentContext::WriteFormForImage(
 	ObjectIDType inObjectID,
 	const PDFParsingOptions& inParsingOptions)
 {
-    EStatusCode status;
+    EStatusCode status = eFailure;
     EHummusImageType imageType = GetImageType(inImagePath,inImageIndex);
         
     switch(imageType)
@@ -2970,7 +2976,6 @@ EStatusCode DocumentContext::WriteFormForImage(
 		{
 			InputFile inputFile;
 			if (inputFile.OpenFile(inImagePath) != eSuccess) {
-				status = eFailure;
 				break;
 			}
 			PDFFormXObject* form = CreateFormXObjectFromPNGStream(inputFile.GetInputStream(), inObjectID);
