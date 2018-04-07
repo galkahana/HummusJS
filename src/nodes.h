@@ -4,7 +4,7 @@
 
 
 #define NODE_0_10_MODULE_VERSION 11
-#define NODE_7_10_1_MODULE_VERSION 51
+#define NODE_2_5_0_MODULE_VERSION 44
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
 #include <node_object_wrap.h>
@@ -42,19 +42,22 @@
 #define ESCAPABLE_HANDLE(v) Local<v>
 #define THIS_HANDLE (this->handle())
 
-#define TO_NUMBER(x) x->ToNumber(isolate)
-#define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
-#define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
 
-#if NODE_MODULE_VERSION > NODE_7_10_1_MODULE_VERSION
+#if NODE_MODULE_VERSION > NODE_2_5_0_MODULE_VERSION
 
 #define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT,argc,argv).ToLocalChecked()
+#define TO_NUMBER(x) x->ToNumber(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
 
 #else 
 
 #define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance()
 #define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(argc,argv)
+#define TO_NUMBER(x) x->ToNumber()
+#define TO_UINT32(x) x->ToUint32()
+#define TO_INT32(x) x->ToInt32()
 
 #endif
 
