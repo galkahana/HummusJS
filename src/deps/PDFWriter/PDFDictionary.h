@@ -27,9 +27,8 @@
 
 
 
-class PDFNameLess : public std::binary_function<const PDFName*,const PDFName*,bool>
+struct PDFNameLess
 {
-public:
 	bool operator( ) (const PDFName* left, 
 						const PDFName* right ) const
 	{

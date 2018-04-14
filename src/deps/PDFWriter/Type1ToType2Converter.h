@@ -51,9 +51,8 @@ struct Stem
 	long mExtent;
 };
 
-class StemLess : public std::binary_function<const Stem,const Stem,bool>
+struct StemLess
 {
-public:
 	bool operator( ) (const Stem& inLeft, 
 						const Stem& inRight ) const
 	{
