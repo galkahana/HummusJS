@@ -27,3 +27,4 @@ hummus.PDFWriter.prototype.triggerDocumentExtensionEvent = function(eventName,ev
 hummus.PDFStreamForResponse = require('./PDFStreamForResponse');
 hummus.PDFWStreamForFile = require('./PDFWStreamForFile');
 hummus.PDFRStreamForFile = require('./PDFRStreamForFile');
+hummus.PDFRStreamForBuffer = require('./PDFRStreamForBuffer');

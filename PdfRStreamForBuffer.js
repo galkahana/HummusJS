@@ -5,15 +5,16 @@
 */
 
 function PDFRStreamForBuffer(buffer){
-    this.innerBuffer = buffer;
+    this.innerArray = Array.prototype.slice.call(buffer, 0);
     this.rposition = 0;
     this.fileSize = buffer.byteLength;
 }
 
 PDFRStreamForBuffer.prototype.read = function(inAmount){
-    const previousPosition = this.rposition;
-    this.rposition += inAmount;
-    return [].concat(this.innerBuffer.slice(previousPosition, this.rposition));
+    var amountToRead = inAmount;
+    var arr = this.innerArray.slice(this.rposition,this.rposition+amountToRead);
+    this.rposition += amountToRead;
+    return arr;
 }
 
 PDFRStreamForBuffer.prototype.notEnded = function(){
