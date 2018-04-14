@@ -33,16 +33,16 @@ OutputStreamTraits::~OutputStreamTraits(void)
 {
 }
 
-#define TENMEGS 10*1024*1024
+#define ONEK 1024
 EStatusCode OutputStreamTraits::CopyToOutputStream(IByteReader* inInputStream)
 {
-	Byte* buffer = new Byte[TENMEGS];
+	Byte* buffer = new Byte[ONEK];
 	LongBufferSizeType readBytes,writeBytes;
 	EStatusCode status = PDFHummus::eSuccess;
 
 	while(inInputStream->NotEnded() && PDFHummus::eSuccess == status)
 	{
-		readBytes = inInputStream->Read(buffer,TENMEGS);
+		readBytes = inInputStream->Read(buffer,ONEK);
 		writeBytes = mOutputStream->Write(buffer,readBytes);
 		status = (readBytes == writeBytes) ? PDFHummus::eSuccess:PDFHummus::eFailure;
 		if (readBytes == 0) {
