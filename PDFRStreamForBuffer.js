@@ -7,7 +7,7 @@
 function PDFRStreamForBuffer(buffer){
     this.innerArray = Array.prototype.slice.call(buffer, 0);
     this.rposition = 0;
-    this.fileSize = buffer.byteLength;
+    this.fileSize = this.innerArray.length;
 }
 
 PDFRStreamForBuffer.prototype.read = function(inAmount){
