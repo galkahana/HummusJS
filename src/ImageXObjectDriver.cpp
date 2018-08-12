@@ -47,7 +47,7 @@ METHOD_RETURN_TYPE ImageXObjectDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> ImageXObjectDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -82,7 +82,7 @@ METHOD_RETURN_TYPE ImageXObjectDriver::New(const ARGS_TYPE& args)
     ImageXObjectDriver* image = new ImageXObjectDriver();
     image->Wrap(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE ImageXObjectDriver::GetID(Local<String> property, const PROPERTY_TYPE &info)
@@ -95,9 +95,9 @@ METHOD_RETURN_TYPE ImageXObjectDriver::GetID(Local<String> property, const PROPE
     if(!image->ImageXObject)
     {
 		THROW_EXCEPTION("image object not initialized, create using pdfWriter.createFormXObject");
-        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
     
-	SET_ACCESSOR_RETURN_VALUE(NEW_NUMBER(image->ImageXObject->GetImageObjectID()));
+	SET_ACCESSOR_RETURN_VALUE(NEW_NUMBER(image->ImageXObject->GetImageObjectID()))
 }
 

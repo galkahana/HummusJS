@@ -44,7 +44,7 @@ METHOD_RETURN_TYPE PDFDateDriver::NewInstance(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
     CREATE_ESCAPABLE_SCOPE;
         
-	SET_FUNCTION_RETURN_VALUE(PDFDateDriver::GetNewInstance(args));
+	SET_FUNCTION_RETURN_VALUE(PDFDateDriver::GetNewInstance(args))
 }
 
 v8::Handle<v8::Value> PDFDateDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -52,16 +52,21 @@ v8::Handle<v8::Value> PDFDateDriver::GetNewInstance(const ARGS_TYPE& args)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
+	const unsigned argc = 1;
+
 	if (args.Length() != 1 || (!args[0]->IsDate() && !args[0]->IsString()))
 	{
 		THROW_EXCEPTION("Wrong arguments. Provide 1 argument which is a date");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
-	}
+		Handle<Value> argv[argc] = { NEW_STRING("") };
+		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
 
-	const unsigned argc = 1;
-	Handle<Value> argv[argc] = { args[0] };
-	Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
-	return CLOSE_SCOPE(instance);
+		return CLOSE_SCOPE(instance);
+	} else {
+		Handle<Value> argv[argc] = { args[0] };
+		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+
+		return CLOSE_SCOPE(instance);
+	}
 }
 
 unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Handle<Date> inDate, const char* inFunctionName)
@@ -120,7 +125,7 @@ METHOD_RETURN_TYPE PDFDateDriver::New(const ARGS_TYPE& args)
     }
     
     element->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFDateDriver::ToString(const ARGS_TYPE& args)
@@ -130,7 +135,7 @@ METHOD_RETURN_TYPE PDFDateDriver::ToString(const ARGS_TYPE& args)
     
     PDFDateDriver* element = ObjectWrap::Unwrap<PDFDateDriver>(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(NEW_STRING(element->mDate.ToString().c_str()));
+    SET_FUNCTION_RETURN_VALUE(NEW_STRING(element->mDate.ToString().c_str()))
 }
 
 METHOD_RETURN_TYPE PDFDateDriver::SetToCurrentTime(const ARGS_TYPE& args)
@@ -141,7 +146,7 @@ METHOD_RETURN_TYPE PDFDateDriver::SetToCurrentTime(const ARGS_TYPE& args)
     PDFDateDriver* element = ObjectWrap::Unwrap<PDFDateDriver>(args.This());
     element->mDate.SetToCurrentTime();
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFDate* PDFDateDriver::getInstance()

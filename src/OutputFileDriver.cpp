@@ -80,7 +80,7 @@ METHOD_RETURN_TYPE OutputFileDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> OutputFileDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -116,7 +116,7 @@ METHOD_RETURN_TYPE OutputFileDriver::New(const ARGS_TYPE& args)
     }
     
     outputFile->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE OutputFileDriver::OpenFile(const ARGS_TYPE& args)
@@ -129,7 +129,7 @@ METHOD_RETURN_TYPE OutputFileDriver::OpenFile(const ARGS_TYPE& args)
        (args.Length() == 2 && !args[1]->IsBoolean()))
     {
 		THROW_EXCEPTION("wrong arguments. please provide a string for the file path and optional boolean flag to determine whether this file is opened for appending");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     OutputFileDriver* driver = ObjectWrap::Unwrap<OutputFileDriver>(args.This());
@@ -138,17 +138,17 @@ METHOD_RETURN_TYPE OutputFileDriver::OpenFile(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->OpenFile(*String::Utf8Value(args[0]->ToString()),args.Length() == 2 ? args[1]->ToBoolean()->Value() : false) != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("can't open file. make sure path is not busy");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE OutputFileDriver::CloseFile(const ARGS_TYPE& args)
@@ -161,14 +161,14 @@ METHOD_RETURN_TYPE OutputFileDriver::CloseFile(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->mOutputFileInstance)
         driver->mOutputFileInstance->CloseFile();
     
-    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE OutputFileDriver::GetFilePath(const ARGS_TYPE& args)
@@ -181,14 +181,14 @@ METHOD_RETURN_TYPE OutputFileDriver::GetFilePath(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->mOutputFileInstance && driver->mOutputFileInstance->GetOutputStream())
-        SET_FUNCTION_RETURN_VALUE(NEW_STRING(driver->mOutputFileInstance->GetFilePath().c_str()));
+        SET_FUNCTION_RETURN_VALUE(NEW_STRING(driver->mOutputFileInstance->GetFilePath().c_str()))
     else
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE OutputFileDriver::GetOutputStream(const ARGS_TYPE& args)
@@ -201,7 +201,7 @@ METHOD_RETURN_TYPE OutputFileDriver::GetOutputStream(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -211,9 +211,9 @@ METHOD_RETURN_TYPE OutputFileDriver::GetOutputStream(const ARGS_TYPE& args)
         
         ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->ToObject())->SetStream(driver->mOutputFileInstance->GetOutputStream(),false);
         
-        SET_FUNCTION_RETURN_VALUE(result);
+        SET_FUNCTION_RETURN_VALUE(result)
     }
     else
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 

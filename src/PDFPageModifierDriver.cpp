@@ -68,7 +68,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFPageModifierDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -103,14 +103,14 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)
         (args.Length() >= 3 && !args[2]->IsBoolean())
     ) {
         THROW_EXCEPTION("Wrong arguments, perovide a: PDFWriter of the pdf that page you want modified, page index of that page, and boolean indicating if you want to ensure encapsulation. last one defaults to false");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* writerDriver = ObjectWrap::Unwrap<PDFWriterDriver>(args[0]->ToObject());
     if(!writerDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a PDFWriter as the first object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     else
         writer = writerDriver->GetWriter();
@@ -129,7 +129,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)
     PDFPageModifierDriver* driver = new PDFPageModifierDriver(writer,pageIndex,ensureContentEncapsulation);
     
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::StartContext(const ARGS_TYPE& args)
@@ -143,16 +143,16 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::StartContext(const ARGS_TYPE& args)
         if(!driver)
         {
             THROW_EXCEPTION("no driver created...please create one through Hummus");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
             break;       
         }
 
         if(!driver->mModifierPageInstance->StartContentContext()) {
             THROW_EXCEPTION("context not created, page index is either wrong, or page is null");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED); 
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED) 
             break;       
         }
-        SET_FUNCTION_RETURN_VALUE(args.This());
+        SET_FUNCTION_RETURN_VALUE(args.This())
     }while(false);
     
 
@@ -170,13 +170,13 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
         if(!driver)
         {
             THROW_EXCEPTION("no driver created...please create one through Hummus");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
             break;
         }
 
         if(!driver->mModifierPageInstance->GetCurrentFormContext()) {
             THROW_EXCEPTION("No context created, please create one with startContext");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)        
             break;
 
         }
@@ -190,7 +190,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
         contentContextDriver->FormOfContext = driver->mModifierPageInstance->GetCurrentFormContext();
         contentContextDriver->SetResourcesDictionary(driver->mModifierPageInstance->GetCurrentResourcesDictionary());
 
-        SET_FUNCTION_RETURN_VALUE(newInstance);
+        SET_FUNCTION_RETURN_VALUE(newInstance)
     }while(false);
 }
 
@@ -205,12 +205,12 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::EndContext(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
 
     driver->mModifierPageInstance->EndContentContext();    
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::AttachURLLinktoCurrentPage(const ARGS_TYPE& args)
@@ -226,7 +226,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::AttachURLLinktoCurrentPage(const ARGS_
         !args[4]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass a url, and 4 numbers (left,bottom,right,top) for the rectangle valid for clicking");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFPageModifierDriver* driver = ObjectWrap::Unwrap<PDFPageModifierDriver>(args.This());
@@ -239,10 +239,10 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::AttachURLLinktoCurrentPage(const ARGS_
     if(status != eSuccess)
     {
 		THROW_EXCEPTION("unable to attach link to current page. will happen if the input URL may not be encoded to ascii7");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::WritePage(const ARGS_TYPE& args)
@@ -256,15 +256,15 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::WritePage(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
 
     if(driver->mModifierPageInstance->WritePage() != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to write page");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }    
       
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }

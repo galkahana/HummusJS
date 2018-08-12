@@ -73,7 +73,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::GetType(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     Local<Number> result = NEW_NUMBER((unsigned long)ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject()->GetType());
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFIndirectObjectReference(const ARGS_TYPE& args)
@@ -83,11 +83,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFIndirectObjectReference(const ARGS_TYPE
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectIndirectObjectReference)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFIndirectObjectReferenceDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFIndirectObjectReferenceDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFArray(const ARGS_TYPE& args)
@@ -97,11 +97,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFArray(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectArray)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFArrayDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFArrayDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFDictionary(const ARGS_TYPE& args)
@@ -111,11 +111,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFDictionary(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectDictionary)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFDictionaryDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFDictionaryDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFStream(const ARGS_TYPE& args)
@@ -125,11 +125,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFStream(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectStream)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
     Handle<Value> newInstance = PDFStreamInputDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFStreamInputDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFBoolean(const ARGS_TYPE& args)
@@ -139,11 +139,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFBoolean(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectBoolean)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFBooleanDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFBooleanDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFLiteralString(const ARGS_TYPE& args)
@@ -153,11 +153,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFLiteralString(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectLiteralString)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFLiteralStringDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFLiteralStringDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFHexString(const ARGS_TYPE& args)
@@ -167,11 +167,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFHexString(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectHexString)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFHexStringDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFHexStringDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFNull(const ARGS_TYPE& args)
@@ -181,11 +181,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFNull(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectNull)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFNullDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFNullDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFName(const ARGS_TYPE& args)
@@ -195,11 +195,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFName(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectName)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFNameDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFNameDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFInteger(const ARGS_TYPE& args)
@@ -209,11 +209,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFInteger(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectInteger)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 	Handle<Value> newInstance = PDFIntegerDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFIntegerDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFReal(const ARGS_TYPE& args)
@@ -223,11 +223,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFReal(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectReal)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
     Handle<Value> newInstance = PDFRealDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFRealDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToPDFSymbol(const ARGS_TYPE& args)
@@ -237,11 +237,11 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFSymbol(const ARGS_TYPE& args)
     
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() != PDFObject::ePDFObjectSymbol)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
     Handle<Value> newInstance = PDFSymbolDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFSymbolDriver>(newInstance->ToObject())->TheObject = anObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 Handle<Value> PDFObjectDriver::CreateDriver(PDFObject* inObject)
@@ -340,15 +340,15 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToNumber(const ARGS_TYPE& args)
     PDFObject* anObject = ObjectWrap::Unwrap<PDFObjectDriver>(args.This())->GetObject();
     if(anObject->GetType() == PDFObject::ePDFObjectInteger)
     {
-        SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(((PDFInteger*)anObject)->GetValue()));
+        SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(((PDFInteger*)anObject)->GetValue()))
     }
     else if(anObject->GetType() == PDFObject::ePDFObjectReal)
     {
-        SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(((PDFReal*)anObject)->GetValue()));
+        SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(((PDFReal*)anObject)->GetValue()))
         
     }
     else
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE PDFObjectDriver::ToString(const ARGS_TYPE& args)
@@ -385,6 +385,6 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToString(const ARGS_TYPE& args)
         default:
             result = PDFObject::scPDFObjectTypeLabel(anObject->GetType());
     }
-    SET_FUNCTION_RETURN_VALUE(NEW_STRING(result.c_str()));
+    SET_FUNCTION_RETURN_VALUE(NEW_STRING(result.c_str()))
 
 }

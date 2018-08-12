@@ -46,7 +46,7 @@ METHOD_RETURN_TYPE PDFNameDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFNameDriver::GetNewInstance()
@@ -72,7 +72,7 @@ METHOD_RETURN_TYPE PDFNameDriver::New(const ARGS_TYPE& args)
     
     PDFNameDriver* driver = new PDFNameDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFNameDriver::GetObject()
@@ -86,7 +86,7 @@ METHOD_RETURN_TYPE PDFNameDriver::GetValue(Local<String> property, const PROPERT
 	CREATE_ESCAPABLE_SCOPE;
     
     Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFNameDriver>(info.Holder())->TheObject->GetValue().c_str());
-    SET_ACCESSOR_RETURN_VALUE(result);
+    SET_ACCESSOR_RETURN_VALUE(result)
 }
 
 

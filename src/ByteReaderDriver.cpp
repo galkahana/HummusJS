@@ -59,7 +59,7 @@ METHOD_RETURN_TYPE ByteReaderDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> ByteReaderDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -85,7 +85,7 @@ METHOD_RETURN_TYPE ByteReaderDriver::New(const ARGS_TYPE& args)
 
     ByteReaderDriver* driver = new ByteReaderDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 void ByteReaderDriver::SetStream(IByteReader* inReader,bool inOwns)
@@ -113,7 +113,7 @@ METHOD_RETURN_TYPE ByteReaderDriver::Read(const ARGS_TYPE& args)
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. pass the number of bytes to read");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ByteReaderDriver* element = ObjectWrap::Unwrap<ByteReaderDriver>(args.This());
@@ -129,7 +129,7 @@ METHOD_RETURN_TYPE ByteReaderDriver::Read(const ARGS_TYPE& args)
     
     delete[] buffer;
     
-    SET_FUNCTION_RETURN_VALUE(outBuffer);
+    SET_FUNCTION_RETURN_VALUE(outBuffer)
 }
 
 METHOD_RETURN_TYPE ByteReaderDriver::NotEnded(const ARGS_TYPE& args)
@@ -139,7 +139,7 @@ METHOD_RETURN_TYPE ByteReaderDriver::NotEnded(const ARGS_TYPE& args)
 
     ByteReaderDriver* element = ObjectWrap::Unwrap<ByteReaderDriver>(args.This());
     
-	SET_FUNCTION_RETURN_VALUE(NEW_BOOLEAN(element->mInstance->NotEnded()));
+	SET_FUNCTION_RETURN_VALUE(NEW_BOOLEAN(element->mInstance->NotEnded()))
 }
 
 

@@ -66,7 +66,7 @@ METHOD_RETURN_TYPE PDFPageDriver::NewInstance(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
     CREATE_ESCAPABLE_SCOPE;    
-	SET_FUNCTION_RETURN_VALUE(GetNewInstance(args));
+	SET_FUNCTION_RETURN_VALUE(GetNewInstance(args))
 }
 
 
@@ -142,7 +142,7 @@ METHOD_RETURN_TYPE PDFPageDriver::New(const ARGS_TYPE& args)
     }
     
     pdfPage->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROPERTY_TYPE &info)
@@ -159,7 +159,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROP
     mediaBox->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightX));
     mediaBox->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightY));
 
-    SET_ACCESSOR_RETURN_VALUE(mediaBox);
+    SET_ACCESSOR_RETURN_VALUE(mediaBox)
 }
 
 METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPERTY_TYPE &info)
@@ -180,11 +180,11 @@ METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPE
         box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(cropBox.second.UpperRightX));
         box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(cropBox.second.UpperRightY));
     
-        SET_ACCESSOR_RETURN_VALUE(box);
+        SET_ACCESSOR_RETURN_VALUE(box)
     }
     else
     {
-        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
 }
 
@@ -206,11 +206,11 @@ METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(Local<String> property, const PROP
         box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(bleedBox.second.UpperRightX));
         box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(bleedBox.second.UpperRightY));
     
-        SET_ACCESSOR_RETURN_VALUE(box);
+        SET_ACCESSOR_RETURN_VALUE(box)
     }
     else
     {
-        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
 }
 
@@ -232,11 +232,11 @@ METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(Local<String> property, const PROPE
         box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(trimBox.second.UpperRightX));
         box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(trimBox.second.UpperRightY));
     
-        SET_ACCESSOR_RETURN_VALUE(box);
+        SET_ACCESSOR_RETURN_VALUE(box)
     }
     else
     {
-        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
 }
 
@@ -258,11 +258,11 @@ METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(Local<String> property, const PROPER
         box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(artBox.second.UpperRightX));
         box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(artBox.second.UpperRightY));
     
-        SET_ACCESSOR_RETURN_VALUE(box);
+        SET_ACCESSOR_RETURN_VALUE(box)
     }
     else
     {
-        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
 }
 
@@ -298,11 +298,11 @@ METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPER
     if(rotate.first) 
     {
         Handle<Number> result = NEW_NUMBER(rotate.second);
-        SET_ACCESSOR_RETURN_VALUE(result);        
+        SET_ACCESSOR_RETURN_VALUE(result)        
     }
     else
     {
-        SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+        SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
 }    
 
@@ -411,7 +411,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetResourcesDictionary(const ARGS_TYPE& args)
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->ToObject());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(pageDriver->GetPage()->GetResourcesDictionary());
     
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 

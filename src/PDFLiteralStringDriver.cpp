@@ -50,7 +50,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFLiteralStringDriver::GetNewInstance()
@@ -76,7 +76,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::New(const ARGS_TYPE& args)
     
     PDFLiteralStringDriver* driver = new PDFLiteralStringDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFLiteralStringDriver::GetObject()
@@ -91,7 +91,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::GetValue(Local<String> property, cons
     
     
     Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFLiteralStringDriver>(info.Holder())->TheObject->GetValue().c_str());
-    SET_ACCESSOR_RETURN_VALUE(result);
+    SET_ACCESSOR_RETURN_VALUE(result)
 }
 
 
@@ -103,7 +103,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::ToText(const ARGS_TYPE& args)
 
     
     Handle<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFLiteralStringDriver::ToBytesArray(const ARGS_TYPE& args)
@@ -117,7 +117,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::ToBytesArray(const ARGS_TYPE& args)
 	for(std::string::size_type i=0;i<aString.length();++i)
 		result->Set(NEW_NUMBER(i),NEW_NUMBER((IOBasicTypes::Byte)(aString[i])));
 
-	SET_FUNCTION_RETURN_VALUE(result);
+	SET_FUNCTION_RETURN_VALUE(result)
 }
 
 

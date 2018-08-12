@@ -48,7 +48,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::NewInstance(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 		
-	SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args));
+	SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args))
 }
 
 v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -56,17 +56,22 @@ v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
+	const unsigned argc = 1;
+
 	if (args.Length() == 1 && !args[0]->IsString() && !args[0]->IsArray())
 	{
 		THROW_EXCEPTION("Wrong arguments. Provide no arguments, or provide 1 argument which is a string or an array of bytes");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+
+		Handle<Value> argv[argc] = { NEW_STRING("") };
+		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+
+		return CLOSE_SCOPE(instance);
+	} else {
+		Handle<Value> argv[argc] = { args[0] };
+		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+
+		return CLOSE_SCOPE(instance);
 	}
-
-	const unsigned argc = 1;
-	Handle<Value> argv[argc] = { args[0] };
-	Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
-
-	return CLOSE_SCOPE(instance);
 }
 
 METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
@@ -92,7 +97,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
 	}
     
     element->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE( args.This());
+	SET_FUNCTION_RETURN_VALUE( args.This())
 }
 
 METHOD_RETURN_TYPE PDFTextStringDriver::ToBytesArray(const ARGS_TYPE& args)
@@ -109,7 +114,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::ToBytesArray(const ARGS_TYPE& args)
 	for(std::string::size_type i=0;i<aString.length();++i)
 		result->Set(NEW_NUMBER(i),NEW_NUMBER((IOBasicTypes::Byte)(aString[i])));
 
-	SET_FUNCTION_RETURN_VALUE(result);
+	SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFTextStringDriver::ToString(const ARGS_TYPE& args)
@@ -119,7 +124,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::ToString(const ARGS_TYPE& args)
     
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(NEW_STRING(element->mTextString.ToUTF8String().c_str()));
+    SET_FUNCTION_RETURN_VALUE(NEW_STRING(element->mTextString.ToUTF8String().c_str()))
 }
 
 METHOD_RETURN_TYPE PDFTextStringDriver::FromString(const ARGS_TYPE& args)
@@ -131,5 +136,5 @@ METHOD_RETURN_TYPE PDFTextStringDriver::FromString(const ARGS_TYPE& args)
     if(args.Length() > 0 && args[0]->IsString())
         element->mTextString.FromUTF8(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }

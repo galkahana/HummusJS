@@ -46,7 +46,7 @@ METHOD_RETURN_TYPE PDFNullDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFNullDriver::GetNewInstance()
@@ -72,7 +72,7 @@ METHOD_RETURN_TYPE PDFNullDriver::New(const ARGS_TYPE& args)
     
     PDFNullDriver* driver = new PDFNullDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFNullDriver::GetObject()
@@ -84,7 +84,7 @@ METHOD_RETURN_TYPE PDFNullDriver::GetValue(Local<String> property, const PROPERT
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+    SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
 }
 
 

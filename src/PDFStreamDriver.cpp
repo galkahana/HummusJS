@@ -51,7 +51,7 @@ METHOD_RETURN_TYPE PDFStreamDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 	
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFStreamDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -77,7 +77,7 @@ METHOD_RETURN_TYPE PDFStreamDriver::New(const ARGS_TYPE& args)
 
     PDFStreamDriver* driver = new PDFStreamDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFStreamDriver::GetWriteStream(const ARGS_TYPE& args)
@@ -90,5 +90,5 @@ METHOD_RETURN_TYPE PDFStreamDriver::GetWriteStream(const ARGS_TYPE& args)
     ObjectWrap::Unwrap<ByteWriterDriver>(result->ToObject())->SetStream(
                                                                         ObjectWrap::Unwrap<PDFStreamDriver>(args.This())->PDFStreamInstance->GetWriteStream(), false);
     
-	SET_FUNCTION_RETURN_VALUE(result);
+	SET_FUNCTION_RETURN_VALUE(result)
 }

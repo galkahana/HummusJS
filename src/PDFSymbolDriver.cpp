@@ -47,7 +47,7 @@ METHOD_RETURN_TYPE PDFSymbolDriver::NewInstance(const ARGS_TYPE& args)
     
 	Local<Object> instance = NEW_INSTANCE(constructor);
     
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFSymbolDriver::GetNewInstance()
@@ -73,7 +73,7 @@ METHOD_RETURN_TYPE PDFSymbolDriver::New(const ARGS_TYPE& args)
     
     PDFSymbolDriver* driver = new PDFSymbolDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFSymbolDriver::GetObject()
@@ -87,7 +87,7 @@ METHOD_RETURN_TYPE PDFSymbolDriver::GetValue(Local<String> property, const PROPE
 	CREATE_ESCAPABLE_SCOPE;
     
     Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFSymbolDriver>(info.Holder())->TheObject->GetValue().c_str());
-    SET_ACCESSOR_RETURN_VALUE(result);
+    SET_ACCESSOR_RETURN_VALUE(result)
 }
 
 

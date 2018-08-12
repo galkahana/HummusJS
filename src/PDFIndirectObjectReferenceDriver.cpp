@@ -48,7 +48,7 @@ METHOD_RETURN_TYPE PDFIndirectObjectReferenceDriver::NewInstance(const ARGS_TYPE
     
 	Local<Object> instance = NEW_INSTANCE(constructor);
     
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFIndirectObjectReferenceDriver::GetNewInstance()
@@ -74,7 +74,7 @@ METHOD_RETURN_TYPE PDFIndirectObjectReferenceDriver::New(const ARGS_TYPE& args)
     
     PDFIndirectObjectReferenceDriver* driver = new PDFIndirectObjectReferenceDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE( args.This());
+	SET_FUNCTION_RETURN_VALUE( args.This())
 }
 
 PDFObject* PDFIndirectObjectReferenceDriver::GetObject()
@@ -88,7 +88,7 @@ METHOD_RETURN_TYPE PDFIndirectObjectReferenceDriver::GetObjectID(const ARGS_TYPE
 	CREATE_ESCAPABLE_SCOPE;
     
     Local<Number> result = NEW_NUMBER(ObjectWrap::Unwrap<PDFIndirectObjectReferenceDriver>(args.This())->TheObject->mObjectID);
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFIndirectObjectReferenceDriver::GetVersion(const ARGS_TYPE& args)
@@ -97,5 +97,5 @@ METHOD_RETURN_TYPE PDFIndirectObjectReferenceDriver::GetVersion(const ARGS_TYPE&
 	CREATE_ESCAPABLE_SCOPE;
     
     Local<Number> result = NEW_NUMBER(ObjectWrap::Unwrap<PDFIndirectObjectReferenceDriver>(args.This())->TheObject->mVersion);
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }

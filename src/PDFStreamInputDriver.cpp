@@ -50,7 +50,7 @@ METHOD_RETURN_TYPE PDFStreamInputDriver::NewInstance(const ARGS_TYPE& args)
     
 	Local<Object> instance = NEW_INSTANCE(constructor);
     
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFStreamInputDriver::GetNewInstance()
@@ -76,7 +76,7 @@ METHOD_RETURN_TYPE PDFStreamInputDriver::New(const ARGS_TYPE& args)
     PDFStreamInputDriver* driver = new PDFStreamInputDriver();
 
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFStreamInputDriver::GetObject()
@@ -92,7 +92,7 @@ METHOD_RETURN_TYPE PDFStreamInputDriver::GetDictionary(const ARGS_TYPE& args)
     RefCountPtr<PDFDictionary> streamDict = driver->TheObject->QueryStreamDictionary();
     Handle<Value> result = PDFObjectDriver::CreateDriver(streamDict.GetPtr());
 
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFStreamInputDriver::GetStreamContentStart(const ARGS_TYPE& args)
@@ -102,5 +102,5 @@ METHOD_RETURN_TYPE PDFStreamInputDriver::GetStreamContentStart(const ARGS_TYPE& 
     PDFStreamInputDriver* driver = ObjectWrap::Unwrap<PDFStreamInputDriver>(args.This());
     Handle<Number> result = NEW_NUMBER(driver->TheObject->GetStreamContentStart());
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }

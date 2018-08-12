@@ -81,7 +81,7 @@ METHOD_RETURN_TYPE InputFileDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> InputFileDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -111,7 +111,7 @@ METHOD_RETURN_TYPE InputFileDriver::New(const ARGS_TYPE& args)
         inputFile->OpenFile(*String::Utf8Value(args[0]->ToString()));
     
     inputFile->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE InputFileDriver::OpenFile(const ARGS_TYPE& args)
@@ -122,7 +122,7 @@ METHOD_RETURN_TYPE InputFileDriver::OpenFile(const ARGS_TYPE& args)
     if(args.Length() != 1 || !args[0]->IsString())
     {
 		THROW_EXCEPTION("wrong arguments. please provide a string for the file path");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
     InputFileDriver* driver = ObjectWrap::Unwrap<InputFileDriver>(args.This());
@@ -131,17 +131,17 @@ METHOD_RETURN_TYPE InputFileDriver::OpenFile(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->OpenFile(*String::Utf8Value(args[0]->ToString())) != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("can't open file. make sure path exists");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE InputFileDriver::CloseFile(const ARGS_TYPE& args)
@@ -154,14 +154,14 @@ METHOD_RETURN_TYPE InputFileDriver::CloseFile(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->mInputFileInstance)
         driver->mInputFileInstance->CloseFile();
     
-    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE InputFileDriver::GetFilePath(const ARGS_TYPE& args)
@@ -174,14 +174,14 @@ METHOD_RETURN_TYPE InputFileDriver::GetFilePath(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->mInputFileInstance && driver->mInputFileInstance->GetInputStream())
-        SET_FUNCTION_RETURN_VALUE(NEW_STRING(driver->mInputFileInstance->GetFilePath().c_str()));
+        SET_FUNCTION_RETURN_VALUE(NEW_STRING(driver->mInputFileInstance->GetFilePath().c_str()))
     else
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 METHOD_RETURN_TYPE InputFileDriver::GetFileSize(const ARGS_TYPE& args)
@@ -194,14 +194,14 @@ METHOD_RETURN_TYPE InputFileDriver::GetFileSize(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     if(driver->mInputFileInstance && driver->mInputFileInstance->GetInputStream())
-        SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(driver->mInputFileInstance->GetFileSize()));
+        SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(driver->mInputFileInstance->GetFileSize()))
     else
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 
 }
 
@@ -215,7 +215,7 @@ METHOD_RETURN_TYPE InputFileDriver::GetInputStream(const ARGS_TYPE& args)
     if(!driver)
     {
 		THROW_EXCEPTION("no driver created...please create one through Hummus");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -225,10 +225,10 @@ METHOD_RETURN_TYPE InputFileDriver::GetInputStream(const ARGS_TYPE& args)
         
         ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(result->ToObject())->SetStream(driver->mInputFileInstance->GetInputStream(), false);
         
-        SET_FUNCTION_RETURN_VALUE(result);
+        SET_FUNCTION_RETURN_VALUE(result)
     }
     else
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 }
 
