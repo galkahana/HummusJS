@@ -38,7 +38,7 @@ METHOD_RETURN_TYPE PDFObjectParserDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 	
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFObjectParserDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -64,7 +64,7 @@ METHOD_RETURN_TYPE PDFObjectParserDriver::New(const ARGS_TYPE& args)
 
     PDFObjectParserDriver* driver = new PDFObjectParserDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFObjectParserDriver::ParseNewObject(const ARGS_TYPE& args)
@@ -77,7 +77,7 @@ METHOD_RETURN_TYPE PDFObjectParserDriver::ParseNewObject(const ARGS_TYPE& args)
     RefCountPtr<PDFObject> newObject = self->PDFObjectParserInstance->ParseNewObject();
     
     if(!newObject)
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     else
-        SET_FUNCTION_RETURN_VALUE(PDFObjectDriver::CreateDriver(newObject.GetPtr()));
+        SET_FUNCTION_RETURN_VALUE(PDFObjectDriver::CreateDriver(newObject.GetPtr()))
 }

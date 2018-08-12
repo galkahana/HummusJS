@@ -53,7 +53,7 @@ METHOD_RETURN_TYPE XObjectContentContextDriver::NewInstance(const ARGS_TYPE& arg
     
     Local<Object> instance = NEW_INSTANCE(constructor);
     
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> XObjectContentContextDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -73,7 +73,7 @@ METHOD_RETURN_TYPE XObjectContentContextDriver::New(const ARGS_TYPE& args)
     XObjectContentContextDriver* form = new XObjectContentContextDriver();
     form->Wrap(args.This());
     
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 AbstractContentContext* XObjectContentContextDriver::GetContext()

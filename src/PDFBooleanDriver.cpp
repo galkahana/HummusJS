@@ -46,7 +46,7 @@ METHOD_RETURN_TYPE PDFBooleanDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFBooleanDriver::GetNewInstance()
@@ -72,7 +72,7 @@ METHOD_RETURN_TYPE PDFBooleanDriver::New(const ARGS_TYPE& args)
     
     PDFBooleanDriver* driver = new PDFBooleanDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFBooleanDriver::GetObject()
@@ -88,7 +88,7 @@ METHOD_RETURN_TYPE PDFBooleanDriver::GetValue(Local<String> property, const PROP
     Handle<Boolean> result = NEW_BOOLEAN(ObjectWrap::Unwrap<PDFBooleanDriver>(info.Holder())->TheObject->GetValue());
 
     
-    SET_ACCESSOR_RETURN_VALUE(result);
+    SET_ACCESSOR_RETURN_VALUE(result)
 }
 
 

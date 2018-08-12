@@ -117,7 +117,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     
     Local<Object> instance = NEW_INSTANCE(constructor);
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFWriterDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -138,7 +138,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::New(const ARGS_TYPE& args)
         
     pdfWriter->Wrap(args.This());
     
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::End(const ARGS_TYPE& args)
@@ -162,7 +162,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::End(const ARGS_TYPE& args)
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to end PDF");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(pdfWriter->mWriteStreamProxy)
@@ -177,7 +177,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::End(const ARGS_TYPE& args)
         pdfWriter->mReadStreamProxy = NULL;
     }
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreatePage(const ARGS_TYPE& args)
@@ -185,7 +185,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePage(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(args));
+    SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(args))
     
 }
 
@@ -196,7 +196,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::WritePage(const ARGS_TYPE& args)
     
     WritePageAndReturnID(args);
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -209,21 +209,21 @@ METHOD_RETURN_TYPE PDFWriterDriver::WritePageAndReturnID(const ARGS_TYPE& args)
     
 	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
     if(!pageDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(pageDriver->ContentContext &&
        (pdfWriter->mPDFWriter.EndPageContentContext(pageDriver->ContentContext) != PDFHummus::eSuccess))
     {
 		THROW_EXCEPTION("Unable to finalize page context");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     pageDriver->ContentContext = NULL;
     
@@ -232,10 +232,10 @@ METHOD_RETURN_TYPE PDFWriterDriver::WritePageAndReturnID(const ARGS_TYPE& args)
     if(result.first != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to write page");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result.second));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result.second))
     
 }
 
@@ -248,14 +248,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     
 	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
     if(!pageDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     
@@ -267,7 +267,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     // save it also at page driver, so we can end the context when the page is written
     pageDriver->ContentContext = contentContextDriver->ContentContext;
     
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::PausePageContentContext(const ARGS_TYPE& args)
@@ -279,25 +279,25 @@ METHOD_RETURN_TYPE PDFWriterDriver::PausePageContentContext(const ARGS_TYPE& arg
     
 	if (args.Length() != 1 || !PageContentContextDriver::HasInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a page context as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     PageContentContextDriver* pageContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(args[0]->ToObject());
     if(!pageContextDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a page context as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(!pageContextDriver->ContentContext)
     {
 		THROW_EXCEPTION("paused context not initialized, please create one using pdfWriter.startPageContentContext");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     pdfWriter->mPDFWriter.PausePageContentContext(pageContextDriver->ContentContext);
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
@@ -309,7 +309,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
         || (args.Length() == 5 && !args[4]->IsNumber()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 4 coordinates of the form rectangle and an optional 5th agument which is the forward reference ID");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
      
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -328,7 +328,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
                                                                                          TO_NUMBER(args[1])->Value(),
                                                                                          TO_NUMBER(args[2])->Value(),
                                                                                          TO_NUMBER(args[3])->Value()));
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::EndFormXObject(const ARGS_TYPE& args)
@@ -340,19 +340,19 @@ METHOD_RETURN_TYPE PDFWriterDriver::EndFormXObject(const ARGS_TYPE& args)
     
 	if (args.Length() != 1 || !FormXObjectDriver::HasInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a form as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     FormXObjectDriver* formContextDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
     if(!formContextDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a form as the single parameter");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
         
     pdfWriter->mPDFWriter.EndFormXObject(formContextDriver->FormXObject);
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -366,7 +366,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     if((args.Length() != 1  && args.Length() != 2 ) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image or an image stream. Optionally pass an object ID for a forward reference image");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -393,12 +393,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     if(!formXObject)
     {
 		THROW_EXCEPTION("unable to create form xobject. verify that the target is an existing jpg file/stream");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::RetrieveJPGImageInformation(const ARGS_TYPE& args)
@@ -410,7 +410,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::RetrieveJPGImageInformation(const ARGS_TYPE&
        !args[0]->IsString())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -419,7 +419,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::RetrieveJPGImageInformation(const ARGS_TYPE&
     if(!info.first)
     {
 		THROW_EXCEPTION("unable to retrieve image information");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Object> result = NEW_OBJECT;
@@ -448,7 +448,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::RetrieveJPGImageInformation(const ARGS_TYPE&
 		result->Set(NEW_SYMBOL("PhotoshopYDensity"), NEW_NUMBER(info.second.PhotoshopYDensity));
     }
 
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& args)
@@ -459,7 +459,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
     if((args.Length() != 1  && args.Length() != 2 ) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image or an image stream. Optionally pass an object ID for a forward reference image");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -486,12 +486,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
     if(!formXObject)
     {
 		THROW_EXCEPTION("unable to create form xobject. verify that the target is an existing png file/stream");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
@@ -505,7 +505,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
                 (args.Length() == 3 && !args[1]->IsString() && !args[2]->IsNumber()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the font file, with option to a 2nd parameter for another path in case of type 1 font. another optional argument may follow with font index in case of font packages (TTC, DFont)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -535,12 +535,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
     if(!usedFont)
     {
 		THROW_EXCEPTION("unable to create font object. verify that the target is an existing and supported font type (ttf,otf,type1,dfont,ttc)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = UsedFontDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<UsedFontDriver>(newInstance->ToObject())->UsedFont = usedFont;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::AttachURLLinktoCurrentPage(const ARGS_TYPE& args)
@@ -556,7 +556,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AttachURLLinktoCurrentPage(const ARGS_TYPE& 
         !args[4]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass a url, and 4 numbers (left,bottom,right,top) for the rectangle valid for clicking");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -569,10 +569,10 @@ METHOD_RETURN_TYPE PDFWriterDriver::AttachURLLinktoCurrentPage(const ARGS_TYPE& 
     if(status != eSuccess)
     {
 		THROW_EXCEPTION("unable to attach link to current page. will happen if the input URL may not be encoded to ascii7");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -585,7 +585,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::Shutdown(const ARGS_TYPE& args)
        !args[0]->IsString())
     {
 		THROW_EXCEPTION("wrong arguments, pass a path to save the state file to");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -594,10 +594,10 @@ METHOD_RETURN_TYPE PDFWriterDriver::Shutdown(const ARGS_TYPE& args)
     if(status != eSuccess)
     {
 		THROW_EXCEPTION("unable to save state file. verify that path is not occupied");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFHummus::EStatusCode PDFWriterDriver::StartPDF(const std::string& inOutputFilePath,
@@ -683,7 +683,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
     if((args.Length() != 1 && args.Length() != 2) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsObject() && !args[1]->IsNumber()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image, and optionally an options object or object ID");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -752,12 +752,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
     if(!formXObject)
     {
 		THROW_EXCEPTION("unable to create form xobject. verify that the target is an existing tiff file");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
@@ -795,7 +795,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
     if((args.Length() != 1 && args.Length() != 2) || (!args[0]->IsString() && !args[0]->IsObject()) || (args.Length() == 2 && !args[1]->IsNumber()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is the path to the image. pass another optional argument of a forward reference object ID");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -822,12 +822,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
     if(!imageXObject)
     {
 		THROW_EXCEPTION("unable to create image xobject. verify that the target is an existing jpg file");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = ImageXObjectDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<ImageXObjectDriver>(newInstance->ToObject())->ImageXObject = imageXObject;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetObjectsContext(const ARGS_TYPE& args)
@@ -841,7 +841,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetObjectsContext(const ARGS_TYPE& args)
     ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(newInstance->ToObject());
     objectsContextDriver->ObjectsContextInstance = &(pdfWriter->mPDFWriter.GetObjectsContext());
  
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetDocumentContext(const ARGS_TYPE& args)
@@ -855,7 +855,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetDocumentContext(const ARGS_TYPE& args)
     DocumentContextDriver* documentContextDriver = ObjectWrap::Unwrap<DocumentContextDriver>(newInstance->ToObject());
     documentContextDriver->DocumentContextInstance = &(pdfWriter->mPDFWriter.GetDocumentContext());
     
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 
@@ -870,7 +870,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
        )
     {
 		THROW_EXCEPTION("wrong arguments, pass a path for file to append pages from or a stream object, optionally an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -910,7 +910,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     if(result.first != eSuccess)
     {
 		THROW_EXCEPTION("unable to append page, make sure it's fine");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Local<Array> resultPageIDs = NEW_ARRAY((unsigned int)result.second.size());
@@ -920,7 +920,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     for(; it != result.second.end();++it)
         resultPageIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
     
-    SET_FUNCTION_RETURN_VALUE(resultPageIDs);
+    SET_FUNCTION_RETURN_VALUE(resultPageIDs)
 }
 
 PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
@@ -1000,20 +1000,20 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     if(args.Length() < 2)
     {
 		THROW_EXCEPTION("Too few arguments. Pass a page object, a path to pages source file or an IByteReaderWithPosition, and two optional: configuration object and callback function that will be called between pages merging");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(!PDFPageDriver::HasInstance(args[0]))
     {
 		THROW_EXCEPTION("Invalid arguments. First argument must be a page object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)        
     }
     
     if(!args[1]->IsString() && 
        !args[1]->IsObject())
     {
 		THROW_EXCEPTION("Invalid arguments. Second argument must be either an input stream or a path to a pages source file.");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -1073,9 +1073,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     if(status != eSuccess)
     {
 		THROW_EXCEPTION("unable to append to page, make sure source file exists");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& args)
@@ -1089,7 +1089,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
        )
     {
 		THROW_EXCEPTION("wrong arguments, pass a path to a PDF file to create copying context for or a stream object, and then an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -1134,13 +1134,13 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     if(!copyingContext)
     {
 		THROW_EXCEPTION("unable to create copying context. verify that the target is an existing PDF file");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = DocumentCopyingContextDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->ReadStreamProxy = proxy;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& args)
@@ -1158,7 +1158,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
        )
     {
 		THROW_EXCEPTION("wrong arguments, pass a path to the file, and optionals - a box enumerator or actual 4 numbers box, a range object, a matrix for the form, array of object ids to copy in addition");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -1185,7 +1185,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         if(matrixArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         for(int i=0;i<6;++i)
@@ -1209,7 +1209,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         if(boxArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         PDFRectangle box(TO_NUMBER(boxArray->Get(0))->Value(),
@@ -1239,7 +1239,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     if(result.first != eSuccess)
     {
 		THROW_EXCEPTION("unable to create forms from file. make sure the file exists, and that the input page range is valid (well, if you provided one..m'k?");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Local<Array> resultFormIDs = NEW_ARRAY((unsigned int)result.second.size());
@@ -1249,7 +1249,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     for(; it != result.second.end();++it)
         resultFormIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
     
-    SET_FUNCTION_RETURN_VALUE(resultFormIDs);
+    SET_FUNCTION_RETURN_VALUE(resultFormIDs)
 }
  
 METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContextForModifiedFile(const ARGS_TYPE& args)
@@ -1263,19 +1263,19 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContextForModifiedFile(const
     if(!copyingContext)
     {
 		THROW_EXCEPTION("unable to create copying context for modified file...possibly a file is not being modified by this writer...");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = DocumentCopyingContextDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFTextString(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args));
+    SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args))
     
 }
 
@@ -1283,7 +1283,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFDate(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    SET_FUNCTION_RETURN_VALUE(PDFDateDriver::GetNewInstance(args));
+    SET_FUNCTION_RETURN_VALUE(PDFDateDriver::GetNewInstance(args))
     
 }
 
@@ -1304,7 +1304,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
        )
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 to 3 arguments. a path to an image, an optional image index (for multi-image files), and an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -1328,7 +1328,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
     
     newObject->Set(NEW_STRING("width"),NEW_NUMBER(dimensions.first));
     newObject->Set(NEW_STRING("height"),NEW_NUMBER(dimensions.second));
-    SET_FUNCTION_RETURN_VALUE(newObject);
+    SET_FUNCTION_RETURN_VALUE(newObject)
 };
 
 
@@ -1343,7 +1343,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
        )
 	{
 		THROW_EXCEPTION("wrong arguments, pass 1 argument and an optional one. a path to an image, and an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
 	PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -1359,7 +1359,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
 
 	unsigned long result = pdfWriter->mPDFWriter.GetImagePagesCount(*String::Utf8Value(args[0]->ToString()),parsingOptions);
 
-	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result));
+	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(result))
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetImageType(const ARGS_TYPE& args) {
@@ -1370,7 +1370,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageType(const ARGS_TYPE& args) {
 		!args[0]->IsString())
 	{
 		THROW_EXCEPTION("wrong arguments, pass 1 argument. a path to an imag");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
 	PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
@@ -1381,27 +1381,27 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageType(const ARGS_TYPE& args) {
     {
         case PDFHummus::ePDF:
         {
-            SET_FUNCTION_RETURN_VALUE(NEW_STRING("PDF"));
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("PDF"))
             break;
         }
         case PDFHummus::eJPG:
         {
-            SET_FUNCTION_RETURN_VALUE(NEW_STRING("JPEG"));
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("JPEG"))
             break;
         }
         case PDFHummus::eTIFF:
         {
-            SET_FUNCTION_RETURN_VALUE(NEW_STRING("TIFF"));
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("TIFF"))
             break;
         }
         case PDFHummus::ePNG:
         {
-            SET_FUNCTION_RETURN_VALUE(NEW_STRING("PNG"));
+            SET_FUNCTION_RETURN_VALUE(NEW_STRING("PNG"))
             break;
         }
         default:
         {
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);    
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)    
         }
     }
 }
@@ -1417,12 +1417,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedFileParser(const ARGS_TYPE& args)
     if(!parser->GetTrailer()) // checking for the trailer should be a good indication to whether this parser is relevant
     {
 		THROW_EXCEPTION("unable to create modified parser...possibly a file is not being modified by this writer...");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = PDFReaderDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->ToObject())->SetFromOwnedParser(parser);
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedInputFile(const ARGS_TYPE& args)
@@ -1436,12 +1436,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedInputFile(const ARGS_TYPE& args)
     if(!inputFile->GetInputStream()) 
     {
 		THROW_EXCEPTION("unable to create modified input file...possibly a file is not being modified by this writer...");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = InputFileDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<InputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(inputFile);
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::GetOutputFile(const ARGS_TYPE& args)
@@ -1455,12 +1455,12 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetOutputFile(const ARGS_TYPE& args)
     if(!outputFile->GetOutputStream())
     {
 		THROW_EXCEPTION("unable to get output file. probably pdf writing hasn't started, or the output is not to a file");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> newInstance = OutputFileDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<OutputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(outputFile);
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(const ARGS_TYPE& args)
@@ -1472,14 +1472,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(
        !args[0]->IsNumber())
     {
         THROW_EXCEPTION("wrong arguments,  pass an object ID for an annotation to register");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
     pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(TO_NUMBER(args[0])->Uint32Value());
 
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::RequireCatalogUpdate(const ARGS_TYPE& args)
@@ -1491,7 +1491,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::RequireCatalogUpdate(const ARGS_TYPE& args)
 
     pdfWriter->mIsCatalogUpdateRequired = true;
 
-    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
 
 /*

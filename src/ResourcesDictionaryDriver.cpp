@@ -53,7 +53,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     
     Local<Object> instance = NEW_INSTANCE(constructor);
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> ResourcesDictionaryDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -89,7 +89,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::New(const ARGS_TYPE& args)
     ResourcesDictionaryDriver* form = new ResourcesDictionaryDriver();
     form->Wrap(args.This());
     
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFormXObjectMapping(const ARGS_TYPE& args)
@@ -100,7 +100,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFormXObjectMapping(const ARGS_T
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the form xobject id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -109,7 +109,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFormXObjectMapping(const ARGS_T
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddFormXObjectMapping(
                                                                                                         (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
     
 }
 
@@ -121,7 +121,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddImageXObjectMapping(const ARGS_
     if(args.Length() != 1)
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the image xobject or its ID");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -134,7 +134,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddImageXObjectMapping(const ARGS_
                                                                                 ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->ToObject())->ImageXObject
                                                                                     ).c_str());
         
-        SET_FUNCTION_RETURN_VALUE(name);
+        SET_FUNCTION_RETURN_VALUE(name)
     }
     else if(args[0]->IsNumber())
     {
@@ -142,12 +142,12 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddImageXObjectMapping(const ARGS_
                                          resourcesDictionaryDriver->ResourcesDictionaryInstance->AddImageXObjectMapping(
                                                                                                                        (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
         
-        SET_FUNCTION_RETURN_VALUE(name);
+        SET_FUNCTION_RETURN_VALUE(name)
     }
     else
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the image xobject or its ID");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 }
 
@@ -159,14 +159,14 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddProcsetResource(const ARGS_TYPE
     if(args.Length() != 1 || !args[0]->IsString())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the procset name");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
     
     resourcesDictionaryDriver->ResourcesDictionaryInstance->AddProcsetResource(*String::Utf8Value(args[0]->ToString()));
     
-     SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+     SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
 }
 
@@ -178,7 +178,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddExtGStateMapping(const ARGS_TYP
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the external graphic state object id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -187,7 +187,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddExtGStateMapping(const ARGS_TYP
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddExtGStateMapping(
                                                                                                                    (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFontMapping(const ARGS_TYPE& args)
@@ -198,7 +198,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFontMapping(const ARGS_TYPE& ar
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the font object id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -207,7 +207,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddFontMapping(const ARGS_TYPE& ar
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddFontMapping(
                                                                                                                  (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddColorSpaceMapping(const ARGS_TYPE& args)
@@ -218,7 +218,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddColorSpaceMapping(const ARGS_TY
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the color space id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -227,7 +227,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddColorSpaceMapping(const ARGS_TY
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddColorSpaceMapping(
                                                                                                             (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPatternMapping(const ARGS_TYPE& args)
@@ -238,7 +238,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPatternMapping(const ARGS_TYPE&
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the pattern object id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -247,7 +247,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPatternMapping(const ARGS_TYPE&
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddPatternMapping(
                                                                                                                   (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPropertyMapping(const ARGS_TYPE& args)
@@ -258,7 +258,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPropertyMapping(const ARGS_TYPE
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the property object id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -267,7 +267,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddPropertyMapping(const ARGS_TYPE
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddPropertyMapping(
                                                                                                                (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddXObjectMapping(const ARGS_TYPE& args)
@@ -278,7 +278,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddXObjectMapping(const ARGS_TYPE&
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the xobject id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -287,7 +287,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddXObjectMapping(const ARGS_TYPE&
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddXObjectMapping(
                                                                                                                 (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddShadingMapping(const ARGS_TYPE& args)
@@ -298,7 +298,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddShadingMapping(const ARGS_TYPE&
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is the shading object id");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
@@ -307,7 +307,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddShadingMapping(const ARGS_TYPE&
                                      resourcesDictionaryDriver->ResourcesDictionaryInstance->AddShadingMapping(
                                                                                                                (ObjectIDType)(TO_UINT32(args[0])->Value())).c_str());
     
-    SET_FUNCTION_RETURN_VALUE(name);
+    SET_FUNCTION_RETURN_VALUE(name)
 }
 
 

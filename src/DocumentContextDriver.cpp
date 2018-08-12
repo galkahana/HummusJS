@@ -45,7 +45,7 @@ METHOD_RETURN_TYPE DocumentContextDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> DocumentContextDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -72,7 +72,7 @@ METHOD_RETURN_TYPE DocumentContextDriver::New(const ARGS_TYPE& args)
     DocumentContextDriver* objectsContext = new DocumentContextDriver();
     objectsContext->Wrap(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DocumentContextDriver::GetInfoDictionary(const ARGS_TYPE& args)
@@ -84,14 +84,14 @@ METHOD_RETURN_TYPE DocumentContextDriver::GetInfoDictionary(const ARGS_TYPE& arg
     if(!driver->DocumentContextInstance)
     {
 		THROW_EXCEPTION("document context driver not initialized. use the pdfwriter to get the current document context");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> infoDictionaryDriverObject = InfoDictionaryDriver::GetNewInstance();
     InfoDictionaryDriver* infoDictDriver = ObjectWrap::Unwrap<InfoDictionaryDriver>(infoDictionaryDriverObject->ToObject());
     infoDictDriver->InfoDictionaryInstance = &(driver->DocumentContextInstance->GetTrailerInformation().GetInfo());
     
-	SET_FUNCTION_RETURN_VALUE(infoDictionaryDriverObject);
+	SET_FUNCTION_RETURN_VALUE(infoDictionaryDriverObject)
 }
 
 

@@ -30,8 +30,8 @@
 #define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
 #define CREATE_SCOPE HandleScope scope(isolate)
 #define CREATE_ESCAPABLE_SCOPE v8::EscapableHandleScope scope(isolate)
-#define SET_FUNCTION_RETURN_VALUE(v) args.GetReturnValue().Set(v)
-#define SET_ACCESSOR_RETURN_VALUE(v) info.GetReturnValue().Set(v)
+#define SET_FUNCTION_RETURN_VALUE(v) {args.GetReturnValue().Set(v); return;}
+#define SET_ACCESSOR_RETURN_VALUE(v) {info.GetReturnValue().Set(v); return;}
 #define HAS_INSTANCE(c,o) Local<FunctionTemplate>::New(isolate, c)->HasInstance(o->ToObject())
 #define UNDEFINED Undefined(isolate)
 #define THROW_EXCEPTION(s) isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,s)))
@@ -87,8 +87,8 @@
 #define CREATE_ESCAPABLE_SCOPE v8::HandleScope scope
 #define NEW_INSTANCE(c) c->NewInstance()
 #define NEW_INSTANCE_ARGS(c,argc,argv) c->NewInstance(argc,argv)
-#define SET_ACCESSOR_RETURN_VALUE(v) return scope.Close(v)
-#define SET_FUNCTION_RETURN_VALUE(v) return scope.Close(v)
+#define SET_FUNCTION_RETURN_VALUE(v) return scope.Close(v);
+#define SET_ACCESSOR_RETURN_VALUE(v) return scope.Close(v);
 #define HAS_INSTANCE(c,o) c->HasInstance(o->ToObject())
 #define UNDEFINED Undefined()
 #define THROW_EXCEPTION(s) ThrowException(Exception::TypeError(String::New(s)))

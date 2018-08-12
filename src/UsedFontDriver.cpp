@@ -57,7 +57,7 @@ METHOD_RETURN_TYPE UsedFontDriver::NewInstance(const ARGS_TYPE& args)
     
     Local<Object> instance = NEW_INSTANCE(constructor);
         
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> UsedFontDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -83,7 +83,7 @@ METHOD_RETURN_TYPE UsedFontDriver::New(const ARGS_TYPE& args)
     
     UsedFontDriver* usedFont = new UsedFontDriver();
     usedFont->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
@@ -97,7 +97,7 @@ METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
     if(args.Length() > 1 || (args.Length() && !args[0]->IsNumber()))
     {
         THROW_EXCEPTION("Wrong arguments, optionally provide a font size");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
     if (args.Length())
@@ -115,7 +115,7 @@ METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
     #define HANDLE_FTERROR(_m) { FT_Error _err = _m; if (_err) { \
         FT_Activate_Size(oldSize); \
         THROW_EXCEPTION("Unknown font error"); \
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED); \
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED) \
     } }
 
     HANDLE_FTERROR(FT_New_Size(ftFont, &newSize));
@@ -146,7 +146,7 @@ METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
     HANDLE_FTERROR(FT_Activate_Size(oldSize));
     HANDLE_FTERROR(FT_Done_Size(newSize));
 
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
     #undef HANDLE_FTERROR
 }
 
@@ -165,7 +165,7 @@ METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args
        (args.Length() == 2 && !args[1]->IsNumber()))
     {
 		THROW_EXCEPTION("Wrong arguments, provide a string or array of glyph indexes, and optionally also a font size");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() == 2)
@@ -274,6 +274,6 @@ METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args
     result->Set(NEW_STRING("width"),NEW_NUMBER((double)(bbox.xMax-bbox.xMin)*fontSize/1000));
     result->Set(NEW_STRING("height"),NEW_NUMBER((double)(bbox.yMax-bbox.yMin)*fontSize/1000));
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
