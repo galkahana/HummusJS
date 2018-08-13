@@ -61,7 +61,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> FormXObjectDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -91,7 +91,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::New(const ARGS_TYPE& args)
     
     FormXObjectDriver* form = new FormXObjectDriver();
     form->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE FormXObjectDriver::GetID(Local<String> property, const PROPERTY_TYPE &info)
@@ -104,10 +104,10 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetID(Local<String> property, const PROPER
     if(!form->FormXObject)
     {
 		THROW_EXCEPTION("form object not initialized, create using pdfWriter.CreateFormXObject");
-		SET_ACCESSOR_RETURN_VALUE(UNDEFINED);
+		SET_ACCESSOR_RETURN_VALUE(UNDEFINED)
     }
     
-	SET_ACCESSOR_RETURN_VALUE(NEW_NUMBER(form->FormXObject->GetObjectID()));
+	SET_ACCESSOR_RETURN_VALUE(NEW_NUMBER(form->FormXObject->GetObjectID()))
 }
 
 METHOD_RETURN_TYPE FormXObjectDriver::GetContentContext(const ARGS_TYPE& args)
@@ -122,7 +122,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentContext(const ARGS_TYPE& args)
     contentContextDriver->FormOfContext = formDriver->FormXObject;
     contentContextDriver->SetResourcesDictionary(&(formDriver->FormXObject->GetResourcesDictionary()));
     
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE FormXObjectDriver::GetResourcesDictionary(const ARGS_TYPE& args)
@@ -135,7 +135,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetResourcesDictionary(const ARGS_TYPE& ar
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->ToObject());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(formDriver->FormXObject->GetResourcesDictionary());
     
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 
@@ -149,5 +149,5 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentStream(const ARGS_TYPE& args)
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
     streamDriver->PDFStreamInstance = formDriver->FormXObject->GetContentStream();
     
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }

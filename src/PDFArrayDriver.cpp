@@ -50,7 +50,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFArrayDriver::GetNewInstance()
@@ -76,7 +76,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::New(const ARGS_TYPE& args)
     
     PDFArrayDriver* array = new PDFArrayDriver();
     array->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFArrayDriver::GetObject()
@@ -99,7 +99,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::ToJSArray(const ARGS_TYPE& args)
         result->Set(NEW_NUMBER(i),PDFObjectDriver::CreateDriver(anObject.GetPtr()));
     }
 
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFArrayDriver::GetLength(const ARGS_TYPE& args)
@@ -111,7 +111,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::GetLength(const ARGS_TYPE& args)
     
     Local<Number> result = NEW_NUMBER(arrayDriver->TheObject->GetLength());
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFArrayDriver::QueryObject(const ARGS_TYPE& args)
@@ -122,7 +122,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::QueryObject(const ARGS_TYPE& args)
     if(args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is an index in the array");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -130,11 +130,11 @@ METHOD_RETURN_TYPE PDFArrayDriver::QueryObject(const ARGS_TYPE& args)
     if(TO_NUMBER(args[0])->Uint32Value() >= arrayDriver->TheObject->GetLength())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is a valid index in the array");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     RefCountPtr<PDFObject> anObject = arrayDriver->TheObject->QueryObject(TO_NUMBER(args[0])->Uint32Value());
     Handle<Value> result = PDFObjectDriver::CreateDriver(anObject.GetPtr());
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }

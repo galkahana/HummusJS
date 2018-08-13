@@ -62,7 +62,7 @@ METHOD_RETURN_TYPE PageContentContextDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PageContentContextDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -90,7 +90,7 @@ METHOD_RETURN_TYPE PageContentContextDriver::New(const ARGS_TYPE& args)
     PageContentContextDriver* pdfPage = new PageContentContextDriver();
     pdfPage->Wrap(args.This());
     
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 AbstractContentContext* PageContentContextDriver::GetContext()
@@ -108,7 +108,7 @@ METHOD_RETURN_TYPE PageContentContextDriver::GetCurrentPageContentStream(const A
     
     Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
     ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject())->PDFStreamInstance = driver->ContentContext->GetCurrentPageContentStream();
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PageContentContextDriver::GetAssociatedPage(const ARGS_TYPE& args)
@@ -117,5 +117,5 @@ METHOD_RETURN_TYPE PageContentContextDriver::GetAssociatedPage(const ARGS_TYPE& 
 	CREATE_ESCAPABLE_SCOPE;
     
     PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
-    SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(driver->ContentContext->GetAssociatedPage()));
+    SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(driver->ContentContext->GetAssociatedPage()))
 }

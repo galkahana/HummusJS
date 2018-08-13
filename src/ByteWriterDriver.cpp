@@ -59,7 +59,7 @@ METHOD_RETURN_TYPE ByteWriterDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> ByteWriterDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -85,7 +85,7 @@ METHOD_RETURN_TYPE ByteWriterDriver::New(const ARGS_TYPE& args)
     
     ByteWriterDriver* driver = new ByteWriterDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 void ByteWriterDriver::SetStream(IByteWriter* inWriter,bool inOwns)
@@ -113,7 +113,7 @@ METHOD_RETURN_TYPE ByteWriterDriver::Write(const ARGS_TYPE& args)
        !args[0]->IsArray())
     {
 		THROW_EXCEPTION("Wrong arguments. pass an array of bytes to write");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ByteWriterDriver* element = ObjectWrap::Unwrap<ByteWriterDriver>(args.This());
@@ -127,7 +127,7 @@ METHOD_RETURN_TYPE ByteWriterDriver::Write(const ARGS_TYPE& args)
     
     delete[] buffer;
     
-	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(bufferSize));
+	SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(bufferSize))
 }
 
 

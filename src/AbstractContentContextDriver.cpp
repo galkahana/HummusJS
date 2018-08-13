@@ -173,7 +173,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::b(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->b();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::B(const ARGS_TYPE& args)
@@ -186,7 +186,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::B(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->B();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::bStar(const ARGS_TYPE& args)
@@ -199,7 +199,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::bStar(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->bStar();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::BStar(const ARGS_TYPE& args)
@@ -212,7 +212,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::BStar(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->BStar();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::s(const ARGS_TYPE& args)
@@ -225,7 +225,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::s(const ARGS_TYPE& args)
 		THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->s();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::S(const ARGS_TYPE& args)
@@ -238,7 +238,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::S(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->S();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::f(const ARGS_TYPE& args)
@@ -251,7 +251,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::f(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->f();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::F(const ARGS_TYPE& args)
@@ -264,7 +264,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::F(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->F();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -278,7 +278,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::fStar(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->fStar();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -292,7 +292,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::n(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->n();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -305,18 +305,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::m(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 2 parameters, movement position");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->m(TO_NUMBER(args[0])->Value(),TO_NUMBER(args[1])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::l(const ARGS_TYPE& args)
@@ -328,18 +328,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::l(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 2 || !args[0]->IsNumber() || !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 2 parameters, line to position");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->l(TO_NUMBER(args[0])->Value(),TO_NUMBER(args[1])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::c(const ARGS_TYPE& args)
@@ -351,7 +351,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::c(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 6 ||
@@ -363,7 +363,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::c(const ARGS_TYPE& args)
         !args[5]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 6 parameters of the curve");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->c(TO_NUMBER(args[0])->Value(),
@@ -373,7 +373,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::c(const ARGS_TYPE& args)
                                     TO_NUMBER(args[4])->Value(),
                                     TO_NUMBER(args[5])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::v(const ARGS_TYPE& args)
@@ -385,7 +385,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::v(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 4 ||
@@ -395,7 +395,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::v(const ARGS_TYPE& args)
         !args[3]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 4 parameters of the curve");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->v(TO_NUMBER(args[0])->Value(),
@@ -403,7 +403,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::v(const ARGS_TYPE& args)
                                     TO_NUMBER(args[2])->Value(),
                                     TO_NUMBER(args[3])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::y(const ARGS_TYPE& args)
@@ -415,7 +415,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::y(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 4 ||
@@ -425,7 +425,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::y(const ARGS_TYPE& args)
         !args[3]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 4 parameters of the curve");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->y(TO_NUMBER(args[0])->Value(),
@@ -433,7 +433,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::y(const ARGS_TYPE& args)
                                     TO_NUMBER(args[2])->Value(),
                                     TO_NUMBER(args[3])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::h(const ARGS_TYPE& args)
@@ -445,12 +445,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::h(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->GetContext()->h();
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::re(const ARGS_TYPE& args)
@@ -462,12 +462,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::re(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()) {
 		THROW_EXCEPTION("Wrong Argument, please provide 4 parameters: 2 bottom left coordinates, and width and height measures");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->re(TO_NUMBER(args[0])->Value(),
@@ -475,7 +475,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::re(const ARGS_TYPE& args)
                                      TO_NUMBER(args[2])->Value(),
                                      TO_NUMBER(args[3])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::q(const ARGS_TYPE& args)
@@ -488,7 +488,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::q(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
     else
         contentContext->GetContext()->q();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::Q(const ARGS_TYPE& args)
@@ -501,7 +501,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Q(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
     else
         contentContext->GetContext()->Q();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::cm(const ARGS_TYPE& args)
@@ -513,7 +513,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::cm(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 6 ||
@@ -525,7 +525,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::cm(const ARGS_TYPE& args)
         !args[5]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->cm(TO_NUMBER(args[0])->Value(),
@@ -534,7 +534,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::cm(const ARGS_TYPE& args)
                                      TO_NUMBER(args[3])->Value(),
                                      TO_NUMBER(args[4])->Value(),
                                      TO_NUMBER(args[5])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::w(const ARGS_TYPE& args)
@@ -546,18 +546,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::w(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, width measure");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->w(TO_NUMBER(args[0])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::J(const ARGS_TYPE& args)
@@ -569,18 +569,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::J(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, line cap style");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->J(TO_NUMBER(args[0])->Int32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::j(const ARGS_TYPE& args)
@@ -592,18 +592,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::j(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, line join style");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->j(TO_NUMBER(args[0])->Int32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::M(const ARGS_TYPE& args)
@@ -615,18 +615,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::M(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, miter limit");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->M(TO_NUMBER(args[0])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
@@ -638,7 +638,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 2 ||
@@ -646,7 +646,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
         !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 2 parameters - array for dash pattern and dash phase number");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
     int dashArrayLength = TO_NUMBER(args[0]->ToObject()->Get(NEW_STRING("length")))->Int32Value();
@@ -658,7 +658,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
     
     delete[] dashArray;
                              
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::ri(const ARGS_TYPE& args)
@@ -670,17 +670,17 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::ri(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsString()) {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 string argument, the rendering intent");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->ri(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::i(const ARGS_TYPE& args)
@@ -692,18 +692,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::i(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, flatness");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->i(TO_NUMBER(args[0])->Int32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::gs(const ARGS_TYPE& args)
@@ -715,17 +715,17 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::gs(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsString()) {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 string argument, graphic state name");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->gs(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::CS(const ARGS_TYPE& args)
@@ -737,18 +737,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::CS(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsString())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide a color space name");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->CS(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::cs(const ARGS_TYPE& args)
@@ -760,18 +760,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::cs(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsString())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide a color space name");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->cs(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::SC(const ARGS_TYPE& args)
@@ -783,13 +783,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SC(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() == 0)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     
@@ -800,7 +800,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SC(const ARGS_TYPE& args)
     contentContext->GetContext()->SC(components,args.Length());
     
     delete[] components;
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::SCN(const ARGS_TYPE& args)
@@ -812,14 +812,14 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SCN(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() == 0 ||
         (args.Length() == 1 && !args[0]->IsNumber()))
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     bool hasPatternArgument = args[args.Length()-1]->IsString();
@@ -835,7 +835,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SCN(const ARGS_TYPE& args)
         contentContext->GetContext()->SCN(components,componentsLength);
     
     delete[] components;
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::sc(const ARGS_TYPE& args)
@@ -847,13 +847,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::sc(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() == 0)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     
@@ -864,7 +864,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::sc(const ARGS_TYPE& args)
     contentContext->GetContext()->sc(components,args.Length());
     
     delete[] components;
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::scn(const ARGS_TYPE& args)
@@ -876,14 +876,14 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::scn(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() == 0 ||
         (args.Length() == 1 && !args[0]->IsNumber()))
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide at least one color component");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     bool hasPatternArgument = args[args.Length()-1]->IsString();
@@ -899,7 +899,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::scn(const ARGS_TYPE& args)
         contentContext->GetContext()->scn(components,componentsLength);
     
     delete[] components;
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::G(const ARGS_TYPE& args)
@@ -911,18 +911,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::G(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, gray value (0-255)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->G(TO_NUMBER(args[0])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::g(const ARGS_TYPE& args)
@@ -934,18 +934,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::g(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context using pdfWriter.startPageContentContext(page)");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Argument, please provide 1 parameter, gray value (0-255)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->g(TO_NUMBER(args[0])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::RG(const ARGS_TYPE& args)
@@ -957,7 +957,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::RG(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 3 ||
@@ -966,13 +966,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::RG(const ARGS_TYPE& args)
         !args[2]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 3 arguments as rgb color values");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->RG(TO_NUMBER(args[0])->Value(),
                                      TO_NUMBER(args[1])->Value(),
                                      TO_NUMBER(args[2])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::rg(const ARGS_TYPE& args)
@@ -984,7 +984,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::rg(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 3 ||
@@ -993,13 +993,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::rg(const ARGS_TYPE& args)
         !args[2]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 3 arguments as rgb color values");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->rg(TO_NUMBER(args[0])->Value(),
                                      TO_NUMBER(args[1])->Value(),
                                      TO_NUMBER(args[2])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -1012,12 +1012,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::K(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()) {
 		THROW_EXCEPTION("Wrong Argument, please provide 4 cmyk components (values should be 0-255)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->K(TO_NUMBER(args[0])->Value(),
@@ -1025,7 +1025,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::K(const ARGS_TYPE& args)
                                     TO_NUMBER(args[2])->Value(),
                                     TO_NUMBER(args[3])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::k(const ARGS_TYPE& args)
@@ -1037,12 +1037,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::k(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 4 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber()) {
 		THROW_EXCEPTION("Wrong Argument, please provide 4 cmyk components (values should be 0-255)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->k(TO_NUMBER(args[0])->Value(),
@@ -1050,7 +1050,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::k(const ARGS_TYPE& args)
                                     TO_NUMBER(args[2])->Value(),
                                     TO_NUMBER(args[3])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::W(const ARGS_TYPE& args)
@@ -1062,12 +1062,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::W(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->GetContext()->W();
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::WStar(const ARGS_TYPE& args)
@@ -1079,12 +1079,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WStar(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->GetContext()->WStar();
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args)
@@ -1096,13 +1096,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
     if(!contentContext->GetContext() || !contentContext->mResourcesDictionary)
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() != 1)
     {
         THROW_EXCEPTION("Invalid arguments. pass an xobject");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args[0]->IsString())
@@ -1120,7 +1120,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
         if(!formDriver)
         {
             THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(formDriver->FormXObject->GetObjectID()));
@@ -1131,7 +1131,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
         if(!imageDriver)
         {
             THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddImageXObjectMapping(imageDriver->ImageXObject));
@@ -1139,9 +1139,9 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
     else
     {
         THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::Tc(const ARGS_TYPE& args)
@@ -1153,18 +1153,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tc(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide character space");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Tc(TO_NUMBER(args[0])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1177,18 +1177,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tw(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide word space");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Tw(TO_NUMBER(args[0])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1201,18 +1201,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tz(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide horizontal scaling");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Tz(TO_NUMBER(args[0])->Int32Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1225,18 +1225,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TL(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide text leading");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->TL(TO_NUMBER(args[0])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1249,18 +1249,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tr(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide rendering mode");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Tr(TO_NUMBER(args[0])->Int32Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1273,18 +1273,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Ts(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide font rise");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Ts(TO_NUMBER(args[0])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1298,7 +1298,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::BT(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->BT();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1312,7 +1312,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::ET(const ARGS_TYPE& args)
         THROW_EXCEPTION("Null content context. Please create a context");
     else
         contentContext->GetContext()->ET();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -1325,7 +1325,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Td(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 2 ||
@@ -1333,12 +1333,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Td(const ARGS_TYPE& args)
         !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 2 arguments");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Td(TO_NUMBER(args[0])->Value(),
                                      TO_NUMBER(args[1])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::TD(const ARGS_TYPE& args)
@@ -1350,7 +1350,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TD(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 2 ||
@@ -1358,12 +1358,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TD(const ARGS_TYPE& args)
         !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 2 arguments");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->TD(TO_NUMBER(args[0])->Value(),
                                      TO_NUMBER(args[1])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::Tm(const ARGS_TYPE& args)
@@ -1375,7 +1375,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tm(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 6 ||
@@ -1387,7 +1387,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tm(const ARGS_TYPE& args)
         !args[5]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 6 arguments forming a 2d transformation matrix (for text)");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->Tm(TO_NUMBER(args[0])->Value(),
@@ -1396,7 +1396,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tm(const ARGS_TYPE& args)
                                      TO_NUMBER(args[3])->Value(),
                                      TO_NUMBER(args[4])->Value(),
                                      TO_NUMBER(args[5])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::TStar(const ARGS_TYPE& args)
@@ -1408,11 +1408,11 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TStar(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->GetContext()->TStar();
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 
@@ -1426,7 +1426,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 2 ||
@@ -1434,7 +1434,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
         !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide a font object (create with pdfWriter.getFontForFile) or font resource name and a size measure");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     if(args[0]->IsString())
@@ -1445,7 +1445,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
         contentContext->GetContext()->Tf(
                                      ObjectWrap::Unwrap<UsedFontDriver>(args[0]->ToObject())->UsedFont,
                                      TO_NUMBER(args[1])->Value());
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1458,7 +1458,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tj(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if ((args.Length() != 1 && args.Length() != 2 ) ||
@@ -1466,7 +1466,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tj(const ARGS_TYPE& args)
         (args.Length() == 2 && !args[1]->IsObject()))
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 1 argument, the string that you wish to display or a glyphs IDs array, and an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
         
     
@@ -1492,7 +1492,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tj(const ARGS_TYPE& args)
                 contentContext->GetContext()->Tj(*String::Utf8Value(args[0]->ToString()));
         }
     }
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
@@ -1504,7 +1504,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if ((args.Length() != 1 && args.Length() != 2 ) ||
@@ -1512,7 +1512,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
         (args.Length() == 2 && !args[1]->IsObject()))
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 1 argument, the string that you wish to display or a glyphs IDs array, and an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     if(args[0]->IsArray())
@@ -1538,7 +1538,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
                 contentContext->GetContext()->Quote(*String::Utf8Value(args[0]->ToString()));
         }
     }
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& args)
@@ -1550,7 +1550,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if ((args.Length() != 3 && args.Length() != 4)||
@@ -1560,7 +1560,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
         (args.Length() == 4 && !args[3]->IsObject()))
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide 3 arguments, word spacing, character spacing and text, and optionally an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     if(args[2]->IsArray())
@@ -1596,7 +1596,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
     }
     
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
@@ -1608,7 +1608,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     // first, scan args to see if has arrays or lists, to realize which form of TJ to run
@@ -1642,7 +1642,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
         if(!status)
         {
             THROW_EXCEPTION("Wrong arguments. please provide a variable number of elements each either string/glyphs list or number, and an optional final options object");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
 
         
@@ -1676,12 +1676,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
         if(!status)
         {
             THROW_EXCEPTION("Wrong arguments. please provide a variable number of elements each either string/glyph list or number, and an optional final options object");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         contentContext->GetContext()->TJ(params);
         
     }
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Handle<Object>& inObject)
@@ -1743,18 +1743,18 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteFreeCode(const ARGS_TYPE& 
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
 	if (args.Length() != 1 ||
         !args[0]->IsString())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide string to write");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     contentContext->GetContext()->WriteFreeCode(*String::Utf8Value(args[0]->ToString()));
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
 
@@ -1769,13 +1769,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawPath(const ARGS_TYPE& args)
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() < 2)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide path coordinates and an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1789,7 +1789,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawPath(const ARGS_TYPE& args)
     }
     
     contentContext->FinishPath(args[args.Length() - 1]);
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& inMaybeOptions)
@@ -1924,13 +1924,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawCircle(const ARGS_TYPE& arg
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() < 3)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide x and y coordinates for center, radius and an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1960,7 +1960,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawCircle(const ARGS_TYPE& arg
  */
     
     contentContext->FinishPath(args[args.Length() - 1]);
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 /* context.drawSquare(x,y,l,[{type:stroke, color:#FF00FF, width:3, close:true}])
@@ -1974,13 +1974,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawSquare(const ARGS_TYPE& arg
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() < 3)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -1992,7 +1992,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawSquare(const ARGS_TYPE& arg
     );
 
     contentContext->FinishPath(args[args.Length() - 1]);
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 /* context.drawSquare(x,y,w,h,[{type:stroke, color:#FF00FF, width:3, close:true}])
@@ -2006,13 +2006,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawRectangle(const ARGS_TYPE& 
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() < 4)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide bottom left coordinates, width and height and optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->SetupColorAndLineWidth(args[args.Length() - 1]);
@@ -2024,7 +2024,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawRectangle(const ARGS_TYPE& 
                                      );
     
     contentContext->FinishPath(args[args.Length() - 1]);
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 #include <ft2build.h>
@@ -2067,13 +2067,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() < 3)
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide the text and x,y coordinate for text position. optionally also add an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     contentContext->GetContext()->BT();
@@ -2115,7 +2115,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 		}
 	}
 
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeOptions)
@@ -2142,7 +2142,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
     if(!contentContext->GetContext())
     {
         THROW_EXCEPTION("Null content context. Please create a context");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() < 3 ||
@@ -2152,7 +2152,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
        (args.Length() >= 4 && !args[3]->IsObject()))
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide bottom left coordinates, an edge size and optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
     /*
@@ -2220,5 +2220,5 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
                                             imagePath,
                                             imageOptions);    
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }

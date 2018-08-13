@@ -55,7 +55,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> DictionaryContextDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -100,7 +100,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::New(const ARGS_TYPE& args)
     DictionaryContextDriver* driver = new DictionaryContextDriver();
     driver->Wrap(args.This());
     
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteKey(const ARGS_TYPE& args)
@@ -112,7 +112,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteKey(const ARGS_TYPE& args)
        !args[0]->IsString())
     {
 		THROW_EXCEPTION("Wrong arguments, provide a string to write");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -121,11 +121,11 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteKey(const ARGS_TYPE& args)
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     driver->DictionaryContextInstance->WriteKey(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE& args)
@@ -139,7 +139,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
        (args.Length() == 4 && (!args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber() || !args[3]->IsNumber())))
     {
 		THROW_EXCEPTION("Wrong arguments, provide an array of 4 numbers, or 4 numbers");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -148,7 +148,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args.Length() == 1)
@@ -157,7 +157,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
         if(args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
         {
             THROW_EXCEPTION("Wrong arguments, provide an array of 4 numbers, or 4 numbers");
-            SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+            SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         driver->DictionaryContextInstance->WriteRectangleValue(PDFRectangle(
@@ -178,7 +178,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
     }
     
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteNameValue(const ARGS_TYPE& args)
@@ -190,7 +190,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNameValue(const ARGS_TYPE& args
        !args[0]->IsString())
     {
 		THROW_EXCEPTION("Wrong arguments, provide a string to write");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -199,12 +199,12 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNameValue(const ARGS_TYPE& args
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     driver->DictionaryContextInstance->WriteNameValue(*String::Utf8Value(args[0]->ToString()));
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_TYPE& args)
@@ -216,7 +216,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
        (!args[0]->IsString() && !args[0]->IsArray()))
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument that is a literal string (string) or an array");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
 
@@ -225,7 +225,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
 	if(args[0]->IsArray())
@@ -240,7 +240,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
     {
 		driver->DictionaryContextInstance->WriteLiteralStringValue(*String::Utf8Value(args[0]->ToString()));
 	}
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteBooleanValue(const ARGS_TYPE& args)
@@ -252,7 +252,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteBooleanValue(const ARGS_TYPE& a
        !args[0]->IsBoolean())
     {
 		THROW_EXCEPTION("Wrong arguments, provide a boolean to write");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args.This());
@@ -260,12 +260,12 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteBooleanValue(const ARGS_TYPE& a
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     driver->DictionaryContextInstance->WriteBooleanValue(args[0]->ToBoolean()->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS_TYPE& args)
@@ -277,7 +277,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments, provide an object id to write");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args.This());
@@ -285,12 +285,12 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)TO_NUMBER(args[0])->Uint32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE DictionaryContextDriver::WriteNumberValue(const ARGS_TYPE& args)
@@ -302,7 +302,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNumberValue(const ARGS_TYPE& ar
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments, provide a number to write");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args.This());
@@ -310,7 +310,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNumberValue(const ARGS_TYPE& ar
     if(!driver->DictionaryContextInstance)
     {
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     if(args[0]->IsUint32())
@@ -320,5 +320,5 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNumberValue(const ARGS_TYPE& ar
     else
         driver->DictionaryContextInstance->WriteDoubleValue(TO_NUMBER(args[0])->Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }

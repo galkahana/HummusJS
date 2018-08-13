@@ -68,7 +68,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::NewInstance(const ARGS_TYPE& ar
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> ByteReaderWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -95,7 +95,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::New(const ARGS_TYPE& args)
 
     ByteReaderWithPositionDriver* driver = new ByteReaderWithPositionDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 void ByteReaderWithPositionDriver::SetStream(IByteReaderWithPosition* inReader,bool inOwns)
@@ -123,7 +123,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Read(const ARGS_TYPE& args)
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. pass the number of bytes to read");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
@@ -137,7 +137,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Read(const ARGS_TYPE& args)
     for(LongBufferSizeType i=0;i<bufferSize;++i)
         outBuffer->Set(NEW_NUMBER(i),NEW_NUMBER(buffer[i]));
     
-    SET_FUNCTION_RETURN_VALUE(outBuffer);
+    SET_FUNCTION_RETURN_VALUE(outBuffer)
 }
 
 METHOD_RETURN_TYPE ByteReaderWithPositionDriver::NotEnded(const ARGS_TYPE& args)
@@ -147,7 +147,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::NotEnded(const ARGS_TYPE& args)
 
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(NEW_BOOLEAN(element->mInstance->NotEnded()));
+    SET_FUNCTION_RETURN_VALUE(NEW_BOOLEAN(element->mInstance->NotEnded()))
 }
 
 METHOD_RETURN_TYPE ByteReaderWithPositionDriver::GetCurrentPosition(const ARGS_TYPE& args)
@@ -157,7 +157,7 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::GetCurrentPosition(const ARGS_T
 
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->mInstance->GetCurrentPosition()));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->mInstance->GetCurrentPosition()))
 }
 
 METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Skip(const ARGS_TYPE& args)
@@ -169,14 +169,14 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::Skip(const ARGS_TYPE& args)
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. pass the number of bytes to skip");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     element->mInstance->Skip(TO_NUMBER(args[0])->Uint32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPosition(const ARGS_TYPE& args)
@@ -188,14 +188,14 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPosition(const ARGS_TYPE& ar
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. pass the position");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     element->mInstance->SetPosition(TO_NUMBER(args[0])->Uint32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPositionFromEnd(const ARGS_TYPE& args)
@@ -207,12 +207,12 @@ METHOD_RETURN_TYPE ByteReaderWithPositionDriver::SetPositionFromEnd(const ARGS_T
        !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. pass the position");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     
     ByteReaderWithPositionDriver* element = ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(args.This());
     element->mInstance->SetPositionFromEnd(TO_NUMBER(args[0])->Uint32Value());
     
-    SET_FUNCTION_RETURN_VALUE(args.This());
+    SET_FUNCTION_RETURN_VALUE(args.This())
 }

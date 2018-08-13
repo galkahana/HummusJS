@@ -60,7 +60,7 @@ METHOD_RETURN_TYPE PDFPageInputDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFPageInputDriver::GetNewInstance()
@@ -79,7 +79,7 @@ METHOD_RETURN_TYPE PDFPageInputDriver::New(const ARGS_TYPE& args)
     
     PDFPageInputDriver* element = new PDFPageInputDriver();
     element->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE( args.This());
+	SET_FUNCTION_RETURN_VALUE( args.This())
 }
 
 METHOD_RETURN_TYPE  PDFPageInputDriver::GetDictionary(const ARGS_TYPE& args)
@@ -92,14 +92,14 @@ METHOD_RETURN_TYPE  PDFPageInputDriver::GetDictionary(const ARGS_TYPE& args)
     if(!element->PageInput)
     {
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
     Handle<Value> newInstance;
 
     newInstance = PDFDictionaryDriver::GetNewInstance();
     ObjectWrap::Unwrap<PDFDictionaryDriver>(newInstance->ToObject())->TheObject = element->PageInputDictionary;
-    SET_FUNCTION_RETURN_VALUE(newInstance);
+    SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
 METHOD_RETURN_TYPE PDFPageInputDriver::GetMediaBox(const ARGS_TYPE& args)
@@ -112,10 +112,10 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetMediaBox(const ARGS_TYPE& args)
     if(!element->PageInput)
     {
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 	else
-		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetMediaBox()));
+		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetMediaBox()))
 }
 
 Handle<Value> PDFPageInputDriver::GetArrayForPDFRectangle(const PDFRectangle& inRectangle)
@@ -142,10 +142,10 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetCropBox(const ARGS_TYPE& args)
 	if (!element->PageInput)
 	{
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 	else
-		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetCropBox()));
+		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetCropBox()))
 }
 
 METHOD_RETURN_TYPE PDFPageInputDriver::GetTrimBox(const ARGS_TYPE& args)
@@ -158,10 +158,10 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetTrimBox(const ARGS_TYPE& args)
 	if (!element->PageInput)
 	{
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 	else
-		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetTrimBox()));
+		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetTrimBox()))
 }
 
 METHOD_RETURN_TYPE PDFPageInputDriver::GetBleedBox(const ARGS_TYPE& args)
@@ -174,10 +174,10 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetBleedBox(const ARGS_TYPE& args)
 	if (!element->PageInput)
 	{
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 	else
-		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetBleedBox()));
+		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetBleedBox()))
 }
 
 METHOD_RETURN_TYPE PDFPageInputDriver::GetArtBox(const ARGS_TYPE& args)
@@ -190,10 +190,10 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetArtBox(const ARGS_TYPE& args)
 	if (!element->PageInput)
 	{
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 	else
-		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetArtBox()));
+		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetArtBox()))
 }
 
 METHOD_RETURN_TYPE PDFPageInputDriver::GetRotate(const ARGS_TYPE& args)
@@ -206,8 +206,8 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetRotate(const ARGS_TYPE& args)
 	if (!element->PageInput)
 	{
 		THROW_EXCEPTION("page input not initialized. create one using the PDFReader.parsePage");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 	else
-		SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->PageInput->GetRotate()));
+		SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->PageInput->GetRotate()))
 }

@@ -49,7 +49,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFHexStringDriver::GetNewInstance()
@@ -75,7 +75,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::New(const ARGS_TYPE& args)
     
     PDFHexStringDriver* driver = new PDFHexStringDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFHexStringDriver::GetObject()
@@ -89,7 +89,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::GetValue(Local<String> property, const PR
 	CREATE_ESCAPABLE_SCOPE;
     
     Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFHexStringDriver>(info.Holder())->TheObject->GetValue().c_str());
-    SET_ACCESSOR_RETURN_VALUE(result);
+    SET_ACCESSOR_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFHexStringDriver::ToText(const ARGS_TYPE& args)
@@ -100,7 +100,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::ToText(const ARGS_TYPE& args)
 
     
     Handle<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFHexStringDriver::ToBytesArray(const ARGS_TYPE& args)
@@ -114,5 +114,5 @@ METHOD_RETURN_TYPE PDFHexStringDriver::ToBytesArray(const ARGS_TYPE& args)
 	for(std::string::size_type i=0;i<aString.length();++i)
 		result->Set(NEW_NUMBER(i),NEW_NUMBER((IOBasicTypes::Byte)(aString[i])));
 
-	SET_FUNCTION_RETURN_VALUE(result);
+	SET_FUNCTION_RETURN_VALUE(result)
 }

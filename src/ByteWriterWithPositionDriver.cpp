@@ -58,7 +58,7 @@ METHOD_RETURN_TYPE ByteWriterWithPositionDriver::NewInstance(const ARGS_TYPE& ar
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 Handle<Value> ByteWriterWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
@@ -85,7 +85,7 @@ METHOD_RETURN_TYPE ByteWriterWithPositionDriver::New(const ARGS_TYPE& args)
 
     ByteWriterWithPositionDriver* driver = new ByteWriterWithPositionDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 void ByteWriterWithPositionDriver::SetStream(IByteWriterWithPosition* inWriterWithPosition,bool inOwns)
@@ -113,7 +113,7 @@ METHOD_RETURN_TYPE ByteWriterWithPositionDriver::Write(const ARGS_TYPE& args)
        !args[0]->IsArray())
     {
 		THROW_EXCEPTION("Wrong arguments. pass an array of bytes to write");
-        SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+        SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     ByteWriterWithPositionDriver* element = ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(args.This());
@@ -127,7 +127,7 @@ METHOD_RETURN_TYPE ByteWriterWithPositionDriver::Write(const ARGS_TYPE& args)
     
     delete[] buffer;
     
-    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(bufferSize));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(bufferSize))
 }
 
 METHOD_RETURN_TYPE ByteWriterWithPositionDriver::GetCurrentPosition(const ARGS_TYPE& args)
@@ -137,6 +137,6 @@ METHOD_RETURN_TYPE ByteWriterWithPositionDriver::GetCurrentPosition(const ARGS_T
 
     ByteWriterWithPositionDriver* element = ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(args.This());
 
-    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->mInstance->GetCurrentPosition()));
+    SET_FUNCTION_RETURN_VALUE(NEW_NUMBER(element->mInstance->GetCurrentPosition()))
 }
 

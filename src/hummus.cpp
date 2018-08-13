@@ -82,12 +82,12 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 
 	if (args.Length() < 1 || args.Length() > 2) {
 		THROW_EXCEPTION("Wrong number of arguments, Provide one argument stating the location of the output file, and an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
 	if (!args[0]->IsString() && !args[0]->IsObject()) {
 		THROW_EXCEPTION("Wrong arguments, please provide a path to a file as the first argument or a stream object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     EPDFVersion pdfVersion = ePDFVersion14;
@@ -104,7 +104,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
             if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
             {
                 THROW_EXCEPTION("Wrong argument for PDF version, please provide a valid PDF version");
-                SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+                SET_FUNCTION_RETURN_VALUE(UNDEFINED)
             }
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
@@ -151,9 +151,9 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to create PDF file, make sure that output file target is available");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 
 }
 
@@ -182,22 +182,22 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
 
 	if (args.Length() < 2 || args.Length() > 3) {
 		THROW_EXCEPTION("Wrong number of arguments, Provide one argument stating the location of the source file, a second one for the destination file, and an optional options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
 	if (!args[0]->IsString() && !args[0]->IsObject()) {
 		THROW_EXCEPTION("Wrong arguments, please provide a path to a file as the first argument or a stream object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
 	if (!args[1]->IsString() && !args[1]->IsObject()) {
 		THROW_EXCEPTION("Wrong arguments, please provide a path to a file as the second argument or a stream object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
     if((args[1]->IsString() && !args[0]->IsString()) || (args[1]->IsObject() && !args[0]->IsObject())) {
 		THROW_EXCEPTION("Wrong arguments, please either provide two paths or two stream objects for the first two arguments");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);        
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)        
     }
     
 
@@ -216,7 +216,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
             if(pdfVersionValue != ePDFVersionUndefined && (pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue))
             {
                 THROW_EXCEPTION("Wrong argument for PDF version, please provide a valid PDF version");
-                SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+                SET_FUNCTION_RETURN_VALUE(UNDEFINED)
             }
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
@@ -280,9 +280,9 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to recrypt files, check that input and output files are clear and arguments are coool");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+    SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 
 }
 
@@ -299,7 +299,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
             !args[1]->IsString() ||
             ((args.Length() == 3) && !args[2]->IsObject())) {
 		THROW_EXCEPTION("Wrong arguments, provide 2 strings - path to file to continue, and path to state file (provided to the previous shutdown call. You may also add an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     std::string alternativePath;
@@ -356,9 +356,9 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to continue PDF file, make sure that output file target is available and state file exists");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 
@@ -376,7 +376,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
        (args[0]->IsObject() && (!args[1]->IsObject() || args.Length() > 3)))
     {
 		THROW_EXCEPTION("Wrong arguments, please path a path to modified file, or a pair of stream - first for the source, and second for destination. in addition you can optionally add an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     
@@ -398,7 +398,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
             {
                 THROW_EXCEPTION("Wrong argument for PDF version, please provide a valid PDF version");
-                SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+                SET_FUNCTION_RETURN_VALUE(UNDEFINED)
             }
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
@@ -454,9 +454,9 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to modify PDF file, make sure that output file target is available and that it is not protected");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 
@@ -474,7 +474,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
         (args.Length() >=2 && !args[1]->IsObject()))
     {
 		THROW_EXCEPTION("Wrong arguments, provide 1 string - path to file read, or a read stream object, and optionally an options object");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
         
     PDFHummus::EStatusCode status;
@@ -498,9 +498,9 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to start parsing PDF file");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    SET_FUNCTION_RETURN_VALUE(instance);
+    SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
@@ -510,7 +510,7 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
 	if (args.Length() != 1 || !args[0]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments, provide a single enumerator value of a PDF Object type");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
     unsigned long value = TO_NUMBER(args[0])->Uint32Value();
@@ -518,12 +518,12 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
     if(value > PDFObject::ePDFObjectSymbol)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a single enumerator value of a PDF Object type");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     Handle<Value> result = NEW_STRING(PDFObject::scPDFObjectTypeLabel((PDFObject::EPDFObjectType)value));
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 void HummusInit(Handle<Object> exports) {

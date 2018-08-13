@@ -54,7 +54,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::NewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance);
+	SET_FUNCTION_RETURN_VALUE(instance)
 }
 
 v8::Handle<v8::Value> PDFDictionaryDriver::GetNewInstance()
@@ -80,7 +80,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::New(const ARGS_TYPE& args)
     
     PDFDictionaryDriver* driver = new PDFDictionaryDriver();
     driver->Wrap(args.This());
-	SET_FUNCTION_RETURN_VALUE(args.This());
+	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
 PDFObject* PDFDictionaryDriver::GetObject()
@@ -102,7 +102,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::ToJSObject(const ARGS_TYPE& args)
     while(it.MoveNext())
         result->Set(NEW_STRING(it.GetKey()->GetValue().c_str()),PDFObjectDriver::CreateDriver(it.GetValue()));
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFDictionaryDriver::Exists(const ARGS_TYPE& args)
@@ -115,13 +115,13 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::Exists(const ARGS_TYPE& args)
     if(args.Length() != 1 || !args[0]->IsString())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is a string key");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
     Handle<Boolean> result = NEW_BOOLEAN(driver->TheObject->Exists(*String::Utf8Value(args[0]->ToString())));
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
 
 METHOD_RETURN_TYPE PDFDictionaryDriver::QueryObject(const ARGS_TYPE& args)
@@ -132,7 +132,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::QueryObject(const ARGS_TYPE& args)
     if(args.Length() != 1 || !args[0]->IsString())
     {
 		THROW_EXCEPTION("wrong arguments, pass 1 argument which is a string key");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         
     }
     
@@ -143,11 +143,11 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::QueryObject(const ARGS_TYPE& args)
     if(!driver->TheObject->Exists(key))
     {
 		THROW_EXCEPTION("key not found");
-		SET_FUNCTION_RETURN_VALUE(UNDEFINED);
+		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
     RefCountPtr<PDFObject> anObject = driver->TheObject->QueryDirectObject(key);
     Handle<Value> result = PDFObjectDriver::CreateDriver(anObject.GetPtr());
     
-    SET_FUNCTION_RETURN_VALUE(result);
+    SET_FUNCTION_RETURN_VALUE(result)
 }
