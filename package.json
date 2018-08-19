@@ -44,7 +44,7 @@
     "module_path": "./binding",
     "remote_path": "./{module_name}/v{version}/{toolset}/",
     "host": "https://hummus.s3-us-west-2.amazonaws.com",
-    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
+    "package_name": "{node_abi}-{platform}-{arch}-{libc}.tar.gz"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
