@@ -41,7 +41,7 @@ before_install:
   == "master" && test "${TRAVIS_PULL_REQUEST}" == "false"; then PUBLISH_BINARY=true;
   fi;
 - if [[ $MUSL ]]; then
-  $EXTRA_NPM_FLAGS="--target_libc=musl";
+  EXTRA_NPM_FLAGS="--target_libc=musl";
   fi;
 - git clone https://github.com/creationix/nvm.git ../.nvm && source ../.nvm/nvm.sh
 - nvm install $NODE_NVM_VERSION
