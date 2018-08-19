@@ -53,8 +53,8 @@ before_install:
 install:
 - npm install --build-from-source
 script:
-- ./node_modules/.bin/node-pre-gyp package testpackage
+- ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS
 - npm test
-- if [[ "${PUBLISH_BINARY}" == "true" ]]; then ./node_modules/.bin/node-pre-gyp unpublish
-  publish; rm -rf {build,binding}; ./node_modules/.bin/node-pre-gyp install; npm test;
+- if [[ "${PUBLISH_BINARY}" == "true" ]]; then ./node_modules/.bin/node-pre-gyp unpublish $EXTRA_NODE_PRE_GYP_FLAGS
+  publish; rm -rf {build,binding}; ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS; npm test;
   fi
