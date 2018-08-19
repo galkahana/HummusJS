@@ -41,7 +41,7 @@ before_install:
   == "master" && test "${TRAVIS_PULL_REQUEST}" == "false"; then PUBLISH_BINARY=true;
   fi;
 - if [[ $MUSL ]]; then
-  EXTRA_NPM_FLAGS="--target_libc=musl";
+  EXTRA_NODE_PRE_GYP_FLAGS="--target_libc=musl";
   fi;
 - git clone https://github.com/creationix/nvm.git ../.nvm && source ../.nvm/nvm.sh
 - nvm install $NODE_NVM_VERSION
@@ -51,7 +51,7 @@ before_install:
 - npm --version
 - $CXX --version
 install:
-- npm install --build-from-source $EXTRA_NPM_FLAGS
+- npm install --build-from-source
 script:
 - ./node_modules/.bin/node-pre-gyp package testpackage
 - npm test
