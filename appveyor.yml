@@ -6,7 +6,7 @@ environment:
   matrix:
     - nodejs_version: 4
       platform: x64
-      msvs_toolset: 12      
+      msvs_toolset: 12
     - nodejs_version: 5
       platform: x64
     - nodejs_version: 6
@@ -20,6 +20,11 @@ environment:
     - nodejs_version: 10
       platform: x64
     # electron
+    - nodejs_version: 10
+      platform: x64
+      NODE_RUNTIME: electron
+      NODE_RUNTIME_VERSION: 3.0.9
+      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
     - nodejs_version: 8
       platform: x64
       NODE_RUNTIME: electron
@@ -37,4 +42,4 @@ install:
 
 build: OFF
 test: OFF
-deploy: OFF 
+deploy: OFF
