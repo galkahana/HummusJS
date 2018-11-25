@@ -1807,7 +1807,7 @@ void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& i
     SetColor(inMaybeOptions,isStroke);
     
     if(isStroke && options->Has(NEW_STRING("width")))
-        GetContext()->w(TO_NUMBER(options->Get(NEW_STRING("width")))->Uint32Value());
+        GetContext()->w(TO_NUMBER(options->Get(NEW_STRING("width")))->Value());
 }
 
 void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,bool inIsStroke)
