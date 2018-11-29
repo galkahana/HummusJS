@@ -4,7 +4,7 @@ project(LibJpeg)
 set(LIBJPEG_INCLUDE_DIRS ${LibJpeg_SOURCE_DIR} PARENT_SCOPE)
 set(LIBJPEG_LDFLAGS LibJpeg PARENT_SCOPE)
 
-add_library (LibJpeg 
+add_library (LibJpeg_OBJLIB OBJECT 
 #sources
 jaricom.c
 jcapimin.c
@@ -64,4 +64,24 @@ jpegint.h
 jpeglib.h
 jversion.h
 
+)
+
+set(LibJpeg_OBJECTS $<TARGET_OBJECTS:LibJpeg_OBJLIB>)
+set(LibJpeg_OBJECTS $<TARGET_OBJECTS:LibJpeg_OBJLIB> PARENT_SCOPE)
+if(IS_XCODE)
+    add_library(LibJpeg ${LibJpeg_OBJECTS} jutils.c)
+else(IS_XCODE)
+    add_library(LibJpeg ${LibJpeg_OBJECTS})
+endif(IS_XCODE)
+
+
+install(TARGETS LibJpeg
+    RUNTIME DESTINATION bin COMPONENT dependencies
+    ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT dependencies
+    LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT dependencies
+)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    DESTINATION include
+    FILES_MATCHING
+    PATTERN "*.h"
 )

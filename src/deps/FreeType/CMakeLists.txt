@@ -12,7 +12,7 @@ include_directories (${FreeType_SOURCE_DIR}/include/src)
 include_directories (${FreeType_SOURCE_DIR}/include/freetype/internal)
 include_directories (${FreeType_SOURCE_DIR}/include/freetype/internal/services)
 
-add_library (FreeType
+add_library (FreeType_OBJLIB OBJECT
 #sources
 src/base/ftbbox.c
 src/base/ftgxval.c
@@ -64,4 +64,25 @@ include/freetype/config/ftmodule.h
 include/freetype/config/ftoption.h
 include/freetype/config/ftstdlib.h
 include/ft2build.h
+)
+
+set(FreeType_OBJECTS $<TARGET_OBJECTS:FreeType_OBJLIB>)
+set(FreeType_OBJECTS $<TARGET_OBJECTS:FreeType_OBJLIB> PARENT_SCOPE)
+
+if(IS_XCODE)
+    add_library(FreeType ${FreeType_OBJECTS} src/smooth/smooth.c)
+else(IS_XCODE)
+    add_library(FreeType ${FreeType_OBJECTS})
+endif(IS_XCODE)
+
+
+install(TARGETS FreeType
+    RUNTIME DESTINATION bin COMPONENT dependencies
+    ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT dependencies
+    LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT dependencies
+)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include
+    DESTINATION include/FreeType
+    FILES_MATCHING
+    PATTERN "*.h"
 )
