@@ -331,7 +331,7 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 			primitivesWriter.SetStreamForWriting(newStream->GetWriteStream());
 			primitivesWriter.WriteKeyword("q");
 			objectContext.EndPDFStream(newStream);
-
+			delete newStream;
 		}
 
 		// last but not least, create the actual content stream object, placing the form
