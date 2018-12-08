@@ -27,6 +27,6 @@ public:
 	virtual std::string DecryptString(std::string inStringToDecrypt) = 0;
 	// event for indirect object parsing start
 	virtual void OnObjectStart(long long inObjectID, long long inGenerationNumber) = 0;
-	// event for indirect object parsing end
+	// event for indirect object parsing end (you will be getting null if parsing failed, or not more objects. so check)
 	virtual void OnObjectEnd(PDFObject* inObject) = 0;
 };

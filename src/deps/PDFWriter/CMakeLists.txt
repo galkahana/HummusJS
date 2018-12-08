@@ -111,6 +111,8 @@ PageTree.cpp
 ParsedPrimitiveHelper.cpp
 PDFArray.cpp
 PDFBoolean.cpp
+PDFCosArray.cpp
+PDFCosDict.cpp
 PDFDate.cpp
 PDFDictionary.cpp
 PDFDocEncoding.cpp
@@ -293,6 +295,8 @@ PageTree.h
 ParsedPrimitiveHelper.h
 PDFArray.h
 PDFBoolean.h
+PDFCosArray.h
+PDFCosDict.h
 PDFDate.h
 PDFDictionary.h
 PDFDocEncoding.h
@@ -636,6 +640,10 @@ PDFArray.cpp
 PDFArray.h
 PDFBoolean.cpp
 PDFBoolean.h
+PDFCosArray.cpp
+PDFCosArray.h
+PDFCosDict.cpp
+PDFCosDict.h
 PDFDictionary.cpp
 PDFDictionary.h
 PDFHexString.cpp
