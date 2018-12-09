@@ -524,6 +524,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
     Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
     streamDriver->PDFStreamInstance = aStream;
+    streamDriver->mOwns = true;
 
     
     SET_FUNCTION_RETURN_VALUE(newInstance)
@@ -556,6 +557,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
     Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
     streamDriver->PDFStreamInstance = aStream;
+    streamDriver->mOwns = true;
 
     
     SET_FUNCTION_RETURN_VALUE(newInstance)

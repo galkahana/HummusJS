@@ -29,6 +29,13 @@ Persistent<FunctionTemplate> PDFStreamDriver::constructor_template;
 PDFStreamDriver::PDFStreamDriver()
 {
     PDFStreamInstance = NULL;
+	mOwns = false;
+}
+
+PDFStreamDriver::~PDFStreamDriver()
+{
+	if(mOwns)
+		delete PDFStreamInstance;
 }
 
 void PDFStreamDriver::Init()
