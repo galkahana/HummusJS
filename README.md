@@ -9,6 +9,3 @@ Documentation is available [here](https://github.com/galkahana/HummusJS/wiki).
 Project site is [here](http://www.pdfhummus.com).   
 
 If you are looking for a C++ Library go [here](https://github.com/galkahana/PDF-Writer).   
-
-You can contact via the issues section in this project, or at [gal@pdfhummus.com](mailto:gal@pdfhummus.com). I provide  listening, consulting, and the occasional project assistance/implementation. 
-
