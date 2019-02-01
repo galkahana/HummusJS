@@ -77,13 +77,14 @@ script:
   ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
   npm test;
   fi
-- if [[ "${PUBLISH_BINARY}" ]]; then
+- if [[ "${PUBLISH_BINARY}" == "true" ]]; then
   ./node_modules/.bin/node-pre-gyp unpublish publish $EXTRA_NODE_PRE_GYP_FLAGS; 
   rm -rf {build,binding};
   fi
-- if [[ $MUSL ]]; then 
+- if [[ "${PUBLISH_BINARY}" == "true" && "{$MUSL}" == "true" ]]; then 
   ./scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
-  else
+  fi
+- if [[ "{PUBLISH_BINARY}" == "true" && "${MUSL}" != "true" ]]; then
   ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
   npm test;
   fi
