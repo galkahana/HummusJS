@@ -74,8 +74,7 @@ install:
 script:
 - if [[ $MUSL ]]; then
   scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
-  fi
-- if [[ $MUSL != "true" ]]; then
+  else
   ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
   npm test;
   fi
@@ -83,10 +82,9 @@ script:
   ./node_modules/.bin/node-pre-gyp unpublish publish $EXTRA_NODE_PRE_GYP_FLAGS; 
   rm -rf {build,binding};
   fi
-- if [[ "${MUSL}" != "true" ]]; then
-  ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
-  npm test;
-  fi
 - if [[ $MUSL ]]; then 
   ./scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
+  else
+  ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
+  npm test;
   fi
