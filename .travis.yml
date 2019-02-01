@@ -67,8 +67,7 @@ before_install:
 install:
 - if [[ $MUSL ]]; then
   scripts/alpine-build.sh;
-  fi
-- if [[ $MUSL != "true" ]]; then
+  else
   npm install --build-from-source;
   fi
 script:
