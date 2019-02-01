@@ -35,7 +35,12 @@ matrix:
   allow_failures:
   - env: ELECTRON_VERSION="3.0.10" NODE_NVM_VERSION="10.2.0"
   - os: osx
-    env: MUSL=true
+    env: MUSL=true NODE_NVM_VERSION="9.11.1"
+  - os: osx
+    env: MUSL=true NODE_NVM_VERSION="10.8.0"
+  - os: osx
+    env: MUSL=true NODE_NVM_VERSION="11.2.0"
+
 before_install:
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - if [[ $ELECTRON_VERSION ]]; then
