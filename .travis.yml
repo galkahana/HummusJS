@@ -10,6 +10,8 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+services:
+    - docker
 env:
   matrix:
   - NODE_NVM_VERSION="4.9.1"
@@ -32,6 +34,13 @@ env:
 matrix:
   allow_failures:
   - env: ELECTRON_VERSION="3.0.10" NODE_NVM_VERSION="10.2.0"
+  - os: osx
+    env: MUSL=true NODE_NVM_VERSION="9.11.1"
+  - os: osx
+    env: MUSL=true NODE_NVM_VERSION="10.8.0"
+  - os: osx
+    env: MUSL=true NODE_NVM_VERSION="11.2.0"
+
 before_install:
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - if [[ $ELECTRON_VERSION ]]; then
@@ -56,10 +65,26 @@ before_install:
 - npm --version
 - $CXX --version
 install:
-- npm install --build-from-source
+- if [[ $MUSL ]]; then
+  scripts/alpine-build.sh;
+  else
+  npm install --build-from-source;
+  fi
 script:
-- ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS
-- npm test
-- if [[ "${PUBLISH_BINARY}" == "true" ]]; then ./node_modules/.bin/node-pre-gyp unpublish
-  publish $EXTRA_NODE_PRE_GYP_FLAGS; rm -rf {build,binding}; ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS; npm test;
+- if [[ $MUSL ]]; then
+  scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
+  else
+  ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
+  npm test;
+  fi
+- if [[ "${PUBLISH_BINARY}" == "true" ]]; then
+  ./node_modules/.bin/node-pre-gyp unpublish publish $EXTRA_NODE_PRE_GYP_FLAGS; 
+  rm -rf {build,binding};
+  fi
+- if [[ "${PUBLISH_BINARY}" == "true" && "{$MUSL}" == "true" ]]; then 
+  ./scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
+  fi
+- if [[ "{PUBLISH_BINARY}" == "true" && "${MUSL}" != "true" ]]; then
+  ./node_modules/.bin/node-pre-gyp install $EXTRA_NODE_PRE_GYP_FLAGS;
+  npm test;
   fi
