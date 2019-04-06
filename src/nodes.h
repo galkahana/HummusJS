@@ -19,6 +19,8 @@
     #define TO_STRING() ToString(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<String>())
     #define TO_OBJECT() ToObject(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Object>())
     #define TO_BOOLEAN() ToBoolean(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Boolean>())
+    #define TO_UINT32Value() ToUint32(Isolate::GetCurrent()->GetCurrentContext()).ToLocalChecked()->Value()
+
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
@@ -30,6 +32,8 @@
     #define TO_STRING() ToString()
     #define TO_OBJECT() ToObject()
     #define TO_BOOLEAN() ToBoolean()
+    #define TO_UINT32Value() ToUint32()->Value()
+
 #endif
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION

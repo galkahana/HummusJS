@@ -179,9 +179,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteNumber(const ARGS_TYPE& args)
     }
     
     if(args[0]->IsUint32())
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(TO_UINT32(args[0])->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(TO_UINT32(args[0])->Value());
     else if(args[0]->IsInt32())
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(TO_INT32(args[0])->Int32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteInteger(TO_INT32(args[0])->Value());
     else
         ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteDouble(TO_NUMBER(args[0])->Value());
 
@@ -297,7 +297,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartNewIndirectObject(const ARGS_TYPE&
     {
         // version that writes a know indirect object id, allow chaining
     
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartNewIndirectObject(TO_UINT32(args[0])->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartNewIndirectObject(TO_UINT32(args[0])->Value());
     
         SET_FUNCTION_RETURN_VALUE(args.This())
     }
@@ -316,7 +316,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartModifiedIndirectObject(const ARGS_
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartModifiedIndirectObject(TO_UINT32(args[0])->Uint32Value());
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartModifiedIndirectObject(TO_UINT32(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -356,7 +356,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteLiteralString(const ARGS_TYPE& arg
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_OBJECT()->Uint32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
 			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(string);
@@ -386,7 +386,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteHexString(const ARGS_TYPE& args)
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_OBJECT()->Uint32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
 			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(string);

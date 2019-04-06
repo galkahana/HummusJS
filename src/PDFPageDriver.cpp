@@ -276,7 +276,7 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
     pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
@@ -331,7 +331,7 @@ void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
     pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
@@ -351,7 +351,7 @@ void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
     pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
@@ -371,7 +371,7 @@ void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
     pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
@@ -391,7 +391,7 @@ void PDFPageDriver::SetArtBox(Local<String> property, Local<Value> value, const 
     if(!value->IsArray())
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
     pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),

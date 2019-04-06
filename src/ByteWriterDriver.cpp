@@ -117,11 +117,11 @@ METHOD_RETURN_TYPE ByteWriterDriver::Write(const ARGS_TYPE& args)
     }
     
     ByteWriterDriver* element = ObjectWrap::Unwrap<ByteWriterDriver>(args.This());
-    int bufferSize = args[0]->TO_OBJECT()->Get(NEW_STRING("length"))->TO_OBJECT()->Uint32Value();
+    int bufferSize = args[0]->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value();
     IOBasicTypes::Byte* buffer = new IOBasicTypes::Byte[bufferSize];
     
     for(int i=0;i<bufferSize;++i)
-        buffer[i] = args[0]->TO_OBJECT()->Get(i)->TO_OBJECT()->Uint32Value();
+        buffer[i] = args[0]->TO_OBJECT()->Get(i)->TO_UINT32Value();
 
     bufferSize = (int)element->mInstance->Write(buffer,bufferSize);
     

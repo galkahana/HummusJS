@@ -126,7 +126,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     if(args.Length() == 3)
     {
         Handle<Object> matrixArray = args[2]->TO_OBJECT();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 6)
+        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -149,7 +149,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     else
     {
         Handle<Object> boxArray = args[1]->TO_OBJECT();
-        if(boxArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+        if(boxArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -396,7 +396,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(c
     ObjectIDTypeList objectIDs;
     Handle<Object> objectIDsArray = args[0]->TO_OBJECT();
 
-    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value();
+    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
     
     for(unsigned int i=0;i <length;++i)
         objectIDs.push_back(TO_UINT32(objectIDsArray->Get(i))->Value());

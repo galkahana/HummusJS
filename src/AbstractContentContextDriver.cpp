@@ -1108,10 +1108,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
     if(args[0]->IsString())
     {
         // string type, form name in local resources dictionary
-        Local<String> stringArg = args[0]->TO_STRING();
-        String::Utf8Value utf8XObjectName(stringArg);
-        
-        contentContext->GetContext()->Do(*utf8XObjectName);
+        contentContext->GetContext()->Do(*UTF_8_VALUE(args[0]->TO_STRING()));
     }
     else if(FormXObjectDriver::HasInstance(args[0]))
     {
@@ -1829,7 +1826,7 @@ void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,
         else
         {
             // should be number
-            unsigned long colorvalue = (unsigned long)(options->Get(NEW_STRING("color"))->ToInteger()->Value());
+            unsigned long colorvalue = (unsigned long)(TO_INT32(options->Get(NEW_STRING("color")))->Value());
             std::string colorspace = options->Has(NEW_STRING("colorspace")) ?
             *UTF_8_VALUE(options->Get(NEW_STRING("colorspace")->TO_STRING())) :
             "rgb";

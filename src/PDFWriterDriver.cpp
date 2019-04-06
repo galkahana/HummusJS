@@ -764,7 +764,7 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-    if(inArray->TO_OBJECT()->Get(NEW_STRING("length"))->TO_OBJECT()->Uint32Value() == 4)
+    if(inArray->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value() == 4)
     {
         // cmyk color
         return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
@@ -773,7 +773,7 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
                             (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(3))->Value());
         
     }
-    else if(inArray->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() == 3)
+    else if(inArray->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() == 3)
     {
         // rgb color
         return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
@@ -1182,7 +1182,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     if(args.Length() >= 4)
     {
         Handle<Object> matrixArray = args[3]->TO_OBJECT();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 6)
+        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -1197,7 +1197,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     if(args.Length() >= 5)
     {
         Handle<Object> objectsIDsArray = args[4]->TO_OBJECT();
-        unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value();
+        unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
         for(unsigned int i=0;i<arrayLength;++i)
             extraObjectsList.push_back((ObjectIDType)(TO_UINT32(objectsIDsArray->Get(i))->Value()));
             
@@ -1206,7 +1206,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     if(args[1]->IsArray())
     {
         Handle<Object> boxArray = args[1]->TO_OBJECT();
-        if(boxArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
+        if(boxArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
