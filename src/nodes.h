@@ -5,8 +5,9 @@
 
 #define NODE_0_10_MODULE_VERSION 11
 #define NODE_2_5_0_MODULE_VERSION 44
+#define NODE_10_0_0_MODULE_VERSION 64
 #define NODE_11_0_0_MODULE_VERSION 67
-#define NODE_CONTEXT_AWARE_VERSION NODE_11_0_0_MODULE_VERSION
+#define NODE_CONTEXT_AWARE_VERSION NODE_10_0_0_MODULE_VERSION
 
 #if NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
 	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
@@ -19,7 +20,6 @@
     #define TO_STRING() ToString(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<String>())
     #define TO_OBJECT() ToObject(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Object>())
     #define TO_BOOLEAN() ToBoolean(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Boolean>())
-    #define TO_UINT32Value() ToUint32(Isolate::GetCurrent()->GetCurrentContext()).ToLocalChecked()->Value()
 
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
@@ -32,7 +32,6 @@
     #define TO_STRING() ToString()
     #define TO_OBJECT() ToObject()
     #define TO_BOOLEAN() ToBoolean()
-    #define TO_UINT32Value() ToUint32()->Value()
 
 #endif
 
@@ -80,6 +79,7 @@
 #define TO_NUMBER(x) x->ToNumber(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_UINT32Value() ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()->Value()
 
 #else 
 
@@ -88,6 +88,7 @@
 #define TO_NUMBER(x) x->ToNumber()
 #define TO_UINT32(x) x->ToUint32()
 #define TO_INT32(x) x->ToInt32()
+#define TO_UINT32Value() ToUint32()->Value()
 
 #endif
 
@@ -130,6 +131,7 @@
 #define TO_NUMBER(x) x->ToNumber()
 #define TO_UINT32(x) x->ToUint32()
 #define TO_INT32(x) x->ToInt32()
+#define TO_UINT32Value() ToUint32()->Value()
 #endif
 
 #define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)
