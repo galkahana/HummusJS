@@ -79,7 +79,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     Handle<Value> instance = PDFWriterDriver::GetNewInstance(args);
     
-    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
+    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
 
 	if (args.Length() < 1 || args.Length() > 2) {
 		THROW_EXCEPTION("Wrong number of arguments, Provide one argument stating the location of the output file, and an optional options object");
@@ -97,7 +97,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     
     if(args.Length() == 2 && args[1]->IsObject())
     {
-        Handle<Object> anObject = args[1]->ToObject();
+        Handle<Object> anObject = args[1]->TO_OBJECT();
         if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
         {
             long pdfVersionValue = TO_NUMBER(anObject->Get(NEW_STRING("version")))->Int32Value();
@@ -142,7 +142,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     
     if(args[0]->IsObject())
     {
-        status = driver->StartPDF(args[0]->ToObject(), pdfVersion,logConfig,pdfCreationSettings);
+        status = driver->StartPDF(args[0]->TO_OBJECT(), pdfVersion,logConfig,pdfCreationSettings);
     }
     else
     {
@@ -209,7 +209,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     
     if(args.Length() == 3 && args[2]->IsObject())
     {
-        Handle<Object> anObject = args[2]->ToObject();
+        Handle<Object> anObject = args[2]->TO_OBJECT();
         if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
         {
             long pdfVersionValue = TO_NUMBER(anObject->Get(NEW_STRING("version")))->Int32Value();
@@ -259,8 +259,8 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition readStreamProxy(args[0]->ToObject());
-        ObjectByteWriterWithPosition writeStreamProxy(args[1]->ToObject());
+        ObjectByteReaderWithPosition readStreamProxy(args[0]->TO_OBJECT());
+        ObjectByteWriterWithPosition writeStreamProxy(args[1]->TO_OBJECT());
         status = PDFWriter::RecryptPDF(&readStreamProxy,
                                     originalPassword,
                                     &writeStreamProxy,
@@ -293,7 +293,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     Handle<Value> instance = PDFWriterDriver::GetNewInstance(args);
     
-    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
+    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
     
 	if ((args.Length() != 2  && args.Length() !=3)||
             (!args[0]->IsString() && !args[0]->IsObject()) ||
@@ -309,13 +309,13 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
    
     if(args.Length() == 2 && args[1]->IsObject())
     {
-        Handle<Object> anObject = args[1]->ToObject();
+        Handle<Object> anObject = args[1]->TO_OBJECT();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
             alternativePath = *UTF_8_VALUE(anObject->Get(NEW_STRING("modifiedFilePath"))->TO_STRING());
 
         if(anObject->Has(NEW_STRING("modifiedStream")) && anObject->Get(NEW_STRING("modifiedStream"))->IsObject())
-            alternativeStream = anObject->Get(NEW_STRING("modifiedStream"))->ToObject();
+            alternativeStream = anObject->Get(NEW_STRING("modifiedStream"))->TO_OBJECT();
         
         
         if(anObject->Has(NEW_STRING("log")))
@@ -331,7 +331,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
             {
                 logConfig.ShouldLog = true;
                 logConfig.LogFileLocation = "";
-                ObjectByteWriter proxy(value->ToObject());
+                ObjectByteWriter proxy(value->TO_OBJECT());
                 logConfig.LogStream = &proxy;
             }
         }
@@ -341,7 +341,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
     
     if(args[0]->IsObject())
     {
-        status = driver->ContinuePDF(args[0]->ToObject(),
+        status = driver->ContinuePDF(args[0]->TO_OBJECT(),
                                      *UTF_8_VALUE(args[1]->TO_STRING()),
                                      alternativeStream,
                                      logConfig);
@@ -369,7 +369,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     Handle<Value> instance = PDFWriterDriver::GetNewInstance(args);
     
-    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->ToObject());
+    PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
     
     if(args.Length() < 1 ||
        (!args[0]->IsString() && !args[0]->IsObject()) ||
@@ -391,7 +391,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     
     if(args.Length() == (optionsObjectIndex+1) && args[optionsObjectIndex]->IsObject())
     {
-        Handle<Object> anObject = args[optionsObjectIndex]->ToObject();
+        Handle<Object> anObject = args[optionsObjectIndex]->TO_OBJECT();
         if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsString())
         {
             long pdfVersionValue = TO_NUMBER(anObject->Get(NEW_STRING("version")))->Int32Value();
@@ -439,8 +439,8 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     
     if(args[0]->IsObject())
     {
-        status = driver->ModifyPDF(args[0]->ToObject(),
-                                   args[1]->ToObject(),
+        status = driver->ModifyPDF(args[0]->TO_OBJECT(),
+                                   args[1]->TO_OBJECT(),
                                    pdfVersion,
                                    logConfig,
                                    pdfCreationSettings);
@@ -467,7 +467,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     Handle<Value> instance = PDFReaderDriver::GetNewInstance(args);
     
-    PDFReaderDriver* driver = ObjectWrap::Unwrap<PDFReaderDriver>(instance->ToObject());
+    PDFReaderDriver* driver = ObjectWrap::Unwrap<PDFReaderDriver>(instance->TO_OBJECT());
     
 	if (args.Length() < 1 ||
         args.Length() > 2 ||
@@ -483,7 +483,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
 
     if(args.Length() >= 2) 
     {
-        Handle<Object> options = args[1]->ToObject();
+        Handle<Object> options = args[1]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -492,7 +492,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
         
         
     if(args[0]->IsObject())
-        status = driver->StartPDFParsing(args[0]->ToObject(),parsingOptions);
+        status = driver->StartPDFParsing(args[0]->TO_OBJECT(),parsingOptions);
     else
         
         status = driver->StartPDFParsing(std::string(*UTF_8_VALUE(args[0]->TO_STRING())),parsingOptions);

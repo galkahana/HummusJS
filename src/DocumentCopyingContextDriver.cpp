@@ -125,8 +125,8 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     
     if(args.Length() == 3)
     {
-        Handle<Object> matrixArray = args[2]->ToObject();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 6)
+        Handle<Object> matrixArray = args[2]->TO_OBJECT();
+        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -148,8 +148,8 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     }
     else
     {
-        Handle<Object> boxArray = args[1]->ToObject();
-        if(boxArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        Handle<Object> boxArray = args[1]->TO_OBJECT();
+        if(boxArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -200,7 +200,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToPage(const ARGS_T
     }
     
     EStatusCode status = copyingContextDriver->CopyingContext->MergePDFPageToPage(
-                                                                                  ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject())->GetPage(),
+                                                                                  ObjectWrap::Unwrap<PDFPageDriver>(args[0]->TO_OBJECT())->GetPage(),
                                                                                   TO_UINT32(args[1])->Value());
     
     if(status != eSuccess)
@@ -264,7 +264,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToFormXObject(const
     }
     
     EStatusCode status = copyingContextDriver->CopyingContext->MergePDFPageToFormXObject(
-                                                                                  ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject())->FormXObject,
+                                                                                  ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->TO_OBJECT())->FormXObject,
                                                                                   TO_UINT32(args[1])->Value());
     
     if(status != eSuccess)
@@ -281,7 +281,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentParser(const A
     DocumentCopyingContextDriver* copyingContext = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
     Handle<Value> newInstance = PDFReaderDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->ToObject())->SetFromOwnedParser(copyingContext->CopyingContext->GetSourceDocumentParser());
+    ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->TO_OBJECT())->SetFromOwnedParser(copyingContext->CopyingContext->GetSourceDocumentParser());
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -304,7 +304,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyDirectObjectAsIs(const ARGS
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    EStatusCode status = copyingContextDriver->CopyingContext->CopyDirectObjectAsIs(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->ToObject())->GetObject());
+    EStatusCode status = copyingContextDriver->CopyingContext->CopyDirectObjectAsIs(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->TO_OBJECT())->GetObject());
     if(status != eSuccess)
 		THROW_EXCEPTION("Unable to merge page index to form. parhaps the page index is wrong");
     SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -358,7 +358,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(co
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    EStatusCodeAndObjectIDTypeList result = copyingContextDriver->CopyingContext->CopyDirectObjectWithDeepCopy(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->ToObject())->GetObject());
+    EStatusCodeAndObjectIDTypeList result = copyingContextDriver->CopyingContext->CopyDirectObjectWithDeepCopy(ObjectWrap::Unwrap<PDFObjectDriver>(args[0]->TO_OBJECT())->GetObject());
     if(result.first != eSuccess)
 		THROW_EXCEPTION("Unable to copy object, parhaps the object id is wrong");
 
@@ -394,9 +394,9 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(c
     }
     
     ObjectIDTypeList objectIDs;
-    Handle<Object> objectIDsArray = args[0]->ToObject();
+    Handle<Object> objectIDsArray = args[0]->TO_OBJECT();
 
-    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
+    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value();
     
     for(unsigned int i=0;i <length;++i)
         objectIDs.push_back(TO_UINT32(objectIDsArray->Get(i))->Value());
@@ -488,7 +488,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
     // create an object that will serve as the map
     ObjectIDTypeToObjectIDTypeMap resultMap;
     
-    Handle<Object> anObject = args[0]->ToObject();
+    Handle<Object> anObject = args[0]->TO_OBJECT();
     
     Handle<Array> objectKeys = anObject->GetOwnPropertyNames();
     
@@ -521,7 +521,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentStream(const A
 
 	Handle<Value> resultDriver = ByteReaderWithPositionDriver::GetNewInstance(args);
     
-    ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(resultDriver->ToObject())->SetStream(
+    ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(resultDriver->TO_OBJECT())->SetStream(
         copyingContextDriver->CopyingContext->GetSourceDocumentStream(),
         false);
     

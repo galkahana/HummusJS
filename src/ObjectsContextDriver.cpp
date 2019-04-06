@@ -152,7 +152,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartDictionary(const ARGS_TYPE& args)
     DictionaryContext* dictionaryContext = driver->ObjectsContextInstance->StartDictionary();
     
     Handle<Value> newInstance = DictionaryContextDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<DictionaryContextDriver>(newInstance->ToObject())->DictionaryContextInstance = dictionaryContext;
+    ObjectWrap::Unwrap<DictionaryContextDriver>(newInstance->TO_OBJECT())->DictionaryContextInstance = dictionaryContext;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -231,7 +231,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::EndDictionary(const ARGS_TYPE& args)
     }
     
     PDFHummus::EStatusCode status = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndDictionary(
-                                                                    ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject())->DictionaryContextInstance);
+                                                                    ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT())->DictionaryContextInstance);
     
     if(status != PDFHummus::eSuccess)
     {
@@ -356,9 +356,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteLiteralString(const ARGS_TYPE& arg
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::NEW_STRING("length")))->ToObject()->Uint32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_OBJECT()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->ToObject()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(string);
 	}
 	else
@@ -386,9 +386,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteHexString(const ARGS_TYPE& args)
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->ToObject()->Get(v8::NEW_STRING("length")))->ToObject()->Uint32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_OBJECT()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->ToObject()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(string);
 	}
 	else
@@ -488,7 +488,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::EndPDFStream(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    PDFStreamDriver* driver = ObjectWrap::Unwrap<PDFStreamDriver>(args[0]->ToObject());
+    PDFStreamDriver* driver = ObjectWrap::Unwrap<PDFStreamDriver>(args[0]->TO_OBJECT());
     
     ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndPDFStream(driver->PDFStreamInstance);
     
@@ -513,7 +513,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
     
     if(args.Length() == 1)
     {
-        DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject());
+        DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT());
         aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream(driver->DictionaryContextInstance);
     }
     else
@@ -522,7 +522,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
     }
     
     Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
-    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
 
@@ -546,7 +546,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
     
     if(args.Length() == 1)
     {
-        DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->ToObject());
+        DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT());
         aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream(driver->DictionaryContextInstance);
     }
     else
@@ -555,7 +555,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
     }
     
     Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
-    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
 
@@ -573,7 +573,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartFreeContext(const ARGS_TYPE& args)
     
     Handle<Value> result = ByteWriterWithPositionDriver::GetNewInstance(args);
     
-    ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->ToObject())->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
+    ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

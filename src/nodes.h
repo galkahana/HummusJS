@@ -17,6 +17,7 @@
 
     #define UTF_8_VALUE(x) String::Utf8Value(isolate, x)
     #define TO_STRING() ToString(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<String>())
+    #define TO_OBJECT() ToObject(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Object>())
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
@@ -26,6 +27,7 @@
 
     #define UTF_8_VALUE(x) String::Utf8Value(x)
     #define TO_STRING() ToString()
+    #define TO_OBJECT() ToObject()
 #endif
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
@@ -54,7 +56,7 @@
 #define CREATE_ESCAPABLE_SCOPE v8::EscapableHandleScope scope(isolate)
 #define SET_FUNCTION_RETURN_VALUE(v) {args.GetReturnValue().Set(v); return;}
 #define SET_ACCESSOR_RETURN_VALUE(v) {info.GetReturnValue().Set(v); return;}
-#define HAS_INSTANCE(c,o) Local<FunctionTemplate>::New(isolate, c)->HasInstance(o->ToObject())
+#define HAS_INSTANCE(c,o) Local<FunctionTemplate>::New(isolate, c)->HasInstance(o->TO_OBJECT())
 #define UNDEFINED Undefined(isolate)
 #define THROW_EXCEPTION(s) isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,s)))
 #define DISPOSE_PERSISTENT(p) p.Reset()
@@ -110,7 +112,7 @@
 #define NEW_INSTANCE_ARGS(c,argc,argv) c->NewInstance(argc,argv)
 #define SET_FUNCTION_RETURN_VALUE(v) return scope.Close(v);
 #define SET_ACCESSOR_RETURN_VALUE(v) return scope.Close(v);
-#define HAS_INSTANCE(c,o) c->HasInstance(o->ToObject())
+#define HAS_INSTANCE(c,o) c->HasInstance(o->TO_OBJECT())
 #define UNDEFINED Undefined()
 #define THROW_EXCEPTION(s) ThrowException(Exception::TypeError(String::New(s)))
 #define DISPOSE_PERSISTENT(p) p.Dispose()

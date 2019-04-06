@@ -87,11 +87,11 @@ METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
 		}
 		else if(args[0]->IsArray()) {
 			// bytes array, init as is
-			int bufferSize = args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value();
+			int bufferSize = args[0]->TO_OBJECT()->Get(NEW_STRING("length"))->TO_OBJECT()->Uint32Value();
 			std::string buffer;
 
 			for(int i=0;i<bufferSize;++i)
-				buffer.push_back((char)(args[0]->ToObject()->Get(i)->ToObject()->Uint32Value()));
+				buffer.push_back((char)(args[0]->TO_OBJECT()->Get(i)->TO_OBJECT()->Uint32Value()));
 			element->mTextString = buffer;
 		}
 	}

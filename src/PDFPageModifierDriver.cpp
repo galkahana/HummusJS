@@ -106,7 +106,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    PDFWriterDriver* writerDriver = ObjectWrap::Unwrap<PDFWriterDriver>(args[0]->ToObject());
+    PDFWriterDriver* writerDriver = ObjectWrap::Unwrap<PDFWriterDriver>(args[0]->TO_OBJECT());
     if(!writerDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a PDFWriter as the first object");
@@ -182,7 +182,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
         }
 
         Handle<Value> newInstance = XObjectContentContextDriver::GetNewInstance(args);
-        XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->ToObject());
+        XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->TO_OBJECT());
         contentContextDriver->ContentContext = 
             driver->mModifierPageInstance->GetCurrentFormContext() ? 
                 driver->mModifierPageInstance->GetCurrentFormContext()->GetContentContext():

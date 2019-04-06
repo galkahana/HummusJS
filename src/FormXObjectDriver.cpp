@@ -117,7 +117,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentContext(const ARGS_TYPE& args)
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
   
     Handle<Value> newInstance = XObjectContentContextDriver::GetNewInstance(args);
-    XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->ToObject());
+    XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->TO_OBJECT());
     contentContextDriver->ContentContext = formDriver->FormXObject->GetContentContext();
     contentContextDriver->FormOfContext = formDriver->FormXObject;
     contentContextDriver->SetResourcesDictionary(&(formDriver->FormXObject->GetResourcesDictionary()));
@@ -132,7 +132,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetResourcesDictionary(const ARGS_TYPE& ar
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
     
     Handle<Value> newInstance = ResourcesDictionaryDriver::GetNewInstance(args);
-    ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->ToObject());
+    ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(formDriver->FormXObject->GetResourcesDictionary());
     
     SET_FUNCTION_RETURN_VALUE(newInstance)
@@ -146,7 +146,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentStream(const ARGS_TYPE& args)
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
     
     Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
-    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->ToObject());
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = formDriver->FormXObject->GetContentStream();
     
     SET_FUNCTION_RETURN_VALUE(newInstance)

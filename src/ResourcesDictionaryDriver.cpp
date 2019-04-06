@@ -70,7 +70,7 @@ v8::Handle<v8::Value> ResourcesDictionaryDriver::GetInstanceFor(ResourcesDiction
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-    ObjectWrap::Unwrap<ResourcesDictionaryDriver>(instance->ToObject())->ResourcesDictionaryInstance = inResourcesDictionaryInstance;
+    ObjectWrap::Unwrap<ResourcesDictionaryDriver>(instance->TO_OBJECT())->ResourcesDictionaryInstance = inResourcesDictionaryInstance;
 	return CLOSE_SCOPE(instance);    
 }
 
@@ -131,7 +131,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddImageXObjectMapping(const ARGS_
     
         Local<String> name = NEW_STRING(
                                          resourcesDictionaryDriver->ResourcesDictionaryInstance->AddImageXObjectMapping(
-                                                                                ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->ToObject())->ImageXObject
+                                                                                ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->TO_OBJECT())->ImageXObject
                                                                                     ).c_str());
         
         SET_FUNCTION_RETURN_VALUE(name)

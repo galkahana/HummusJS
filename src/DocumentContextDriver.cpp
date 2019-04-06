@@ -88,7 +88,7 @@ METHOD_RETURN_TYPE DocumentContextDriver::GetInfoDictionary(const ARGS_TYPE& arg
     }
     
     Handle<Value> infoDictionaryDriverObject = InfoDictionaryDriver::GetNewInstance();
-    InfoDictionaryDriver* infoDictDriver = ObjectWrap::Unwrap<InfoDictionaryDriver>(infoDictionaryDriverObject->ToObject());
+    InfoDictionaryDriver* infoDictDriver = ObjectWrap::Unwrap<InfoDictionaryDriver>(infoDictionaryDriverObject->TO_OBJECT());
     infoDictDriver->InfoDictionaryInstance = &(driver->DocumentContextInstance->GetTrailerInformation().GetInfo());
     
 	SET_FUNCTION_RETURN_VALUE(infoDictionaryDriverObject)

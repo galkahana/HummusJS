@@ -649,10 +649,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
-    int dashArrayLength = TO_NUMBER(args[0]->ToObject()->Get(NEW_STRING("length")))->Int32Value();
+    int dashArrayLength = TO_NUMBER(args[0]->TO_OBJECT()->Get(NEW_STRING("length")))->Int32Value();
     double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
-        dashArray[i] = TO_NUMBER(args[0]->ToObject()->Get(i))->Int32Value();
+        dashArray[i] = TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Int32Value();
     
     contentContext->GetContext()->d(dashArray,dashArrayLength,TO_NUMBER(args[1])->Int32Value());
     
@@ -1116,7 +1116,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
     else if(FormXObjectDriver::HasInstance(args[0]))
     {
         // a form object
-        FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
+        FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->TO_OBJECT());
         if(!formDriver)
         {
             THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
@@ -1127,7 +1127,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
     }else if(ImageXObjectDriver::HasInstance(args[0]))
     {
         // an image object
-        ImageXObjectDriver* imageDriver = ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->ToObject());
+        ImageXObjectDriver* imageDriver = ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->TO_OBJECT());
         if(!imageDriver)
         {
             THROW_EXCEPTION("Wrong arguments, provide an xobject as the single parameter or its name according to the local resource dictionary");
@@ -1443,7 +1443,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
                                          TO_NUMBER(args[1])->Value());
     else
         contentContext->GetContext()->Tf(
-                                     ObjectWrap::Unwrap<UsedFontDriver>(args[0]->ToObject())->UsedFont,
+                                     ObjectWrap::Unwrap<UsedFontDriver>(args[0]->TO_OBJECT())->UsedFont,
                                      TO_NUMBER(args[1])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This())
     
@@ -1478,7 +1478,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tj(const ARGS_TYPE& args)
     {
         TextPlacingOptions options;
         if(args.Length() == 2)
-            options = ObjectToOptions(args[1]->ToObject());
+            options = ObjectToOptions(args[1]->TO_OBJECT());
 
         switch(options.encoding)
         {
@@ -1524,7 +1524,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
     
         TextPlacingOptions options;
         if(args.Length() == 2)
-            options = ObjectToOptions(args[1]->ToObject());
+            options = ObjectToOptions(args[1]->TO_OBJECT());
     
         switch(options.encoding)
         {
@@ -1574,7 +1574,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
     
         TextPlacingOptions options;
         if(args.Length() == 4)
-            options = ObjectToOptions(args[3]->ToObject());
+            options = ObjectToOptions(args[3]->TO_OBJECT());
         
         switch(options.encoding)
         {
@@ -1625,7 +1625,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
 
         TextPlacingOptions options;
         if(hasOptions)
-            options = ObjectToOptions(args[args.Length()-1]->ToObject());
+            options = ObjectToOptions(args[args.Length()-1]->TO_OBJECT());
         
         bool status = true;
         int lengthButOptions = hasOptions ? (args.Length()-1) : args.Length();
@@ -1710,23 +1710,23 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
 	
 	GlyphUnicodeMappingList glyphList;
 
-    int arrayLength =TO_NUMBER(inArray->ToObject()->Get(NEW_STRING("length")))->Int32Value();
-    Local<Object> arrayObject = inArray->ToObject();
+    int arrayLength =TO_NUMBER(inArray->TO_OBJECT()->Get(NEW_STRING("length")))->Int32Value();
+    Local<Object> arrayObject = inArray->TO_OBJECT();
 
     for(int i=0; i < arrayLength; ++i)
     {
         if(!arrayObject->Get(i)->IsArray())
             continue;
         
-        int itemLength = TO_NUMBER(arrayObject->Get(i)->ToObject()->Get(NEW_STRING("length")))->Int32Value();
+        int itemLength = TO_NUMBER(arrayObject->Get(i)->TO_OBJECT()->Get(NEW_STRING("length")))->Int32Value();
         if(0 == itemLength)
             continue;
         
         GlyphUnicodeMapping mapping;
         
-        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(i)->ToObject()->Get(0))->Value();
+        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(i)->TO_OBJECT()->Get(0))->Value();
         for(int j=1; j < itemLength;++j)
-            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(i)->ToObject()->Get(j))->Value());
+            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(i)->TO_OBJECT()->Get(j))->Value());
 			
 		glyphList.push_back(mapping);
     }
@@ -1800,7 +1800,7 @@ void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& i
     if(!inMaybeOptions->IsObject())
         return;
     
-    Handle<Object> options = inMaybeOptions->ToObject();
+    Handle<Object> options = inMaybeOptions->TO_OBJECT();
     
     bool isStroke = !options->Has(NEW_STRING("type")) ||
                     strcmp(*UTF_8_VALUE(options->Get(NEW_STRING("type"))),"stroke") == 0;
@@ -1817,7 +1817,7 @@ void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,
 	if (!inMaybeOptions->IsObject())
         return;
     
-    Handle<Object> options = inMaybeOptions->ToObject();
+    Handle<Object> options = inMaybeOptions->TO_OBJECT();
 
     if(options->Has(NEW_STRING("color")))
     {
@@ -1884,7 +1884,7 @@ void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOption
     if(inMaybeOptions->IsObject())
     {
     
-        Handle<Object> options = inMaybeOptions->ToObject();
+        Handle<Object> options = inMaybeOptions->TO_OBJECT();
     
         if(options->Has(NEW_STRING("type")))
             type = *UTF_8_VALUE(options->Get(NEW_STRING("type")));
@@ -2095,7 +2095,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 	// underline
 	if(args.Length() >= 4 && args[3]->IsObject())
 	{
-		Handle<Object> options = args[3]->ToObject();
+		Handle<Object> options = args[3]->TO_OBJECT();
 		if(options->Has(NEW_STRING("underline")) && 
 				options->Get(NEW_STRING("underline"))->ToBoolean()->Value() &&
 				UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
@@ -2103,7 +2103,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 			// draw underline. use font data for position and thickness
 			double fontSize = options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1;
 
-			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->ToObject())->UsedFont;
+			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->TO_OBJECT())->UsedFont;
 			FreeTypeFaceWrapper*  ftWrapper = font->GetFreeTypeFont();
 
 			contentContext->SetColor(args[3],true);
@@ -2125,11 +2125,11 @@ void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeO
 	if (!inMaybeOptions->IsObject())
         return;
     
-    Handle<Object> options = inMaybeOptions->ToObject();
+    Handle<Object> options = inMaybeOptions->TO_OBJECT();
     
     if(options->Has(NEW_STRING("font")) &&
        UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
-        GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->ToObject())->UsedFont,
+        GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->TO_OBJECT())->UsedFont,
                          options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1);
 }
 
@@ -2172,7 +2172,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
     
     if(args.Length() >= 4)
     {
-        Handle<Object> optionsObject = args[3]->ToObject();
+        Handle<Object> optionsObject = args[3]->TO_OBJECT();
         
         if(optionsObject->Has(NEW_STRING("index")))
             imageOptions.imageIndex = TO_UINT32(optionsObject->Get(NEW_STRING("index")))->Value();
@@ -2183,7 +2183,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
             
             if(transformationValue->IsArray() || transformationValue->IsObject())
             {
-                Handle<Object> transformationObject = transformationValue->ToObject();
+                Handle<Object> transformationObject = transformationValue->TO_OBJECT();
                 
                 if(transformationValue->IsArray() && TO_NUMBER(transformationObject->Get(NEW_STRING("length")))->Value() == 6)
                 {

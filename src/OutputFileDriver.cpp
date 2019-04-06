@@ -209,7 +209,7 @@ METHOD_RETURN_TYPE OutputFileDriver::GetOutputStream(const ARGS_TYPE& args)
     {
         Handle<Value> result = ByteWriterWithPositionDriver::GetNewInstance(args);
         
-        ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->ToObject())->SetStream(driver->mOutputFileInstance->GetOutputStream(),false);
+        ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->mOutputFileInstance->GetOutputStream(),false);
         
         SET_FUNCTION_RETURN_VALUE(result)
     }

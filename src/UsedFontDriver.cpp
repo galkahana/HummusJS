@@ -188,9 +188,9 @@ METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args
     }
     else // array of glyph indexes
     {
-        unsigned int arrayLength = TO_UINT32(args[0]->ToObject()->Get(v8::NEW_STRING("length")))->Value();
+        unsigned int arrayLength = TO_UINT32(args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->Value();
         for(unsigned int i=0; i < arrayLength;++i)
-            glyphs.push_back(TO_UINT32(args[0]->ToObject()->Get(i))->Value());
+            glyphs.push_back(TO_UINT32(args[0]->TO_OBJECT()->Get(i))->Value());
     }
     
     // now calculate the placement bounding box. using the algorithm described in the FreeType turtorial part 2, minus the kerning part, and with no scale

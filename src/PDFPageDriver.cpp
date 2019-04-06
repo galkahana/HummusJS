@@ -80,7 +80,7 @@ v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(const ARGS_TYPE& args)
 
 	// this version creates an instance of a page, and owns it. this is the one used by javascript
 
-	PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->ToObject());
+	PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->TO_OBJECT());
 	driver->mPDFPage = new PDFPage();
 	driver->mOwnsPage = true;
 
@@ -105,7 +105,7 @@ v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(PDFPage* inPage)
 
 	// this version links to a page and does not own it!
 
-	PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->ToObject());
+	PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->TO_OBJECT());
 	driver->mPDFPage = inPage;
 	driver->mOwnsPage = false;
 
@@ -276,13 +276,13 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->ToObject()->Get(0))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(1))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(2))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
     
 }
     
@@ -331,13 +331,13 @@ void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->ToObject()->Get(0))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(1))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(2))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
     
 }
 
@@ -351,13 +351,13 @@ void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->ToObject()->Get(0))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(1))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(2))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
     
 }
 
@@ -371,13 +371,13 @@ void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->ToObject()->Get(0))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(1))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(2))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
     
 }
 
@@ -391,13 +391,13 @@ void PDFPageDriver::SetArtBox(Local<String> property, Local<Value> value, const 
     if(!value->IsArray())
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    if(value->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->ToObject()->Get(0))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(1))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(2))->Value(),
-                                                  TO_NUMBER(value->ToObject()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
     
 }
 
@@ -408,7 +408,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetResourcesDictionary(const ARGS_TYPE& args)
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args.This());
     
     Handle<Value> newInstance = ResourcesDictionaryDriver::GetNewInstance(args);
-    ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->ToObject());
+    ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(pageDriver->GetPage()->GetResourcesDictionary());
     
     SET_FUNCTION_RETURN_VALUE(newInstance)

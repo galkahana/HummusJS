@@ -94,7 +94,7 @@ METHOD_RETURN_TYPE PDFStreamDriver::GetWriteStream(const ARGS_TYPE& args)
 
     Handle<Value> result = ByteWriterDriver::GetNewInstance(args);
     
-    ObjectWrap::Unwrap<ByteWriterDriver>(result->ToObject())->SetStream(
+    ObjectWrap::Unwrap<ByteWriterDriver>(result->TO_OBJECT())->SetStream(
                                                                         ObjectWrap::Unwrap<PDFStreamDriver>(args.This())->PDFStreamInstance->GetWriteStream(), false);
     
 	SET_FUNCTION_RETURN_VALUE(result)

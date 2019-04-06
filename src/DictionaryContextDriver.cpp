@@ -72,7 +72,7 @@ v8::Handle<v8::Value> DictionaryContextDriver::GetInstanceFor(DictionaryContext*
 	CREATE_ESCAPABLE_SCOPE;
 
 	Local<Object> instance = NEW_INSTANCE(constructor);
-    ObjectWrap::Unwrap<DictionaryContextDriver>(instance->ToObject())->DictionaryContextInstance = inDictionaryContextInstance;
+    ObjectWrap::Unwrap<DictionaryContextDriver>(instance->TO_OBJECT())->DictionaryContextInstance = inDictionaryContextInstance;
 	return CLOSE_SCOPE(instance);    
 }
 
@@ -154,17 +154,17 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
     if(args.Length() == 1)
     {
         // array version. verify that there are 4 numbers
-        if(args[0]->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        if(args[0]->TO_OBJECT()->Get(NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         {
             THROW_EXCEPTION("Wrong arguments, provide an array of 4 numbers, or 4 numbers");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         driver->DictionaryContextInstance->WriteRectangleValue(PDFRectangle(
-                                                      TO_NUMBER(args[0]->ToObject()->Get(0))->Value(),
-                                                      TO_NUMBER(args[0]->ToObject()->Get(1))->Value(),
-                                                      TO_NUMBER(args[0]->ToObject()->Get(2))->Value(),
-                                                      TO_NUMBER(args[0]->ToObject()->Get(3))->Value()));
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(0))->Value(),
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(1))->Value(),
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(2))->Value(),
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(3))->Value()));
         
     }
     else
@@ -231,9 +231,9 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->ToObject()->Get(NEW_STRING("length")))->ToObject()->Uint32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(NEW_STRING("length")))->TO_OBJECT()->Uint32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->ToObject()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
 		driver->DictionaryContextInstance->WriteLiteralStringValue(string);
 	}
 	else

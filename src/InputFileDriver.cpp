@@ -223,7 +223,7 @@ METHOD_RETURN_TYPE InputFileDriver::GetInputStream(const ARGS_TYPE& args)
     {
         Handle<Value> result = ByteReaderWithPositionDriver::GetNewInstance(args);
         
-        ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(result->ToObject())->SetStream(driver->mInputFileInstance->GetInputStream(), false);
+        ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->mInputFileInstance->GetInputStream(), false);
         
         SET_FUNCTION_RETURN_VALUE(result)
     }

@@ -293,7 +293,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::SetCreationDate(const ARGS_TYPE& args)
 
     
     Handle<Value> dataDriverValue = PDFDateDriver::GetNewInstance(args);
-    PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->ToObject());
+    PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->TO_OBJECT());
 
     driver->InfoDictionaryInstance->CreationDate =  *(dateDriver->getInstance());
     
@@ -314,7 +314,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::SetModDate(const ARGS_TYPE& args)
     
     
     Handle<Value> dataDriverValue = PDFDateDriver::GetNewInstance(args);
-    PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->ToObject());
+    PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->TO_OBJECT());
     
     driver->InfoDictionaryInstance->ModDate =  *(dateDriver->getInstance());
     

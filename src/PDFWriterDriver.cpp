@@ -212,7 +212,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::WritePageAndReturnID(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->TO_OBJECT());
     if(!pageDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
@@ -251,7 +251,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
+    PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->TO_OBJECT());
     if(!pageDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
@@ -260,7 +260,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     
     
     Handle<Value> newInstance = PageContentContextDriver::GetNewInstance(args);
-    PageContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(newInstance->ToObject());
+    PageContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(newInstance->TO_OBJECT());
     contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
     contentContextDriver->SetResourcesDictionary(&(pageDriver->GetPage()->GetResourcesDictionary()));
     
@@ -282,7 +282,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::PausePageContentContext(const ARGS_TYPE& arg
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    PageContentContextDriver* pageContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(args[0]->ToObject());
+    PageContentContextDriver* pageContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(args[0]->TO_OBJECT());
     if(!pageContextDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a page context as the single parameter");
@@ -314,7 +314,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
      
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
-    FormXObjectDriver* formXObjectDriver = ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject());
+    FormXObjectDriver* formXObjectDriver = ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT());
     formXObjectDriver->FormXObject =
                         args.Length() == 5 ?
                                             pdfWriter->mPDFWriter.StartFormXObject(
@@ -343,7 +343,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::EndFormXObject(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    FormXObjectDriver* formContextDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->ToObject());
+    FormXObjectDriver* formContextDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->TO_OBJECT());
     if(!formContextDriver)
     {
 		THROW_EXCEPTION("Wrong arguments, provide a form as the single parameter");
@@ -375,7 +375,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        ObjectByteReaderWithPosition proxy(args[0]->TO_OBJECT());
         
         formXObject =
         args.Length() == 2 ?
@@ -397,7 +397,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     }
     
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
+    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT())->FormXObject = formXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -468,7 +468,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        ObjectByteReaderWithPosition proxy(args[0]->TO_OBJECT());
         
         formXObject =
         args.Length() == 2 ?
@@ -490,7 +490,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
     }
     
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
+    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT())->FormXObject = formXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -539,7 +539,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
     }
     
     Handle<Value> newInstance = UsedFontDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<UsedFontDriver>(newInstance->ToObject())->UsedFont = usedFont;
+    ObjectWrap::Unwrap<UsedFontDriver>(newInstance->TO_OBJECT())->UsedFont = usedFont;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -695,7 +695,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
     {
         if(args[1]->IsObject())
         {
-            Local<Object> anObject = args[1]->ToObject();
+            Local<Object> anObject = args[1]->TO_OBJECT();
             
             // page index parameters
             if(anObject->Has(NEW_STRING("pageIndex")) && anObject->Get(NEW_STRING("pageIndex"))->IsNumber())
@@ -704,7 +704,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
             if(anObject->Has(NEW_STRING("bwTreatment")) && anObject->Get(NEW_STRING("bwTreatment"))->IsObject())
             {
                 // special black and white treatment
-                Local<Object> bwObject = anObject->Get(NEW_STRING("bwTreatment"))->ToObject();
+                Local<Object> bwObject = anObject->Get(NEW_STRING("bwTreatment"))->TO_OBJECT();
                 if(bwObject->Has(NEW_STRING("asImageMask")) && bwObject->Get(NEW_STRING("asImageMask"))->IsBoolean())
                     tiffUsageParameters.BWTreatment.AsImageMask = bwObject->Get(NEW_STRING("asImageMask"))->ToBoolean()->Value();
                 if(bwObject->Has(NEW_STRING("oneColor")) && bwObject->Get(NEW_STRING("oneColor"))->IsArray())
@@ -714,7 +714,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
             if(anObject->Has(NEW_STRING("grayscaleTreatment")) && anObject->Get(NEW_STRING("grayscaleTreatment"))->IsObject())
             {
                 // special black and white treatment
-                Local<Object> colormapObject = anObject->Get(NEW_STRING("grayscaleTreatment"))->ToObject();
+                Local<Object> colormapObject = anObject->Get(NEW_STRING("grayscaleTreatment"))->TO_OBJECT();
                 if(colormapObject->Has(NEW_STRING("asColorMap")) && colormapObject->Get(NEW_STRING("asColorMap"))->IsBoolean())
                     tiffUsageParameters.GrayscaleTreatment.AsColorMap = colormapObject->Get(NEW_STRING("asColorMap"))->ToBoolean()->Value();
                 if(colormapObject->Has(NEW_STRING("oneColor")) && colormapObject->Get(NEW_STRING("oneColor"))->IsArray())
@@ -734,7 +734,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        ObjectByteReaderWithPosition proxy(args[0]->TO_OBJECT());
         
         formXObject =
             objectID == 0 ?
@@ -756,7 +756,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
     }
     
     Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->ToObject())->FormXObject = formXObject;
+    ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT())->FormXObject = formXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -764,21 +764,21 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Handle<v8::Value> inArray)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-    if(inArray->ToObject()->Get(NEW_STRING("length"))->ToObject()->Uint32Value() == 4)
+    if(inArray->TO_OBJECT()->Get(NEW_STRING("length"))->TO_OBJECT()->Uint32Value() == 4)
     {
         // cmyk color
-        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->ToObject()->Get(0))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(1))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(2))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(3))->Value());
+        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(1))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(2))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(3))->Value());
         
     }
-    else if(inArray->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() == 3)
+    else if(inArray->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() == 3)
     {
         // rgb color
-        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->ToObject()->Get(0))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(1))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->ToObject()->Get(2))->Value());
+        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(1))->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(2))->Value());
     }
     else
     {
@@ -805,7 +805,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        ObjectByteReaderWithPosition proxy(args[0]->TO_OBJECT());
         
         imageXObject =
             args.Length() == 2 ?
@@ -826,7 +826,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
     }
     
     Handle<Value> newInstance = ImageXObjectDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<ImageXObjectDriver>(newInstance->ToObject())->ImageXObject = imageXObject;
+    ObjectWrap::Unwrap<ImageXObjectDriver>(newInstance->TO_OBJECT())->ImageXObject = imageXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -838,7 +838,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetObjectsContext(const ARGS_TYPE& args)
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
 
     Handle<Value> newInstance = ObjectsContextDriver::GetNewInstance(args);
-    ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(newInstance->ToObject());
+    ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(newInstance->TO_OBJECT());
     objectsContextDriver->ObjectsContextInstance = &(pdfWriter->mPDFWriter.GetObjectsContext());
  
     SET_FUNCTION_RETURN_VALUE(newInstance)
@@ -852,7 +852,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetDocumentContext(const ARGS_TYPE& args)
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
     Handle<Value> newInstance = DocumentContextDriver::GetNewInstance(args);
-    DocumentContextDriver* documentContextDriver = ObjectWrap::Unwrap<DocumentContextDriver>(newInstance->ToObject());
+    DocumentContextDriver* documentContextDriver = ObjectWrap::Unwrap<DocumentContextDriver>(newInstance->TO_OBJECT());
     documentContextDriver->DocumentContextInstance = &(pdfWriter->mPDFWriter.GetDocumentContext());
     
     SET_FUNCTION_RETURN_VALUE(newInstance)
@@ -879,7 +879,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     PDFParsingOptions parsingOptions;
     
     if(args.Length() >= 2) {
-        Handle<Object> options = args[1]->ToObject();
+        Handle<Object> options = args[1]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -891,7 +891,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     
     if(args[0]->IsObject())
     {
-        ObjectByteReaderWithPosition proxy(args[0]->ToObject());
+        ObjectByteReaderWithPosition proxy(args[0]->TO_OBJECT());
         result = pdfWriter->mPDFWriter.AppendPDFPagesFromPDF(
                                                              &proxy,
                                                              pageRange,
@@ -935,17 +935,17 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
 
     if(inObject->Has(NEW_STRING("specificRanges")) && inObject->Get(NEW_STRING("specificRanges"))->IsArray())
     {
-        Local<Object> anArray = inObject->Get(NEW_STRING("specificRanges"))->ToObject();
+        Local<Object> anArray = inObject->Get(NEW_STRING("specificRanges"))->TO_OBJECT();
         unsigned int length = TO_UINT32(anArray->Get(NEW_STRING("length")))->Value();
         for(unsigned int i=0; i < length; ++i)
         {
             if(!anArray->Get(i)->IsArray() ||
-               TO_UINT32(anArray->Get(i)->ToObject()->Get(NEW_STRING("length")))->Value() != 2)
+               TO_UINT32(anArray->Get(i)->TO_OBJECT()->Get(NEW_STRING("length")))->Value() != 2)
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
                 break;
             }
-            Local<Object> item = anArray->Get(i)->ToObject();
+            Local<Object> item = anArray->Get(i)->TO_OBJECT();
             if(!item->Get(0)->IsNumber() || !item->Get(1)->IsNumber())
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
@@ -1017,14 +1017,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
-    PDFPageDriver* page = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->ToObject());
+    PDFPageDriver* page = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->TO_OBJECT());
     
     PDFPageRange pageRange;
     PDFParsingOptions parsingOptions; 
     
     // get page range
     if(args.Length() > 2 && args[2]->IsObject()) {
-        Handle<Object> options = args[2]->ToObject();
+        Handle<Object> options = args[2]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -1032,7 +1032,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
         pageRange = ObjectToPageRange(options);
     } 
     else if(args.Length() > 3 && args[3]->IsObject()) {
-        Handle<Object> options = args[3]->ToObject();
+        Handle<Object> options = args[3]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -1059,7 +1059,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     }
     else 
     {
-		ObjectByteReaderWithPosition proxy(args[1]->ToObject());
+		ObjectByteReaderWithPosition proxy(args[1]->TO_OBJECT());
         status = pdfWriter->mPDFWriter.MergePDFPagesToPage(page->GetPage(),
                                                            &proxy,
                                                            pageRange,
@@ -1100,7 +1100,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     PDFParsingOptions parsingOptions;
 
     if(args.Length() >= 2) {
-        Handle<Object> options = args[1]->ToObject();
+        Handle<Object> options = args[1]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -1114,14 +1114,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
         {
             // parser based copying context  [note that here parsingOptions doesn't matter as the parser creation already took it into account]
 
-            PDFParser* theParser = ObjectWrap::Unwrap<PDFReaderDriver>(args[0]->ToObject())->GetParser();
+            PDFParser* theParser = ObjectWrap::Unwrap<PDFReaderDriver>(args[0]->TO_OBJECT())->GetParser();
             copyingContext = pdfWriter->mPDFWriter.GetDocumentContext().CreatePDFCopyingContext(theParser);
         }
         else
         {
             // stream based copying context
 
-            proxy = new ObjectByteReaderWithPosition(args[0]->ToObject());
+            proxy = new ObjectByteReaderWithPosition(args[0]->TO_OBJECT());
             copyingContext = pdfWriter->mPDFWriter.CreatePDFCopyingContext(proxy,parsingOptions);
         }
     }
@@ -1138,8 +1138,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     }
     
     Handle<Value> newInstance = DocumentCopyingContextDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
-    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->ReadStreamProxy = proxy;
+    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->TO_OBJECT())->CopyingContext = copyingContext;
+    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->TO_OBJECT())->ReadStreamProxy = proxy;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -1167,7 +1167,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     PDFParsingOptions parsingOptions;
     
     if(args.Length() >= 3) {
-        Handle<Object> options = args[2]->ToObject();
+        Handle<Object> options = args[2]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -1181,8 +1181,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     
     if(args.Length() >= 4)
     {
-        Handle<Object> matrixArray = args[3]->ToObject();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 6)
+        Handle<Object> matrixArray = args[3]->TO_OBJECT();
+        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -1196,8 +1196,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     ObjectIDTypeList extraObjectsList;
     if(args.Length() >= 5)
     {
-        Handle<Object> objectsIDsArray = args[4]->ToObject();
-        unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
+        Handle<Object> objectsIDsArray = args[4]->TO_OBJECT();
+        unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value();
         for(unsigned int i=0;i<arrayLength;++i)
             extraObjectsList.push_back((ObjectIDType)(TO_UINT32(objectsIDsArray->Get(i))->Value()));
             
@@ -1205,8 +1205,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     
     if(args[1]->IsArray())
     {
-        Handle<Object> boxArray = args[1]->ToObject();
-        if(boxArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value() != 4)
+        Handle<Object> boxArray = args[1]->TO_OBJECT();
+        if(boxArray->Get(v8::NEW_STRING("length"))->TO_OBJECT()->Uint32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -1267,7 +1267,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContextForModifiedFile(const
     }
     
     Handle<Value> newInstance = DocumentCopyingContextDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->ToObject())->CopyingContext = copyingContext;
+    ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->TO_OBJECT())->CopyingContext = copyingContext;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -1312,7 +1312,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
     PDFParsingOptions parsingOptions;
 
     if(args.Length() >= 3) {
-        Handle<Object> options = args[2]->ToObject();
+        Handle<Object> options = args[2]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -1350,7 +1350,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
     PDFParsingOptions parsingOptions;
 
     if(args.Length() >= 2) {
-        Handle<Object> options = args[1]->ToObject();
+        Handle<Object> options = args[1]->TO_OBJECT();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
             parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
@@ -1421,7 +1421,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedFileParser(const ARGS_TYPE& args)
     }
     
     Handle<Value> newInstance = PDFReaderDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->ToObject())->SetFromOwnedParser(parser);
+    ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->TO_OBJECT())->SetFromOwnedParser(parser);
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -1440,7 +1440,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedInputFile(const ARGS_TYPE& args)
     }
     
     Handle<Value> newInstance = InputFileDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<InputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(inputFile);
+    ObjectWrap::Unwrap<InputFileDriver>(newInstance->TO_OBJECT())->SetFromOwnedFile(inputFile);
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
@@ -1459,7 +1459,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetOutputFile(const ARGS_TYPE& args)
     }
     
     Handle<Value> newInstance = OutputFileDriver::GetNewInstance(args);
-    ObjectWrap::Unwrap<OutputFileDriver>(newInstance->ToObject())->SetFromOwnedFile(outputFile);
+    ObjectWrap::Unwrap<OutputFileDriver>(newInstance->TO_OBJECT())->SetFromOwnedFile(outputFile);
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 

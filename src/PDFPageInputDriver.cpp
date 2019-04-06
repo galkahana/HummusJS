@@ -98,7 +98,7 @@ METHOD_RETURN_TYPE  PDFPageInputDriver::GetDictionary(const ARGS_TYPE& args)
     Handle<Value> newInstance;
 
     newInstance = PDFDictionaryDriver::GetNewInstance();
-    ObjectWrap::Unwrap<PDFDictionaryDriver>(newInstance->ToObject())->TheObject = element->PageInputDictionary;
+    ObjectWrap::Unwrap<PDFDictionaryDriver>(newInstance->TO_OBJECT())->TheObject = element->PageInputDictionary;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
 
