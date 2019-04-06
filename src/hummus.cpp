@@ -111,7 +111,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
         }
             
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->TO_BOOLEAN()->Value();
 
         if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
         {
@@ -223,7 +223,7 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
         }
             
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->TO_BOOLEAN()->Value();
 
         if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
         {
@@ -405,7 +405,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
         }
         
         if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
+            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->TO_BOOLEAN()->Value();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
             alternativePath = *UTF_8_VALUE(anObject->Get(NEW_STRING("modifiedFilePath"))->TO_STRING());

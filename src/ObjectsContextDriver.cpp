@@ -413,7 +413,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteBoolean(const ARGS_TYPE& args)
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteBoolean(args[0]->ToBoolean()->Value());
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteBoolean(args[0]->TO_BOOLEAN()->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     
@@ -470,7 +470,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::SetCompressStreams(const ARGS_TYPE& arg
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->SetCompressStreams(args[0]->ToBoolean()->Value());
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->SetCompressStreams(args[0]->TO_BOOLEAN()->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     

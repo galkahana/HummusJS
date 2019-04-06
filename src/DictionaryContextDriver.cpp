@@ -263,7 +263,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteBooleanValue(const ARGS_TYPE& a
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    driver->DictionaryContextInstance->WriteBooleanValue(args[0]->ToBoolean()->Value());
+    driver->DictionaryContextInstance->WriteBooleanValue(args[0]->TO_BOOLEAN()->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }

@@ -706,7 +706,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
                 // special black and white treatment
                 Local<Object> bwObject = anObject->Get(NEW_STRING("bwTreatment"))->TO_OBJECT();
                 if(bwObject->Has(NEW_STRING("asImageMask")) && bwObject->Get(NEW_STRING("asImageMask"))->IsBoolean())
-                    tiffUsageParameters.BWTreatment.AsImageMask = bwObject->Get(NEW_STRING("asImageMask"))->ToBoolean()->Value();
+                    tiffUsageParameters.BWTreatment.AsImageMask = bwObject->Get(NEW_STRING("asImageMask"))->TO_BOOLEAN()->Value();
                 if(bwObject->Has(NEW_STRING("oneColor")) && bwObject->Get(NEW_STRING("oneColor"))->IsArray())
                     tiffUsageParameters.BWTreatment.OneColor = colorFromArray(bwObject->Get(NEW_STRING("oneColor")));
             }
@@ -716,7 +716,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
                 // special black and white treatment
                 Local<Object> colormapObject = anObject->Get(NEW_STRING("grayscaleTreatment"))->TO_OBJECT();
                 if(colormapObject->Has(NEW_STRING("asColorMap")) && colormapObject->Get(NEW_STRING("asColorMap"))->IsBoolean())
-                    tiffUsageParameters.GrayscaleTreatment.AsColorMap = colormapObject->Get(NEW_STRING("asColorMap"))->ToBoolean()->Value();
+                    tiffUsageParameters.GrayscaleTreatment.AsColorMap = colormapObject->Get(NEW_STRING("asColorMap"))->TO_BOOLEAN()->Value();
                 if(colormapObject->Has(NEW_STRING("oneColor")) && colormapObject->Get(NEW_STRING("oneColor"))->IsArray())
                     tiffUsageParameters.GrayscaleTreatment.OneColor = colorFromArray(colormapObject->Get(NEW_STRING("oneColor")));
                 if(colormapObject->Has(NEW_STRING("zeroColor")) && colormapObject->Get(NEW_STRING("zeroColor"))->IsArray())

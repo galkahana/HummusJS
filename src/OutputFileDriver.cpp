@@ -111,7 +111,7 @@ METHOD_RETURN_TYPE OutputFileDriver::New(const ARGS_TYPE& args)
        
     {
         if(args.Length() == 2 && args[1]->IsBoolean())
-            append = args[1]->ToBoolean()->Value();
+            append = args[1]->TO_BOOLEAN()->Value();
         outputFile->OpenFile(*UTF_8_VALUE(args[0]->TO_STRING()),append);
     }
     
@@ -142,7 +142,7 @@ METHOD_RETURN_TYPE OutputFileDriver::OpenFile(const ARGS_TYPE& args)
         
     }
     
-    if(driver->OpenFile(*UTF_8_VALUE(args[0]->TO_STRING()),args.Length() == 2 ? args[1]->ToBoolean()->Value() : false) != PDFHummus::eSuccess)
+    if(driver->OpenFile(*UTF_8_VALUE(args[0]->TO_STRING()),args.Length() == 2 ? args[1]->TO_BOOLEAN()->Value() : false) != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("can't open file. make sure path is not busy");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)

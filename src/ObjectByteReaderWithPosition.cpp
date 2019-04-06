@@ -69,7 +69,7 @@ bool ObjectByteReaderWithPosition::NotEnded()
         return true;
     Handle<Function> func = Handle<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->ToBoolean()->Value());
+	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->TO_BOOLEAN()->Value());
 }
 
 void ObjectByteReaderWithPosition::SetPosition(LongFilePositionType inOffsetFromStart)

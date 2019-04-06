@@ -1890,7 +1890,7 @@ void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOption
             type = *UTF_8_VALUE(options->Get(NEW_STRING("type")));
         
         if(options->Has(NEW_STRING("close")))
-            closePath = options->Get(NEW_STRING("close"))->ToBoolean()->Value();
+            closePath = options->Get(NEW_STRING("close"))->TO_BOOLEAN()->Value();
     }
     
     if(type.compare("stroke") == 0)
@@ -2097,7 +2097,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 	{
 		Handle<Object> options = args[3]->TO_OBJECT();
 		if(options->Has(NEW_STRING("underline")) && 
-				options->Get(NEW_STRING("underline"))->ToBoolean()->Value() &&
+				options->Get(NEW_STRING("underline"))->TO_BOOLEAN()->Value() &&
 				UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
 		{
 			// draw underline. use font data for position and thickness
@@ -2198,7 +2198,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
                     imageOptions.boundingBoxWidth = TO_NUMBER(transformationObject->Get(NEW_STRING("width")))->Value();
                     imageOptions.boundingBoxHeight = TO_NUMBER(transformationObject->Get(NEW_STRING("height")))->Value();
                     imageOptions.fitProportional = transformationObject->Has(NEW_STRING("proportional")) ?
-                                            transformationObject->Get(NEW_STRING("proportional"))->ToBoolean()->Value() :
+                                            transformationObject->Get(NEW_STRING("proportional"))->TO_BOOLEAN()->Value() :
                                             false;
                     imageOptions.fitPolicy = transformationObject->Has(NEW_STRING("fit")) ?
                                     (strcmp("always",*UTF_8_VALUE(transformationObject->Get(NEW_STRING("fit"))->TO_STRING())) == 0 ? AbstractContentContext::eAlways : AbstractContentContext::eOverflow):

@@ -122,7 +122,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)
 
     if(args.Length() >= 3)
     {
-        ensureContentEncapsulation = args[2]->ToBoolean()->Value();
+        ensureContentEncapsulation = args[2]->TO_BOOLEAN()->Value();
     }
 
 

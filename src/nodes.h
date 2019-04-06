@@ -18,6 +18,7 @@
     #define UTF_8_VALUE(x) String::Utf8Value(isolate, x)
     #define TO_STRING() ToString(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<String>())
     #define TO_OBJECT() ToObject(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Object>())
+    #define TO_BOOLEAN() ToBoolean(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Boolean>())
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
@@ -28,6 +29,7 @@
     #define UTF_8_VALUE(x) String::Utf8Value(x)
     #define TO_STRING() ToString()
     #define TO_OBJECT() ToObject()
+    #define TO_BOOLEAN() ToBoolean()
 #endif
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
