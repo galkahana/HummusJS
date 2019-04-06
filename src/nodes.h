@@ -135,7 +135,7 @@
 
 #if NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
     #define TO_STRING() ToString(GET_CURRENT_CONTEXT).FromMaybe(Local<String>())
-    #define TO_OBJECT() ToObject(GET_CURRENT_CONTEXT)).FromMaybe(Local<Object>())
+    #define TO_OBJECT() ToObject(GET_CURRENT_CONTEXT).FromMaybe(Local<Object>())
     #define TO_BOOLEAN() ToBoolean(GET_CURRENT_CONTEXT).FromMaybe(Local<Boolean>())
 
 #else 
