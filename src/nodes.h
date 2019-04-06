@@ -17,9 +17,6 @@
     #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context);
 
     #define UTF_8_VALUE(x) String::Utf8Value(isolate, x)
-    #define TO_STRING() ToString(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<String>())
-    #define TO_OBJECT() ToObject(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Object>())
-    #define TO_BOOLEAN() ToBoolean(Isolate::GetCurrent()->GetCurrentContext()).FromMaybe(Local<Boolean>())
 
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
@@ -29,9 +26,6 @@
     #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports);
 
     #define UTF_8_VALUE(x) String::Utf8Value(x)
-    #define TO_STRING() ToString()
-    #define TO_OBJECT() ToObject()
-    #define TO_BOOLEAN() ToBoolean()
 
 #endif
 
@@ -76,19 +70,11 @@
 
 #define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT,argc,argv).ToLocalChecked()
-#define TO_NUMBER(x) x->ToNumber(GET_CURRENT_CONTEXT).ToLocalChecked()
-#define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
-#define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
-#define TO_UINT32Value() ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()->Value()
 
 #else 
 
 #define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance()
 #define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(argc,argv)
-#define TO_NUMBER(x) x->ToNumber()
-#define TO_UINT32(x) x->ToUint32()
-#define TO_INT32(x) x->ToInt32()
-#define TO_UINT32Value() ToUint32()->Value()
 
 #endif
 
@@ -128,10 +114,35 @@
 #define CLOSE_SCOPE(v) scope.Close(v)
 #define ESCAPABLE_HANDLE(v) Handle<v>
 #define THIS_HANDLE v8::Local<v8::Object>::New(this->handle_)
+#endif
+
+// some conversions
+#if NODE_MODULE_VERSION > NODE_2_5_0_MODULE_VERSION
+
+#define TO_NUMBER(x) x->ToNumber(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define TO_UINT32Value() ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()->Value()
+
+#else 
+
 #define TO_NUMBER(x) x->ToNumber()
 #define TO_UINT32(x) x->ToUint32()
 #define TO_INT32(x) x->ToInt32()
 #define TO_UINT32Value() ToUint32()->Value()
+
+#endif
+
+#if NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
+    #define TO_STRING() ToString(GET_CURRENT_CONTEXT).FromMaybe(Local<String>())
+    #define TO_OBJECT() ToObject(GET_CURRENT_CONTEXT)).FromMaybe(Local<Object>())
+    #define TO_BOOLEAN() ToBoolean(GET_CURRENT_CONTEXT).FromMaybe(Local<Boolean>())
+
+#else 
+    #define TO_STRING() ToString()
+    #define TO_OBJECT() ToObject()
+    #define TO_BOOLEAN() ToBoolean()
+
 #endif
 
 #define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)
