@@ -79,7 +79,7 @@ unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Handle<Date> inDate, co
     Handle<Value> result;
     
     result = func->Call(inDate, 0, NULL);
-    return TO_NUMBER(result)->Uint32Value();
+    return TO_UINT32(result)->Value();
 }
 
 int PDFDateDriver::GetIntValueFromDateFunction(Handle<Date> inDate, const char* inFunctionName)

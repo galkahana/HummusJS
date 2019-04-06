@@ -61,7 +61,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     }
     else if(result->IsNumber())
     {
-        return TO_NUMBER(result)->Uint32Value();
+        return TO_UINT32(result)->Value();
     }
     else
     {

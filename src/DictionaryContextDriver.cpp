@@ -288,7 +288,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteObjectReferenceValue(const ARGS
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)TO_NUMBER(args[0])->Uint32Value());
+    driver->DictionaryContextInstance->WriteObjectReferenceValue((ObjectIDType)TO_UINT32(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }

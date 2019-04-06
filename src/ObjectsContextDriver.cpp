@@ -135,7 +135,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::DeleteObject(const ARGS_TYPE& args)
     
     ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
-    objectsContextDriver->ObjectsContextInstance->GetInDirectObjectsRegistry().DeleteObject(TO_NUMBER(args[0])->Uint32Value());
+    objectsContextDriver->ObjectsContextInstance->GetInDirectObjectsRegistry().DeleteObject(TO_UINT32(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     
@@ -204,7 +204,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::EndArray(const ARGS_TYPE& args)
     if(args.Length() == 0)
         ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndArray();
     else
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndArray((ETokenSeparator)(TO_NUMBER(args[0])->Uint32Value()));
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndArray((ETokenSeparator)(TO_UINT32(args[0])->Value()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -266,10 +266,10 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteIndirectObjectReference(const ARGS
     }
 
     if(args.Length() == 1)
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(TO_NUMBER(args[0])->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(TO_UINT32(args[0])->Value());
     else
-        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(TO_NUMBER(args[0])->Uint32Value(),
-                                                                                                                    TO_NUMBER(args[1])->Uint32Value());
+        ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteIndirectObjectReference(TO_UINT32(args[0])->Value(),
+                                                                                                                    TO_UINT32(args[1])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
 

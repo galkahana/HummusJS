@@ -516,7 +516,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
     {
         usedFont = pdfWriter->mPDFWriter.GetFontForFile(*UTF_8_VALUE(args[0]->ToString()),
                                                         *UTF_8_VALUE(args[1]->ToString()),
-                                                        TO_NUMBER(args[0])->Uint32Value());
+                                                        TO_UINT32(args[0])->Value());
     }
     else if(args.Length() == 2)
     {
@@ -525,7 +525,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
                                                             *UTF_8_VALUE(args[1]->ToString()));
         else
             usedFont = pdfWriter->mPDFWriter.GetFontForFile(*UTF_8_VALUE(args[0]->ToString()),
-                                                            TO_NUMBER(args[1])->Uint32Value());
+                                                            TO_UINT32(args[1])->Value());
     }
     else // length is 1
     {
@@ -930,17 +930,17 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
         
     if(inObject->Has(NEW_STRING("type")) && inObject->Get(NEW_STRING("type"))->IsNumber())
     {
-        pageRange.mType = (PDFPageRange::ERangeType)(TO_NUMBER(inObject->Get(NEW_STRING("type")))->Uint32Value());
+        pageRange.mType = (PDFPageRange::ERangeType)(TO_UINT32(inObject->Get(NEW_STRING("type")))->Value());
     }
 
     if(inObject->Has(NEW_STRING("specificRanges")) && inObject->Get(NEW_STRING("specificRanges"))->IsArray())
     {
         Local<Object> anArray = inObject->Get(NEW_STRING("specificRanges"))->ToObject();
-        unsigned int length = TO_NUMBER(anArray->Get(NEW_STRING("length")))->Uint32Value();
+        unsigned int length = TO_UINT32(anArray->Get(NEW_STRING("length")))->Value();
         for(unsigned int i=0; i < length; ++i)
         {
             if(!anArray->Get(i)->IsArray() ||
-               TO_NUMBER(anArray->Get(i)->ToObject()->Get(NEW_STRING("length")))->Uint32Value() != 2)
+               TO_UINT32(anArray->Get(i)->ToObject()->Get(NEW_STRING("length")))->Value() != 2)
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
                 break;
@@ -952,8 +952,8 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Handle<Object> inObject)
                 break;
             }
             pageRange.mSpecificRanges.push_back(ULongAndULong(
-                                                              TO_NUMBER(item->Get(0))->Uint32Value(),
-                                                              TO_NUMBER(item->Get(1))->Uint32Value()));
+                                                              TO_UINT32(item->Get(0))->Value(),
+                                                              TO_UINT32(item->Get(1))->Value()));
             
         }
     }
@@ -1199,7 +1199,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         Handle<Object> objectsIDsArray = args[4]->ToObject();
         unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
         for(unsigned int i=0;i<arrayLength;++i)
-            extraObjectsList.push_back((ObjectIDType)(TO_NUMBER(objectsIDsArray->Get(i))->Uint32Value()));
+            extraObjectsList.push_back((ObjectIDType)(TO_UINT32(objectsIDsArray->Get(i))->Value()));
             
     }
     
@@ -1230,7 +1230,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
         result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
                                                                 *UTF_8_VALUE(args[0]->ToString()),
                                                                 pageRange,
-                                                                (EPDFPageBox)TO_NUMBER(args[1])->Uint32Value(),
+                                                                (EPDFPageBox)TO_UINT32(args[1])->Value(),
                                                                  transformationMatrix,
                                                                  extraObjectsList,
                                                                  parsingOptions);
@@ -1321,7 +1321,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
 
     DoubleAndDoublePair dimensions = pdfWriter->mPDFWriter.GetImageDimensions(
                                   *UTF_8_VALUE(args[0]->ToString()),
-                                  args.Length() >= 2 ? TO_NUMBER(args[1])->Uint32Value() : 0,
+                                  args.Length() >= 2 ? TO_UINT32(args[1])->Value() : 0,
                                   parsingOptions);
     
     Handle<Object> newObject = NEW_OBJECT;
@@ -1477,7 +1477,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::RegisterAnnotationReferenceForNextPageWrite(
 
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(TO_NUMBER(args[0])->Uint32Value());
+    pdfWriter->mPDFWriter.GetDocumentContext().RegisterAnnotationReferenceForNextPageWrite(TO_UINT32(args[0])->Value());
 
     SET_FUNCTION_RETURN_VALUE(args.This())
 }

@@ -54,7 +54,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBu
     
     IOBasicTypes::LongBufferSizeType bufferLength = result->ToObject()->Get(v8::NEW_STRING("length"))->ToObject()->Uint32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
-        inBuffer[i] = (IOBasicTypes::Byte)(TO_NUMBER(value->ToObject()->Get((uint32_t)i))->Uint32Value());
+        inBuffer[i] = (IOBasicTypes::Byte)(TO_UINT32(value->ToObject()->Get((uint32_t)i))->Value());
     
     return bufferLength;
 }

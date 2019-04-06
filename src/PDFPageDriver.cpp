@@ -316,7 +316,7 @@ void PDFPageDriver::SetRotate(Local<String> property, Local<Value> value, const 
     if(!value->IsNumber())
         THROW_EXCEPTION("Rotation is not set to a number");
     
-    pageDriver->mPDFPage->SetRotate(TO_NUMBER(value)->Uint32Value());
+    pageDriver->mPDFPage->SetRotate(TO_UINT32(value)->Value());
     
 }
 

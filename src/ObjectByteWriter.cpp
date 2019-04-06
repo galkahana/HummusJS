@@ -51,5 +51,5 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byt
     Handle<Value> args[1];
     args[0] = anArray;
     
-	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args))->Uint32Value();
+	return TO_UINT32(func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args))->Value();
 }

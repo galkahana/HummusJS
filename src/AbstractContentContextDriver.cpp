@@ -1724,9 +1724,9 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
         
         GlyphUnicodeMapping mapping;
         
-        mapping.mGlyphCode = TO_NUMBER(arrayObject->Get(i)->ToObject()->Get(0))->Uint32Value();
+        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(i)->ToObject()->Get(0))->Value();
         for(int j=1; j < itemLength;++j)
-            mapping.mUnicodeValues.push_back(TO_NUMBER(arrayObject->Get(i)->ToObject()->Get(j))->Uint32Value());
+            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(i)->ToObject()->Get(j))->Value());
 			
 		glyphList.push_back(mapping);
     }
@@ -2175,7 +2175,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
         Handle<Object> optionsObject = args[3]->ToObject();
         
         if(optionsObject->Has(NEW_STRING("index")))
-            imageOptions.imageIndex = TO_NUMBER(optionsObject->Get(NEW_STRING("index")))->Uint32Value();
+            imageOptions.imageIndex = TO_UINT32(optionsObject->Get(NEW_STRING("index")))->Value();
         
         if(optionsObject->Has(NEW_STRING("transformation")))
         {

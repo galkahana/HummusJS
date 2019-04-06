@@ -117,7 +117,7 @@ METHOD_RETURN_TYPE ByteReaderDriver::Read(const ARGS_TYPE& args)
     }
     
     ByteReaderDriver* element = ObjectWrap::Unwrap<ByteReaderDriver>(args.This());
-    IOBasicTypes::LongBufferSizeType bufferSize = TO_NUMBER(args[0])->Uint32Value();
+    IOBasicTypes::LongBufferSizeType bufferSize = TO_UINT32(args[0])->Value();
     IOBasicTypes::Byte* buffer = new IOBasicTypes::Byte[bufferSize];
     
     bufferSize = element->mInstance->Read(buffer,(int)bufferSize); // reading int cause that's the maximum that can read (use should read till notended anyways)

@@ -276,7 +276,7 @@ void InfoDictionaryDriver::SetTrapped(Local<String> property, Local<Value> value
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Trapped = (EInfoTrapped)(TO_NUMBER(value)->Uint32Value());
+    infoDictionaryDriver->InfoDictionaryInstance->Trapped = (EInfoTrapped)(TO_UINT32(value)->Value());
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::SetCreationDate(const ARGS_TYPE& args)

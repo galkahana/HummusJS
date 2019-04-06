@@ -514,7 +514,7 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    unsigned long value = TO_NUMBER(args[0])->Uint32Value();
+    unsigned long value = TO_NUMBER(args[0])->Value();
     
     if(value > PDFObject::ePDFObjectSymbol)
     {
