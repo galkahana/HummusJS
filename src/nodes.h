@@ -14,12 +14,16 @@
     #define CALL_INIT_WITH_EXPORTS(f) f(exports, context);
     #define DEF_INIT_WITH_EXPORTS(f) void f(Handle<Object> exports, Handle<Context> context)
     #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context);
+
+    #define UTF_8_VALUE(x) String::Utf8Value(isolate, x)
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports);
     #define DEF_INIT_WITH_EXPORTS(f) void f(Handle<Object> exports)
     #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports);
+
+    #define UTF_8_VALUE(x) String::Utf8Value(x)
 #endif
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION

@@ -113,7 +113,7 @@ void InfoDictionaryDriver::SetTitle(Local<String> property, Local<Value> value, 
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Title.FromUTF8(*String::Utf8Value(value->ToString()));
+    infoDictionaryDriver->InfoDictionaryInstance->Title.FromUTF8(*UTF_8_VALUE(value->ToString()));
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::GetAuthor(Local<String> property, const PROPERTY_TYPE &info)
@@ -141,7 +141,7 @@ void InfoDictionaryDriver::SetAuthor(Local<String> property, Local<Value> value,
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Author.FromUTF8(*String::Utf8Value(value->ToString()));
+    infoDictionaryDriver->InfoDictionaryInstance->Author.FromUTF8(*UTF_8_VALUE(value->ToString()));
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::GetSubject(Local<String> property, const PROPERTY_TYPE &info)
@@ -168,7 +168,7 @@ void InfoDictionaryDriver::SetSubject(Local<String> property, Local<Value> value
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Subject.FromUTF8(*String::Utf8Value(value->ToString()));
+    infoDictionaryDriver->InfoDictionaryInstance->Subject.FromUTF8(*UTF_8_VALUE(value->ToString()));
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::GetKeywords(Local<String> property, const PROPERTY_TYPE &info)
@@ -195,7 +195,7 @@ void InfoDictionaryDriver::SetKeywords(Local<String> property, Local<Value> valu
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Keywords.FromUTF8(*String::Utf8Value(value->ToString()));
+    infoDictionaryDriver->InfoDictionaryInstance->Keywords.FromUTF8(*UTF_8_VALUE(value->ToString()));
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::GetCreator(Local<String> property, const PROPERTY_TYPE &info)
@@ -222,7 +222,7 @@ void InfoDictionaryDriver::SetCreator(Local<String> property, Local<Value> value
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Creator.FromUTF8(*String::Utf8Value(value->ToString()));
+    infoDictionaryDriver->InfoDictionaryInstance->Creator.FromUTF8(*UTF_8_VALUE(value->ToString()));
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::GetProducer(Local<String> property, const PROPERTY_TYPE &info)
@@ -249,7 +249,7 @@ void InfoDictionaryDriver::SetProducer(Local<String> property, Local<Value> valu
     if(!infoDictionaryDriver->InfoDictionaryInstance)
 		THROW_EXCEPTION("info dictionary driver not initialized. use the document context object to get a valid info dictionary");
     
-    infoDictionaryDriver->InfoDictionaryInstance->Producer.FromUTF8(*String::Utf8Value(value->ToString()));
+    infoDictionaryDriver->InfoDictionaryInstance->Producer.FromUTF8(*UTF_8_VALUE(value->ToString()));
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::GetTrapped(Local<String> property, const PROPERTY_TYPE &info)
@@ -342,9 +342,9 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::AddAdditionalInfoEntry(const ARGS_TYPE&
     }
     
     PDFTextString textString;
-    textString.FromUTF8(*String::Utf8Value(args[1]->ToString()));
+    textString.FromUTF8(*UTF_8_VALUE(args[1]->ToString()));
     
-    driver->InfoDictionaryInstance->AddAdditionalInfoEntry(*String::Utf8Value(args[0]->ToString()), textString);
+    driver->InfoDictionaryInstance->AddAdditionalInfoEntry(*UTF_8_VALUE(args[0]->ToString()), textString);
     
     SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
@@ -368,7 +368,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::RemoveAdditionalInfoEntry(const ARGS_TY
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    driver->InfoDictionaryInstance->RemoveAdditionalInfoEntry(*String::Utf8Value(args[0]->ToString()));
+    driver->InfoDictionaryInstance->RemoveAdditionalInfoEntry(*UTF_8_VALUE(args[0]->ToString()));
     
     SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 }
@@ -409,7 +409,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::GetAdditionalInfoEntry(const ARGS_TYPE&
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    PDFTextString testString = driver->InfoDictionaryInstance->GetAdditionalInfoEntry(*String::Utf8Value(args[0]->ToString()));
+    PDFTextString testString = driver->InfoDictionaryInstance->GetAdditionalInfoEntry(*UTF_8_VALUE(args[0]->ToString()));
     
     SET_FUNCTION_RETURN_VALUE(NEW_STRING(testString.ToUTF8String().c_str()))
 }

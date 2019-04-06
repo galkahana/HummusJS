@@ -119,7 +119,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::Exists(const ARGS_TYPE& args)
         
     }
     
-    Handle<Boolean> result = NEW_BOOLEAN(driver->TheObject->Exists(*String::Utf8Value(args[0]->ToString())));
+    Handle<Boolean> result = NEW_BOOLEAN(driver->TheObject->Exists(*UTF_8_VALUE(args[0]->ToString())));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }
@@ -136,7 +136,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::QueryObject(const ARGS_TYPE& args)
         
     }
     
-    std::string key = *String::Utf8Value(args[0]->ToString());
+    std::string key = *UTF_8_VALUE(args[0]->ToString());
 
     PDFDictionaryDriver* driver = ObjectWrap::Unwrap<PDFDictionaryDriver>(args.This());
     

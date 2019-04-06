@@ -116,18 +116,18 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
         if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
         {
             logConfig.ShouldLog = true;
-            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
+            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
-            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("userPassword"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
@@ -146,7 +146,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     }
     else
     {
-        status = driver->StartPDF(std::string(*String::Utf8Value(args[0]->ToString())), pdfVersion,logConfig,pdfCreationSettings);
+        status = driver->StartPDF(std::string(*UTF_8_VALUE(args[0]->ToString())), pdfVersion,logConfig,pdfCreationSettings);
     }
     
     if(status != PDFHummus::eSuccess)
@@ -228,23 +228,23 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
         if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
         {
             logConfig.ShouldLog = true;
-            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
+            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("password")) && anObject->Get(NEW_STRING("password"))->IsString())
         {
-            originalPassword = *String::Utf8Value(anObject->Get(NEW_STRING("password"))->ToString());
+            originalPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("password"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
-            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("userPassword"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
@@ -270,9 +270,9 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     }
     else
     {
-        status = PDFWriter::RecryptPDF(std::string(*String::Utf8Value(args[0]->ToString())),
+        status = PDFWriter::RecryptPDF(std::string(*UTF_8_VALUE(args[0]->ToString())),
                                     originalPassword,
-                                    std::string(*String::Utf8Value(args[1]->ToString())),
+                                    std::string(*UTF_8_VALUE(args[1]->ToString())),
                                     logConfig,
                                     pdfCreationSettings,
                                     pdfVersion);
@@ -312,7 +312,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
         Handle<Object> anObject = args[1]->ToObject();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
-            alternativePath = *String::Utf8Value(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
+            alternativePath = *UTF_8_VALUE(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
 
         if(anObject->Has(NEW_STRING("modifiedStream")) && anObject->Get(NEW_STRING("modifiedStream"))->IsObject())
             alternativeStream = anObject->Get(NEW_STRING("modifiedStream"))->ToObject();
@@ -324,7 +324,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
             if(value->IsString())
             {
                 logConfig.ShouldLog = true;
-                logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
+                logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->ToString());
                 logConfig.LogStream = NULL;
             }
             else if(value->IsObject())
@@ -342,14 +342,14 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
     if(args[0]->IsObject())
     {
         status = driver->ContinuePDF(args[0]->ToObject(),
-                                     *String::Utf8Value(args[1]->ToString()),
+                                     *UTF_8_VALUE(args[1]->ToString()),
                                      alternativeStream,
                                      logConfig);
     }
     else
     {
-        status = driver->ContinuePDF(*String::Utf8Value(args[0]->ToString()),
-                                             *String::Utf8Value(args[1]->ToString()),
+        status = driver->ContinuePDF(*UTF_8_VALUE(args[0]->ToString()),
+                                             *UTF_8_VALUE(args[1]->ToString()),
                                              alternativePath,
                                              logConfig);
     }
@@ -408,23 +408,23 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->ToBoolean()->Value();
         
         if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
-            alternativePath = *String::Utf8Value(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
+            alternativePath = *UTF_8_VALUE(anObject->Get(NEW_STRING("modifiedFilePath"))->ToString());
 
         if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
         {
             logConfig.ShouldLog = true;
-            logConfig.LogFileLocation = *String::Utf8Value(anObject->Get(NEW_STRING("log"))->ToString());
+            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
-            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *String::Utf8Value(anObject->Get(NEW_STRING("userPassword"))->ToString());
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("userPassword"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *String::Utf8Value(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("ownerPassword"))->ToString());
         }
 
         if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
@@ -447,7 +447,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     }
     else
     {
-        status = driver->ModifyPDF(*String::Utf8Value(args[0]->ToString()),
+        status = driver->ModifyPDF(*UTF_8_VALUE(args[0]->ToString()),
                                pdfVersion,alternativePath,logConfig,
                                pdfCreationSettings);
     }
@@ -486,7 +486,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
         Handle<Object> options = args[1]->ToObject();
         if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
         {
-            parsingOptions.Password = *String::Utf8Value(options->Get(NEW_STRING("password"))->ToString());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->ToString());
         }
     }
         
@@ -495,7 +495,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
         status = driver->StartPDFParsing(args[0]->ToObject(),parsingOptions);
     else
         
-        status = driver->StartPDFParsing(std::string(*String::Utf8Value(args[0]->ToString())),parsingOptions);
+        status = driver->StartPDFParsing(std::string(*UTF_8_VALUE(args[0]->ToString())),parsingOptions);
     if(status != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("Unable to start parsing PDF file");

@@ -108,7 +108,7 @@ METHOD_RETURN_TYPE InputFileDriver::New(const ARGS_TYPE& args)
     InputFileDriver* inputFile = new InputFileDriver();
     
     if(args.Length() == 1 && args[0]->IsString())
-        inputFile->OpenFile(*String::Utf8Value(args[0]->ToString()));
+        inputFile->OpenFile(*UTF_8_VALUE(args[0]->ToString()));
     
     inputFile->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
@@ -135,7 +135,7 @@ METHOD_RETURN_TYPE InputFileDriver::OpenFile(const ARGS_TYPE& args)
         
     }
     
-    if(driver->OpenFile(*String::Utf8Value(args[0]->ToString())) != PDFHummus::eSuccess)
+    if(driver->OpenFile(*UTF_8_VALUE(args[0]->ToString())) != PDFHummus::eSuccess)
     {
 		THROW_EXCEPTION("can't open file. make sure path exists");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)

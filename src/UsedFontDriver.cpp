@@ -183,7 +183,7 @@ METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args
     {
         UnicodeString unicode;
         
-        unicode.FromUTF8(*String::Utf8Value(args[0]->ToString()));
+        unicode.FromUTF8(*UTF_8_VALUE(args[0]->ToString()));
         ftWrapper->GetGlyphsForUnicodeText(unicode.GetUnicodeList(),glyphs);
     }
     else // array of glyph indexes

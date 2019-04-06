@@ -334,7 +334,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteName(const ARGS_TYPE& args)
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteName(*String::Utf8Value(args[0]->ToString()));
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteName(*UTF_8_VALUE(args[0]->ToString()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     
@@ -363,7 +363,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteLiteralString(const ARGS_TYPE& arg
 	}
 	else
     {
-		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(*String::Utf8Value(args[0]->ToString()));
+		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(*UTF_8_VALUE(args[0]->ToString()));
 	}
     
     SET_FUNCTION_RETURN_VALUE(args.This())
@@ -393,7 +393,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteHexString(const ARGS_TYPE& args)
 	}
 	else
     {
-		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(*String::Utf8Value(args[0]->ToString()));
+		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(*UTF_8_VALUE(args[0]->ToString()));
 	}
     
     SET_FUNCTION_RETURN_VALUE(args.This())
@@ -432,7 +432,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteKeyword(const ARGS_TYPE& args)
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteKeyword(*String::Utf8Value(args[0]->ToString()));
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteKeyword(*UTF_8_VALUE(args[0]->ToString()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     
@@ -451,7 +451,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteComment(const ARGS_TYPE& args)
         
     }
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteComment(*String::Utf8Value(args[0]->ToString()));
+    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteComment(*UTF_8_VALUE(args[0]->ToString()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     
