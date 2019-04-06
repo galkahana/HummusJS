@@ -55,7 +55,7 @@ void OutputFileDriver::SetFromOwnedFile(OutputFile* inFile)
     mOutputFileInstance = inFile;
 }
 
-void OutputFileDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(OutputFileDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -71,7 +71,7 @@ void OutputFileDriver::Init(Handle<Object> inExports)
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
-	SET_CONSTRUCTOR_EXPORT(inExports, "OutputFile",t);
+	SET_CONSTRUCTOR_EXPORT("OutputFile",t);
 }
 
 METHOD_RETURN_TYPE OutputFileDriver::NewInstance(const ARGS_TYPE& args)

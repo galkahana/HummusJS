@@ -58,7 +58,7 @@ class PDFWriterDriver : public node::ObjectWrap, IDocumentContextExtender
 public:
     virtual ~PDFWriterDriver();
     
-    static void Init(v8::Handle<v8::Object> inExports);
+	DEC_INIT_WITH_EXPORTS(Init)
 	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 

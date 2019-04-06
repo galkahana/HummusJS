@@ -64,7 +64,7 @@ PDFWriterDriver::~PDFWriterDriver()
     delete mReadStreamProxy;
 }
 
-void PDFWriterDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -108,7 +108,7 @@ void PDFWriterDriver::Init(Handle<Object> inExports)
     SET_PROTOTYPE_METHOD(t, "requireCatalogUpdate", RequireCatalogUpdate);    
 
 	SET_CONSTRUCTOR(constructor, t);
-    SET_CONSTRUCTOR_EXPORT(inExports, "PDFWriter", t);
+    SET_CONSTRUCTOR_EXPORT("PDFWriter", t);
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::NewInstance(const ARGS_TYPE& args)

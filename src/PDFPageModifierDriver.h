@@ -29,7 +29,7 @@ class PDFPageModifierDriver : public node::ObjectWrap
 public:
     virtual ~PDFPageModifierDriver();
     
-    static void Init(v8::Handle<v8::Object> inExports); // to allow instantiation from the hummus object
+	DEC_INIT_WITH_EXPORTS(Init)
 	static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);

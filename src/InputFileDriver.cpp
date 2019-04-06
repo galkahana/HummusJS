@@ -55,7 +55,7 @@ void InputFileDriver::SetFromOwnedFile(InputFile* inFile)
     mInputFileInstance = inFile;
 }
 
-void InputFileDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(InputFileDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -72,7 +72,7 @@ void InputFileDriver::Init(Handle<Object> inExports)
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 	
-	SET_CONSTRUCTOR_EXPORT(inExports, "InputFile", t);
+	SET_CONSTRUCTOR_EXPORT("InputFile", t);
 }
 
 METHOD_RETURN_TYPE InputFileDriver::NewInstance(const ARGS_TYPE& args)

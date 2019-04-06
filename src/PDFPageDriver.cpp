@@ -39,7 +39,7 @@ PDFPageDriver::PDFPageDriver()
     mOwnsPage = false;
 }
 
-void PDFPageDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(PDFPageDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -58,7 +58,7 @@ void PDFPageDriver::Init(Handle<Object> inExports)
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
     
-	SET_CONSTRUCTOR_EXPORT(inExports, "PDFPage", t);
+	SET_CONSTRUCTOR_EXPORT("PDFPage", t);
 }
 
 

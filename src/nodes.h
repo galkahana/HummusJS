@@ -5,6 +5,22 @@
 
 #define NODE_0_10_MODULE_VERSION 11
 #define NODE_2_5_0_MODULE_VERSION 44
+#define NODE_11_0_0_MODULE_VERSION 67
+#define NODE_CONTEXT_AWARE_VERSION NODE_11_0_0_MODULE_VERSION
+
+#if NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
+	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
+    #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
+    #define CALL_INIT_WITH_EXPORTS(f) f(exports, context);
+    #define DEF_INIT_WITH_EXPORTS(f) void f(Handle<Object> exports, Handle<Context> context)
+    #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context);
+#else 
+	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
+    #define EXPORTS_SET(e,k,v) e->Set(k,v);
+    #define CALL_INIT_WITH_EXPORTS(f) f(exports);
+    #define DEF_INIT_WITH_EXPORTS(f) void f(Handle<Object> exports)
+    #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports);
+#endif
 
 #if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
 #include <node_object_wrap.h>
@@ -24,7 +40,7 @@
 #define NEW_OBJECT Object::New(isolate)
 #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f);
 #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f,g);
-#define SET_CONSTRUCTOR_EXPORT(t,s,c) t->Set(NEW_STRING(s),c->GetFunction())
+#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction())
 #define SET_PROTOTYPE_METHOD(t, s, f) NODE_SET_PROTOTYPE_METHOD(t,s,f)
 #define SET_PERSISTENT_OBJECT(c,ot,t) c.Reset(isolate,t)
 #define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
@@ -61,7 +77,6 @@
 
 #endif
 
-
 #else
 
 #define ARGS_TYPE v8::Arguments
@@ -79,7 +94,7 @@
 #define NEW_OBJECT Object::New()
 #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(String::NewSymbol(s), f);
 #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(String::NewSymbol(s), f,g);
-#define SET_CONSTRUCTOR_EXPORT(t,s,c) t->Set(String::NewSymbol(s),c->GetFunction())
+#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,String::NewSymbol(s),c->GetFunction())
 #define SET_PROTOTYPE_METHOD(t,s,f) t->PrototypeTemplate()->Set(String::NewSymbol(s),FunctionTemplate::New(f)->GetFunction())
 #define SET_PERSISTENT_OBJECT(c,ot,t) c =Persistent<ot>::New(t);
 #define SET_CONSTRUCTOR(c,t) SET_PERSISTENT_OBJECT(c,Function,t->GetFunction())

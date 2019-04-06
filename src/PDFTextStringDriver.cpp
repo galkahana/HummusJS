@@ -25,7 +25,7 @@ using namespace v8;
 
 Persistent<Function> PDFTextStringDriver::constructor;
 
-void PDFTextStringDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(PDFTextStringDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -39,7 +39,7 @@ void PDFTextStringDriver::Init(Handle<Object> inExports)
 	SET_PROTOTYPE_METHOD(t, "fromString", FromString);
 	SET_CONSTRUCTOR(constructor, t);
 
-	SET_CONSTRUCTOR_EXPORT(inExports, "PDFTextString", t);
+	SET_CONSTRUCTOR_EXPORT("PDFTextString", t);
 
 }
 

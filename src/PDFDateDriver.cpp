@@ -24,7 +24,7 @@ using namespace v8;
 
 Persistent<Function> PDFDateDriver::constructor;
 
-void PDFDateDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(PDFDateDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -36,7 +36,7 @@ void PDFDateDriver::Init(Handle<Object> inExports)
 	SET_PROTOTYPE_METHOD(t, "toString", ToString);
 	SET_PROTOTYPE_METHOD(t, "setToCurrentTime", SetToCurrentTime);
 	SET_CONSTRUCTOR(constructor, t);
-	SET_CONSTRUCTOR_EXPORT(inExports, "PDFDate", t);
+	SET_CONSTRUCTOR_EXPORT("PDFDate", t);
 }
 
 METHOD_RETURN_TYPE PDFDateDriver::NewInstance(const ARGS_TYPE& args)

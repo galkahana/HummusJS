@@ -17,9 +17,10 @@
  limitations under the License.
  
  */
-#include <node.h>
+#include <node.h> 
 #include <v8.h>
 
+#include "nodes.h"
 #include "PDFWriterDriver.h"
 #include "PDFPageDriver.h"
 #include "PageContentContextDriver.h"
@@ -526,11 +527,11 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(result)
 }
 
-void HummusInit(Handle<Object> exports) {
+DEF_INIT_WITH_EXPORTS(HummusInit) {
 	CREATE_ISOLATE_CONTEXT;
 
-    PDFWriterDriver::Init(exports);
-    PDFPageDriver::Init(exports);
+    CALL_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFPageDriver::Init)
     PageContentContextDriver::Init();
     FormXObjectDriver::Init();
     XObjectContentContextDriver::Init();
@@ -553,89 +554,89 @@ void HummusInit(Handle<Object> exports) {
     PDFIntegerDriver::Init();
     PDFRealDriver::Init();
     PDFSymbolDriver::Init();
-    PDFTextStringDriver::Init(exports);
-    PDFDateDriver::Init(exports);
+    CALL_INIT_WITH_EXPORTS(PDFTextStringDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFDateDriver::Init)
     DictionaryContextDriver::Init();
     PDFPageInputDriver::Init();
-    InputFileDriver::Init(exports);
-    OutputFileDriver::Init(exports);
+    CALL_INIT_WITH_EXPORTS(InputFileDriver::Init)
+    CALL_INIT_WITH_EXPORTS(OutputFileDriver::Init)
     InfoDictionaryDriver::Init();
     PDFStreamDriver::Init();
     ByteReaderDriver::Init();
 	ByteWriterDriver::Init();
-	ByteReaderWithPositionDriver::Init();
+    ByteReaderWithPositionDriver::Init();
 	ByteWriterWithPositionDriver::Init();
-    PDFPageModifierDriver::Init(exports);
+    CALL_INIT_WITH_EXPORTS(PDFPageModifierDriver::Init)
     PDFObjectParserDriver::Init();
 
     
     // define methods
-	exports->Set(NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE(CreateWriter)->GetFunction());
-	exports->Set(NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE(CreateWriterToContinue)->GetFunction());
-	exports->Set(NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE(CreateWriterToModify)->GetFunction());
-	exports->Set(NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE(CreateReader)->GetFunction());
-    exports->Set(NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction());
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE(CreateWriter)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE(CreateWriterToContinue)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE(CreateWriterToModify)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE(CreateReader)->GetFunction())
+    EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction())
     
     // define pdf versions enum
-    exports->Set(NEW_SYMBOL("ePDFVersion10"),NEW_NUMBER(ePDFVersion10));
-    exports->Set(NEW_SYMBOL("ePDFVersion11"),NEW_NUMBER(ePDFVersion11));
-    exports->Set(NEW_SYMBOL("ePDFVersion12"),NEW_NUMBER(ePDFVersion12));
-    exports->Set(NEW_SYMBOL("ePDFVersion13"),NEW_NUMBER(ePDFVersion13));
-    exports->Set(NEW_SYMBOL("ePDFVersion14"),NEW_NUMBER(ePDFVersion14));
-    exports->Set(NEW_SYMBOL("ePDFVersion15"),NEW_NUMBER(ePDFVersion15));
-    exports->Set(NEW_SYMBOL("ePDFVersion16"),NEW_NUMBER(ePDFVersion16));
-    exports->Set(NEW_SYMBOL("ePDFVersion17"),NEW_NUMBER(ePDFVersion17));
-    exports->Set(NEW_SYMBOL("ePDFVersionUndefined"),NEW_NUMBER(ePDFVersionUndefined));
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion10"),NEW_NUMBER(ePDFVersion10))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion11"),NEW_NUMBER(ePDFVersion11))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion12"),NEW_NUMBER(ePDFVersion12))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion13"),NEW_NUMBER(ePDFVersion13))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion14"),NEW_NUMBER(ePDFVersion14))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion15"),NEW_NUMBER(ePDFVersion15))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion16"),NEW_NUMBER(ePDFVersion16))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion17"),NEW_NUMBER(ePDFVersion17))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersionUndefined"),NEW_NUMBER(ePDFVersionUndefined))
     
     // procsets for resource inclusion
-    exports->Set(NEW_SYMBOL("KProcsetImageB"),NEW_STRING(KProcsetImageB.c_str()));
-    exports->Set(NEW_SYMBOL("KProcsetImageC"),NEW_STRING(KProcsetImageC.c_str()));
-    exports->Set(NEW_SYMBOL("KProcsetImageI"),NEW_STRING(KProcsetImageI.c_str()));
-    exports->Set(NEW_SYMBOL("kProcsetPDF"),NEW_STRING(KProcsetPDF.c_str()));
-    exports->Set(NEW_SYMBOL("kProcsetText"),NEW_STRING(KProcsetText.c_str()));
+    EXPORTS_SET(exports,NEW_SYMBOL("KProcsetImageB"),NEW_STRING(KProcsetImageB.c_str()))
+    EXPORTS_SET(exports,NEW_SYMBOL("KProcsetImageC"),NEW_STRING(KProcsetImageC.c_str()))
+    EXPORTS_SET(exports,NEW_SYMBOL("KProcsetImageI"),NEW_STRING(KProcsetImageI.c_str()))
+    EXPORTS_SET(exports,NEW_SYMBOL("kProcsetPDF"),NEW_STRING(KProcsetPDF.c_str()))
+    EXPORTS_SET(exports,NEW_SYMBOL("kProcsetText"),NEW_STRING(KProcsetText.c_str()))
     
     // page range values
-    exports->Set(NEW_SYMBOL("eRangeTypeAll"),NEW_NUMBER(PDFPageRange::eRangeTypeAll));
-    exports->Set(NEW_SYMBOL("eRangeTypeSpecific"),NEW_NUMBER(PDFPageRange::eRangeTypeSpecific));
+    EXPORTS_SET(exports,NEW_SYMBOL("eRangeTypeAll"),NEW_NUMBER(PDFPageRange::eRangeTypeAll))
+    EXPORTS_SET(exports,NEW_SYMBOL("eRangeTypeSpecific"),NEW_NUMBER(PDFPageRange::eRangeTypeSpecific))
     
     // EPDFPageBox enumerator, for embedding pages into forms
-    exports->Set(NEW_SYMBOL("ePDFPageBoxMediaBox"),NEW_NUMBER(ePDFPageBoxMediaBox));
-    exports->Set(NEW_SYMBOL("ePDFPageBoxCropBox"),NEW_NUMBER(ePDFPageBoxCropBox));
-    exports->Set(NEW_SYMBOL("ePDFPageBoxBleedBox"),NEW_NUMBER(ePDFPageBoxBleedBox));
-    exports->Set(NEW_SYMBOL("ePDFPageBoxTrimBox"),NEW_NUMBER(ePDFPageBoxTrimBox));
-    exports->Set(NEW_SYMBOL("ePDFPageBoxArtBox"),NEW_NUMBER(ePDFPageBoxArtBox));
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFPageBoxMediaBox"),NEW_NUMBER(ePDFPageBoxMediaBox))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFPageBoxCropBox"),NEW_NUMBER(ePDFPageBoxCropBox))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFPageBoxBleedBox"),NEW_NUMBER(ePDFPageBoxBleedBox))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFPageBoxTrimBox"),NEW_NUMBER(ePDFPageBoxTrimBox))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFPageBoxArtBox"),NEW_NUMBER(ePDFPageBoxArtBox))
     
     // parsed object types
-    exports->Set(NEW_SYMBOL("ePDFObjectBoolean"),NEW_NUMBER(PDFObject::ePDFObjectBoolean));
-    exports->Set(NEW_SYMBOL("ePDFObjectLiteralString"),NEW_NUMBER(PDFObject::ePDFObjectLiteralString));
-    exports->Set(NEW_SYMBOL("ePDFObjectHexString"),NEW_NUMBER(PDFObject::ePDFObjectHexString));
-    exports->Set(NEW_SYMBOL("ePDFObjectNull"),NEW_NUMBER(PDFObject::ePDFObjectNull));
-    exports->Set(NEW_SYMBOL("ePDFObjectName"),NEW_NUMBER(PDFObject::ePDFObjectName));
-    exports->Set(NEW_SYMBOL("ePDFObjectInteger"),NEW_NUMBER(PDFObject::ePDFObjectInteger));
-    exports->Set(NEW_SYMBOL("ePDFObjectReal"),NEW_NUMBER(PDFObject::ePDFObjectReal));
-    exports->Set(NEW_SYMBOL("ePDFObjectArray"),NEW_NUMBER(PDFObject::ePDFObjectArray));
-    exports->Set(NEW_SYMBOL("ePDFObjectDictionary"),NEW_NUMBER(PDFObject::ePDFObjectDictionary));
-    exports->Set(NEW_SYMBOL("ePDFObjectIndirectObjectReference"),NEW_NUMBER(PDFObject::ePDFObjectIndirectObjectReference));
-    exports->Set(NEW_SYMBOL("ePDFObjectStream"),NEW_NUMBER(PDFObject::ePDFObjectStream));
-    exports->Set(NEW_SYMBOL("ePDFObjectSymbol"),NEW_NUMBER(PDFObject::ePDFObjectSymbol));
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectBoolean"),NEW_NUMBER(PDFObject::ePDFObjectBoolean))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectLiteralString"),NEW_NUMBER(PDFObject::ePDFObjectLiteralString))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectHexString"),NEW_NUMBER(PDFObject::ePDFObjectHexString))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectNull"),NEW_NUMBER(PDFObject::ePDFObjectNull))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectName"),NEW_NUMBER(PDFObject::ePDFObjectName))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectInteger"),NEW_NUMBER(PDFObject::ePDFObjectInteger))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectReal"),NEW_NUMBER(PDFObject::ePDFObjectReal))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectArray"),NEW_NUMBER(PDFObject::ePDFObjectArray))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectDictionary"),NEW_NUMBER(PDFObject::ePDFObjectDictionary))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectIndirectObjectReference"),NEW_NUMBER(PDFObject::ePDFObjectIndirectObjectReference))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectStream"),NEW_NUMBER(PDFObject::ePDFObjectStream))
+    EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectSymbol"),NEW_NUMBER(PDFObject::ePDFObjectSymbol))
     // getter for string represenation of type enum
-	exports->Set(NEW_SYMBOL("getTypeLabel"), NEW_FUNCTION_TEMPLATE(GetTypeLabel)->GetFunction());
+	EXPORTS_SET(exports,NEW_SYMBOL("getTypeLabel"), NEW_FUNCTION_TEMPLATE(GetTypeLabel)->GetFunction())
     
     // ETokenSeparator
-    exports->Set(NEW_SYMBOL("eTokenSeparatorSpace"),NEW_NUMBER(eTokenSeparatorSpace));
-    exports->Set(NEW_SYMBOL("eTokenSeparatorEndLine"),NEW_NUMBER(eTokenSeparatorEndLine));
-    exports->Set(NEW_SYMBOL("eTokenSepratorNone"),NEW_NUMBER(eTokenSepratorNone));
+    EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorSpace"),NEW_NUMBER(eTokenSeparatorSpace))
+    EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorEndLine"),NEW_NUMBER(eTokenSeparatorEndLine))
+    EXPORTS_SET(exports,NEW_SYMBOL("eTokenSepratorNone"),NEW_NUMBER(eTokenSepratorNone))
     
     // EXrefEntryType
-    exports->Set(NEW_SYMBOL("eXrefEntryExisting"),NEW_NUMBER(eXrefEntryExisting));
-    exports->Set(NEW_SYMBOL("eXrefEntryDelete"),NEW_NUMBER(eXrefEntryDelete));
-    exports->Set(NEW_SYMBOL("eXrefEntryStreamObject"),NEW_NUMBER(eXrefEntryStreamObject));
-    exports->Set(NEW_SYMBOL("eXrefEntryUndefined"),NEW_NUMBER(eXrefEntryUndefined));
+    EXPORTS_SET(exports,NEW_SYMBOL("eXrefEntryExisting"),NEW_NUMBER(eXrefEntryExisting))
+    EXPORTS_SET(exports,NEW_SYMBOL("eXrefEntryDelete"),NEW_NUMBER(eXrefEntryDelete))
+    EXPORTS_SET(exports,NEW_SYMBOL("eXrefEntryStreamObject"),NEW_NUMBER(eXrefEntryStreamObject))
+    EXPORTS_SET(exports,NEW_SYMBOL("eXrefEntryUndefined"),NEW_NUMBER(eXrefEntryUndefined))
     
     // EInfoTrapped
-    exports->Set(NEW_SYMBOL("EInfoTrappedTrue"),NEW_NUMBER(EInfoTrappedTrue));
-    exports->Set(NEW_SYMBOL("EInfoTrappedFalse"),NEW_NUMBER(EInfoTrappedFalse));
-    exports->Set(NEW_SYMBOL("EInfoTrappedUnknown"),NEW_NUMBER(EInfoTrappedUnknown));
+    EXPORTS_SET(exports,NEW_SYMBOL("EInfoTrappedTrue"),NEW_NUMBER(EInfoTrappedTrue))
+    EXPORTS_SET(exports,NEW_SYMBOL("EInfoTrappedFalse"),NEW_NUMBER(EInfoTrappedFalse))
+    EXPORTS_SET(exports,NEW_SYMBOL("EInfoTrappedUnknown"),NEW_NUMBER(EInfoTrappedUnknown))
 }
 
-NODE_MODULE(hummus, HummusInit)
+NODES_MODULE(hummus, HummusInit)

@@ -42,7 +42,7 @@ PDFPageModifierDriver::~PDFPageModifierDriver()
     delete mModifierPageInstance;
 }
 
-void PDFPageModifierDriver::Init(Handle<Object> inExports)
+DEF_INIT_WITH_EXPORTS(PDFPageModifierDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -59,7 +59,7 @@ void PDFPageModifierDriver::Init(Handle<Object> inExports)
 	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 	
-	SET_CONSTRUCTOR_EXPORT(inExports, "PDFPageModifier", t);
+	SET_CONSTRUCTOR_EXPORT("PDFPageModifier", t);
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::NewInstance(const ARGS_TYPE& args)
