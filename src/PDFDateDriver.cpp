@@ -92,7 +92,7 @@ int PDFDateDriver::GetIntValueFromDateFunction(Handle<Date> inDate, const char* 
     Handle<Value> result;
     
     result = func->Call(inDate, 0, NULL);
-    return TO_NUMBER(result)->Int32Value();
+    return TO_INT32(result)->Value();
 }
 
 METHOD_RETURN_TYPE PDFDateDriver::New(const ARGS_TYPE& args)

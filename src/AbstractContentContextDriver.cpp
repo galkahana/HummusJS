@@ -578,7 +578,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::J(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->J(TO_NUMBER(args[0])->Int32Value());
+    contentContext->GetContext()->J(TO_INT32(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -601,7 +601,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::j(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->j(TO_NUMBER(args[0])->Int32Value());
+    contentContext->GetContext()->j(TO_INT32(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -649,12 +649,12 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
-    int dashArrayLength = TO_NUMBER(args[0]->TO_OBJECT()->Get(NEW_STRING("length")))->Int32Value();
+    int dashArrayLength = TO_INT32(args[0]->TO_OBJECT()->Get(NEW_STRING("length")))->Value();
     double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
-        dashArray[i] = TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Int32Value();
+        dashArray[i] = TO_INT32(args[0]->TO_OBJECT()->Get(i))->Value();
     
-    contentContext->GetContext()->d(dashArray,dashArrayLength,TO_NUMBER(args[1])->Int32Value());
+    contentContext->GetContext()->d(dashArray,dashArrayLength,TO_INT32(args[1])->Value());
     
     delete[] dashArray;
                              
@@ -701,7 +701,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::i(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->i(TO_NUMBER(args[0])->Int32Value());
+    contentContext->GetContext()->i(TO_INT32(args[0])->Value());
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -1211,7 +1211,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tz(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->Tz(TO_NUMBER(args[0])->Int32Value());
+    contentContext->GetContext()->Tz(TO_INT32(args[0])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
@@ -1259,7 +1259,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tr(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->Tr(TO_NUMBER(args[0])->Int32Value());
+    contentContext->GetContext()->Tr(TO_INT32(args[0])->Value());
     SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
@@ -1710,7 +1710,7 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
 	
 	GlyphUnicodeMappingList glyphList;
 
-    int arrayLength =TO_NUMBER(inArray->TO_OBJECT()->Get(NEW_STRING("length")))->Int32Value();
+    int arrayLength =TO_INT32(inArray->TO_OBJECT()->Get(NEW_STRING("length")))->Value();
     Local<Object> arrayObject = inArray->TO_OBJECT();
 
     for(int i=0; i < arrayLength; ++i)
@@ -1718,7 +1718,7 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
         if(!arrayObject->Get(i)->IsArray())
             continue;
         
-        int itemLength = TO_NUMBER(arrayObject->Get(i)->TO_OBJECT()->Get(NEW_STRING("length")))->Int32Value();
+        int itemLength = TO_INT32(arrayObject->Get(i)->TO_OBJECT()->Get(NEW_STRING("length")))->Value();
         if(0 == itemLength)
             continue;
         

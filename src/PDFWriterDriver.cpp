@@ -379,7 +379,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
         
         formXObject =
         args.Length() == 2 ?
-        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy,(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy,(ObjectIDType)TO_INT32(args[1])->Value()):
         pdfWriter->mPDFWriter.CreateFormXObjectFromJPGStream(&proxy);
         
     }
@@ -387,7 +387,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
     {
         formXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*UTF_8_VALUE(args[0]->TO_STRING()),(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*UTF_8_VALUE(args[0]->TO_STRING()),(ObjectIDType)TO_INT32(args[1])->Value()):
             pdfWriter->mPDFWriter.CreateFormXObjectFromJPGFile(*UTF_8_VALUE(args[0]->TO_STRING()));
     }
     if(!formXObject)
@@ -472,7 +472,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
         
         formXObject =
         args.Length() == 2 ?
-        pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy,(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
+        pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy,(ObjectIDType)TO_INT32(args[1])->Value()):
         pdfWriter->mPDFWriter.CreateFormXObjectFromPNGStream(&proxy);
         
     }
@@ -480,7 +480,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
     {
         formXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*UTF_8_VALUE(args[0]->TO_STRING()),(ObjectIDType)TO_NUMBER(args[1])->Int32Value()):
+            pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*UTF_8_VALUE(args[0]->TO_STRING()),(ObjectIDType)TO_INT32(args[1])->Value()):
             pdfWriter->mPDFWriter.CreateFormXObjectFromPNGFile(*UTF_8_VALUE(args[0]->TO_STRING()));
     }
     if(!formXObject)
@@ -725,7 +725,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
         }
         else // number
         {
-            objectID = TO_NUMBER(args[1])->Int32Value();
+            objectID = TO_INT32(args[1])->Value();
         }
 
     }
@@ -809,14 +809,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
         
         imageXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy,(ObjectIDType)TO_NUMBER(args[1])->Int32Value()) :
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy,(ObjectIDType)TO_INT32(args[1])->Value()) :
             pdfWriter->mPDFWriter.CreateImageXObjectFromJPGStream(&proxy);
     }
     else
     {
         imageXObject =
             args.Length() == 2 ?
-            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*UTF_8_VALUE(args[0]->TO_STRING()),(ObjectIDType)TO_NUMBER(args[1])->Int32Value()) :
+            pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*UTF_8_VALUE(args[0]->TO_STRING()),(ObjectIDType)TO_INT32(args[1])->Value()) :
             pdfWriter->mPDFWriter.CreateImageXObjectFromJPGFile(*UTF_8_VALUE(args[0]->TO_STRING()));
     }
     if(!imageXObject)
