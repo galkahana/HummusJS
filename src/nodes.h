@@ -8,8 +8,14 @@
 #define NODE_10_0_0_MODULE_VERSION 64
 #define NODE_11_0_0_MODULE_VERSION 67
 #define NODE_CONTEXT_AWARE_VERSION NODE_10_0_0_MODULE_VERSION
+// #define IS_CONTEXT_AWARE NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
+#ifdef NODE_MODULE_INIT
+    #define IS_CONTEXT_AWARE true
+#else 
+    #define IS_CONTEXT_AWARE false
+#endif
 
-#if NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
+#if IS_CONTEXT_AWARE
 	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
     #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports, context);
