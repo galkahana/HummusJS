@@ -123,7 +123,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteKey(const ARGS_TYPE& args)
 		THROW_EXCEPTION("dictinoarycontext object not initialized, create using objectscontext.startDictionary");
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
-    driver->DictionaryContextInstance->WriteKey(*UTF_8_VALUE(args[0]->ToString()));
+    driver->DictionaryContextInstance->WriteKey(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -202,7 +202,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteNameValue(const ARGS_TYPE& args
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    driver->DictionaryContextInstance->WriteNameValue(*UTF_8_VALUE(args[0]->ToString()));
+    driver->DictionaryContextInstance->WriteNameValue(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -238,7 +238,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
 	}
 	else
     {
-		driver->DictionaryContextInstance->WriteLiteralStringValue(*UTF_8_VALUE(args[0]->ToString()));
+		driver->DictionaryContextInstance->WriteLiteralStringValue(*UTF_8_VALUE(args[0]->TO_STRING()));
 	}
     SET_FUNCTION_RETURN_VALUE(args.This())
 }

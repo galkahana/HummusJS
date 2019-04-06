@@ -494,7 +494,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
     
     for(unsigned long i=0; i < objectKeys->Length(); ++i)
     {
-        Handle<String> key  = objectKeys->Get(NEW_NUMBER(0))->ToString();
+        Handle<String> key  = objectKeys->Get(NEW_NUMBER(0))->TO_STRING();
         Handle<Value> value = anObject->Get(key);
         
         resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*UTF_8_VALUE(key)),TO_UINT32(value)->Value()));

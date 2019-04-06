@@ -164,7 +164,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddProcsetResource(const ARGS_TYPE
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
     
-    resourcesDictionaryDriver->ResourcesDictionaryInstance->AddProcsetResource(*UTF_8_VALUE(args[0]->ToString()));
+    resourcesDictionaryDriver->ResourcesDictionaryInstance->AddProcsetResource(*UTF_8_VALUE(args[0]->TO_STRING()));
     
      SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     

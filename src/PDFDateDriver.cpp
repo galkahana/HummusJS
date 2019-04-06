@@ -120,7 +120,7 @@ METHOD_RETURN_TYPE PDFDateDriver::New(const ARGS_TYPE& args)
         }
         else if(args[0]->IsString())
         {
-            element->mDate.ParseString(*UTF_8_VALUE(args[0]->ToString()));
+            element->mDate.ParseString(*UTF_8_VALUE(args[0]->TO_STRING()));
         }
     }
     

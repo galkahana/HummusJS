@@ -231,7 +231,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::AttachURLLinktoCurrentPage(const ARGS_
     
     PDFPageModifierDriver* driver = ObjectWrap::Unwrap<PDFPageModifierDriver>(args.This());
     
-    EStatusCode status = driver->mModifierPageInstance->AttachURLLinktoCurrentPage(*UTF_8_VALUE(args[0]->ToString()),
+    EStatusCode status = driver->mModifierPageInstance->AttachURLLinktoCurrentPage(*UTF_8_VALUE(args[0]->TO_STRING()),
                                                                              PDFRectangle(TO_NUMBER(args[1])->Value(),
                                                                              TO_NUMBER(args[2])->Value(),
                                                                              TO_NUMBER(args[3])->Value(),

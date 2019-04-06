@@ -678,7 +678,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::ri(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->ri(*UTF_8_VALUE(args[0]->ToString()));
+    contentContext->GetContext()->ri(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -723,7 +723,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::gs(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->gs(*UTF_8_VALUE(args[0]->ToString()));
+    contentContext->GetContext()->gs(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -746,7 +746,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::CS(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->CS(*UTF_8_VALUE(args[0]->ToString()));
+    contentContext->GetContext()->CS(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -769,7 +769,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::cs(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->cs(*UTF_8_VALUE(args[0]->ToString()));
+    contentContext->GetContext()->cs(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -830,7 +830,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::SCN(const ARGS_TYPE& args)
         components[i] = TO_NUMBER(args[i])->Value();
     
     if(hasPatternArgument)
-        contentContext->GetContext()->SCN(components,componentsLength,*UTF_8_VALUE(args[args.Length()-1]->ToString()));
+        contentContext->GetContext()->SCN(components,componentsLength,*UTF_8_VALUE(args[args.Length()-1]->TO_STRING()));
     else
         contentContext->GetContext()->SCN(components,componentsLength);
     
@@ -894,7 +894,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::scn(const ARGS_TYPE& args)
         components[i] = TO_NUMBER(args[i])->Value();
     
     if(hasPatternArgument)
-        contentContext->GetContext()->scn(components,componentsLength,*UTF_8_VALUE(args[args.Length()-1]->ToString()));
+        contentContext->GetContext()->scn(components,componentsLength,*UTF_8_VALUE(args[args.Length()-1]->TO_STRING()));
     else
         contentContext->GetContext()->scn(components,componentsLength);
     
@@ -1108,7 +1108,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
     if(args[0]->IsString())
     {
         // string type, form name in local resources dictionary
-        Local<String> stringArg = args[0]->ToString();
+        Local<String> stringArg = args[0]->TO_STRING();
         String::Utf8Value utf8XObjectName(stringArg);
         
         contentContext->GetContext()->Do(*utf8XObjectName);
@@ -1439,7 +1439,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
     
     if(args[0]->IsString())
         contentContext->GetContext()->TfLow(
-                                         *UTF_8_VALUE(args[0]->ToString()),
+                                         *UTF_8_VALUE(args[0]->TO_STRING()),
                                          TO_NUMBER(args[1])->Value());
     else
         contentContext->GetContext()->Tf(
@@ -1483,13 +1483,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tj(const ARGS_TYPE& args)
         switch(options.encoding)
         {
             case TextPlacingOptions::EEncodingCode:
-                contentContext->GetContext()->TjLow(*UTF_8_VALUE(args[0]->ToString()));
+                contentContext->GetContext()->TjLow(*UTF_8_VALUE(args[0]->TO_STRING()));
                 break;
             case TextPlacingOptions::EEncodingHex:
-                contentContext->GetContext()->TjHexLow(*UTF_8_VALUE(args[0]->ToString()));
+                contentContext->GetContext()->TjHexLow(*UTF_8_VALUE(args[0]->TO_STRING()));
                 break;
             default:
-                contentContext->GetContext()->Tj(*UTF_8_VALUE(args[0]->ToString()));
+                contentContext->GetContext()->Tj(*UTF_8_VALUE(args[0]->TO_STRING()));
         }
     }
     SET_FUNCTION_RETURN_VALUE(args.This())
@@ -1529,13 +1529,13 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Quote(const ARGS_TYPE& args)
         switch(options.encoding)
         {
             case TextPlacingOptions::EEncodingCode:
-                contentContext->GetContext()->QuoteLow(*UTF_8_VALUE(args[0]->ToString()));
+                contentContext->GetContext()->QuoteLow(*UTF_8_VALUE(args[0]->TO_STRING()));
                 break;
             case TextPlacingOptions::EEncodingHex:
-                contentContext->GetContext()->QuoteHexLow(*UTF_8_VALUE(args[0]->ToString()));
+                contentContext->GetContext()->QuoteHexLow(*UTF_8_VALUE(args[0]->TO_STRING()));
                 break;
             default:
-                contentContext->GetContext()->Quote(*UTF_8_VALUE(args[0]->ToString()));
+                contentContext->GetContext()->Quote(*UTF_8_VALUE(args[0]->TO_STRING()));
         }
     }
     SET_FUNCTION_RETURN_VALUE(args.This())
@@ -1581,17 +1581,17 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DoubleQuote(const ARGS_TYPE& ar
             case TextPlacingOptions::EEncodingCode:
                 contentContext->GetContext()->DoubleQuoteLow(TO_NUMBER(args[0])->Value(),
                                                           TO_NUMBER(args[1])->Value(),
-                                                          *UTF_8_VALUE(args[2]->ToString()));
+                                                          *UTF_8_VALUE(args[2]->TO_STRING()));
                 break;
             case TextPlacingOptions::EEncodingHex:
                 contentContext->GetContext()->DoubleQuoteHexLow(TO_NUMBER(args[0])->Value(),
                                                           TO_NUMBER(args[1])->Value(),
-                                                          *UTF_8_VALUE(args[2]->ToString()));
+                                                          *UTF_8_VALUE(args[2]->TO_STRING()));
                 break;
             default:
                 contentContext->GetContext()->DoubleQuote(TO_NUMBER(args[0])->Value(),
                                                           TO_NUMBER(args[1])->Value(),
-                                                          *UTF_8_VALUE(args[2]->ToString()));
+                                                          *UTF_8_VALUE(args[2]->TO_STRING()));
         }
     }
     
@@ -1632,7 +1632,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
         for(int i=0; i < lengthButOptions && status; ++i)
         {
             if(args[i]->IsString())
-                params.push_back(StringOrDouble(*UTF_8_VALUE(args[i]->ToString())));
+                params.push_back(StringOrDouble(*UTF_8_VALUE(args[i]->TO_STRING())));
             else if(args[i]->IsNumber())
                 params.push_back(StringOrDouble(TO_NUMBER(args[i])->Value()));
             else
@@ -1691,7 +1691,7 @@ TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Handle<Ob
     
 	if (inObject->Has(NEW_SYMBOL("encoding")))
     {
-        std::string value = *UTF_8_VALUE(inObject->Get(NEW_SYMBOL("encoding"))->ToString());
+        std::string value = *UTF_8_VALUE(inObject->Get(NEW_SYMBOL("encoding"))->TO_STRING());
         if(value.compare("hex"))
             options.encoding = TextPlacingOptions::EEncodingHex;
         else if(value.compare("code"))
@@ -1753,7 +1753,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteFreeCode(const ARGS_TYPE& 
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
     
-    contentContext->GetContext()->WriteFreeCode(*UTF_8_VALUE(args[0]->ToString()));
+    contentContext->GetContext()->WriteFreeCode(*UTF_8_VALUE(args[0]->TO_STRING()));
     SET_FUNCTION_RETURN_VALUE(args.This())
     
 }
@@ -1824,14 +1824,14 @@ void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,
         if(options->Get(NEW_STRING("color"))->IsString())
         {
             // string, named color. always RGB (for now)
-            SetRGBColor(sColorMap.GetRGBForColorName(*UTF_8_VALUE(options->Get(NEW_STRING("color"))->ToString())),inIsStroke);
+            SetRGBColor(sColorMap.GetRGBForColorName(*UTF_8_VALUE(options->Get(NEW_STRING("color"))->TO_STRING())),inIsStroke);
         }
         else
         {
             // should be number
             unsigned long colorvalue = (unsigned long)(options->Get(NEW_STRING("color"))->ToInteger()->Value());
             std::string colorspace = options->Has(NEW_STRING("colorspace")) ?
-            *UTF_8_VALUE(options->Get(NEW_STRING("colorspace")->ToString())) :
+            *UTF_8_VALUE(options->Get(NEW_STRING("colorspace")->TO_STRING())) :
             "rgb";
             if(colorspace.compare("rgb") == 0)
             {
@@ -2083,7 +2083,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 		contentContext->SetFont(args[3]);
 	}
 
-	std::string text = *UTF_8_VALUE(args[0]->ToString());
+	std::string text = *UTF_8_VALUE(args[0]->TO_STRING());
 	double xPos = TO_NUMBER(args[1])->Value();
 	double yPos = TO_NUMBER(args[2])->Value();
 
@@ -2167,7 +2167,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
 
     double x = TO_NUMBER(args[0])->Value();
     double y = TO_NUMBER(args[1])->Value();
-    std::string imagePath = *(UTF_8_VALUE(args[2]->ToString()));
+    std::string imagePath = *(UTF_8_VALUE(args[2]->TO_STRING()));
     AbstractContentContext::ImageOptions imageOptions;
     
     if(args.Length() >= 4)
@@ -2201,7 +2201,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
                                             transformationObject->Get(NEW_STRING("proportional"))->ToBoolean()->Value() :
                                             false;
                     imageOptions.fitPolicy = transformationObject->Has(NEW_STRING("fit")) ?
-                                    (strcmp("always",*UTF_8_VALUE(transformationObject->Get(NEW_STRING("fit"))->ToString())) == 0 ? AbstractContentContext::eAlways : AbstractContentContext::eOverflow):
+                                    (strcmp("always",*UTF_8_VALUE(transformationObject->Get(NEW_STRING("fit"))->TO_STRING())) == 0 ? AbstractContentContext::eAlways : AbstractContentContext::eOverflow):
                                     AbstractContentContext::eOverflow;
                 }
                 
@@ -2210,7 +2210,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
 
         if(optionsObject->Has(NEW_STRING("password")) && optionsObject->Get(NEW_STRING("password"))->IsString())
         {
-            imageOptions.pdfParsingOptions.Password = *UTF_8_VALUE(optionsObject->Get(NEW_STRING("password"))->ToString());
+            imageOptions.pdfParsingOptions.Password = *UTF_8_VALUE(optionsObject->Get(NEW_STRING("password"))->TO_STRING());
         }        
 
     }

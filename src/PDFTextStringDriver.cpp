@@ -83,7 +83,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
 	if(args.Length() > 0) {
 		if(args[0]->IsString()) {
 			// text string, consider a plain unicode string
-	        element->mTextString.FromUTF8(*UTF_8_VALUE(args[0]->ToString()));
+	        element->mTextString.FromUTF8(*UTF_8_VALUE(args[0]->TO_STRING()));
 		}
 		else if(args[0]->IsArray()) {
 			// bytes array, init as is
@@ -134,7 +134,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::FromString(const ARGS_TYPE& args)
     
     PDFTextStringDriver* element = ObjectWrap::Unwrap<PDFTextStringDriver>(args.This());
     if(args.Length() > 0 && args[0]->IsString())
-        element->mTextString.FromUTF8(*UTF_8_VALUE(args[0]->ToString()));
+        element->mTextString.FromUTF8(*UTF_8_VALUE(args[0]->TO_STRING()));
     
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
