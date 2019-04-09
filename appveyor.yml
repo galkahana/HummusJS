@@ -27,11 +27,13 @@ environment:
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 3.0.9
       TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+      MOCHA_RUNTIME_VERSION: 7.0.0
     - nodejs_version: 8
       platform: x64
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 2.0.7
       TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+      MOCHA_RUNTIME_VERSION: 7.0.0
     - nodejs_version: 8
       platform: x64
       NODE_RUNTIME: electron

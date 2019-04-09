@@ -106,7 +106,8 @@ GOTO NPM_TEST_FINISHED
 ECHO installing electron
 CALL npm install -g "electron@%NODE_RUNTIME_VERSION%"
 ECHO installing electron-mocha
-CALL npm install -g electron-mocha
+IF NOT "%MOCHA_RUNTIME_VERSION%" (CALL npm install -g electron-mocha) ELSE (CALL npm install -g "electron-mocha@%MOCHA_RUNTIME_VERSION%")
+
 ECHO calling electron-mocha
 CALL electron-mocha -R tap ./tests/*.js --timeout 15000
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
