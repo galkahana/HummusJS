@@ -1,6 +1,6 @@
 {
   "name": "hummus",
-  "version": "1.0.97",
+  "version": "1.0.98",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
   "license": "Apache-2.0",
@@ -26,7 +26,8 @@
     "PDFRStreamForFile.js",
     "PDFStreamForResponse.js",
     "PDFWStreamForFile.js",
-    "PDFRStreamForBuffer.js"
+    "PDFRStreamForBuffer.js",
+    "hummus.d.ts"
   ],
   "dependencies": {
     "node-pre-gyp": "^0.10.0"
