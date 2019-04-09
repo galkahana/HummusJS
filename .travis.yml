@@ -14,8 +14,6 @@ services:
     - docker
 env:
   matrix:
-  - NODE_NVM_VERSION="4.9.1"
-  - NODE_NVM_VERSION="5.12.0"
   - NODE_NVM_VERSION="6.14.1"
   - NODE_NVM_VERSION="7.10.1"
   - NODE_NVM_VERSION="8.11.1"
