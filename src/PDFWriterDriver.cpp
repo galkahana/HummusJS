@@ -116,7 +116,8 @@ v8::Handle<v8::Value> PDFWriterDriver::GetNewInstance(const ARGS_TYPE& args)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Object> instance = NEW_INSTANCE(constructor);
+    
+	NEW_INSTANCE(constructor, instance);
 	return CLOSE_SCOPE(instance);
 }
 

@@ -55,12 +55,12 @@ v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
 		THROW_EXCEPTION("Wrong arguments. Provide no arguments, or provide 1 argument which is a string or an array of bytes");
 
 		Handle<Value> argv[argc] = { NEW_STRING("") };
-		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
 
 		return CLOSE_SCOPE(instance);
 	} else {
 		Handle<Value> argv[argc] = { args[0] };
-		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
 
 		return CLOSE_SCOPE(instance);
 	}

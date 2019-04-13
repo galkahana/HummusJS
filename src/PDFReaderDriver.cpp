@@ -100,12 +100,12 @@ v8::Handle<v8::Value> PDFReaderDriver::GetNewInstance(const ARGS_TYPE& args)
 	{
 		const unsigned argc = 1;
 		Handle<Value> argv[argc] = { args[0] };
-		Local<Object> instance = NEW_INSTANCE_ARGS(constructor, argc, argv);
+		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
 		return CLOSE_SCOPE(instance);
 	}
 	else
 	{
-		Local<Object> instance = NEW_INSTANCE(constructor);
+		NEW_INSTANCE(constructor, instance);
 		return CLOSE_SCOPE(instance);
 	}
 }

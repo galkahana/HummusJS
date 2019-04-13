@@ -52,7 +52,7 @@
 #define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction())
 #define SET_PROTOTYPE_METHOD(t, s, f) NODE_SET_PROTOTYPE_METHOD(t,s,f)
 #define SET_PERSISTENT_OBJECT(c,ot,t) c.Reset(isolate,t)
-#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
+
 #define CREATE_SCOPE HandleScope scope(isolate)
 #define CREATE_ESCAPABLE_SCOPE v8::EscapableHandleScope scope(isolate)
 #define SET_FUNCTION_RETURN_VALUE(v) {args.GetReturnValue().Set(v); return;}
@@ -70,13 +70,15 @@
 
 #if NODE_MODULE_VERSION > NODE_2_5_0_MODULE_VERSION
 
-#define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT).ToLocalChecked()
-#define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(GET_CURRENT_CONTEXT,argc,argv).ToLocalChecked()
+#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+#define NEW_INSTANCE(c,i) Local<Function> c1 = Local<Function>::New(isolate, c); Local<Object> i = Local<Function>::New(isolate, c1)->NewInstance(GET_CURRENT_CONTEXT).ToLocalChecked()
+#define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Function> c1 = Local<Function>::New(isolate, c); Local<Object> i = Local<Function>::New(isolate, c1)->NewInstance(GET_CURRENT_CONTEXT,argc,argv).ToLocalChecked()
 
 #else 
 
-#define NEW_INSTANCE(c) Local<Function>::New(isolate, c)->NewInstance()
-#define NEW_INSTANCE_ARGS(c,argc,argv) Local<Function>::New(isolate, c)->NewInstance(argc,argv)
+#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
+#define NEW_INSTANCE(c,i) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance()
+#define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance(argc,argv)
 
 #endif
 
@@ -103,8 +105,8 @@
 #define SET_CONSTRUCTOR(c,t) SET_PERSISTENT_OBJECT(c,Function,t->GetFunction())
 #define CREATE_SCOPE v8::HandleScope scope
 #define CREATE_ESCAPABLE_SCOPE v8::HandleScope scope
-#define NEW_INSTANCE(c) c->NewInstance()
-#define NEW_INSTANCE_ARGS(c,argc,argv) c->NewInstance(argc,argv)
+#define NEW_INSTANCE(c,i) Local<Object> i = c->NewInstance()
+#define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = c->NewInstance(argc,argv)
 #define SET_FUNCTION_RETURN_VALUE(v) return scope.Close(v);
 #define SET_ACCESSOR_RETURN_VALUE(v) return scope.Close(v);
 #define HAS_INSTANCE(c,o) c->HasInstance(o->TO_OBJECT())

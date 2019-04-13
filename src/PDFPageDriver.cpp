@@ -67,7 +67,7 @@ v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Handle<Value> argv[1] = { NEW_BOOLEAN(false) };
-	Local<Object> instance = NEW_INSTANCE_ARGS(constructor, 1, argv);
+	NEW_INSTANCE_ARGS(constructor, instance, 1, argv);
 
 	// this version creates an instance of a page, and owns it. this is the one used by javascript
 
@@ -92,7 +92,7 @@ v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(PDFPage* inPage)
 	CREATE_ESCAPABLE_SCOPE;
 
 	Handle<Value> argv[1] = { NEW_BOOLEAN(false) };
-	Local<Object> instance = NEW_INSTANCE_ARGS(constructor, 1, argv);
+	NEW_INSTANCE_ARGS(constructor, instance, 1, argv);
 
 	// this version links to a page and does not own it!
 

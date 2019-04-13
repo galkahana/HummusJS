@@ -51,7 +51,7 @@ v8::Handle<v8::Value> XObjectContentContextDriver::GetNewInstance(const ARGS_TYP
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Object> instance = NEW_INSTANCE(constructor);
+	NEW_INSTANCE(constructor, instance);
 	return CLOSE_SCOPE(instance);
 }
 
