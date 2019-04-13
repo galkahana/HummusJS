@@ -74,15 +74,6 @@ DEF_INIT_WITH_EXPORTS(OutputFileDriver::Init)
 	SET_CONSTRUCTOR_EXPORT("OutputFile",t);
 }
 
-METHOD_RETURN_TYPE OutputFileDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> OutputFileDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

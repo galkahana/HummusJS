@@ -60,15 +60,6 @@ void InfoDictionaryDriver::Init()
 	SET_CONSTRUCTOR(constructor, t);
 }
 
-METHOD_RETURN_TYPE InfoDictionaryDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> InfoDictionaryDriver::GetNewInstance()
 {
 	CREATE_ISOLATE_CONTEXT;

@@ -44,15 +44,6 @@ void PDFArrayDriver::Init()
 
 }
 
-METHOD_RETURN_TYPE PDFArrayDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> PDFArrayDriver::GetNewInstance()
 {
 	CREATE_ISOLATE_CONTEXT;

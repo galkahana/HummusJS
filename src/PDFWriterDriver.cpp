@@ -111,15 +111,6 @@ DEF_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
     SET_CONSTRUCTOR_EXPORT("PDFWriter", t);
 }
 
-METHOD_RETURN_TYPE PDFWriterDriver::NewInstance(const ARGS_TYPE& args)
-{
-    CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-    
-    Local<Object> instance = NEW_INSTANCE(constructor);
-    SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> PDFWriterDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

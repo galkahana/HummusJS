@@ -69,15 +69,6 @@ void ObjectsContextDriver::Init()
 
 }
 
-METHOD_RETURN_TYPE ObjectsContextDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> ObjectsContextDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

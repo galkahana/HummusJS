@@ -56,15 +56,6 @@ void PageContentContextDriver::Init()
 
 }
 
-METHOD_RETURN_TYPE PageContentContextDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> PageContentContextDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

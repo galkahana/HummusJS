@@ -43,14 +43,6 @@ DEF_INIT_WITH_EXPORTS(PDFTextStringDriver::Init)
 
 }
 
-METHOD_RETURN_TYPE PDFTextStringDriver::NewInstance(const ARGS_TYPE& args)
-{
-    CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-		
-	SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args))
-}
-
 v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

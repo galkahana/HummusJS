@@ -75,15 +75,6 @@ DEF_INIT_WITH_EXPORTS(InputFileDriver::Init)
 	SET_CONSTRUCTOR_EXPORT("InputFile", t);
 }
 
-METHOD_RETURN_TYPE InputFileDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> InputFileDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

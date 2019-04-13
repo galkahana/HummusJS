@@ -28,7 +28,6 @@ class ObjectsContextDriver : public node::ObjectWrap
 public:
     
     static void Init();
-    static METHOD_RETURN_TYPE NewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
     ObjectsContext* ObjectsContextInstance;

@@ -84,14 +84,6 @@ void PDFReaderDriver::Init()
     SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);    
 }
 
-METHOD_RETURN_TYPE PDFReaderDriver::NewInstance(const ARGS_TYPE& args)
-{
-    CREATE_ISOLATE_CONTEXT;
-    CREATE_ESCAPABLE_SCOPE;
-
-	SET_FUNCTION_RETURN_VALUE(PDFReaderDriver::GetNewInstance(args))
-}
-
 bool PDFReaderDriver::HasInstance(Handle<Value> inObject)
 {
     CREATE_ISOLATE_CONTEXT;

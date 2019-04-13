@@ -52,15 +52,6 @@ void ByteWriterWithPositionDriver::Init()
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 }
 
-METHOD_RETURN_TYPE ByteWriterWithPositionDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 Handle<Value> ByteWriterWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

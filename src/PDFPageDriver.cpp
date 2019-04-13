@@ -61,15 +61,6 @@ DEF_INIT_WITH_EXPORTS(PDFPageDriver::Init)
 	SET_CONSTRUCTOR_EXPORT("PDFPage", t);
 }
 
-
-METHOD_RETURN_TYPE PDFPageDriver::NewInstance(const ARGS_TYPE& args)
-{
-    CREATE_ISOLATE_CONTEXT;
-    CREATE_ESCAPABLE_SCOPE;    
-	SET_FUNCTION_RETURN_VALUE(GetNewInstance(args))
-}
-
-
 v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;

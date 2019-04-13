@@ -68,15 +68,6 @@ void DocumentCopyingContextDriver::Init()
 	SET_CONSTRUCTOR(constructor, t);
 }
 
-METHOD_RETURN_TYPE DocumentCopyingContextDriver::NewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Local<Object> instance = NEW_INSTANCE(constructor);
-	SET_FUNCTION_RETURN_VALUE(instance)
-}
-
 v8::Handle<v8::Value> DocumentCopyingContextDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
