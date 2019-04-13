@@ -13,6 +13,7 @@
                 './src/deps/FreeType/include'
             ],
            'sources': [
+                './src/ConstructorsHolder.cpp',
                 './src/PDFStreamDriver.cpp',
                 './src/DictionaryContextDriver.cpp',
                 './src/PDFTextStringDriver.cpp',

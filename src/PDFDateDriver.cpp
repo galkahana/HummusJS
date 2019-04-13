@@ -24,7 +24,7 @@ using namespace v8;
 
 Persistent<Function> PDFDateDriver::constructor;
 
-DEF_INIT_WITH_EXPORTS(PDFDateDriver::Init)
+DEF_SUBORDINATE_INIT(PDFDateDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 

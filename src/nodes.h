@@ -15,19 +15,27 @@
     #define IS_CONTEXT_AWARE 0
 #endif
 
+// TBD
+#define DECLARE_EXTERNAL(C) C* c1 = new C(isolate, exports); Local<External> external = External::New(isolate, c1); 
+#define EXPOSE_EXTERNAL(C, c) C* c = reinterpret_cast<C*>(external->Value());
+#define EXPOSE_EXTERNAL_ARGS(C, c) C* c = reinterpret_cast<C*>(args.Data().As<External>()->Value());
+#define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) FunctionTemplate::New(isolate, X, external)
+
 #if IS_CONTEXT_AWARE
 	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
     #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
-    #define CALL_INIT_WITH_EXPORTS(f) f(exports, context);
-    #define DEF_INIT_WITH_EXPORTS(f) void f(Handle<Object> exports, Handle<Context> context)
-    #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context);
+    #define CALL_INIT_WITH_EXPORTS(f) f(exports, context, external);
+    #define DEF_INIT(f) void f(Handle<Object> exports, Handle<Context> context)
+    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports, Handle<Context> context, Handle<External> external)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context, v8::Handle<v8::External> external);
 
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports);
-    #define DEF_INIT_WITH_EXPORTS(f) void f(Handle<Object> exports)
-    #define DEC_INIT_WITH_EXPORTS(f) static void f(v8::Handle<v8::Object> exports);
+    #define DEF_INIT(f) void f(Handle<Object> exports)
+    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports);
 
 #endif
 

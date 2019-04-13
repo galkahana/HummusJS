@@ -69,6 +69,7 @@
 #include "PDFWriter.h"
 #include "PDFPageModifierDriver.h"
 #include "PDFObjectParserDriver.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 using namespace node;
@@ -527,8 +528,10 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(result)
 }
 
-DEF_INIT_WITH_EXPORTS(HummusInit) {
+DEF_INIT(HummusInit) {
 	CREATE_ISOLATE_CONTEXT;
+    
+    DECLARE_EXTERNAL(ConstructorsHolder)   
 
     CALL_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
     CALL_INIT_WITH_EXPORTS(PDFPageDriver::Init)
@@ -571,9 +574,9 @@ DEF_INIT_WITH_EXPORTS(HummusInit) {
 
     
     // define methods
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE(CreateWriter)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE(CreateWriterToContinue)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE(CreateWriterToModify)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriter)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToContinue)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToModify)->GetFunction())
 	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE(CreateReader)->GetFunction())
     EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction())
     

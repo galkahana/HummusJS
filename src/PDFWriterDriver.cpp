@@ -45,10 +45,9 @@
 #include "ObjectByteReaderWithPosition.h"
 #include "DictionaryContextDriver.h"
 #include "ResourcesDictionaryDriver.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
-
-Persistent<Function> PDFWriterDriver::constructor;
 
 PDFWriterDriver::PDFWriterDriver()
 {
@@ -64,9 +63,10 @@ PDFWriterDriver::~PDFWriterDriver()
     delete mReadStreamProxy;
 }
 
-DEF_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
+DEF_SUBORDINATE_INIT(PDFWriterDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
+    EXPOSE_EXTERNAL(ConstructorsHolder, holder)
 
 	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
 
@@ -107,7 +107,7 @@ DEF_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "registerAnnotationReferenceForNextPageWrite", RegisterAnnotationReferenceForNextPageWrite);
     SET_PROTOTYPE_METHOD(t, "requireCatalogUpdate", RequireCatalogUpdate);    
 
-	SET_CONSTRUCTOR(constructor, t);
+	SET_CONSTRUCTOR(holder->PDFWriter_constructor, t);
     SET_CONSTRUCTOR_EXPORT("PDFWriter", t);
 }
 
@@ -115,9 +115,10 @@ v8::Handle<v8::Value> PDFWriterDriver::GetNewInstance(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
 
     
-	NEW_INSTANCE(constructor, instance);
+	NEW_INSTANCE(holder->PDFWriter_constructor, instance);
 	return CLOSE_SCOPE(instance);
 }
 

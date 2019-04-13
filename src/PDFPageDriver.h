@@ -30,7 +30,7 @@ class PDFPageDriver : public node::ObjectWrap
 public:
     virtual ~PDFPageDriver();
     
-    DEC_INIT_WITH_EXPORTS(Init)
+    DEC_SUBORDINATE_INIT(Init)
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 	static v8::Handle<v8::Value> GetNewInstance(PDFPage* inPage);
     static bool HasInstance(v8::Handle<v8::Value> inObject);

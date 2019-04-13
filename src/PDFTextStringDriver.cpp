@@ -25,7 +25,7 @@ using namespace v8;
 
 Persistent<Function> PDFTextStringDriver::constructor;
 
-DEF_INIT_WITH_EXPORTS(PDFTextStringDriver::Init)
+DEF_SUBORDINATE_INIT(PDFTextStringDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 

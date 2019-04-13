@@ -39,7 +39,7 @@ PDFPageDriver::PDFPageDriver()
     mOwnsPage = false;
 }
 
-DEF_INIT_WITH_EXPORTS(PDFPageDriver::Init)
+DEF_SUBORDINATE_INIT(PDFPageDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 

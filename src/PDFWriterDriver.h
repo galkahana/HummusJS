@@ -58,7 +58,7 @@ class PDFWriterDriver : public node::ObjectWrap, IDocumentContextExtender
 public:
     virtual ~PDFWriterDriver();
     
-	DEC_INIT_WITH_EXPORTS(Init)
+	DEC_SUBORDINATE_INIT(Init)
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 
     PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
@@ -184,7 +184,6 @@ private:
     PDFWriterDriver();
     
     
-    static v8::Persistent<v8::Function> constructor;
     static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE End(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE CreatePage(const ARGS_TYPE& args);

@@ -25,7 +25,7 @@
 class PDFDateDriver : public node::ObjectWrap
 {
 public:
-    DEC_INIT_WITH_EXPORTS(Init)
+    DEC_SUBORDINATE_INIT(Init)
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     
     PDFDate* getInstance();

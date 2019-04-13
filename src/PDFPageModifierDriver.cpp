@@ -42,7 +42,7 @@ PDFPageModifierDriver::~PDFPageModifierDriver()
     delete mModifierPageInstance;
 }
 
-DEF_INIT_WITH_EXPORTS(PDFPageModifierDriver::Init)
+DEF_SUBORDINATE_INIT(PDFPageModifierDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 

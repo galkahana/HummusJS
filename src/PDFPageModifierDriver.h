@@ -29,7 +29,7 @@ class PDFPageModifierDriver : public node::ObjectWrap
 public:
     virtual ~PDFPageModifierDriver();
     
-	DEC_INIT_WITH_EXPORTS(Init)
+	DEC_SUBORDINATE_INIT(Init)
 	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     

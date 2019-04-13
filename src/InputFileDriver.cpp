@@ -55,7 +55,7 @@ void InputFileDriver::SetFromOwnedFile(InputFile* inFile)
     mInputFileInstance = inFile;
 }
 
-DEF_INIT_WITH_EXPORTS(InputFileDriver::Init)
+DEF_SUBORDINATE_INIT(InputFileDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
