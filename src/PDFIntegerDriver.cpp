@@ -19,35 +19,26 @@
  */
 #include "PDFIntegerDriver.h"
 #include "RefCountPtr.h"
-
+#include "ConstructorsHolder.h"
 using namespace v8;
 
-Persistent<Function> PDFIntegerDriver::constructor;
 Persistent<FunctionTemplate> PDFIntegerDriver::constructor_template;
 
-void PDFIntegerDriver::Init()
+DEF_SUBORDINATE_INIT(PDFIntegerDriver::Init)
 {
-
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("PDFInteger"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
-
-v8::Handle<v8::Value> PDFIntegerDriver::GetNewInstance()
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFInteger_constructor, t); 	
 }
 
 bool PDFIntegerDriver::HasInstance(Handle<Value> inObject)
@@ -61,8 +52,9 @@ METHOD_RETURN_TYPE PDFIntegerDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     PDFIntegerDriver* driver = new PDFIntegerDriver();
+	driver->holder = externalHolder;
     driver->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE( args.This())
 }

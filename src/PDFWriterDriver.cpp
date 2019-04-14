@@ -66,9 +66,8 @@ PDFWriterDriver::~PDFWriterDriver()
 DEF_SUBORDINATE_INIT(PDFWriterDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
-    EXPOSE_EXTERNAL(ConstructorsHolder, holder)
-
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+    
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("PDFWriter"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -106,29 +105,22 @@ DEF_SUBORDINATE_INIT(PDFWriterDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "getOutputFile", GetOutputFile);
 	SET_PROTOTYPE_METHOD(t, "registerAnnotationReferenceForNextPageWrite", RegisterAnnotationReferenceForNextPageWrite);
     SET_PROTOTYPE_METHOD(t, "requireCatalogUpdate", RequireCatalogUpdate);    
-
-	SET_CONSTRUCTOR(holder->PDFWriter_constructor, t);
     SET_CONSTRUCTOR_EXPORT("PDFWriter", t);
-}
 
-v8::Handle<v8::Value> PDFWriterDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
-
-    
-	NEW_INSTANCE(holder->PDFWriter_constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFWriter_constructor, t);    
 }
 
 METHOD_RETURN_TYPE PDFWriterDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     PDFWriterDriver* pdfWriter = new PDFWriterDriver();
         
+    pdfWriter->holder = externalHolder;    
     pdfWriter->Wrap(args.This());
     
 	SET_FUNCTION_RETURN_VALUE(args.This())
@@ -177,8 +169,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePage(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(args))
+    SET_FUNCTION_RETURN_VALUE(pdfWriter->holder->GetNewPDFPage(args))
     
 }
 
@@ -252,7 +245,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     }
     
     
-    Handle<Value> newInstance = PageContentContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewPageContentContext(args);
     PageContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<PageContentContextDriver>(newInstance->TO_OBJECT());
     contentContextDriver->ContentContext = pdfWriter->mPDFWriter.StartPageContentContext(pageDriver->GetPage());
     contentContextDriver->SetResourcesDictionary(&(pageDriver->GetPage()->GetResourcesDictionary()));
@@ -306,7 +299,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObject(const ARGS_TYPE& args)
     }
      
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
-    Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewFormXObject(args);
     FormXObjectDriver* formXObjectDriver = ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT());
     formXObjectDriver->FormXObject =
                         args.Length() == 5 ?
@@ -389,7 +382,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateformXObjectFromJPG(const ARGS_TYPE& ar
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewFormXObject(args);
     ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT())->FormXObject = formXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -482,7 +475,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromPNG(const ARGS_TYPE& ar
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewFormXObject(args);
     ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT())->FormXObject = formXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -531,7 +524,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetFontForFile(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = UsedFontDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewUsedFont(args);
     ObjectWrap::Unwrap<UsedFontDriver>(newInstance->TO_OBJECT())->UsedFont = usedFont;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -748,7 +741,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = FormXObjectDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewFormXObject(args);
     ObjectWrap::Unwrap<FormXObjectDriver>(newInstance->TO_OBJECT())->FormXObject = formXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -818,7 +811,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateImageXObjectFromJPG(const ARGS_TYPE& a
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = ImageXObjectDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewImageXObject(args);
     ObjectWrap::Unwrap<ImageXObjectDriver>(newInstance->TO_OBJECT())->ImageXObject = imageXObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -830,7 +823,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetObjectsContext(const ARGS_TYPE& args)
 
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
 
-    Handle<Value> newInstance = ObjectsContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewObjectsContext(args);
     ObjectsContextDriver* objectsContextDriver = ObjectWrap::Unwrap<ObjectsContextDriver>(newInstance->TO_OBJECT());
     objectsContextDriver->ObjectsContextInstance = &(pdfWriter->mPDFWriter.GetObjectsContext());
  
@@ -844,7 +837,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetDocumentContext(const ARGS_TYPE& args)
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-    Handle<Value> newInstance = DocumentContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewDocumentContext(args);
     DocumentContextDriver* documentContextDriver = ObjectWrap::Unwrap<DocumentContextDriver>(newInstance->TO_OBJECT());
     documentContextDriver->DocumentContextInstance = &(pdfWriter->mPDFWriter.GetDocumentContext());
     
@@ -1130,7 +1123,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = DocumentCopyingContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewDocumentCopyingContext(args);
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->TO_OBJECT())->CopyingContext = copyingContext;
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->TO_OBJECT())->ReadStreamProxy = proxy;
     SET_FUNCTION_RETURN_VALUE(newInstance)
@@ -1259,7 +1252,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContextForModifiedFile(const
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = DocumentCopyingContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewDocumentCopyingContext(args);
     ObjectWrap::Unwrap<DocumentCopyingContextDriver>(newInstance->TO_OBJECT())->CopyingContext = copyingContext;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -1268,7 +1261,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFTextString(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    SET_FUNCTION_RETURN_VALUE(PDFTextStringDriver::GetNewInstance(args))
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    SET_FUNCTION_RETURN_VALUE(pdfWriter->holder->GetNewPDFTextString(args))
     
 }
 
@@ -1276,7 +1271,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFDate(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    SET_FUNCTION_RETURN_VALUE(PDFDateDriver::GetNewInstance(args))
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
+    SET_FUNCTION_RETURN_VALUE(pdfWriter->holder->GetNewPDFDate(args))
     
 }
 
@@ -1413,7 +1410,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedFileParser(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = PDFReaderDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewPDFReader(args);
     ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->TO_OBJECT())->SetFromOwnedParser(parser);
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -1432,7 +1429,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetModifiedInputFile(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = InputFileDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewInputFile(args);
     ObjectWrap::Unwrap<InputFileDriver>(newInstance->TO_OBJECT())->SetFromOwnedFile(inputFile);
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -1451,7 +1448,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetOutputFile(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> newInstance = OutputFileDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pdfWriter->holder->GetNewOutputFile(args);
     ObjectWrap::Unwrap<OutputFileDriver>(newInstance->TO_OBJECT())->SetFromOwnedFile(outputFile);
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -1518,8 +1515,8 @@ PDFHummus::EStatusCode PDFWriterDriver::OnPageWrite(
 
     Handle<Object> params = NEW_OBJECT;
 
-	params->Set(NEW_SYMBOL("page"),PDFPageDriver::GetNewInstance(inPage));
-	params->Set(NEW_SYMBOL("pageDictionaryContext"),DictionaryContextDriver::GetInstanceFor(inPageDictionaryContext));
+	params->Set(NEW_SYMBOL("page"),this->holder->GetInstanceFor(inPage));
+	params->Set(NEW_SYMBOL("pageDictionaryContext"), this->holder->GetInstanceFor(inPageDictionaryContext));
     return triggerEvent("OnPageWrite",params);        
 }
 PDFHummus::EStatusCode PDFWriterDriver::OnResourcesWrite(
@@ -1532,8 +1529,8 @@ PDFHummus::EStatusCode PDFWriterDriver::OnResourcesWrite(
 
     Handle<Object> params = NEW_OBJECT;
 
-	params->Set(NEW_SYMBOL("resources"),ResourcesDictionaryDriver::GetInstanceFor(inResources));
-	params->Set(NEW_SYMBOL("pageResourcesDictionaryContext"),DictionaryContextDriver::GetInstanceFor(inPageResourcesDictionaryContext));
+	params->Set(NEW_SYMBOL("resources"),this->holder->GetInstanceFor(inResources));
+	params->Set(NEW_SYMBOL("pageResourcesDictionaryContext"),this->holder->GetInstanceFor(inPageResourcesDictionaryContext));
     return triggerEvent("OnResourcesWrite",params);        
 }
 
@@ -1548,7 +1545,7 @@ PDFHummus::EStatusCode PDFWriterDriver::OnResourceDictionaryWrite(
     Handle<Object> params = NEW_OBJECT;
 
 	params->Set(NEW_SYMBOL("resourceDictionaryName"),NEW_STRING(inResourceDictionaryName.c_str()));
-	params->Set(NEW_SYMBOL("resourceDictionary"),DictionaryContextDriver::GetInstanceFor(inResourceDictionary));
+	params->Set(NEW_SYMBOL("resourceDictionary"),this->holder->GetInstanceFor(inResourceDictionary));
     return triggerEvent("OnResourceDictionaryWrite",params);        
 }
 
@@ -1607,7 +1604,7 @@ PDFHummus::EStatusCode PDFWriterDriver::OnCatalogWrite(
     Handle<Object> params = NEW_OBJECT;
 
     // this is the only important one
-	params->Set(NEW_SYMBOL("catalogDictionaryContext"),DictionaryContextDriver::GetInstanceFor(inCatalogDictionaryContext));
+	params->Set(NEW_SYMBOL("catalogDictionaryContext"),this->holder->GetInstanceFor(inCatalogDictionaryContext));
     return triggerEvent("OnCatalogWrite",params);                               
 }
 

@@ -25,14 +25,15 @@
 #include "InputFile.h"
 
 class ObjectByteReaderWithPosition;
+class ConstructorsHolder;
 
 class PDFReaderDriver : public node::ObjectWrap
 {
 public:
     virtual ~PDFReaderDriver();
 
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+    DEC_SUBORDINATE_INIT(Init)
+
 	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
@@ -41,10 +42,11 @@ public:
     void SetFromOwnedParser(PDFParser* inParser);
     PDFParser* GetParser();
     
+
+	ConstructorsHolder* holder;
 private:
     PDFReaderDriver();
     
-    static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPDFLevel(const ARGS_TYPE& args);

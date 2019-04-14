@@ -26,19 +26,20 @@ namespace PDFHummus
     class DocumentContext;
 };
 
+class ConstructorsHolder;
+
 class DocumentContextDriver : public node::ObjectWrap
 {
 public:
     
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+    DEC_SUBORDINATE_INIT(Init)
     
     PDFHummus::DocumentContext* DocumentContextInstance;
-    
+
+    ConstructorsHolder* holder;    
 private:
     DocumentContextDriver();
     
-    static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetInfoDictionary(const ARGS_TYPE& args);
 };

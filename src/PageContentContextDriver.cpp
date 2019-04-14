@@ -23,6 +23,7 @@
 #include "PDFPageDriver.h"
 #include "IPageEndWritingTask.h"
 #include "PDFWriterDriver.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
@@ -36,14 +37,13 @@ PageContentContextDriver::PageContentContextDriver()
     ContentContext = NULL;
 }
 
-Persistent<Function> PageContentContextDriver::constructor;
 Persistent<FunctionTemplate> PageContentContextDriver::constructor_template;
 
-void PageContentContextDriver::Init()
+DEF_SUBORDINATE_INIT(PageContentContextDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("PageContentContext"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -51,18 +51,11 @@ void PageContentContextDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "getCurrentPageContentStream", GetCurrentPageContentStream);
 	SET_PROTOTYPE_METHOD(t, "getAssociatedPage", GetAssociatedPage);
 	AbstractContentContextDriver::Init(t);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
-}
-
-v8::Handle<v8::Value> PageContentContextDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PageContentContext_constructor, t);   	
 }
 
 bool PageContentContextDriver::HasInstance(Handle<Value> inObject)
@@ -77,8 +70,10 @@ METHOD_RETURN_TYPE PageContentContextDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+	EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     PageContentContextDriver* pdfPage = new PageContentContextDriver();
+	pdfPage->holder = externalHolder;
     pdfPage->Wrap(args.This());
     
 	SET_FUNCTION_RETURN_VALUE(args.This())
@@ -97,7 +92,7 @@ METHOD_RETURN_TYPE PageContentContextDriver::GetCurrentPageContentStream(const A
     
     PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
     
-    Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
+    Handle<Value> newInstance = driver->holder->GetNewPDFStream(args);
     ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT())->PDFStreamInstance = driver->ContentContext->GetCurrentPageContentStream();
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -108,5 +103,5 @@ METHOD_RETURN_TYPE PageContentContextDriver::GetAssociatedPage(const ARGS_TYPE& 
 	CREATE_ESCAPABLE_SCOPE;
     
     PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
-    SET_FUNCTION_RETURN_VALUE(PDFPageDriver::GetNewInstance(driver->ContentContext->GetAssociatedPage()))
+    SET_FUNCTION_RETURN_VALUE(driver->holder->GetInstanceFor(driver->ContentContext->GetAssociatedPage()))
 }

@@ -20,10 +20,10 @@
 #include "PDFPageDriver.h"
 #include "PDFRectangle.h"
 #include "ResourcesDictionaryDriver.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
-Persistent<Function> PDFPageDriver::constructor;
 Persistent<FunctionTemplate> PDFPageDriver::constructor_template;
 
 PDFPageDriver::~PDFPageDriver()
@@ -43,7 +43,7 @@ DEF_SUBORDINATE_INIT(PDFPageDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("PDFPage"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -55,53 +55,13 @@ DEF_SUBORDINATE_INIT(PDFPageDriver::Init)
 	SET_ACCESSOR_METHODS(t, "artBox", GetArtBox, SetArtBox);
     SET_ACCESSOR_METHODS(t, "rotate",GetRotate, SetRotate);
 	SET_PROTOTYPE_METHOD(t, "getResourcesDictionary", GetResourcesDictionary);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
     
 	SET_CONSTRUCTOR_EXPORT("PDFPage", t);
-}
 
-v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Handle<Value> argv[1] = { NEW_BOOLEAN(false) };
-	NEW_INSTANCE_ARGS(constructor, instance, 1, argv);
-
-	// this version creates an instance of a page, and owns it. this is the one used by javascript
-
-	PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->TO_OBJECT());
-	driver->mPDFPage = new PDFPage();
-	driver->mOwnsPage = true;
-
-	if (args.Length() == 4 && args[0]->IsNumber() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
-	{
-		driver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(args[0])->Value(),
-			TO_NUMBER(args[1])->Value(),
-			TO_NUMBER(args[2])->Value(),
-			TO_NUMBER(args[3])->Value()));
-	}
-
-	return CLOSE_SCOPE(instance);
-}
-
-v8::Handle<v8::Value> PDFPageDriver::GetNewInstance(PDFPage* inPage)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	Handle<Value> argv[1] = { NEW_BOOLEAN(false) };
-	NEW_INSTANCE_ARGS(constructor, instance, 1, argv);
-
-	// this version links to a page and does not own it!
-
-	PDFPageDriver* driver = ObjectWrap::Unwrap<PDFPageDriver>(instance->TO_OBJECT());
-	driver->mPDFPage = inPage;
-	driver->mOwnsPage = false;
-
-	return CLOSE_SCOPE(instance);
-
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFPage_constructor, t);       
 }
 
 bool PDFPageDriver::HasInstance(Handle<Value> inObject)
@@ -115,6 +75,7 @@ METHOD_RETURN_TYPE PDFPageDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     PDFPageDriver* pdfPage = new PDFPageDriver();
     if(args.Length() != 1) // which would signify that this didn't came from one of the "newinstance" here...so from user "new"
@@ -132,6 +93,7 @@ METHOD_RETURN_TYPE PDFPageDriver::New(const ARGS_TYPE& args)
         
     }
     
+    pdfPage->holder = externalHolder;
     pdfPage->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -398,7 +360,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetResourcesDictionary(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args.This());
     
-    Handle<Value> newInstance = ResourcesDictionaryDriver::GetNewInstance(args);
+    Handle<Value> newInstance = pageDriver->holder->GetNewResourcesDictionary(args);
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(pageDriver->GetPage()->GetResourcesDictionary());
     

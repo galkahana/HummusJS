@@ -28,17 +28,13 @@
 class PDFIntegerDriver : public PDFObjectDriver
 {
 public:
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance();
+    DEC_SUBORDINATE_INIT(Init)
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFObjectCastPtr<PDFInteger> TheObject;
     
     virtual PDFObject* GetObject();
 private:
-    
-    
-    static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetValue(v8::Local<v8::String> property, const PROPERTY_TYPE &info);

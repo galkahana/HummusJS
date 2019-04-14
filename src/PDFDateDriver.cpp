@@ -18,11 +18,10 @@
  
  */
 #include "PDFDateDriver.h"
+#include "ConstructorsHolder.h"
 #include <stdlib.h>
 
 using namespace v8;
-
-Persistent<Function> PDFDateDriver::constructor;
 
 DEF_SUBORDINATE_INIT(PDFDateDriver::Init)
 {
@@ -35,30 +34,11 @@ DEF_SUBORDINATE_INIT(PDFDateDriver::Init)
 
 	SET_PROTOTYPE_METHOD(t, "toString", ToString);
 	SET_PROTOTYPE_METHOD(t, "setToCurrentTime", SetToCurrentTime);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_EXPORT("PDFDate", t);
-}
 
-v8::Handle<v8::Value> PDFDateDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	const unsigned argc = 1;
-
-	if (args.Length() != 1 || (!args[0]->IsDate() && !args[0]->IsString()))
-	{
-		THROW_EXCEPTION("Wrong arguments. Provide 1 argument which is a date");
-		Handle<Value> argv[argc] = { NEW_STRING("") };
-		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
-
-		return CLOSE_SCOPE(instance);
-	} else {
-		Handle<Value> argv[argc] = { args[0] };
-		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
-
-		return CLOSE_SCOPE(instance);
-	}
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFDate_constructor, t);      
 }
 
 unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Handle<Date> inDate, const char* inFunctionName)

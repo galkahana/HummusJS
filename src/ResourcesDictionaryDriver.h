@@ -26,10 +26,8 @@ class ResourcesDictionary;
 class ResourcesDictionaryDriver : public node::ObjectWrap
 {
 public:
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
-    static v8::Handle<v8::Value> GetInstanceFor(ResourcesDictionary* inResourcesDictionaryInstance);
-
+    DEC_SUBORDINATE_INIT(Init)
+    
     // set externally
     ResourcesDictionary* ResourcesDictionaryInstance;
     

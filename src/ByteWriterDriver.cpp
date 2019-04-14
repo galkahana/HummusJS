@@ -19,9 +19,9 @@
  */
 #include "ByteWriterDriver.h"
 #include "IByteWriter.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
-Persistent<Function> ByteWriterDriver::constructor;
 Persistent<FunctionTemplate> ByteWriterDriver::constructor_template;
 
 ByteWriterDriver::ByteWriterDriver()
@@ -37,9 +37,8 @@ ByteWriterDriver::~ByteWriterDriver()
 }
 
 
-void ByteWriterDriver::Init()
+DEF_SUBORDINATE_INIT(ByteWriterDriver::Init)
 {
-
 	CREATE_ISOLATE_CONTEXT;
 
 	// prepare the page interfrace template
@@ -49,17 +48,11 @@ void ByteWriterDriver::Init()
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_PROTOTYPE_METHOD(t, "write", Write);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> ByteWriterDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ByteWriter_constructor, t);   
 }
 
 bool ByteWriterDriver::HasInstance(Handle<Value> inObject)

@@ -19,11 +19,10 @@
  */
 #include "PDFTextStringDriver.h"
 #include "IOBasicTypes.h"
+#include "ConstructorsHolder.h"
 #include <string>
 
 using namespace v8;
-
-Persistent<Function> PDFTextStringDriver::constructor;
 
 DEF_SUBORDINATE_INIT(PDFTextStringDriver::Init)
 {
@@ -37,33 +36,12 @@ DEF_SUBORDINATE_INIT(PDFTextStringDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "toBytesArray", ToBytesArray);
 	SET_PROTOTYPE_METHOD(t, "toString", ToString);
 	SET_PROTOTYPE_METHOD(t, "fromString", FromString);
-	SET_CONSTRUCTOR(constructor, t);
 
 	SET_CONSTRUCTOR_EXPORT("PDFTextString", t);
 
-}
-
-v8::Handle<v8::Value> PDFTextStringDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	const unsigned argc = 1;
-
-	if (args.Length() == 1 && !args[0]->IsString() && !args[0]->IsArray())
-	{
-		THROW_EXCEPTION("Wrong arguments. Provide no arguments, or provide 1 argument which is a string or an array of bytes");
-
-		Handle<Value> argv[argc] = { NEW_STRING("") };
-		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
-
-		return CLOSE_SCOPE(instance);
-	} else {
-		Handle<Value> argv[argc] = { args[0] };
-		 NEW_INSTANCE_ARGS(constructor, instance, argc, argv);
-
-		return CLOSE_SCOPE(instance);
-	}
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFTextString_constructor, t);   	
 }
 
 METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)

@@ -20,6 +20,7 @@
 #include "UsedFontDriver.h"
 #include "PDFUsedFont.h"
 #include "UnicodeString.h"
+#include "ConstructorsHolder.h"
 #include <list>
 
 #include FT_SIZES_H
@@ -27,7 +28,6 @@
 
 using namespace v8;
 
-Persistent<Function> UsedFontDriver::constructor;
 Persistent<FunctionTemplate> UsedFontDriver::constructor_template;
 
 UsedFontDriver::UsedFontDriver()
@@ -35,7 +35,7 @@ UsedFontDriver::UsedFontDriver()
     UsedFont = NULL;
 }
 
-void UsedFontDriver::Init()
+DEF_SUBORDINATE_INIT(UsedFontDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -46,17 +46,11 @@ void UsedFontDriver::Init()
 
 	SET_PROTOTYPE_METHOD(t, "calculateTextDimensions", CalculateTextDimensions);
     SET_PROTOTYPE_METHOD(t, "getFontMetrics", GetFontMetrics);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> UsedFontDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->UsedFont_constructor, t);       
 }
 
 bool UsedFontDriver::HasInstance(Handle<Value> inObject)

@@ -32,9 +32,7 @@ class XObjectContentContextDriver : public AbstractContentContextDriver
 {
 public:
     
-    
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+    DEC_SUBORDINATE_INIT(Init)
     
     XObjectContentContext* ContentContext;
     PDFFormXObject* FormOfContext;

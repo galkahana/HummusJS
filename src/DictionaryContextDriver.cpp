@@ -20,6 +20,7 @@
 #include "DictionaryContextDriver.h"
 #include "DictionaryContext.h"
 #include "PDFRectangle.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
@@ -29,7 +30,7 @@ DictionaryContextDriver::~DictionaryContextDriver()
     // there was a delete here which causes a bug to happen for a year. until today. 28/5/2014
 }
 
-void DictionaryContextDriver::Init()
+DEF_SUBORDINATE_INIT(DictionaryContextDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -45,28 +46,12 @@ void DictionaryContextDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "writeBooleanValue", WriteBooleanValue);
 	SET_PROTOTYPE_METHOD(t, "writeObjectReferenceValue", WriteObjectReferenceValue);
     SET_PROTOTYPE_METHOD(t, "writeNumberValue", WriteNumberValue);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
+
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->DictionaryContext_constructor, t);      
 }
-
-v8::Handle<v8::Value> DictionaryContextDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
-}
-
-v8::Handle<v8::Value> DictionaryContextDriver::GetInstanceFor(DictionaryContext* inDictionaryContextInstance) {
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-    ObjectWrap::Unwrap<DictionaryContextDriver>(instance->TO_OBJECT())->DictionaryContextInstance = inDictionaryContextInstance;
-	return CLOSE_SCOPE(instance);    
-}
-
 
 bool DictionaryContextDriver::HasInstance(Handle<Value> inObject)
 {
@@ -80,7 +65,6 @@ DictionaryContextDriver::DictionaryContextDriver()
     DictionaryContextInstance = NULL;
 }
 
-Persistent<Function> DictionaryContextDriver::constructor;
 Persistent<FunctionTemplate> DictionaryContextDriver::constructor_template;
 
 METHOD_RETURN_TYPE DictionaryContextDriver::New(const ARGS_TYPE& args)

@@ -21,17 +21,17 @@
 #include "IOBasicTypes.h"
 #include "RefCountPtr.h"
 #include "PDFTextString.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
-Persistent<Function> PDFLiteralStringDriver::constructor;
 Persistent<FunctionTemplate> PDFLiteralStringDriver::constructor_template;
 
-void PDFLiteralStringDriver::Init()
+DEF_SUBORDINATE_INIT(PDFLiteralStringDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("PDFLiteralString"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -40,17 +40,11 @@ void PDFLiteralStringDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "toBytesArray", ToBytesArray);
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> PDFLiteralStringDriver::GetNewInstance()
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFLiteralString_constructor, t);  	
 }
 
 bool PDFLiteralStringDriver::HasInstance(Handle<Value> inObject)
@@ -64,8 +58,10 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+	EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     PDFLiteralStringDriver* driver = new PDFLiteralStringDriver();
+	driver->holder = externalHolder;
     driver->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
 }

@@ -23,6 +23,7 @@
 
 class PDFDocumentCopyingContext;
 class IByteReaderWithPosition;
+class ConstructorsHolder;
 
 class DocumentCopyingContextDriver : public node::ObjectWrap
 {
@@ -30,17 +31,16 @@ public:
     
     virtual ~DocumentCopyingContextDriver();
     
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+    DEC_SUBORDINATE_INIT(Init)
     
     PDFDocumentCopyingContext* CopyingContext;
     // member holding an optional stream pointer, held by copying context for the sake of final release
     IByteReaderWithPosition* ReadStreamProxy;
     
+	ConstructorsHolder* holder;
 private:
     DocumentCopyingContextDriver();
     
-    static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE CreateFormXObjectFromPDFPage(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE MergePDFPageToPage(const ARGS_TYPE& args);

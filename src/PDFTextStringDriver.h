@@ -26,12 +26,10 @@ class PDFTextStringDriver : public node::ObjectWrap
 {
 public:
 	DEC_SUBORDINATE_INIT(Init)
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
-    
+
 private:
     PDFTextString mTextString;
     
-    static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE ToBytesArray(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE ToString(const ARGS_TYPE& args);

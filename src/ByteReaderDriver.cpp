@@ -19,10 +19,10 @@
  */
 #include "ByteReaderDriver.h"
 #include "IByteReader.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
-Persistent<Function> ByteReaderDriver::constructor;
 Persistent<FunctionTemplate> ByteReaderDriver::constructor_template;
 
 ByteReaderDriver::ByteReaderDriver()
@@ -38,7 +38,7 @@ ByteReaderDriver::~ByteReaderDriver()
 }
 
 
-void ByteReaderDriver::Init()
+DEF_SUBORDINATE_INIT(ByteReaderDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -49,17 +49,11 @@ void ByteReaderDriver::Init()
     
 	SET_PROTOTYPE_METHOD(t, "read", Read);
 	SET_PROTOTYPE_METHOD(t, "notEnded", NotEnded);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> ByteReaderDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ByteReader_constructor, t);    
 }
 
 bool ByteReaderDriver::HasInstance(Handle<Value> inObject)

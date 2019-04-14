@@ -26,6 +26,7 @@
 #include <string>
 
 class OutputFile;
+class ConstructorsHolder;
 
 class OutputFileDriver : public node::ObjectWrap
 {
@@ -33,19 +34,18 @@ public:
     virtual ~OutputFileDriver();
     
 	DEC_SUBORDINATE_INIT(Init)
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 	static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFHummus::EStatusCode OpenFile(const std::string& inFilePath,bool inAppend);
     void SetFromOwnedFile(OutputFile* inFile);
     
+    ConstructorsHolder* holder;
 private:
     OutputFileDriver();
     
     OutputFile* mOutputFileInstance;
     bool mOwnsInstance;
     
-    static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE OpenFile(const ARGS_TYPE& args);

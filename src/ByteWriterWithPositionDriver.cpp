@@ -19,9 +19,9 @@
  */
 #include "ByteWriterWithPositionDriver.h"
 #include "IByteWriterWithPosition.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
-Persistent<Function> ByteWriterWithPositionDriver::constructor;
 Persistent<FunctionTemplate> ByteWriterWithPositionDriver::constructor_template;
 
 ByteWriterWithPositionDriver::ByteWriterWithPositionDriver()
@@ -36,8 +36,7 @@ ByteWriterWithPositionDriver::~ByteWriterWithPositionDriver()
         delete mInstance;
 }
 
-
-void ByteWriterWithPositionDriver::Init()
+DEF_SUBORDINATE_INIT(ByteWriterWithPositionDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -48,19 +47,13 @@ void ByteWriterWithPositionDriver::Init()
 
 	SET_PROTOTYPE_METHOD(t, "write", Write);
 	SET_PROTOTYPE_METHOD(t, "getCurrentPosition", GetCurrentPosition);
-	SET_CONSTRUCTOR(constructor, t);
+
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
+
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ByteWriterWithPosition_constructor, t);        
 }
-
-Handle<Value> ByteWriterWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
-}
-
 
 bool ByteWriterWithPositionDriver::HasInstance(Handle<Value> inObject)
 {

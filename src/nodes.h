@@ -17,7 +17,7 @@
 
 // TBD
 #define DECLARE_EXTERNAL(C) C* c1 = new C(isolate, exports); Local<External> external = External::New(isolate, c1); 
-#define EXPOSE_EXTERNAL(C, c) C* c = reinterpret_cast<C*>(external->Value());
+#define EXPOSE_EXTERNAL_FOR_INIT(C, c) C* c = reinterpret_cast<C*>(external->Value());
 #define EXPOSE_EXTERNAL_ARGS(C, c) C* c = reinterpret_cast<C*>(args.Data().As<External>()->Value());
 #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) FunctionTemplate::New(isolate, X, external)
 

@@ -22,6 +22,7 @@
 #include "IFormEndWritingTask.h"
 #include "PDFWriterDriver.h"
 #include "DocumentContext.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
@@ -32,9 +33,7 @@ XObjectContentContextDriver::XObjectContentContextDriver()
     FormOfContext = NULL;
 }
 
-Persistent<Function> XObjectContentContextDriver::constructor;
-
-void XObjectContentContextDriver::Init()
+DEF_SUBORDINATE_INIT(XObjectContentContextDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -43,16 +42,10 @@ void XObjectContentContextDriver::Init()
 	t->SetClassName(NEW_STRING("XObjectContentContext"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 	AbstractContentContextDriver::Init(t);
-	SET_CONSTRUCTOR(constructor, t);
-}
 
-v8::Handle<v8::Value> XObjectContentContextDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->XObjectContentContext_constructor, t);   
 }
 
 METHOD_RETURN_TYPE XObjectContentContextDriver::New(const ARGS_TYPE& args)

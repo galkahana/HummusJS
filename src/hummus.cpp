@@ -78,7 +78,8 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    Handle<Value> instance = PDFWriterDriver::GetNewInstance(args);
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
+    Handle<Value> instance = holder->GetNewPDFWriter(args);        
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
 
@@ -292,7 +293,8 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    Handle<Value> instance = PDFWriterDriver::GetNewInstance(args);
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
+    Handle<Value> instance = holder->GetNewPDFWriter(args);    
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
     
@@ -368,7 +370,8 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    Handle<Value> instance = PDFWriterDriver::GetNewInstance(args);
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
+    Handle<Value> instance = holder->GetNewPDFWriter(args);  
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
     
@@ -466,7 +469,8 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    Handle<Value> instance = PDFReaderDriver::GetNewInstance(args);
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
+    Handle<Value> instance = holder->GetNewPDFReader(args);      
     
     PDFReaderDriver* driver = ObjectWrap::Unwrap<PDFReaderDriver>(instance->TO_OBJECT());
     
@@ -535,49 +539,49 @@ DEF_INIT(HummusInit) {
 
     CALL_INIT_WITH_EXPORTS(PDFWriterDriver::Init)
     CALL_INIT_WITH_EXPORTS(PDFPageDriver::Init)
-    PageContentContextDriver::Init();
-    FormXObjectDriver::Init();
-    XObjectContentContextDriver::Init();
-    ResourcesDictionaryDriver::Init();
-    UsedFontDriver::Init();
-    ImageXObjectDriver::Init();
-    ObjectsContextDriver::Init();
-    DocumentContextDriver::Init();
-    DocumentCopyingContextDriver::Init();
-    PDFReaderDriver::Init();
-    PDFArrayDriver::Init();
-    PDFDictionaryDriver::Init();
-    PDFStreamInputDriver::Init();
-    PDFIndirectObjectReferenceDriver::Init();
-    PDFBooleanDriver::Init();
-    PDFLiteralStringDriver::Init();
-    PDFHexStringDriver::Init();
-    PDFNullDriver::Init();
-    PDFNameDriver::Init();
-    PDFIntegerDriver::Init();
-    PDFRealDriver::Init();
-    PDFSymbolDriver::Init();
+    CALL_INIT_WITH_EXPORTS(PageContentContextDriver::Init)
+    CALL_INIT_WITH_EXPORTS(FormXObjectDriver::Init)
+    CALL_INIT_WITH_EXPORTS(ObjectsContextDriver::Init);
+    CALL_INIT_WITH_EXPORTS(DocumentCopyingContextDriver::Init);
+    CALL_INIT_WITH_EXPORTS(PDFReaderDriver::Init)
     CALL_INIT_WITH_EXPORTS(PDFTextStringDriver::Init)
     CALL_INIT_WITH_EXPORTS(PDFDateDriver::Init)
-    DictionaryContextDriver::Init();
-    PDFPageInputDriver::Init();
     CALL_INIT_WITH_EXPORTS(InputFileDriver::Init)
     CALL_INIT_WITH_EXPORTS(OutputFileDriver::Init)
-    InfoDictionaryDriver::Init();
-    PDFStreamDriver::Init();
-    ByteReaderDriver::Init();
-	ByteWriterDriver::Init();
-    ByteReaderWithPositionDriver::Init();
-	ByteWriterWithPositionDriver::Init();
+    CALL_INIT_WITH_EXPORTS(PDFStreamDriver::Init)
+    CALL_INIT_WITH_EXPORTS(ByteReaderDriver::Init)
+	CALL_INIT_WITH_EXPORTS(ByteWriterDriver::Init)
+	CALL_INIT_WITH_EXPORTS(ByteWriterWithPositionDriver::Init)
     CALL_INIT_WITH_EXPORTS(PDFPageModifierDriver::Init)
-    PDFObjectParserDriver::Init();
+    CALL_INIT_WITH_EXPORTS(ByteReaderWithPositionDriver::Init)
+    CALL_INIT_WITH_EXPORTS(DictionaryContextDriver::Init)
+    CALL_INIT_WITH_EXPORTS(DocumentContextDriver::Init)
+    CALL_INIT_WITH_EXPORTS(InfoDictionaryDriver::Init)
+    CALL_INIT_WITH_EXPORTS(ImageXObjectDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFArrayDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFDictionaryDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFStreamInputDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFIndirectObjectReferenceDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFBooleanDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFLiteralStringDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFHexStringDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFNullDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFNameDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFIntegerDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFRealDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFSymbolDriver::Init)    
+    CALL_INIT_WITH_EXPORTS(PDFPageInputDriver::Init)
+    CALL_INIT_WITH_EXPORTS(PDFObjectParserDriver::Init)
+    CALL_INIT_WITH_EXPORTS(XObjectContentContextDriver::Init)
+    CALL_INIT_WITH_EXPORTS(ResourcesDictionaryDriver::Init)
+    CALL_INIT_WITH_EXPORTS(UsedFontDriver::Init)
 
     
     // define methods
 	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriter)->GetFunction())
 	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToContinue)->GetFunction())
 	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToModify)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE(CreateReader)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateReader)->GetFunction())
     EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction())
     
     // define pdf versions enum

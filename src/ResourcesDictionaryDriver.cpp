@@ -21,11 +21,12 @@
 #include "ResourcesDictionaryDriver.h"
 #include "ResourcesDictionary.h"
 #include "ImageXObjectDriver.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
 
-void ResourcesDictionaryDriver::Init()
+DEF_SUBORDINATE_INIT(ResourcesDictionaryDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -44,33 +45,16 @@ void ResourcesDictionaryDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "addPropertyMapping", AddPropertyMapping);
 	SET_PROTOTYPE_METHOD(t, "addXObjectMapping", AddXObjectMapping);
 	SET_PROTOTYPE_METHOD(t, "addShadingMapping", AddShadingMapping);
-	SET_CONSTRUCTOR(constructor, t);
-}
 
-v8::Handle<v8::Value> ResourcesDictionaryDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
-}
-
-v8::Handle<v8::Value> ResourcesDictionaryDriver::GetInstanceFor(ResourcesDictionary* inResourcesDictionaryInstance) {
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-    ObjectWrap::Unwrap<ResourcesDictionaryDriver>(instance->TO_OBJECT())->ResourcesDictionaryInstance = inResourcesDictionaryInstance;
-	return CLOSE_SCOPE(instance);    
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ResourcesDictionary_constructor, t);   
 }
 
 ResourcesDictionaryDriver::ResourcesDictionaryDriver()
 {
     ResourcesDictionaryInstance = NULL;
 }
-
-Persistent<Function> ResourcesDictionaryDriver::constructor;
 
 METHOD_RETURN_TYPE ResourcesDictionaryDriver::New(const ARGS_TYPE& args)
 {

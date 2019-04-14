@@ -22,21 +22,20 @@
 #include "PDFDateDriver.h"
 #include "PDFDate.h"
 #include "PDFTextString.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
-
-Persistent<Function> InfoDictionaryDriver::constructor;
 
 InfoDictionaryDriver::InfoDictionaryDriver()
 {
     InfoDictionaryInstance = NULL;
 }
 
-void InfoDictionaryDriver::Init()
+DEF_SUBORDINATE_INIT(InfoDictionaryDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("InfoDictionary"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -56,25 +55,19 @@ void InfoDictionaryDriver::Init()
 	SET_ACCESSOR_METHODS(t, "producer", GetProducer, SetProducer);
 	SET_ACCESSOR_METHODS(t, "trapped", GetTrapped, SetTrapped);
 
-
-	SET_CONSTRUCTOR(constructor, t);
-}
-
-v8::Handle<v8::Value> InfoDictionaryDriver::GetNewInstance()
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->InfoDictionary_constructor, t); 
 }
 
 METHOD_RETURN_TYPE InfoDictionaryDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     InfoDictionaryDriver* driver = new InfoDictionaryDriver();
+    driver->holder = externalHolder;
     driver->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -283,7 +276,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::SetCreationDate(const ARGS_TYPE& args)
     }
 
     
-    Handle<Value> dataDriverValue = PDFDateDriver::GetNewInstance(args);
+    Handle<Value> dataDriverValue = driver->holder->GetNewPDFDate(args);
     PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->TO_OBJECT());
 
     driver->InfoDictionaryInstance->CreationDate =  *(dateDriver->getInstance());
@@ -304,7 +297,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::SetModDate(const ARGS_TYPE& args)
     }
     
     
-    Handle<Value> dataDriverValue = PDFDateDriver::GetNewInstance(args);
+    Handle<Value> dataDriverValue = driver->holder->GetNewPDFDate(args);
     PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->TO_OBJECT());
     
     driver->InfoDictionaryInstance->ModDate =  *(dateDriver->getInstance());

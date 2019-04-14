@@ -20,11 +20,11 @@
 #include "InputFileDriver.h"
 #include "InputFile.h"
 #include "ByteReaderWithPositionDriver.h"
+#include "ConstructorsHolder.h"
 
 
 using namespace v8;
 
-Persistent<Function> InputFileDriver::constructor;
 Persistent<FunctionTemplate> InputFileDriver::constructor_template;
 
 InputFileDriver::InputFileDriver()
@@ -59,7 +59,7 @@ DEF_SUBORDINATE_INIT(InputFileDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("InputFile"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -69,19 +69,13 @@ DEF_SUBORDINATE_INIT(InputFileDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "getFilePath", GetFilePath);
 	SET_PROTOTYPE_METHOD(t, "getFileSize", GetFileSize);
 	SET_PROTOTYPE_METHOD(t, "getInputStream", GetInputStream);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 	
 	SET_CONSTRUCTOR_EXPORT("InputFile", t);
-}
 
-v8::Handle<v8::Value> InputFileDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->InputFile_constructor, t);        
 }
 
 bool InputFileDriver::HasInstance(Handle<Value> inObject)
@@ -95,8 +89,11 @@ METHOD_RETURN_TYPE InputFileDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     InputFileDriver* inputFile = new InputFileDriver();
+
+    inputFile->holder = externalHolder;
     
     if(args.Length() == 1 && args[0]->IsString())
         inputFile->OpenFile(*UTF_8_VALUE(args[0]->TO_STRING()));
@@ -212,7 +209,7 @@ METHOD_RETURN_TYPE InputFileDriver::GetInputStream(const ARGS_TYPE& args)
     
     if(driver->mInputFileInstance && driver->mInputFileInstance->GetInputStream())
     {
-        Handle<Value> result = ByteReaderWithPositionDriver::GetNewInstance(args);
+        Handle<Value> result = driver->holder->GetNewByteReaderWithPosition(args);
         
         ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->mInputFileInstance->GetInputStream(), false);
         

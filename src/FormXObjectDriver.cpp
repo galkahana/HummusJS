@@ -22,6 +22,7 @@
 #include "XObjectContentContextDriver.h"
 #include "ResourcesDictionaryDriver.h"
 #include "PDFStreamDriver.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
@@ -36,11 +37,11 @@ FormXObjectDriver::FormXObjectDriver()
     FormXObject = NULL;
 }
 
-void FormXObjectDriver::Init()
+DEF_SUBORDINATE_INIT(FormXObjectDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("FormXObject"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -51,17 +52,12 @@ void FormXObjectDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "getResourcesDictionary", GetResourcesDictionary);
 	SET_PROTOTYPE_METHOD(t, "getContentStream", GetContentStream);
 
-	SET_CONSTRUCTOR(constructor, t);
+
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> FormXObjectDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->FormXObject_constructor, t);  
 }
 
 bool FormXObjectDriver::HasInstance(Handle<Value> inObject)
@@ -72,15 +68,16 @@ bool FormXObjectDriver::HasInstance(Handle<Value> inObject)
 
 }
 
-Persistent<Function> FormXObjectDriver::constructor;
 Persistent<FunctionTemplate> FormXObjectDriver::constructor_template;
 
 METHOD_RETURN_TYPE FormXObjectDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     FormXObjectDriver* form = new FormXObjectDriver();
+    form->holder = externalHolder;
     form->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
 }
@@ -107,7 +104,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentContext(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
   
-    Handle<Value> newInstance = XObjectContentContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = formDriver->holder->GetNewXObjectContentContext(args);
     XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->TO_OBJECT());
     contentContextDriver->ContentContext = formDriver->FormXObject->GetContentContext();
     contentContextDriver->FormOfContext = formDriver->FormXObject;
@@ -122,7 +119,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetResourcesDictionary(const ARGS_TYPE& ar
 	CREATE_ESCAPABLE_SCOPE;
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
     
-    Handle<Value> newInstance = ResourcesDictionaryDriver::GetNewInstance(args);
+    Handle<Value> newInstance = formDriver->holder->GetNewResourcesDictionary(args);
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(formDriver->FormXObject->GetResourcesDictionary());
     
@@ -136,7 +133,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentStream(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
     
-    Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
+    Handle<Value> newInstance = formDriver->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = formDriver->FormXObject->GetContentStream();
     

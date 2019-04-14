@@ -19,6 +19,7 @@
  */
 #include "ImageXObjectDriver.h"
 #include "PDFImageXObject.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
@@ -27,7 +28,7 @@ ImageXObjectDriver::~ImageXObjectDriver()
     delete ImageXObject;
 }
 
-void ImageXObjectDriver::Init()
+DEF_SUBORDINATE_INIT(ImageXObjectDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -37,17 +38,11 @@ void ImageXObjectDriver::Init()
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_ACCESSOR_METHOD(t, "id", GetID);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> ImageXObjectDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ImageXObject_constructor, t);    	
 }
 
 bool ImageXObjectDriver::HasInstance(Handle<Value> inObject)
@@ -62,7 +57,6 @@ ImageXObjectDriver::ImageXObjectDriver()
     ImageXObject = NULL;
 }
 
-Persistent<Function> ImageXObjectDriver::constructor;
 Persistent<FunctionTemplate> ImageXObjectDriver::constructor_template;
 
 METHOD_RETURN_TYPE ImageXObjectDriver::New(const ARGS_TYPE& args)

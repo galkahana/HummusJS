@@ -20,11 +20,11 @@
 #include "OutputFileDriver.h"
 #include "OutputFile.h"
 #include "ByteWriterWithPositionDriver.h"
+#include "ConstructorsHolder.h"
 
 
 using namespace v8;
 
-Persistent<Function> OutputFileDriver::constructor;
 Persistent<FunctionTemplate> OutputFileDriver::constructor_template;
 
 OutputFileDriver::OutputFileDriver()
@@ -59,7 +59,7 @@ DEF_SUBORDINATE_INIT(OutputFileDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("OutputFile"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -68,19 +68,13 @@ DEF_SUBORDINATE_INIT(OutputFileDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "closeFile", CloseFile);
 	SET_PROTOTYPE_METHOD(t, "getFilePath", GetFilePath);
 	SET_PROTOTYPE_METHOD(t, "getOutputStream", GetOutputStream);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
 	SET_CONSTRUCTOR_EXPORT("OutputFile",t);
-}
 
-v8::Handle<v8::Value> OutputFileDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->OutputFile_constructor, t);        
 }
 
 bool OutputFileDriver::HasInstance(Handle<Value> inObject)
@@ -94,6 +88,7 @@ METHOD_RETURN_TYPE OutputFileDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     OutputFileDriver* outputFile = new OutputFileDriver();
     bool append = false;
@@ -105,6 +100,8 @@ METHOD_RETURN_TYPE OutputFileDriver::New(const ARGS_TYPE& args)
             append = args[1]->TO_BOOLEAN()->Value();
         outputFile->OpenFile(*UTF_8_VALUE(args[0]->TO_STRING()),append);
     }
+
+    outputFile->holder = externalHolder; 
     
     outputFile->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
@@ -198,7 +195,7 @@ METHOD_RETURN_TYPE OutputFileDriver::GetOutputStream(const ARGS_TYPE& args)
     
     if(driver->mOutputFileInstance && driver->mOutputFileInstance->GetOutputStream())
     {
-        Handle<Value> result = ByteWriterWithPositionDriver::GetNewInstance(args);
+        Handle<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
         
         ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->mOutputFileInstance->GetOutputStream(),false);
         

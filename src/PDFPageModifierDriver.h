@@ -23,6 +23,7 @@
 
 class PDFModifiedPage;
 class PDFWriter;
+class ConstructorsHolder;
 
 class PDFPageModifierDriver : public node::ObjectWrap
 {
@@ -30,16 +31,15 @@ public:
     virtual ~PDFPageModifierDriver();
     
 	DEC_SUBORDINATE_INIT(Init)
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
-    
+
+	ConstructorsHolder* holder;
    
 private:
     PDFPageModifierDriver(PDFWriter* inWriter,unsigned long inPageIndex,bool inEnsureContentEncapsulation = false);
     
     PDFModifiedPage* mModifierPageInstance;
     
-    static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE StartContext(const ARGS_TYPE& args);

@@ -23,6 +23,7 @@
 
 
 class PDFObject;
+class ConstructorsHolder;
 
 class PDFObjectDriver : public node::ObjectWrap
 {
@@ -31,9 +32,9 @@ public:
     
     static void Init(v8::Handle<v8::FunctionTemplate>& ioDriverTemplate);
     
-    static v8::Handle<v8::Value> CreateDriver(PDFObject* inObject);
-        
     virtual PDFObject* GetObject() = 0;
+
+	ConstructorsHolder* holder;
 
 private:
     

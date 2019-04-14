@@ -22,26 +22,23 @@
 #include "nodes.h"
 
 class PDFStream;
+class ConstructorsHolder;
 
 class PDFStreamDriver : public node::ObjectWrap
 {
 public:
     virtual ~PDFStreamDriver();
 
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+    DEC_SUBORDINATE_INIT(Init)
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
-    
-    
+    ConstructorsHolder* holder;
     PDFStream* PDFStreamInstance;
     bool mOwns;
     
 private:
     PDFStreamDriver();
     
-    
-    static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);

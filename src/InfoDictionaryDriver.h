@@ -22,20 +22,21 @@
 #include "nodes.h"
 
 class InfoDictionary;
+class ConstructorsHolder;
 
 class InfoDictionaryDriver : public node::ObjectWrap
 {
 public:
     
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance();
+	DEC_SUBORDINATE_INIT(Init)
     
     InfoDictionary* InfoDictionaryInstance;
+
+	ConstructorsHolder* holder;
     
 private:
     InfoDictionaryDriver();
     
-    static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 
 	static METHOD_RETURN_TYPE GetTitle(v8::Local<v8::String> property, const PROPERTY_TYPE &info);

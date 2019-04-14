@@ -26,6 +26,7 @@
 #include "PDFRectangle.h"
 
 class PDFPageInput;
+class ConstructorsHolder;
 
 class PDFPageInputDriver : public node::ObjectWrap
 {
@@ -33,15 +34,14 @@ public:
     PDFPageInputDriver();
     virtual ~PDFPageInputDriver();
     
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance();
+    DEC_SUBORDINATE_INIT(Init)
     
     PDFPageInput* PageInput;
     PDFObjectCastPtr<PDFDictionary> PageInputDictionary;
-    
+
+    ConstructorsHolder* holder;    
 private:
     
-    static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetDictionary(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetMediaBox(const ARGS_TYPE& args);

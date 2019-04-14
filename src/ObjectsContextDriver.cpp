@@ -26,16 +26,16 @@
 #include "EStatusCode.h"
 #include "PDFStreamDriver.h"
 #include "ByteWriterWithPositionDriver.h"
+#include "ConstructorsHolder.h"
 #include <string>
 
 using namespace v8;
 
-
-void ObjectsContextDriver::Init()
+DEF_SUBORDINATE_INIT(ObjectsContextDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("ObjectsContext"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -65,17 +65,9 @@ void ObjectsContextDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "startFreeContext", StartFreeContext);
 	SET_PROTOTYPE_METHOD(t, "endFreeContext", EndFreeContext);
 
-	SET_CONSTRUCTOR(constructor, t);
-
-}
-
-v8::Handle<v8::Value> ObjectsContextDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ObjectsContext_constructor, t);       
 }
 
 ObjectsContextDriver::ObjectsContextDriver()
@@ -83,14 +75,14 @@ ObjectsContextDriver::ObjectsContextDriver()
     ObjectsContextInstance = NULL;
 }
 
-Persistent<Function> ObjectsContextDriver::constructor;
-
 METHOD_RETURN_TYPE ObjectsContextDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     ObjectsContextDriver* objectsContext = new ObjectsContextDriver();
+    objectsContext->holder = externalHolder;
     objectsContext->Wrap(args.This());
     
 	SET_FUNCTION_RETURN_VALUE(args.This())
@@ -142,7 +134,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartDictionary(const ARGS_TYPE& args)
     
     DictionaryContext* dictionaryContext = driver->ObjectsContextInstance->StartDictionary();
     
-    Handle<Value> newInstance = DictionaryContextDriver::GetNewInstance(args);
+    Handle<Value> newInstance = driver->holder->GetNewDictionaryContext(args);
     ObjectWrap::Unwrap<DictionaryContextDriver>(newInstance->TO_OBJECT())->DictionaryContextInstance = dictionaryContext;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -501,18 +493,20 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
     }
     
     PDFStream* aStream;
+
+    ObjectsContextDriver* objectsContext = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
     if(args.Length() == 1)
     {
         DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT());
-        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream(driver->DictionaryContextInstance);
+        aStream = objectsContext->ObjectsContextInstance->StartPDFStream(driver->DictionaryContextInstance);
     }
     else
     {
-        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartPDFStream();
+        aStream = objectsContext->ObjectsContextInstance->StartPDFStream();
     }
     
-    Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
+    Handle<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
@@ -535,17 +529,19 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
     
     PDFStream* aStream;
     
+    ObjectsContextDriver* objectsContext = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
+
     if(args.Length() == 1)
     {
         DictionaryContextDriver* driver = ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT());
-        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream(driver->DictionaryContextInstance);
+        aStream = objectsContext->ObjectsContextInstance->StartUnfilteredPDFStream(driver->DictionaryContextInstance);
     }
     else
     {
-        aStream = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->StartUnfilteredPDFStream();
+        aStream = objectsContext->ObjectsContextInstance->StartUnfilteredPDFStream();
     }
     
-    Handle<Value> newInstance = PDFStreamDriver::GetNewInstance(args);
+    Handle<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
@@ -562,7 +558,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartFreeContext(const ARGS_TYPE& args)
     
     ObjectsContextDriver* driver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
-    Handle<Value> result = ByteWriterWithPositionDriver::GetNewInstance(args);
+    Handle<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
     
     ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
     

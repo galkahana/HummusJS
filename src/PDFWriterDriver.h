@@ -52,6 +52,7 @@ struct CachedHummusImageInformation
 typedef std::map<StringAndULongPair,CachedHummusImageInformation> StringAndULongPairToCachedHummusImageInformationMap;
 
 class IByteWriterWithPosition;
+class ConstructorsHolder;
 
 class PDFWriterDriver : public node::ObjectWrap, IDocumentContextExtender
 {
@@ -59,7 +60,6 @@ public:
     virtual ~PDFWriterDriver();
     
 	DEC_SUBORDINATE_INIT(Init)
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
 
     PDFHummus::EStatusCode StartPDF(const std::string& inOutputFilePath,
                                     EPDFVersion inPDFVersion,
@@ -95,7 +95,8 @@ public:
     
     
     PDFWriter* GetWriter();
-    
+
+	ConstructorsHolder* holder;
     
     // IDocumentContextExtender implementation
 	virtual PDFHummus::EStatusCode OnPageWrite(

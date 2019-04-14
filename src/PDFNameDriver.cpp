@@ -19,34 +19,27 @@
  */
 #include "PDFNameDriver.h"
 #include "RefCountPtr.h"
-
+#include "ConstructorsHolder.h"
 using namespace v8;
 
-Persistent<Function> PDFNameDriver::constructor;
 Persistent<FunctionTemplate> PDFNameDriver::constructor_template;
 
-void PDFNameDriver::Init()
+DEF_SUBORDINATE_INIT(PDFNameDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("PDFName"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
-}
 
-v8::Handle<v8::Value> PDFNameDriver::GetNewInstance()
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->PDFName_constructor, t);   
 }
 
 bool PDFNameDriver::HasInstance(Handle<Value> inObject)
@@ -60,8 +53,10 @@ METHOD_RETURN_TYPE PDFNameDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+	EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     PDFNameDriver* driver = new PDFNameDriver();
+	driver->holder = externalHolder;
     driver->Wrap(args.This());
 	SET_FUNCTION_RETURN_VALUE(args.This())
 }

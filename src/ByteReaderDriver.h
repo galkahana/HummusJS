@@ -28,8 +28,7 @@ class ByteReaderDriver : public node::ObjectWrap
 public:
     virtual ~ByteReaderDriver();
     
-    static void Init();
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
+    DEC_SUBORDINATE_INIT(Init)
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     void SetStream(IByteReader* inReader,bool inOwns);
@@ -43,7 +42,6 @@ private:
     bool mOwns;
 
     
-    static v8::Persistent<v8::Function> constructor;
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE Read(const ARGS_TYPE& args);

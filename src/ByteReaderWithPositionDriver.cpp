@@ -19,10 +19,10 @@
  */
 #include "ByteReaderWithPositionDriver.h"
 #include "IByteReaderWithPosition.h"
+#include "ConstructorsHolder.h"
 
 using namespace v8;
 
-Persistent<Function> ByteReaderWithPositionDriver::constructor;
 Persistent<FunctionTemplate> ByteReaderWithPositionDriver::constructor_template;
 
 ByteReaderWithPositionDriver::ByteReaderWithPositionDriver()
@@ -37,8 +37,7 @@ ByteReaderWithPositionDriver::~ByteReaderWithPositionDriver()
         delete mInstance;
 }
 
-
-void ByteReaderWithPositionDriver::Init()
+DEF_SUBORDINATE_INIT(ByteReaderWithPositionDriver::Init)
 {
 
 	CREATE_ISOLATE_CONTEXT;
@@ -58,19 +57,12 @@ void ByteReaderWithPositionDriver::Init()
 	SET_PROTOTYPE_METHOD(t, "skip", Skip);
 
 
-	SET_CONSTRUCTOR(constructor, t);
 	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
+
+    // save in factory
+	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
+    SET_CONSTRUCTOR(holder->ByteReaderWithPosition_constructor, t);  
 }
-
-v8::Handle<v8::Value> ByteReaderWithPositionDriver::GetNewInstance(const ARGS_TYPE& args)
-{
-	CREATE_ISOLATE_CONTEXT;
-	CREATE_ESCAPABLE_SCOPE;
-
-	NEW_INSTANCE(constructor, instance);
-	return CLOSE_SCOPE(instance);
-}
-
 
 bool ByteReaderWithPositionDriver::HasInstance(Handle<Value> inObject)
 {

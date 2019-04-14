@@ -24,6 +24,7 @@
 #include "PDFPage.h"
 
 class PageContentContext;
+class ConstructorsHolder;
 
 class PDFPageDriver : public node::ObjectWrap
 {
@@ -31,20 +32,19 @@ public:
     virtual ~PDFPageDriver();
     
     DEC_SUBORDINATE_INIT(Init)
-	static v8::Handle<v8::Value> GetNewInstance(const ARGS_TYPE& args);
-	static v8::Handle<v8::Value> GetNewInstance(PDFPage* inPage);
     static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFPage* GetPage(){return mPDFPage;}
     
     PageContentContext* ContentContext;
-    
+
+    ConstructorsHolder* holder;
+    PDFPage* mPDFPage;
+    bool mOwnsPage;   
     
 private:
     PDFPageDriver();
-    
-    
-    static v8::Persistent<v8::Function> constructor;
+        
     static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetMediaBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
@@ -60,7 +60,4 @@ private:
 	static METHOD_RETURN_TYPE GetRotate(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
     static void SetRotate(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
 	static METHOD_RETURN_TYPE GetResourcesDictionary(const ARGS_TYPE& args);
-    
-    PDFPage* mPDFPage;
-    bool mOwnsPage;
 };
