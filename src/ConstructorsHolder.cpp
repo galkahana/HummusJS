@@ -770,3 +770,5 @@ bool ConstructorsHolder::IsUsedFontInstance(v8::Handle<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, UsedFont_constructor_template );
 }
+
+DEFINE_SHARED_EXTERNAL(ConstructorsHolder)

@@ -179,7 +179,7 @@ class ConstructorsHolder {
         bool IsPDFSymbolInstance(v8::Handle<v8::Value> inObject);
         bool IsUsedFontInstance(v8::Handle<v8::Value> inObject);        
         
-
+        DECLARE_SHARED_EXTERNAL(ConstructorsHolder)
     private:
         static void DeleteMe(const v8::WeakCallbackInfo<ConstructorsHolder>& info);
         static bool IsInstance(v8::Handle<v8::Value> inObject, const v8::Persistent<v8::FunctionTemplate>& constructor_template);

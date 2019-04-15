@@ -1,46 +1,20 @@
 #pragma once
 
 #include <node.h> 
+#include <node_object_wrap.h>
 
 
-#define NODE_0_10_MODULE_VERSION 11
 #define NODE_2_5_0_MODULE_VERSION 44
 #define NODE_10_0_0_MODULE_VERSION 64
 #define NODE_11_0_0_MODULE_VERSION 67
 #define NODE_CONTEXT_AWARE_VERSION NODE_10_0_0_MODULE_VERSION
-// #define IS_CONTEXT_AWARE NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
+#define IS_CONTEXT_AWARE NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
 #ifdef NODE_MODULE_INIT
-    #define IS_CONTEXT_AWARE 1
+    #define IS_CONTEXT_AWARE_MODULE 1
 #else 
-    #define IS_CONTEXT_AWARE 0
+    #define IS_CONTEXT_AWARE_MODULE 0
 #endif
 
-// TBD
-#define DECLARE_EXTERNAL(C) C* c1 = new C(isolate, exports); Local<External> external = External::New(isolate, c1); 
-#define EXPOSE_EXTERNAL_FOR_INIT(C, c) C* c = reinterpret_cast<C*>(external->Value());
-#define EXPOSE_EXTERNAL_ARGS(C, c) C* c = reinterpret_cast<C*>(args.Data().As<External>()->Value());
-#define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) FunctionTemplate::New(isolate, X, external)
-
-#if IS_CONTEXT_AWARE
-	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
-    #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
-    #define CALL_INIT_WITH_EXPORTS(f) f(exports, context, external);
-    #define DEF_INIT(f) void f(Handle<Object> exports, Handle<Context> context)
-    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports, Handle<Context> context, Handle<External> external)
-    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context, v8::Handle<v8::External> external);
-
-#else 
-	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
-    #define EXPORTS_SET(e,k,v) e->Set(k,v);
-    #define CALL_INIT_WITH_EXPORTS(f) f(exports);
-    #define DEF_INIT(f) void f(Handle<Object> exports)
-    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports)
-    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports);
-
-#endif
-
-#if NODE_MODULE_VERSION > NODE_0_10_MODULE_VERSION
-#include <node_object_wrap.h>
 
 #define ARGS_TYPE v8::FunctionCallbackInfo<v8::Value>
 #define PROPERTY_TYPE v8::PropertyCallbackInfo<v8::Value>
@@ -60,7 +34,6 @@
 #define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction())
 #define SET_PROTOTYPE_METHOD(t, s, f) NODE_SET_PROTOTYPE_METHOD(t,s,f)
 #define SET_PERSISTENT_OBJECT(c,ot,t) c.Reset(isolate,t)
-
 #define CREATE_SCOPE HandleScope scope(isolate)
 #define CREATE_ESCAPABLE_SCOPE v8::EscapableHandleScope scope(isolate)
 #define SET_FUNCTION_RETURN_VALUE(v) {args.GetReturnValue().Set(v); return;}
@@ -74,63 +47,14 @@
 #define CLOSE_SCOPE(v) scope.Escape(v)
 #define ESCAPABLE_HANDLE(v) Local<v>
 #define THIS_HANDLE (this->handle())
+#define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)
 
-
+// some conversions
 #if NODE_MODULE_VERSION > NODE_2_5_0_MODULE_VERSION
 
 #define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
 #define NEW_INSTANCE(c,i) Local<Function> c1 = Local<Function>::New(isolate, c); Local<Object> i = Local<Function>::New(isolate, c1)->NewInstance(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Function> c1 = Local<Function>::New(isolate, c); Local<Object> i = Local<Function>::New(isolate, c1)->NewInstance(GET_CURRENT_CONTEXT,argc,argv).ToLocalChecked()
-
-#else 
-
-#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
-#define NEW_INSTANCE(c,i) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance()
-#define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance(argc,argv)
-
-#endif
-
-#else
-
-#define ARGS_TYPE v8::Arguments
-#define PROPERTY_TYPE v8::AccessorInfo
-#define PROPERTY_SETTER_TYPE v8::AccessorInfo
-#define METHOD_RETURN_TYPE v8::Handle<v8::Value>
-#define CREATE_ISOLATE_CONTEXT
-#define NEW_FUNCTION_TEMPLATE(X) FunctionTemplate::New(X)
-#define NEW_STRING(X) String::New(X)
-#define NEW_SYMBOL(X) String::NewSymbol(X)
-#define NEW_NUMBER(X) Number::New(X)
-#define NEW_INTEGER(X) Integer::New(X)
-#define NEW_ARRAY(X) Array::New(X)
-#define NEW_BOOLEAN(X) Boolean::New(X)
-#define NEW_OBJECT Object::New()
-#define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(String::NewSymbol(s), f);
-#define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(String::NewSymbol(s), f,g);
-#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,String::NewSymbol(s),c->GetFunction())
-#define SET_PROTOTYPE_METHOD(t,s,f) t->PrototypeTemplate()->Set(String::NewSymbol(s),FunctionTemplate::New(f)->GetFunction())
-#define SET_PERSISTENT_OBJECT(c,ot,t) c =Persistent<ot>::New(t);
-#define SET_CONSTRUCTOR(c,t) SET_PERSISTENT_OBJECT(c,Function,t->GetFunction())
-#define CREATE_SCOPE v8::HandleScope scope
-#define CREATE_ESCAPABLE_SCOPE v8::HandleScope scope
-#define NEW_INSTANCE(c,i) Local<Object> i = c->NewInstance()
-#define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = c->NewInstance(argc,argv)
-#define SET_FUNCTION_RETURN_VALUE(v) return scope.Close(v);
-#define SET_ACCESSOR_RETURN_VALUE(v) return scope.Close(v);
-#define HAS_INSTANCE(c,o) c->HasInstance(o->TO_OBJECT())
-#define UNDEFINED Undefined()
-#define THROW_EXCEPTION(s) ThrowException(Exception::TypeError(String::New(s)))
-#define DISPOSE_PERSISTENT(p) p.Dispose()
-#define OBJECT_FROM_PERSISTENT(p) p
-#define GET_CURRENT_CONTEXT v8::Context::GetCurrent()
-#define CLOSE_SCOPE(v) scope.Close(v)
-#define ESCAPABLE_HANDLE(v) Handle<v>
-#define THIS_HANDLE v8::Local<v8::Object>::New(this->handle_)
-#endif
-
-// some conversions
-#if NODE_MODULE_VERSION > NODE_2_5_0_MODULE_VERSION
-
 #define TO_NUMBER(x) x->ToNumber(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define TO_UINT32(x) x->ToUint32(GET_CURRENT_CONTEXT).ToLocalChecked()
 #define TO_INT32(x) x->ToInt32(GET_CURRENT_CONTEXT).ToLocalChecked()
@@ -138,6 +62,9 @@
 
 #else 
 
+#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
+#define NEW_INSTANCE(c,i) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance()
+#define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance(argc,argv)
 #define TO_NUMBER(x) x->ToNumber()
 #define TO_UINT32(x) x->ToUint32()
 #define TO_INT32(x) x->ToInt32()
@@ -145,7 +72,8 @@
 
 #endif
 
-#if NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
+// Some more conversions
+#if IS_CONTEXT_AWARE
     #define TO_STRING() ToString(GET_CURRENT_CONTEXT).FromMaybe(Local<String>())
     #define TO_OBJECT() ToObject(GET_CURRENT_CONTEXT).FromMaybe(Local<Object>())
     #define TO_BOOLEAN() ToBoolean(GET_CURRENT_CONTEXT).FromMaybe(Local<Boolean>())
@@ -159,4 +87,42 @@
 
 #endif
 
-#define SET_CONSTRUCTOR_TEMPLATE(c,t) SET_PERSISTENT_OBJECT(c,FunctionTemplate,t)
+// Strict context aware definitions, to support node threadening
+#if IS_CONTEXT_AWARE_MODULE
+	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
+    #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
+    #define CALL_INIT_WITH_EXPORTS(f) f(exports, context, external);
+    #define DEF_INIT(f) void f(Handle<Object> exports, Handle<Context> context)
+    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports, Handle<Context> context, Handle<External> external)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context, v8::Handle<v8::External> external);
+    #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) FunctionTemplate::New(isolate, X, external)
+
+    #define EXPOSE_EXTERNAL(C, c, e) C* c = reinterpret_cast<C*>(e->Value());
+    #define EXPOSE_EXTERNAL_FOR_INIT(C, c) EXPOSE_EXTERNAL(C, c, external)
+    #define EXPOSE_EXTERNAL_ARGS(C, c) EXPOSE_EXTERNAL(C, c, args.Data().As<External>())
+
+    // the following definitions are mutually exclusive - when external is available, use it
+    #define DECLARE_EXTERNAL(C) C* c1 = new C(isolate, exports); Local<External> external = External::New(isolate, c1); 
+    // no ops for this case
+    #define DECLARE_SHARED_EXTERNAL(C)
+    #define DEFINE_SHARED_EXTERNAL(C)    
+#else 
+	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
+    #define EXPORTS_SET(e,k,v) e->Set(k,v);
+    #define CALL_INIT_WITH_EXPORTS(f) f(exports);
+    #define DEF_INIT(f) void f(Handle<Object> exports)
+    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports);
+    #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) NEW_FUNCTION_TEMPLATE(X)
+
+    #define EXPOSE_EXTERNAL(C, c) C* c = C::GetInstance();
+    #define EXPOSE_EXTERNAL_FOR_INIT(C, c) EXPOSE_EXTERNAL(C, c)
+    #define EXPOSE_EXTERNAL_ARGS(C, c) C* c =  EXPOSE_EXTERNAL(C, c)
+
+    // the following definitions are mutually exclusive - external is not avaible, so use shared static
+    #define DECLARE_EXTERNAL(C) 
+    // define and declare a shared external
+    #define DECLARE_SHARED_EXTERNAL(C) static C* GetInstance();
+    #define DEFINE_SHARED_EXTERNAL(C) C _instance; C* C::GetInstance(){return &instance;} 
+
+#endif
