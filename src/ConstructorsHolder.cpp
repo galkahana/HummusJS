@@ -33,27 +33,9 @@
 using namespace v8;
 using namespace node;
 
-ConstructorsHolder::ConstructorsHolder(Isolate* isolate, Local<Object> exports) {
-    mExports.Reset(isolate, exports);
-    mExports.SetWeak(this, DeleteMe, WeakCallbackType::kParameter);
-}
-
-ConstructorsHolder::~ConstructorsHolder() {
-    if (!mExports.IsEmpty()) {
-        mExports.ClearWeak();
-        mExports.Reset();
-    }
-}
-
-
-void ConstructorsHolder::DeleteMe(const WeakCallbackInfo<ConstructorsHolder>& info) {
-    delete info.GetParameter();
-}
-
-
+DEFINE_EXTERNAL_DE_CON_STRUCTORS(ConstructorsHolder)
 
 // creators
-
 v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFWriter(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
@@ -770,5 +752,3 @@ bool ConstructorsHolder::IsUsedFontInstance(v8::Handle<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, UsedFont_constructor_template );
 }
-
-DEFINE_SHARED_EXTERNAL(ConstructorsHolder)

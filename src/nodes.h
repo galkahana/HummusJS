@@ -100,12 +100,27 @@
     #define EXPOSE_EXTERNAL(C, c, e) C* c = reinterpret_cast<C*>(e->Value());
     #define EXPOSE_EXTERNAL_FOR_INIT(C, c) EXPOSE_EXTERNAL(C, c, external)
     #define EXPOSE_EXTERNAL_ARGS(C, c) EXPOSE_EXTERNAL(C, c, args.Data().As<External>())
+    #define DECLARE_EXTERNAL_DE_CON_STRUCTORS(C) v8::Persistent<v8::Object> mExports; \
+                                            C(v8::Isolate* isolate, v8::Local<v8::Object> exports); \
+                                            static void DeleteMe(const v8::WeakCallbackInfo<C>& info); \
+                                            virtual ~C();
+    #define DEFINE_EXTERNAL_DE_CON_STRUCTORS(C) \
+        C::C(Isolate* isolate, Local<Object> exports) { \
+            mExports.Reset(isolate, exports); \
+            mExports.SetWeak(this, DeleteMe, WeakCallbackType::kParameter); \
+        } \
+        C::~C() { \
+            if (!mExports.IsEmpty()) { \
+                mExports.ClearWeak(); \
+                mExports.Reset(); \
+            } \
+        } \
+        void C::DeleteMe(const WeakCallbackInfo<C>& info) { \
+            delete info.GetParameter(); \
+        }
 
-    // the following definitions are mutually exclusive - when external is available, use it
+    // creates external instance on exports, when using externals
     #define DECLARE_EXTERNAL(C) C* c1 = new C(isolate, exports); Local<External> external = External::New(isolate, c1); 
-    // no ops for this case
-    #define DECLARE_SHARED_EXTERNAL(C)
-    #define DEFINE_SHARED_EXTERNAL(C)    
 #else 
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
@@ -117,12 +132,17 @@
 
     #define EXPOSE_EXTERNAL(C, c) C* c = C::GetInstance();
     #define EXPOSE_EXTERNAL_FOR_INIT(C, c) EXPOSE_EXTERNAL(C, c)
-    #define EXPOSE_EXTERNAL_ARGS(C, c) C* c =  EXPOSE_EXTERNAL(C, c)
+    #define EXPOSE_EXTERNAL_ARGS(C, c) EXPOSE_EXTERNAL(C, c)
+    #define DECLARE_EXTERNAL_DE_CON_STRUCTORS(C) C(); \
+                                            virtual ~C(); \
+                                            static C* GetInstance();        
+    #define DEFINE_EXTERNAL_DE_CON_STRUCTORS(C) \
+        C::C(){} \
+        C::~C(){} \
+        C _instance; \
+        C* C::GetInstance(){return &_instance;} 
 
-    // the following definitions are mutually exclusive - external is not avaible, so use shared static
+    // the following is empty because external is defined as a shared static instance, when external is not used
     #define DECLARE_EXTERNAL(C) 
-    // define and declare a shared external
-    #define DECLARE_SHARED_EXTERNAL(C) static C* GetInstance();
-    #define DEFINE_SHARED_EXTERNAL(C) C _instance; C* C::GetInstance(){return &instance;} 
-
+ 
 #endif
