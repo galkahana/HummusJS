@@ -34,7 +34,7 @@ public:
 
     DEC_SUBORDINATE_INIT(Init)
 
-	static bool HasInstance(v8::Handle<v8::Value> inObject);
+	
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
     PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath,const PDFParsingOptions& inParsingOptions);
@@ -47,7 +47,7 @@ public:
 private:
     PDFReaderDriver();
     
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPDFLevel(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPagesCount(const ARGS_TYPE& args);

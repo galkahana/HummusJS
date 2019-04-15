@@ -29,6 +29,7 @@
 #include "PDFWriterDriver.h"
 #include "PDFUsedFont.h"
 #include "FreeTypeFaceWrapper.h"
+#include "ConstructorsHolder.h"
 
 #include <map>
 #include <string.h>
@@ -1110,7 +1111,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
         // string type, form name in local resources dictionary
         contentContext->GetContext()->Do(*UTF_8_VALUE(args[0]->TO_STRING()));
     }
-    else if(FormXObjectDriver::HasInstance(args[0]))
+    else if(contentContext->holder->IsFormXObjectInstance(args[0]))
     {
         // a form object
         FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args[0]->TO_OBJECT());
@@ -1121,7 +1122,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::doXObject(const ARGS_TYPE& args
         }
         
         contentContext->GetContext()->Do(contentContext->mResourcesDictionary->AddFormXObjectMapping(formDriver->FormXObject->GetObjectID()));
-    }else if(ImageXObjectDriver::HasInstance(args[0]))
+    }else if(contentContext->holder->IsImageXObjectInstance(args[0]))
     {
         // an image object
         ImageXObjectDriver* imageDriver = ObjectWrap::Unwrap<ImageXObjectDriver>(args[0]->TO_OBJECT());
@@ -1427,7 +1428,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::Tf(const ARGS_TYPE& args)
     }
     
 	if (args.Length() != 2 ||
-        (!UsedFontDriver::HasInstance(args[0]) && !args[0]->IsString()) ||
+        (!contentContext->holder->IsUsedFontInstance(args[0]) && !args[0]->IsString()) ||
         !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong Arguments, please provide a font object (create with pdfWriter.getFontForFile) or font resource name and a size measure");
@@ -2095,7 +2096,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 		Handle<Object> options = args[3]->TO_OBJECT();
 		if(options->Has(NEW_STRING("underline")) && 
 				options->Get(NEW_STRING("underline"))->TO_BOOLEAN()->Value() &&
-				UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
+				contentContext->holder->IsUsedFontInstance(options->Get(NEW_STRING("font"))))
 		{
 			// draw underline. use font data for position and thickness
 			double fontSize = options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1;
@@ -2125,7 +2126,7 @@ void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeO
     Handle<Object> options = inMaybeOptions->TO_OBJECT();
     
     if(options->Has(NEW_STRING("font")) &&
-       UsedFontDriver::HasInstance(options->Get(NEW_STRING("font"))))
+       holder->IsUsedFontInstance(options->Get(NEW_STRING("font"))))
         GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->TO_OBJECT())->UsedFont,
                          options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1);
 }

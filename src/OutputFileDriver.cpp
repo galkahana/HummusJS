@@ -25,7 +25,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> OutputFileDriver::constructor_template;
+
 
 OutputFileDriver::OutputFileDriver()
 {
@@ -68,21 +68,15 @@ DEF_SUBORDINATE_INIT(OutputFileDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "closeFile", CloseFile);
 	SET_PROTOTYPE_METHOD(t, "getFilePath", GetFilePath);
 	SET_PROTOTYPE_METHOD(t, "getOutputStream", GetOutputStream);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
 	SET_CONSTRUCTOR_EXPORT("OutputFile",t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->OutputFile_constructor, t);        
+	SET_CONSTRUCTOR_TEMPLATE(holder->OutputFile_constructor_template, t);
 }
 
-bool OutputFileDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
-}
 
 METHOD_RETURN_TYPE OutputFileDriver::New(const ARGS_TYPE& args)
 {

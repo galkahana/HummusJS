@@ -7,7 +7,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> PDFObjectParserDriver::constructor_template;
+
 
 PDFObjectParserDriver::PDFObjectParserDriver()
 {
@@ -28,18 +28,11 @@ DEF_SUBORDINATE_INIT(PDFObjectParserDriver::Init)
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_PROTOTYPE_METHOD(t, "parseNewObject", ParseNewObject);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template,t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFObjectParser_constructor, t);  	
-}
-
-bool PDFObjectParserDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-	
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFObjectParser_constructor_template,t);
 }
 
 METHOD_RETURN_TYPE PDFObjectParserDriver::New(const ARGS_TYPE& args)

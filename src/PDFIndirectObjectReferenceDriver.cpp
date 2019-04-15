@@ -22,7 +22,7 @@
 #include "ConstructorsHolder.h"
 using namespace v8;
 
-Persistent<FunctionTemplate> PDFIndirectObjectReferenceDriver::constructor_template;
+
 
 DEF_SUBORDINATE_INIT(PDFIndirectObjectReferenceDriver::Init)
 {
@@ -36,17 +36,11 @@ DEF_SUBORDINATE_INIT(PDFIndirectObjectReferenceDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "getObjectID", GetObjectID);
 	SET_PROTOTYPE_METHOD(t, "getVersion", GetVersion);
 	PDFObjectDriver::Init(t);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
+
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFIndirectObjectReference_constructor, t); 	
-}
-
-bool PDFIndirectObjectReferenceDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFIndirectObjectReference_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE PDFIndirectObjectReferenceDriver::New(const ARGS_TYPE& args)

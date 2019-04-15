@@ -28,13 +28,13 @@ class PDFStreamInputDriver : public PDFObjectDriver
 {
 public:
     DEC_SUBORDINATE_INIT(Init)
-	static bool HasInstance(v8::Handle<v8::Value> inObject);
+	
     
     PDFObjectCastPtr<PDFStreamInput> TheObject;
     
     virtual PDFObject* GetObject();
 private:
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetDictionary(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetStreamContentStart(const ARGS_TYPE& args);

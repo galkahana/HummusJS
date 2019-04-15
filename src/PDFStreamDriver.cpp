@@ -24,7 +24,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> PDFStreamDriver::constructor_template;
+
 
 PDFStreamDriver::PDFStreamDriver()
 {
@@ -48,18 +48,11 @@ DEF_SUBORDINATE_INIT(PDFStreamDriver::Init)
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_PROTOTYPE_METHOD(t, "getWriteStream", GetWriteStream);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template,t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFStream_constructor, t);   	
-}
-
-bool PDFStreamDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-	
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFStream_constructor_template,t);
 }
 
 METHOD_RETURN_TYPE PDFStreamDriver::New(const ARGS_TYPE& args)

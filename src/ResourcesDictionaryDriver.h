@@ -22,6 +22,7 @@
 #include "nodes.h"
 
 class ResourcesDictionary;
+class ConstructorsHolder;
 
 class ResourcesDictionaryDriver : public node::ObjectWrap
 {
@@ -31,10 +32,10 @@ public:
     // set externally
     ResourcesDictionary* ResourcesDictionaryInstance;
     
+    ConstructorsHolder* holder;
 private:
     ResourcesDictionaryDriver();
     
-    static v8::Persistent<v8::Function> constructor;
     static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE AddFormXObjectMapping(const ARGS_TYPE& args);
     static METHOD_RETURN_TYPE AddImageXObjectMapping(const ARGS_TYPE& args);

@@ -30,7 +30,7 @@
 using namespace v8;
 using namespace PDFHummus;
 
-Persistent<FunctionTemplate> PDFPageModifierDriver::constructor_template;
+
 
 PDFPageModifierDriver::PDFPageModifierDriver(PDFWriter* inWriter,unsigned long inPageIndex,bool inEnsureContentEncapsulation)
 {
@@ -56,20 +56,13 @@ DEF_SUBORDINATE_INIT(PDFPageModifierDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "endContext", EndContext);
 	SET_PROTOTYPE_METHOD(t, "attachURLLinktoCurrentPage", AttachURLLinktoCurrentPage);
 	SET_PROTOTYPE_METHOD(t, "writePage", WritePage);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 	
 	SET_CONSTRUCTOR_EXPORT("PDFPageModifier", t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFPageModifier_constructor, t);      
-}
-
-bool PDFPageModifierDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFPageModifier_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE PDFPageModifierDriver::New(const ARGS_TYPE& args)

@@ -23,7 +23,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> PDFNullDriver::constructor_template;
+
 
 DEF_SUBORDINATE_INIT(PDFNullDriver::Init)
 {
@@ -36,18 +36,11 @@ DEF_SUBORDINATE_INIT(PDFNullDriver::Init)
 
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFNull_constructor, t);   	
-}
-
-bool PDFNullDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFNull_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE PDFNullDriver::New(const ARGS_TYPE& args)

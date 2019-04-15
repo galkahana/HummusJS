@@ -179,7 +179,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToPage(const ARGS_T
     }
     
     if(args.Length() != 2 ||
-       !PDFPageDriver::HasInstance(args[0]) ||
+       !copyingContextDriver->holder->IsPDFPageInstance(args[0]) ||
        !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. provide 2 arugments, where the first is a page, and the second is a page index to merge");
@@ -243,7 +243,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::MergePDFPageToFormXObject(const
     }
     
     if(args.Length() != 2 ||
-       !FormXObjectDriver::HasInstance(args[0]) ||
+       !copyingContextDriver->holder->IsFormXObjectInstance(args[0]) ||
        !args[1]->IsNumber())
     {
 		THROW_EXCEPTION("Wrong arguments. provide 2 arugments, where the first is a form, and the second is a page index to merge");

@@ -37,7 +37,7 @@ PageContentContextDriver::PageContentContextDriver()
     ContentContext = NULL;
 }
 
-Persistent<FunctionTemplate> PageContentContextDriver::constructor_template;
+
 
 DEF_SUBORDINATE_INIT(PageContentContextDriver::Init)
 {
@@ -51,20 +51,12 @@ DEF_SUBORDINATE_INIT(PageContentContextDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "getCurrentPageContentStream", GetCurrentPageContentStream);
 	SET_PROTOTYPE_METHOD(t, "getAssociatedPage", GetAssociatedPage);
 	AbstractContentContextDriver::Init(t);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PageContentContext_constructor, t);   	
+	SET_CONSTRUCTOR_TEMPLATE(holder->PageContentContext_constructor_template, t);
 }
-
-bool PageContentContextDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
-}
-
 
 METHOD_RETURN_TYPE PageContentContextDriver::New(const ARGS_TYPE& args)
 {

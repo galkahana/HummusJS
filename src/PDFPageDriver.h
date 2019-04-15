@@ -32,7 +32,7 @@ public:
     virtual ~PDFPageDriver();
     
     DEC_SUBORDINATE_INIT(Init)
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
+    
     
     PDFPage* GetPage(){return mPDFPage;}
     
@@ -45,7 +45,7 @@ public:
 private:
     PDFPageDriver();
         
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetMediaBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
     static void SetMediaBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);

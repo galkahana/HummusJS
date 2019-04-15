@@ -53,22 +53,12 @@ DEF_SUBORDINATE_INIT(FormXObjectDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "getContentStream", GetContentStream);
 
 
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->FormXObject_constructor, t);  
+	SET_CONSTRUCTOR_TEMPLATE(holder->FormXObject_constructor_template, t);
 }
-
-bool FormXObjectDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
-
-}
-
-Persistent<FunctionTemplate> FormXObjectDriver::constructor_template;
 
 METHOD_RETURN_TYPE FormXObjectDriver::New(const ARGS_TYPE& args)
 {

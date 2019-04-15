@@ -33,7 +33,6 @@ public:
     virtual ~FormXObjectDriver();
 
     DEC_SUBORDINATE_INIT(Init)
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     PDFFormXObject* FormXObject;
 
@@ -43,7 +42,6 @@ private:
     
     PDFWriterDriver* mPDFWriterDriver;
     
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetID(v8::Local<v8::String> property, const PROPERTY_TYPE& info);
 	static METHOD_RETURN_TYPE GetContentContext(const ARGS_TYPE& args);

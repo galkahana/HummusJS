@@ -32,7 +32,7 @@ class ConstructorsHolder {
         ConstructorsHolder(v8::Isolate* isolate, v8::Local<v8::Object> exports);
         virtual ~ConstructorsHolder();
 
-        // constructors
+        // constructors (for creating instances)
         v8::Persistent<v8::Function> PDFWriter_constructor; 
         v8::Persistent<v8::Function> ByteReader_constructor; 
         v8::Persistent<v8::Function> PDFReader_constructor; 
@@ -72,6 +72,35 @@ class ConstructorsHolder {
         v8::Persistent<v8::Function> PDFTextString_constructor;
         v8::Persistent<v8::Function> PDFPage_constructor;
 
+        // constructors templates (for instance identification)
+        v8::Persistent<v8::FunctionTemplate> ByteReader_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> ByteReaderWithPosition_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> ByteWriter_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> ByteWriterWithPosition_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> DictionaryContext_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> FormXObject_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> ImageXObject_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> InputFile_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> OutputFile_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PageContentContext_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFArray_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFBoolean_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFDictionary_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFHexString_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFIndirectObjectReference_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFInteger_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFLiteralString_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFName_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFNull_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFObjectParser_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFPage_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFPageModifier_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFReader_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFReal_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFStream_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFStreamInput_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> PDFSymbol_constructor_template;
+        v8::Persistent<v8::FunctionTemplate> UsedFont_constructor_template;        
 
         // instance creation
         v8::Handle<v8::Value> GetNewPDFWriter(const ARGS_TYPE& args);
@@ -119,10 +148,41 @@ class ConstructorsHolder {
         v8::Handle<v8::Value> GetInstanceFor(PDFObject* inObject);
         v8::Handle<v8::Value> GetInstanceFor(PDFPage* inPage);
         v8::Handle<v8::Value> GetInstanceFor(ResourcesDictionary* inResourcesDictionary);
+
+        // instance identification
+        bool IsByteReaderInstance(v8::Handle<v8::Value> inObject);
+        bool IsByteReaderWithPositionInstance(v8::Handle<v8::Value> inObject);
+        bool IsByteWriterInstance(v8::Handle<v8::Value> inObject);
+        bool IsByteWriterWithPositionInstance(v8::Handle<v8::Value> inObject);
+        bool IsDictionaryContextInstance(v8::Handle<v8::Value> inObject);
+        bool IsFormXObjectInstance(v8::Handle<v8::Value> inObject);
+        bool IsImageXObjectInstance(v8::Handle<v8::Value> inObject);
+        bool IsInputFileInstance(v8::Handle<v8::Value> inObject);
+        bool IsOutputFileInstance(v8::Handle<v8::Value> inObject);
+        bool IsPageContentContextInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFArrayInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFBooleanInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFDictionaryInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFHexStringInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFIndirectObjectReferenceInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFIntegerInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFLiteralStringInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFNameInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFNullInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFObjectParserInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFPageInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFPageModifierInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFReaderInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFRealInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFStreamInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFStreamInputInstance(v8::Handle<v8::Value> inObject);
+        bool IsPDFSymbolInstance(v8::Handle<v8::Value> inObject);
+        bool IsUsedFontInstance(v8::Handle<v8::Value> inObject);        
         
 
     private:
         static void DeleteMe(const v8::WeakCallbackInfo<ConstructorsHolder>& info);
+        static bool IsInstance(v8::Handle<v8::Value> inObject, const v8::Persistent<v8::FunctionTemplate>& constructor_template);
 
         v8::Persistent<v8::Object> mExports;
 

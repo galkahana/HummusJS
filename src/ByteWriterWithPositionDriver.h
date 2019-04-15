@@ -29,7 +29,6 @@ public:
     virtual ~ByteWriterWithPositionDriver();
     
     DEC_SUBORDINATE_INIT(Init)
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
     
     void SetStream(IByteWriterWithPosition* inReader,bool inOwns);
     IByteWriterWithPosition* GetStream();
@@ -42,7 +41,6 @@ private:
     bool mOwns;
     
     
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE Write(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetCurrentPosition(const ARGS_TYPE& args);

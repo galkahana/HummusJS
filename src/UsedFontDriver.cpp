@@ -28,7 +28,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> UsedFontDriver::constructor_template;
+
 
 UsedFontDriver::UsedFontDriver()
 {
@@ -46,18 +46,11 @@ DEF_SUBORDINATE_INIT(UsedFontDriver::Init)
 
 	SET_PROTOTYPE_METHOD(t, "calculateTextDimensions", CalculateTextDimensions);
     SET_PROTOTYPE_METHOD(t, "getFontMetrics", GetFontMetrics);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->UsedFont_constructor, t);       
-}
-
-bool UsedFontDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->UsedFont_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE UsedFontDriver::New(const ARGS_TYPE& args)

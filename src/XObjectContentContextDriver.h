@@ -41,8 +41,6 @@ private:
     XObjectContentContextDriver();
 
     virtual AbstractContentContext* GetContext();
-
-    static v8::Persistent<v8::Function> constructor;
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
     
 };

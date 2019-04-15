@@ -22,7 +22,6 @@
 #include "ConstructorsHolder.h"
 
 using namespace v8;
-Persistent<FunctionTemplate> ByteWriterDriver::constructor_template;
 
 ByteWriterDriver::ByteWriterDriver()
 {
@@ -48,18 +47,11 @@ DEF_SUBORDINATE_INIT(ByteWriterDriver::Init)
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_PROTOTYPE_METHOD(t, "write", Write);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->ByteWriter_constructor, t);   
-}
-
-bool ByteWriterDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->ByteWriter_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE ByteWriterDriver::New(const ARGS_TYPE& args)

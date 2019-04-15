@@ -38,26 +38,17 @@ DEF_SUBORDINATE_INIT(ImageXObjectDriver::Init)
 	t->InstanceTemplate()->SetInternalFieldCount(1);
 
 	SET_ACCESSOR_METHOD(t, "id", GetID);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->ImageXObject_constructor, t);    	
-}
-
-bool ImageXObjectDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->ImageXObject_constructor_template, t);
 }
 
 ImageXObjectDriver::ImageXObjectDriver()
 {
     ImageXObject = NULL;
 }
-
-Persistent<FunctionTemplate> ImageXObjectDriver::constructor_template;
 
 METHOD_RETURN_TYPE ImageXObjectDriver::New(const ARGS_TYPE& args)
 {

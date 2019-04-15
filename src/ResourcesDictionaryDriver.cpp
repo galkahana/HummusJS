@@ -30,7 +30,7 @@ DEF_SUBORDINATE_INIT(ResourcesDictionaryDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("ResourcesDictionary"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -60,8 +60,10 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
     
     ResourcesDictionaryDriver* form = new ResourcesDictionaryDriver();
+    form->holder = externalHolder;
     form->Wrap(args.This());
     
 	SET_FUNCTION_RETURN_VALUE(args.This())
@@ -101,7 +103,7 @@ METHOD_RETURN_TYPE ResourcesDictionaryDriver::AddImageXObjectMapping(const ARGS_
     
     ResourcesDictionaryDriver* resourcesDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(args.This());
     
-    if(ImageXObjectDriver::HasInstance(args[0]))
+    if(resourcesDictionaryDriver->holder->IsImageXObjectInstance(args[0]))
     {
     
         Local<String> name = NEW_STRING(

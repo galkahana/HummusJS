@@ -28,6 +28,7 @@
 class AbstractContentContext;
 class ResourcesDictionary;
 class PDFWriterDriver;
+class ConstructorsHolder;
 
 struct TextPlacingOptions
 {
@@ -56,6 +57,7 @@ public:
     
     void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
 
+    ConstructorsHolder* holder;
 protected:
     AbstractContentContextDriver();
         

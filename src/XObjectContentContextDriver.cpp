@@ -37,7 +37,7 @@ DEF_SUBORDINATE_INIT(XObjectContentContextDriver::Init)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE(New);
+	Local<FunctionTemplate> t = NEW_FUNCTION_TEMPLATE_EXTERNAL(New);
 
 	t->SetClassName(NEW_STRING("XObjectContentContext"));
 	t->InstanceTemplate()->SetInternalFieldCount(1);
@@ -52,8 +52,10 @@ METHOD_RETURN_TYPE XObjectContentContextDriver::New(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    
+    EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, externalHolder)
+
     XObjectContentContextDriver* form = new XObjectContentContextDriver();
+    form->holder = externalHolder;
     form->Wrap(args.This());
     
 	SET_FUNCTION_RETURN_VALUE(args.This())

@@ -30,7 +30,7 @@ public:
     virtual ~PDFObjectParserDriver();
 
     DEC_SUBORDINATE_INIT(Init)
-    static bool HasInstance(v8::Handle<v8::Value> inObject);
+    
     
     PDFObjectParser* PDFObjectParserInstance;
 
@@ -39,7 +39,7 @@ private:
     PDFObjectParserDriver();
     
     
-    static v8::Persistent<v8::FunctionTemplate> constructor_template;
+    
 	
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE ParseNewObject(const ARGS_TYPE& args);

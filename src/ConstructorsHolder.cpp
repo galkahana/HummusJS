@@ -28,6 +28,7 @@
 #include "PDFPageModifierDriver.h"
 #include "PDFPageDriver.h"
 #include "ResourcesDictionaryDriver.h"
+#include "XObjectContentContextDriver.h"
 
 using namespace v8;
 using namespace node;
@@ -497,6 +498,8 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewResourcesDictionary(const ARGS_T
 	CREATE_ESCAPABLE_SCOPE;
 
 	NEW_INSTANCE(ResourcesDictionary_constructor, instance);
+    ResourcesDictionaryDriver* element = node::ObjectWrap::Unwrap<ResourcesDictionaryDriver>(instance);
+    element->holder = this;	
 	return CLOSE_SCOPE(instance);
 }
 
@@ -515,6 +518,9 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewXObjectContentContext(const ARGS
 	CREATE_ESCAPABLE_SCOPE;
 
 	NEW_INSTANCE(XObjectContentContext_constructor, instance);
+	XObjectContentContextDriver* driver = ObjectWrap::Unwrap<XObjectContentContextDriver>(instance->TO_OBJECT());
+	driver->holder = this;
+
 	return CLOSE_SCOPE(instance);
 }
 
@@ -592,3 +598,175 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPage(const ARGS_TYPE& args)
 	return CLOSE_SCOPE(instance);
 }
 
+bool ConstructorsHolder::IsInstance(v8::Handle<v8::Value> inObject, const v8::Persistent<v8::FunctionTemplate>& constructor_template) {
+	CREATE_ISOLATE_CONTEXT;
+
+	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+}
+
+bool ConstructorsHolder::IsByteReaderInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, ByteReader_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsByteReaderWithPositionInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, ByteReaderWithPosition_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsByteWriterInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, ByteWriter_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsByteWriterWithPositionInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, ByteWriterWithPosition_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsDictionaryContextInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, DictionaryContext_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsFormXObjectInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, FormXObject_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsImageXObjectInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, ImageXObject_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsInputFileInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, InputFile_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsOutputFileInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, OutputFile_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPageContentContextInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PageContentContext_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFArrayInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFArray_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFBooleanInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFBoolean_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFDictionaryInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFDictionary_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFHexStringInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFHexString_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFIndirectObjectReferenceInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFIndirectObjectReference_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFIntegerInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFInteger_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFLiteralStringInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFLiteralString_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFNameInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFName_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFNullInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFNull_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFObjectParserInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFObjectParser_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFPageInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFPage_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFPageModifierInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFPageModifier_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFReaderInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFReader_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFRealInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFReal_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFStreamInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFStream_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFStreamInputInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFStreamInput_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsPDFSymbolInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, PDFSymbol_constructor_template );
+}
+
+
+bool ConstructorsHolder::IsUsedFontInstance(v8::Handle<v8::Value> inObject)
+{
+	return ConstructorsHolder::IsInstance(inObject, UsedFont_constructor_template );
+}

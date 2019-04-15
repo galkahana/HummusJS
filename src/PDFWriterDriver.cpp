@@ -193,7 +193,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::WritePageAndReturnID(const ARGS_TYPE& args)
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
+	if (args.Length() != 1 || !pdfWriter->holder->IsPDFPageInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
@@ -232,7 +232,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::StartPageContentContext(const ARGS_TYPE& arg
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1 || !PDFPageDriver::HasInstance(args[0])) {
+	if (args.Length() != 1 || !pdfWriter->holder->IsPDFPageInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a page as the single parameter");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
@@ -263,7 +263,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::PausePageContentContext(const ARGS_TYPE& arg
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1 || !PageContentContextDriver::HasInstance(args[0])) {
+	if (args.Length() != 1 || !pdfWriter->holder->IsPageContentContextInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a page context as the single parameter");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
@@ -324,7 +324,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::EndFormXObject(const ARGS_TYPE& args)
     
     PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     
-	if (args.Length() != 1 || !FormXObjectDriver::HasInstance(args[0])) {
+	if (args.Length() != 1 || !pdfWriter->holder->IsFormXObjectInstance(args[0])) {
 		THROW_EXCEPTION("Wrong arguments, provide a form as the single parameter");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
@@ -983,13 +983,15 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
             optional 2: callback function to call after each page merge
      */
     
+    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
+
     if(args.Length() < 2)
     {
 		THROW_EXCEPTION("Too few arguments. Pass a page object, a path to pages source file or an IByteReaderWithPosition, and two optional: configuration object and callback function that will be called between pages merging");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    if(!PDFPageDriver::HasInstance(args[0]))
+    if(!pdfWriter->holder->IsPDFPageInstance(args[0]))
     {
 		THROW_EXCEPTION("Invalid arguments. First argument must be a page object");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)        
@@ -1002,7 +1004,6 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    PDFWriterDriver* pdfWriter = ObjectWrap::Unwrap<PDFWriterDriver>(args.This());
     PDFPageDriver* page = ObjectWrap::Unwrap<PDFPageDriver>(args[0]->TO_OBJECT());
     
     PDFPageRange pageRange;
@@ -1096,7 +1097,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
     
     if(args[0]->IsObject())
     {
-        if(PDFReaderDriver::HasInstance(args[0]))
+        if(pdfWriter->holder->IsPDFReaderInstance(args[0]))
         {
             // parser based copying context  [note that here parsingOptions doesn't matter as the parser creation already took it into account]
 

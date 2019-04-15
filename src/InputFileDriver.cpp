@@ -25,8 +25,6 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> InputFileDriver::constructor_template;
-
 InputFileDriver::InputFileDriver()
 {
     mInputFileInstance = new InputFile();
@@ -69,20 +67,13 @@ DEF_SUBORDINATE_INIT(InputFileDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "getFilePath", GetFilePath);
 	SET_PROTOTYPE_METHOD(t, "getFileSize", GetFileSize);
 	SET_PROTOTYPE_METHOD(t, "getInputStream", GetInputStream);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 	
 	SET_CONSTRUCTOR_EXPORT("InputFile", t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->InputFile_constructor, t);        
-}
-
-bool InputFileDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->InputFile_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE InputFileDriver::New(const ARGS_TYPE& args)

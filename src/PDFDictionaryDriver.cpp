@@ -24,7 +24,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> PDFDictionaryDriver::constructor_template;
+
 
 DEF_SUBORDINATE_INIT(PDFDictionaryDriver::Init)
 {
@@ -41,17 +41,10 @@ DEF_SUBORDINATE_INIT(PDFDictionaryDriver::Init)
 
 	PDFObjectDriver::Init(t);
 
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFDictionary_constructor, t);     
-}
-
-bool PDFDictionaryDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFDictionary_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE PDFDictionaryDriver::New(const ARGS_TYPE& args)

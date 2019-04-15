@@ -205,16 +205,18 @@ METHOD_RETURN_TYPE ObjectsContextDriver::EndDictionary(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+
+    ObjectsContextDriver* driver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
     if(args.Length() != 1 ||
-       !DictionaryContextDriver::HasInstance(args[0]))
+       !driver->holder->IsDictionaryContextInstance(args[0]))
     {
 		THROW_EXCEPTION("Wrong arguments. Please provide a dictionary to end");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    PDFHummus::EStatusCode status = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndDictionary(
-                                                                    ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT())->DictionaryContextInstance);
+    PDFHummus::EStatusCode status = driver->ObjectsContextInstance->EndDictionary(
+                                        ObjectWrap::Unwrap<DictionaryContextDriver>(args[0]->TO_OBJECT())->DictionaryContextInstance);
     
     if(status != PDFHummus::eSuccess)
     {
@@ -463,17 +465,19 @@ METHOD_RETURN_TYPE ObjectsContextDriver::EndPDFStream(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+
+    ObjectsContextDriver* driver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
     if(args.Length() != 1 ||
-       !PDFStreamDriver::HasInstance(args[0]))
+       !driver->holder->IsPDFStreamInstance(args[0]))
     {
 		THROW_EXCEPTION("wrong arguments, provide a stream to end");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    PDFStreamDriver* driver = ObjectWrap::Unwrap<PDFStreamDriver>(args[0]->TO_OBJECT());
+    PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(args[0]->TO_OBJECT());
     
-    ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->EndPDFStream(driver->PDFStreamInstance);
+    driver->ObjectsContextInstance->EndPDFStream(streamDriver->PDFStreamInstance);
     
     SET_FUNCTION_RETURN_VALUE(args.This())
     
@@ -484,9 +488,11 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
+
+    ObjectsContextDriver* objectsContext = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
     if((args.Length() != 0 && args.Length() != 1) ||
-       (args.Length() == 1 && !DictionaryContextDriver::HasInstance(args[0])))
+       (args.Length() == 1 && !objectsContext->holder->IsDictionaryContextInstance(args[0])))
     {
 		THROW_EXCEPTION("wrong arguments, please provide no arguments or an optional stream dictionary");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -494,7 +500,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
     
     PDFStream* aStream;
 
-    ObjectsContextDriver* objectsContext = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
+    
     
     if(args.Length() == 1)
     {
@@ -519,9 +525,11 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
-    
+
+    ObjectsContextDriver* objectsContext = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
+
     if((args.Length() != 0 && args.Length() != 1) ||
-       (args.Length() == 1 && !DictionaryContextDriver::HasInstance(args[0])))
+       (args.Length() == 1 && !objectsContext->holder->IsDictionaryContextInstance(args[0])))
     {
 		THROW_EXCEPTION("wrong arguments, please provide no arguments or an optional stream dictionary");
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -529,7 +537,6 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
     
     PDFStream* aStream;
     
-    ObjectsContextDriver* objectsContext = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
 
     if(args.Length() == 1)
     {

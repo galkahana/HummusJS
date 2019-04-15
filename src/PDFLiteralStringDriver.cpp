@@ -25,7 +25,7 @@
 
 using namespace v8;
 
-Persistent<FunctionTemplate> PDFLiteralStringDriver::constructor_template;
+
 
 DEF_SUBORDINATE_INIT(PDFLiteralStringDriver::Init)
 {
@@ -40,18 +40,11 @@ DEF_SUBORDINATE_INIT(PDFLiteralStringDriver::Init)
 	SET_PROTOTYPE_METHOD(t, "toBytesArray", ToBytesArray);
 	SET_ACCESSOR_METHOD(t, "value", GetValue);
 	PDFObjectDriver::Init(t);
-	SET_CONSTRUCTOR_TEMPLATE(constructor_template, t);
 
     // save in factory
 	EXPOSE_EXTERNAL_FOR_INIT(ConstructorsHolder, holder)
     SET_CONSTRUCTOR(holder->PDFLiteralString_constructor, t);  	
-}
-
-bool PDFLiteralStringDriver::HasInstance(Handle<Value> inObject)
-{
-	CREATE_ISOLATE_CONTEXT;
-
-	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
+	SET_CONSTRUCTOR_TEMPLATE(holder->PDFLiteralString_constructor_template, t);
 }
 
 METHOD_RETURN_TYPE PDFLiteralStringDriver::New(const ARGS_TYPE& args)
