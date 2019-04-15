@@ -6,9 +6,9 @@ declare module 'hummus' {
 
   export type FilePath = string;
 
-  export let PDFPageModifier: PDFPageModifier;
-  export let PDFWStreamForFile: PDFWStreamForFile;
-  export let PDFRStreamForFile: PDFRStreamForFile;
+  export var PDFPageModifier: PDFPageModifier;
+  export var PDFWStreamForFile: PDFWStreamForFile;
+  export var PDFRStreamForFile: PDFRStreamForFile;
 
   export function createWriter(
     input: FilePath | WriteStream,
