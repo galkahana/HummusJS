@@ -9,6 +9,8 @@ declare module 'hummus' {
   export var PDFPageModifier: PDFPageModifier;
   export var PDFWStreamForFile: PDFWStreamForFile;
   export var PDFRStreamForFile: PDFRStreamForFile;
+  export var PDFRStreamForBuffer: PDFRStreamForBuffer;
+  export var PDFStreamForResponse: PDFStreamForResponse;
 
   export function createWriter(
     input: FilePath | WriteStream,
@@ -87,6 +89,10 @@ declare module 'hummus' {
   export interface PDFRStreamForFile extends ReadStream {
     new (inPath: string): PDFRStreamForFile;
     close(inCallback?: () => void): void;
+  }
+
+  export interface PDFRStreamForBuffer extends ReadStream {
+    new (buffer: Buffer): PDFRStreamForBuffer;
   }
 
   export interface ColorOptions {
@@ -205,6 +211,10 @@ declare module 'hummus' {
   export interface PDFWStreamForFile extends WriteStream {
     new (inPath: string): PDFWStreamForFile;
     close(inCallback?: () => void): void;
+  }
+
+  export interface PDFStreamForResponse extends WriteStream {
+    new (res: any): PDFStreamForResponse;
   }
 
   export interface PDFReaderOptions {
