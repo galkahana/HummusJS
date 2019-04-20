@@ -4,38 +4,41 @@ environment:
   node_pre_gyp_secretAccessKey:
     secure: RJGlxPP+hUt/pVbY4vBUWW21uGInC8pbyiQ6wz+8cS20k3cQtpnxs9HNFUI4KfBS
   matrix:
-    - nodejs_version: 5
-      platform: x64
-    - nodejs_version: 6
-      platform: x64
-    - nodejs_version: 7
-      platform: x64
-    - nodejs_version: 8
-      platform: x64
-    - nodejs_version: 9
-      platform: x64
-    - nodejs_version: 10
-      platform: x64
-    - nodejs_version: 11
-      platform: x64
+    - nodejs_version: 4	
+      platform: x64	
+      msvs_toolset: 12
+#    - nodejs_version: 5
+#      platform: x64
+#    - nodejs_version: 6
+#      platform: x64
+#    - nodejs_version: 7
+#      platform: x64
+#    - nodejs_version: 8
+#      platform: x64
+#    - nodejs_version: 9
+#      platform: x64
+#    - nodejs_version: 10
+#      platform: x64
+#    - nodejs_version: 11
+#      platform: x64
     # electron
-    - nodejs_version: 10
-      platform: x64
-      NODE_RUNTIME: electron
-      NODE_RUNTIME_VERSION: 3.0.9
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
-    - nodejs_version: 8
-      platform: x64
-      NODE_RUNTIME: electron
-      NODE_RUNTIME_VERSION: 2.0.7
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
-      MOCHA_RUNTIME_VERSION: 7.0.0
-    - nodejs_version: 8
-      platform: x64
-      NODE_RUNTIME: electron
-      NODE_RUNTIME_VERSION: 1.8.7
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
-      MOCHA_RUNTIME_VERSION: 7.0.0
+#    - nodejs_version: 10
+#      platform: x64
+#      NODE_RUNTIME: electron
+#      NODE_RUNTIME_VERSION: 3.0.9
+#      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+#    - nodejs_version: 8
+#      platform: x64
+#      NODE_RUNTIME: electron
+#      NODE_RUNTIME_VERSION: 2.0.7
+#      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+#      MOCHA_RUNTIME_VERSION: 7.0.0
+#    - nodejs_version: 8
+#      platform: x64
+#      NODE_RUNTIME: electron
+#      NODE_RUNTIME_VERSION: 1.8.7
+#      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+#      MOCHA_RUNTIME_VERSION: 7.0.0
 os: Visual Studio 2015
 
 install:
