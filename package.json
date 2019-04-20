@@ -30,7 +30,7 @@
     "hummus.d.ts"
   ],
   "dependencies": {
-    "node-pre-gyp": "^0.10.0"
+    "node-pre-gyp": "^0.9.1"
   },
   "bundledDependencies": [
     "node-pre-gyp"
