@@ -31,7 +31,7 @@
 #define NEW_OBJECT Object::New(isolate)
 #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f);
 #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f,g);
-#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction())
+#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
 #define SET_PROTOTYPE_METHOD(t, s, f) NODE_SET_PROTOTYPE_METHOD(t,s,f)
 #define SET_PERSISTENT_OBJECT(c,ot,t) c.Reset(isolate,t)
 #define CREATE_SCOPE HandleScope scope(isolate)
@@ -62,7 +62,7 @@
 
 #else 
 
-#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
+#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
 #define NEW_INSTANCE(c,i) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance()
 #define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance(argc,argv)
 #define TO_NUMBER(x) x->ToNumber()

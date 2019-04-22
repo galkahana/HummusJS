@@ -578,11 +578,11 @@ DEF_INIT(HummusInit) {
 
     
     // define methods
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriter)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToContinue)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToModify)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateReader)->GetFunction())
-    EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriter)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToContinue)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToModify)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateReader)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+    EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
     
     // define pdf versions enum
     EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion10"),NEW_NUMBER(ePDFVersion10))
@@ -627,7 +627,7 @@ DEF_INIT(HummusInit) {
     EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectStream"),NEW_NUMBER(PDFObject::ePDFObjectStream))
     EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectSymbol"),NEW_NUMBER(PDFObject::ePDFObjectSymbol))
     // getter for string represenation of type enum
-	EXPORTS_SET(exports,NEW_SYMBOL("getTypeLabel"), NEW_FUNCTION_TEMPLATE(GetTypeLabel)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("getTypeLabel"), NEW_FUNCTION_TEMPLATE(GetTypeLabel)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
     
     // ETokenSeparator
     EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorSpace"),NEW_NUMBER(eTokenSeparatorSpace))
