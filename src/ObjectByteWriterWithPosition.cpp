@@ -42,7 +42,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     for(int i=0;i<(int)inBufferSize;++i)
         anArray->Set(NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
     
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("write"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("write")).ToLocalChecked();
     if(value->IsUndefined() || !value->IsFunction())
     {
 		THROW_EXCEPTION("write is not a function, it should be you know...");
@@ -75,7 +75,7 @@ IOBasicTypes::LongFilePositionType ObjectByteWriterWithPosition::GetCurrentPosit
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("getCurrentPosition"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("getCurrentPosition")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
     Local<Function> func = Local<Function>::Cast(value);

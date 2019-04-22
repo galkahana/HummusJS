@@ -120,7 +120,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
     if(args.Length() == 1)
     {
         // array version. verify that there are 4 numbers
-        if(args[0]->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value() != 4)
+        if(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("Wrong arguments, provide an array of 4 numbers, or 4 numbers");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
@@ -197,7 +197,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(NEW_STRING("length")))->TO_UINT32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
 			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
 		driver->DictionaryContextInstance->WriteLiteralStringValue(string);

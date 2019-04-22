@@ -38,7 +38,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBu
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("read"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("read")).ToLocalChecked();
 
     if(value->IsUndefined())
         return 0;
@@ -64,7 +64,7 @@ bool ObjectByteReader::NotEnded()
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("notEnded"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("notEnded")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
     Local<Function> func = Local<Function>::Cast(value);

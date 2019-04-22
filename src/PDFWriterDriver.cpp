@@ -684,29 +684,29 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectFromTIFF(const ARGS_TYPE& a
             Local<Object> anObject = args[1]->TO_OBJECT();
             
             // page index parameters
-            if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("pageIndex")).FromJust() && anObject->Get(NEW_STRING("pageIndex"))->IsNumber())
-                tiffUsageParameters.PageIndex = (unsigned int)TO_NUMBER(anObject->Get(NEW_STRING("pageIndex")))->Value();
+            if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("pageIndex")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("pageIndex")).ToLocalChecked()->IsNumber())
+                tiffUsageParameters.PageIndex = (unsigned int)TO_NUMBER(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("pageIndex")).ToLocalChecked())->Value();
             
-            if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("bwTreatment")).FromJust() && anObject->Get(NEW_STRING("bwTreatment"))->IsObject())
+            if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("bwTreatment")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("bwTreatment")).ToLocalChecked()->IsObject())
             {
                 // special black and white treatment
-                Local<Object> bwObject = anObject->Get(NEW_STRING("bwTreatment"))->TO_OBJECT();
-                if(bwObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("asImageMask")).FromJust() && bwObject->Get(NEW_STRING("asImageMask"))->IsBoolean())
-                    tiffUsageParameters.BWTreatment.AsImageMask = bwObject->Get(NEW_STRING("asImageMask"))->TO_BOOLEAN()->Value();
-                if(bwObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).FromJust() && bwObject->Get(NEW_STRING("oneColor"))->IsArray())
-                    tiffUsageParameters.BWTreatment.OneColor = colorFromArray(bwObject->Get(NEW_STRING("oneColor")));
+                Local<Object> bwObject = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("bwTreatment")).ToLocalChecked()->TO_OBJECT();
+                if(bwObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("asImageMask")).FromJust() && bwObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("asImageMask")).ToLocalChecked()->IsBoolean())
+                    tiffUsageParameters.BWTreatment.AsImageMask = bwObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("asImageMask")).ToLocalChecked()->TO_BOOLEAN()->Value();
+                if(bwObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).FromJust() && bwObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).ToLocalChecked()->IsArray())
+                    tiffUsageParameters.BWTreatment.OneColor = colorFromArray(bwObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).ToLocalChecked());
             }
 
-            if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("grayscaleTreatment")).FromJust() && anObject->Get(NEW_STRING("grayscaleTreatment"))->IsObject())
+            if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("grayscaleTreatment")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("grayscaleTreatment")).ToLocalChecked()->IsObject())
             {
                 // special black and white treatment
-                Local<Object> colormapObject = anObject->Get(NEW_STRING("grayscaleTreatment"))->TO_OBJECT();
-                if(colormapObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("asColorMap")).FromJust() && colormapObject->Get(NEW_STRING("asColorMap"))->IsBoolean())
-                    tiffUsageParameters.GrayscaleTreatment.AsColorMap = colormapObject->Get(NEW_STRING("asColorMap"))->TO_BOOLEAN()->Value();
-                if(colormapObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).FromJust() && colormapObject->Get(NEW_STRING("oneColor"))->IsArray())
-                    tiffUsageParameters.GrayscaleTreatment.OneColor = colorFromArray(colormapObject->Get(NEW_STRING("oneColor")));
-                if(colormapObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("zeroColor")).FromJust() && colormapObject->Get(NEW_STRING("zeroColor"))->IsArray())
-                    tiffUsageParameters.GrayscaleTreatment.ZeroColor = colorFromArray(colormapObject->Get(NEW_STRING("zeroColor")));
+                Local<Object> colormapObject = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("grayscaleTreatment")).ToLocalChecked()->TO_OBJECT();
+                if(colormapObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("asColorMap")).FromJust() && colormapObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("asColorMap")).ToLocalChecked()->IsBoolean())
+                    tiffUsageParameters.GrayscaleTreatment.AsColorMap = colormapObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("asColorMap")).ToLocalChecked()->TO_BOOLEAN()->Value();
+                if(colormapObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).FromJust() && colormapObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).ToLocalChecked()->IsArray())
+                    tiffUsageParameters.GrayscaleTreatment.OneColor = colorFromArray(colormapObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("oneColor")).ToLocalChecked());
+                if(colormapObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("zeroColor")).FromJust() && colormapObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("zeroColor")).ToLocalChecked()->IsArray())
+                    tiffUsageParameters.GrayscaleTreatment.ZeroColor = colorFromArray(colormapObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("zeroColor")).ToLocalChecked());
             }
         }
         else // number
@@ -750,7 +750,7 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Local<v8::Value> inArray)
 {
 	CREATE_ISOLATE_CONTEXT;
 
-    if(inArray->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value() == 4)
+    if(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() == 4)
     {
         // cmyk color
         return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
@@ -866,9 +866,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     
     if(args.Length() >= 2) {
         Local<Object> options = args[1]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
         pageRange = ObjectToPageRange(options);
     }
@@ -914,19 +914,19 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Local<Object> inObject)
 	CREATE_ISOLATE_CONTEXT;
 	PDFPageRange pageRange;
         
-    if(inObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("type")).FromJust() && inObject->Get(NEW_STRING("type"))->IsNumber())
+    if(inObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("type")).FromJust() && inObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("type")).ToLocalChecked()->IsNumber())
     {
-        pageRange.mType = (PDFPageRange::ERangeType)(TO_UINT32(inObject->Get(NEW_STRING("type")))->Value());
+        pageRange.mType = (PDFPageRange::ERangeType)(TO_UINT32(inObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("type")).ToLocalChecked())->Value());
     }
 
-    if(inObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("specificRanges")).FromJust() && inObject->Get(NEW_STRING("specificRanges"))->IsArray())
+    if(inObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("specificRanges")).FromJust() && inObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("specificRanges")).ToLocalChecked()->IsArray())
     {
-        Local<Object> anArray = inObject->Get(NEW_STRING("specificRanges"))->TO_OBJECT();
-        unsigned int length = TO_UINT32(anArray->Get(NEW_STRING("length")))->Value();
+        Local<Object> anArray = inObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("specificRanges")).ToLocalChecked()->TO_OBJECT();
+        unsigned int length = TO_UINT32(anArray->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
         for(unsigned int i=0; i < length; ++i)
         {
             if(!anArray->Get(i)->IsArray() ||
-               TO_UINT32(anArray->Get(i)->TO_OBJECT()->Get(NEW_STRING("length")))->Value() != 2)
+               TO_UINT32(anArray->Get(i)->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value() != 2)
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
                 break;
@@ -1012,17 +1012,17 @@ METHOD_RETURN_TYPE PDFWriterDriver::MergePDFPagesToPage(const ARGS_TYPE& args)
     // get page range
     if(args.Length() > 2 && args[2]->IsObject()) {
         Local<Object> options = args[2]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
         pageRange = ObjectToPageRange(options);
     } 
     else if(args.Length() > 3 && args[3]->IsObject()) {
         Local<Object> options = args[3]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
         pageRange = ObjectToPageRange(options);
     }
@@ -1088,9 +1088,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreatePDFCopyingContext(const ARGS_TYPE& arg
 
     if(args.Length() >= 2) {
         Local<Object> options = args[1]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
     }
 
@@ -1155,9 +1155,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     
     if(args.Length() >= 3) {
         Local<Object> options = args[2]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }
         pageRange = ObjectToPageRange(options);
     }
@@ -1304,9 +1304,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
 
     if(args.Length() >= 3) {
         Local<Object> options = args[2]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
     }
 
@@ -1342,9 +1342,9 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImagePagesCount(const ARGS_TYPE& args)
 
     if(args.Length() >= 2) {
         Local<Object> options = args[1]->TO_OBJECT();
-        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(NEW_STRING("password"))->IsString())
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
     }    
 
@@ -1582,7 +1582,7 @@ PDFHummus::EStatusCode PDFWriterDriver::triggerEvent(const std::string& inEventN
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = THIS_HANDLE->Get(NEW_STRING("triggerDocumentExtensionEvent"));
+	Local<Value> value = THIS_HANDLE->Get(GET_CURRENT_CONTEXT, NEW_STRING("triggerDocumentExtensionEvent")).ToLocalChecked();
     if(value->IsUndefined())
         return PDFHummus::eFailure;
     Local<Function> func = Local<Function>::Cast(value);

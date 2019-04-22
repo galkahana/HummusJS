@@ -38,7 +38,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReaderWithPosition::Read(IOBasicTypes
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("read"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("read")).ToLocalChecked();
     if(value->IsUndefined())
         return 0;
     Local<Function> func = Local<Function>::Cast(value);
@@ -51,7 +51,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReaderWithPosition::Read(IOBasicTypes
     if(!result->IsArray())
         return 0;
     
-    IOBasicTypes::LongBufferSizeType bufferLength = result->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value();
+    IOBasicTypes::LongBufferSizeType bufferLength = result->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
         inBuffer[i] = (IOBasicTypes::Byte)(TO_UINT32(result->TO_OBJECT()->Get((uint32_t)i))->Value());
     
@@ -64,7 +64,7 @@ bool ObjectByteReaderWithPosition::NotEnded()
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("notEnded"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("notEnded")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
     Local<Function> func = Local<Function>::Cast(value);
@@ -77,7 +77,7 @@ void ObjectByteReaderWithPosition::SetPosition(LongFilePositionType inOffsetFrom
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("setPosition"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("setPosition")).ToLocalChecked();
     if(value->IsUndefined())
         return;
     Local<Function> func = Local<Function>::Cast(value);
@@ -92,7 +92,7 @@ void ObjectByteReaderWithPosition::SetPositionFromEnd(LongFilePositionType inOff
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("setPositionFromEnd"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("setPositionFromEnd")).ToLocalChecked();
     if(value->IsUndefined())
         return;
     Local<Function> func = Local<Function>::Cast(value);
@@ -107,7 +107,7 @@ LongFilePositionType ObjectByteReaderWithPosition::GetCurrentPosition()
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("getCurrentPosition"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("getCurrentPosition")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
     Local<Function> func = Local<Function>::Cast(value);
@@ -120,7 +120,7 @@ void ObjectByteReaderWithPosition::Skip(LongBufferSizeType inSkipSize)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("skip"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("skip")).ToLocalChecked();
     if(value->IsUndefined())
         return;
     Local<Function> func = Local<Function>::Cast(value);
