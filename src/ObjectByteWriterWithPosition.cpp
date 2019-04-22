@@ -53,7 +53,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     Local<Value> args[1];
     args[0] = anArray;
     
-	Local<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	Local<Value> result = func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
     if(result.IsEmpty())
     {
 		THROW_EXCEPTION("wrong return value. it's empty. return the number of written characters");
@@ -80,5 +80,5 @@ IOBasicTypes::LongFilePositionType ObjectByteWriterWithPosition::GetCurrentPosit
         return true;
     Local<Function> func = Local<Function>::Cast(value);
     
-	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL))->Value();
+	return TO_NUMBER(func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked())->Value();
 }

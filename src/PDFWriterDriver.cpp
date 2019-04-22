@@ -960,7 +960,7 @@ public:
         if(!callback.IsEmpty())
         {
             const unsigned argc = 0;
-            callback->Call(GET_CURRENT_CONTEXT->Global(), argc, NULL);
+            callback->Call(GET_CURRENT_CONTEXT, GET_CURRENT_CONTEXT->Global(), argc, NULL).ToLocalChecked();
         }
 		return PDFHummus::eSuccess;
 	}
@@ -1589,7 +1589,7 @@ PDFHummus::EStatusCode PDFWriterDriver::triggerEvent(const std::string& inEventN
     Local<Value> args[2];
     args[0] = NEW_STRING(inEventName.c_str());
     args[1] = inParams;
-	func->Call(THIS_HANDLE, 2, args);                
+	func->Call(GET_CURRENT_CONTEXT, THIS_HANDLE, 2, args).ToLocalChecked();                
     return PDFHummus::eSuccess; 
 }
 

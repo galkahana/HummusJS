@@ -51,5 +51,5 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byt
     Local<Value> args[1];
     args[0] = anArray;
     
-	return TO_UINT32(func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args))->Value();
+	return TO_UINT32(func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked())->Value();
 }

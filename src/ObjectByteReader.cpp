@@ -47,7 +47,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBu
     Local<Value> args[1];
     args[0] = NEW_NUMBER(inBufferSize);
     
-	Local<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	Local<Value> result = func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
     
     if(!result->IsArray())
         return 0;
@@ -69,5 +69,5 @@ bool ObjectByteReader::NotEnded()
         return true;
     Local<Function> func = Local<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->TO_BOOLEAN()->Value());
+	return (func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked()->TO_BOOLEAN()->Value());
 }

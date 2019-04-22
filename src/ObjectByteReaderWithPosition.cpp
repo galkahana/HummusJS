@@ -46,7 +46,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteReaderWithPosition::Read(IOBasicTypes
     Local<Value> args[1];
     args[0] = NEW_NUMBER(inBufferSize);
     
-	Local<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	Local<Value> result = func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
     
     if(!result->IsArray())
         return 0;
@@ -69,7 +69,7 @@ bool ObjectByteReaderWithPosition::NotEnded()
         return true;
     Local<Function> func = Local<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->TO_BOOLEAN()->Value());
+	return (func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked()->TO_BOOLEAN()->Value());
 }
 
 void ObjectByteReaderWithPosition::SetPosition(LongFilePositionType inOffsetFromStart)
@@ -84,7 +84,7 @@ void ObjectByteReaderWithPosition::SetPosition(LongFilePositionType inOffsetFrom
     
     Local<Value> args[1];
     args[0] = NEW_NUMBER(inOffsetFromStart);
-	func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
 }
 
 void ObjectByteReaderWithPosition::SetPositionFromEnd(LongFilePositionType inOffsetFromStart)
@@ -99,7 +99,7 @@ void ObjectByteReaderWithPosition::SetPositionFromEnd(LongFilePositionType inOff
     
     Local<Value> args[1];
     args[0] = NEW_NUMBER(inOffsetFromStart);
-	func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
 }
 
 LongFilePositionType ObjectByteReaderWithPosition::GetCurrentPosition()
@@ -112,7 +112,7 @@ LongFilePositionType ObjectByteReaderWithPosition::GetCurrentPosition()
         return true;
     Local<Function> func = Local<Function>::Cast(value);
     
-	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL))->Value();
+	return TO_NUMBER(func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked())->Value();
 }
 
 void ObjectByteReaderWithPosition::Skip(LongBufferSizeType inSkipSize)
@@ -127,5 +127,5 @@ void ObjectByteReaderWithPosition::Skip(LongBufferSizeType inSkipSize)
     
     Local<Value> args[1];
     args[0] = NEW_NUMBER(inSkipSize);
-	func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
 }

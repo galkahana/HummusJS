@@ -50,7 +50,7 @@ unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Local<Date> inDate, con
     Local<Function> func = Local<Function>::Cast(value);
     Local<Value> result;
     
-    result = func->Call(inDate, 0, NULL);
+    result = func->Call(GET_CURRENT_CONTEXT, inDate, 0, NULL).ToLocalChecked();
     return TO_UINT32(result)->Value();
 }
 
@@ -63,7 +63,7 @@ int PDFDateDriver::GetIntValueFromDateFunction(Local<Date> inDate, const char* i
     Local<Function> func = Local<Function>::Cast(value);
     Local<Value> result;
     
-    result = func->Call(inDate, 0, NULL);
+    result = func->Call(GET_CURRENT_CONTEXT, inDate, 0, NULL).ToLocalChecked();
     return TO_INT32(result)->Value();
 }
 
