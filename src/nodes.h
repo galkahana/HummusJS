@@ -22,7 +22,7 @@
 #define METHOD_RETURN_TYPE void
 #define CREATE_ISOLATE_CONTEXT Isolate* isolate = Isolate::GetCurrent()
 #define NEW_FUNCTION_TEMPLATE(X) FunctionTemplate::New(isolate, X)
-#define NEW_STRING(X) String::NewFromUtf8(isolate, X)
+#define NEW_STRING(X) String::NewFromUtf8(isolate, X, v8::NewStringType::kNormal).ToLocalChecked()
 #define NEW_SYMBOL(X) NEW_STRING(X)
 #define NEW_NUMBER(X) Number::New(isolate,X)
 #define NEW_INTEGER(X) Integer::New(isolate,X)
@@ -40,7 +40,7 @@
 #define SET_ACCESSOR_RETURN_VALUE(v) {info.GetReturnValue().Set(v); return;}
 #define HAS_INSTANCE(c,o) Local<FunctionTemplate>::New(isolate, c)->HasInstance(o->TO_OBJECT())
 #define UNDEFINED Undefined(isolate)
-#define THROW_EXCEPTION(s) isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,s)))
+#define THROW_EXCEPTION(s) isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,s,v8::NewStringType::kNormal).ToLocalChecked()))
 #define DISPOSE_PERSISTENT(p) p.Reset()
 #define OBJECT_FROM_PERSISTENT(p) Local<Object>::New(isolate, p)
 #define GET_CURRENT_CONTEXT v8::Isolate::GetCurrent()->GetCurrentContext()
