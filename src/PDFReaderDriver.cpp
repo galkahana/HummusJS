@@ -388,9 +388,9 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetXrefEntry(const ARGS_TYPE& args)
     
     Local<Object> anObject = NEW_OBJECT;
     
-    anObject->Set(NEW_STRING("objectPosition"),NEW_NUMBER(xrefEntry->mObjectPosition));
-    anObject->Set(NEW_STRING("revision"),NEW_NUMBER(xrefEntry->mRivision));
-    anObject->Set(NEW_STRING("type"),NEW_NUMBER(xrefEntry->mType));
+    anObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("objectPosition"),NEW_NUMBER(xrefEntry->mObjectPosition));
+    anObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("revision"),NEW_NUMBER(xrefEntry->mRivision));
+    anObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("type"),NEW_NUMBER(xrefEntry->mType));
 
     SET_FUNCTION_RETURN_VALUE(anObject)
 }

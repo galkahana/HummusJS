@@ -410,28 +410,28 @@ METHOD_RETURN_TYPE PDFWriterDriver::RetrieveJPGImageInformation(const ARGS_TYPE&
     
     Local<Object> result = NEW_OBJECT;
     
-	result->Set(NEW_SYMBOL("samplesWidth"), NEW_INTEGER((int)info.second.SamplesWidth));
-	result->Set(NEW_SYMBOL("samplesHeight"), NEW_INTEGER((int)info.second.SamplesHeight));
-	result->Set(NEW_SYMBOL("colorComponentsCount"), NEW_INTEGER(info.second.ColorComponentsCount));
-	result->Set(NEW_SYMBOL("JFIFInformationExists"), NEW_BOOLEAN(info.second.JFIFInformationExists));
+	result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("samplesWidth"), NEW_INTEGER((int)info.second.SamplesWidth));
+	result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("samplesHeight"), NEW_INTEGER((int)info.second.SamplesHeight));
+	result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("colorComponentsCount"), NEW_INTEGER(info.second.ColorComponentsCount));
+	result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("JFIFInformationExists"), NEW_BOOLEAN(info.second.JFIFInformationExists));
     if(info.second.JFIFInformationExists)
     {
-		result->Set(NEW_SYMBOL("JFIFUnit"), NEW_INTEGER(info.second.JFIFUnit));
-		result->Set(NEW_SYMBOL("JFIFXDensity"), NEW_NUMBER(info.second.JFIFXDensity));
-		result->Set(NEW_SYMBOL("JFIFYDensity"), NEW_NUMBER(info.second.JFIFYDensity));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("JFIFUnit"), NEW_INTEGER(info.second.JFIFUnit));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("JFIFXDensity"), NEW_NUMBER(info.second.JFIFXDensity));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("JFIFYDensity"), NEW_NUMBER(info.second.JFIFYDensity));
     }
-	result->Set(NEW_SYMBOL("ExifInformationExists"), NEW_BOOLEAN(info.second.ExifInformationExists));
+	result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("ExifInformationExists"), NEW_BOOLEAN(info.second.ExifInformationExists));
     if(info.second.ExifInformationExists)
     {
-		result->Set(NEW_SYMBOL("ExifUnit"), NEW_INTEGER(info.second.ExifUnit));
-		result->Set(NEW_SYMBOL("ExifXDensity"), NEW_NUMBER(info.second.ExifXDensity));
-		result->Set(NEW_SYMBOL("ExifYDensity"), NEW_NUMBER(info.second.ExifYDensity));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("ExifUnit"), NEW_INTEGER(info.second.ExifUnit));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("ExifXDensity"), NEW_NUMBER(info.second.ExifXDensity));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("ExifYDensity"), NEW_NUMBER(info.second.ExifYDensity));
     }
-	result->Set(NEW_SYMBOL("PhotoshopInformationExists"), NEW_BOOLEAN(info.second.PhotoshopInformationExists));
+	result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("PhotoshopInformationExists"), NEW_BOOLEAN(info.second.PhotoshopInformationExists));
     if(info.second.PhotoshopInformationExists)
     {
-		result->Set(NEW_SYMBOL("PhotoshopXDensity"), NEW_NUMBER(info.second.PhotoshopXDensity));
-		result->Set(NEW_SYMBOL("PhotoshopYDensity"), NEW_NUMBER(info.second.PhotoshopYDensity));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("PhotoshopXDensity"), NEW_NUMBER(info.second.PhotoshopXDensity));
+		result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("PhotoshopYDensity"), NEW_NUMBER(info.second.PhotoshopYDensity));
     }
 
     SET_FUNCTION_RETURN_VALUE(result)
@@ -904,7 +904,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::AppendPDFPagesFromPDF(const ARGS_TYPE& args)
     
     ObjectIDTypeList::iterator it = result.second.begin();
     for(; it != result.second.end();++it)
-        resultPageIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
+        resultPageIDs->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(index++),NEW_NUMBER(*it));
     
     SET_FUNCTION_RETURN_VALUE(resultPageIDs)
 }
@@ -1234,7 +1234,7 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     
     ObjectIDTypeList::iterator it = result.second.begin();
     for(; it != result.second.end();++it)
-        resultFormIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
+        resultFormIDs->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(index++),NEW_NUMBER(*it));
     
     SET_FUNCTION_RETURN_VALUE(resultFormIDs)
 }
@@ -1317,8 +1317,8 @@ METHOD_RETURN_TYPE PDFWriterDriver::GetImageDimensions(const ARGS_TYPE& args)
     
     Local<Object> newObject = NEW_OBJECT;
     
-    newObject->Set(NEW_STRING("width"),NEW_NUMBER(dimensions.first));
-    newObject->Set(NEW_STRING("height"),NEW_NUMBER(dimensions.second));
+    newObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("width"),NEW_NUMBER(dimensions.first));
+    newObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("height"),NEW_NUMBER(dimensions.second));
     SET_FUNCTION_RETURN_VALUE(newObject)
 };
 
@@ -1516,8 +1516,8 @@ PDFHummus::EStatusCode PDFWriterDriver::OnPageWrite(
 
     Local<Object> params = NEW_OBJECT;
 
-	params->Set(NEW_SYMBOL("page"),this->holder->GetInstanceFor(inPage));
-	params->Set(NEW_SYMBOL("pageDictionaryContext"), this->holder->GetInstanceFor(inPageDictionaryContext));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("page"),this->holder->GetInstanceFor(inPage));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("pageDictionaryContext"), this->holder->GetInstanceFor(inPageDictionaryContext));
     return triggerEvent("OnPageWrite",params);        
 }
 PDFHummus::EStatusCode PDFWriterDriver::OnResourcesWrite(
@@ -1530,8 +1530,8 @@ PDFHummus::EStatusCode PDFWriterDriver::OnResourcesWrite(
 
     Local<Object> params = NEW_OBJECT;
 
-	params->Set(NEW_SYMBOL("resources"),this->holder->GetInstanceFor(inResources));
-	params->Set(NEW_SYMBOL("pageResourcesDictionaryContext"),this->holder->GetInstanceFor(inPageResourcesDictionaryContext));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("resources"),this->holder->GetInstanceFor(inResources));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("pageResourcesDictionaryContext"),this->holder->GetInstanceFor(inPageResourcesDictionaryContext));
     return triggerEvent("OnResourcesWrite",params);        
 }
 
@@ -1545,8 +1545,8 @@ PDFHummus::EStatusCode PDFWriterDriver::OnResourceDictionaryWrite(
 
     Local<Object> params = NEW_OBJECT;
 
-	params->Set(NEW_SYMBOL("resourceDictionaryName"),NEW_STRING(inResourceDictionaryName.c_str()));
-	params->Set(NEW_SYMBOL("resourceDictionary"),this->holder->GetInstanceFor(inResourceDictionary));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("resourceDictionaryName"),NEW_STRING(inResourceDictionaryName.c_str()));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("resourceDictionary"),this->holder->GetInstanceFor(inResourceDictionary));
     return triggerEvent("OnResourceDictionaryWrite",params);        
 }
 
@@ -1605,7 +1605,7 @@ PDFHummus::EStatusCode PDFWriterDriver::OnCatalogWrite(
     Local<Object> params = NEW_OBJECT;
 
     // this is the only important one
-	params->Set(NEW_SYMBOL("catalogDictionaryContext"),this->holder->GetInstanceFor(inCatalogDictionaryContext));
+	params->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("catalogDictionaryContext"),this->holder->GetInstanceFor(inCatalogDictionaryContext));
     return triggerEvent("OnCatalogWrite",params);                               
 }
 

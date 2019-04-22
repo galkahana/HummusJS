@@ -40,7 +40,7 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byt
 
     Local<Object> anArray = NEW_ARRAY((int)inBufferSize);
     for(int i=0;i<(int)inBufferSize;++i)
-        anArray->Set(NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
+        anArray->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
     
 	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("write")).ToLocalChecked();
     if(value->IsUndefined())

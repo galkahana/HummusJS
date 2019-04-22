@@ -109,16 +109,16 @@ METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
     Local<Object> result = NEW_OBJECT;
     Local<Object> pixelsPerEm = NEW_OBJECT;
 
-    pixelsPerEm->Set(NEW_STRING("x"),NEW_NUMBER(newSize->metrics.x_ppem));
-    pixelsPerEm->Set(NEW_STRING("y"),NEW_NUMBER(newSize->metrics.y_ppem));
-    pixelsPerEm->Set(NEW_STRING("xScale"),NEW_NUMBER(newSize->metrics.x_scale));
-    pixelsPerEm->Set(NEW_STRING("yScale"),NEW_NUMBER(newSize->metrics.y_scale));
+    pixelsPerEm->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("x"),NEW_NUMBER(newSize->metrics.x_ppem));
+    pixelsPerEm->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("y"),NEW_NUMBER(newSize->metrics.y_ppem));
+    pixelsPerEm->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("xScale"),NEW_NUMBER(newSize->metrics.x_scale));
+    pixelsPerEm->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("yScale"),NEW_NUMBER(newSize->metrics.y_scale));
 
-    result->Set(NEW_STRING("pixelsPerEm"), pixelsPerEm);
-    result->Set(NEW_STRING("ascender"), NEW_NUMBER(newSize->metrics.ascender));
-    result->Set(NEW_STRING("descender"), NEW_NUMBER(newSize->metrics.descender));
-    result->Set(NEW_STRING("height"), NEW_NUMBER(newSize->metrics.height));
-    result->Set(NEW_STRING("max_advance"), NEW_NUMBER(newSize->metrics.max_advance));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("pixelsPerEm"), pixelsPerEm);
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("ascender"), NEW_NUMBER(newSize->metrics.ascender));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("descender"), NEW_NUMBER(newSize->metrics.descender));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("height"), NEW_NUMBER(newSize->metrics.height));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("max_advance"), NEW_NUMBER(newSize->metrics.max_advance));
     
     HANDLE_FTERROR(FT_Activate_Size(oldSize));
     HANDLE_FTERROR(FT_Done_Size(newSize));
@@ -244,12 +244,12 @@ METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args
     
     // adapt results to the size, and PDF font size
     
-    result->Set(NEW_STRING("xMin"),NEW_NUMBER((double)(bbox.xMin*fontSize)/1000));
-    result->Set(NEW_STRING("yMin"),NEW_NUMBER((double)(bbox.yMin*fontSize)/1000));
-    result->Set(NEW_STRING("xMax"),NEW_NUMBER((double)(bbox.xMax*fontSize)/1000));
-    result->Set(NEW_STRING("yMax"),NEW_NUMBER((double)(bbox.yMax*fontSize)/1000));
-    result->Set(NEW_STRING("width"),NEW_NUMBER((double)(bbox.xMax-bbox.xMin)*fontSize/1000));
-    result->Set(NEW_STRING("height"),NEW_NUMBER((double)(bbox.yMax-bbox.yMin)*fontSize/1000));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("xMin"),NEW_NUMBER((double)(bbox.xMin*fontSize)/1000));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("yMin"),NEW_NUMBER((double)(bbox.yMin*fontSize)/1000));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("xMax"),NEW_NUMBER((double)(bbox.xMax*fontSize)/1000));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("yMax"),NEW_NUMBER((double)(bbox.yMax*fontSize)/1000));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("width"),NEW_NUMBER((double)(bbox.xMax-bbox.xMin)*fontSize/1000));
+    result->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("height"),NEW_NUMBER((double)(bbox.yMax-bbox.yMin)*fontSize/1000));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

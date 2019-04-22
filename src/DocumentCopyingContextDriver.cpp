@@ -354,7 +354,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(co
     
     ObjectIDTypeList::iterator it = result.second.begin();
     for(; it != result.second.end();++it)
-        resultObjectIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
+        resultObjectIDs->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(index++),NEW_NUMBER(*it));
     
     SET_FUNCTION_RETURN_VALUE(resultObjectIDs)
 }
