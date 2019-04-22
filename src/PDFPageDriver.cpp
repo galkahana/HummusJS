@@ -100,10 +100,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROP
     
     Local<Array> mediaBox = NEW_ARRAY(4);
     
-    mediaBox->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftX));
-    mediaBox->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftY));
-    mediaBox->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightX));
-    mediaBox->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightY));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftX));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftY));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightX));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightY));
 
     SET_ACCESSOR_RETURN_VALUE(mediaBox)
 }
@@ -121,10 +121,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPE
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(cropBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(cropBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(cropBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(cropBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(cropBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(cropBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(cropBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(cropBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -147,10 +147,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(Local<String> property, const PROP
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(bleedBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(bleedBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(bleedBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(bleedBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(bleedBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(bleedBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(bleedBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(bleedBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -173,10 +173,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(Local<String> property, const PROPE
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(trimBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(trimBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(trimBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(trimBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(trimBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(trimBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(trimBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(trimBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -199,10 +199,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(Local<String> property, const PROPER
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(artBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(artBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(artBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(artBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(artBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(artBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(artBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(artBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
