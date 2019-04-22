@@ -76,7 +76,7 @@
 #if IS_CONTEXT_AWARE
     #define TO_STRING() ToString(GET_CURRENT_CONTEXT).FromMaybe(Local<String>())
     #define TO_OBJECT() ToObject(GET_CURRENT_CONTEXT).FromMaybe(Local<Object>())
-    #define TO_BOOLEAN() ToBoolean(GET_CURRENT_CONTEXT).FromMaybe(Local<Boolean>())
+    #define TO_BOOLEAN() ToBoolean(isolate)
     #define UTF_8_VALUE(x) String::Utf8Value(isolate, x)
 
 #else 
