@@ -446,7 +446,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetCopiedObjects(const ARGS_TYP
 	MapIterator<ObjectIDTypeToObjectIDTypeMap> it = copyingContextDriver->CopyingContext->GetCopiedObjectsMappingIterator();
     
     while(it.MoveNext())
-        result->Set(NEW_STRING(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),NEW_NUMBER(it.GetValue()));
+        result->Set(GET_CURRENT_CONTEXT, NEW_STRING(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),NEW_NUMBER(it.GetValue()));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }
@@ -477,12 +477,12 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
     
     Local<Object> anObject = args[0]->TO_OBJECT();
     
-    Local<Array> objectKeys = anObject->GetOwnPropertyNames();
+    Local<Array> objectKeys = anObject->GetOwnPropertyNames(GET_CURRENT_CONTEXT).ToLocalChecked();
     
     for(unsigned long i=0; i < objectKeys->Length(); ++i)
     {
-        Local<String> key  = objectKeys->Get(NEW_NUMBER(0))->TO_STRING();
-        Local<Value> value = anObject->Get(key);
+        Local<String> key  = objectKeys->Get(GET_CURRENT_CONTEXT, NEW_NUMBER(0)).ToLocalChecked()->TO_STRING();
+        Local<Value> value = anObject->Get(GET_CURRENT_CONTEXT, key).ToLocalChecked();
         
         resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*UTF_8_VALUE(key)),TO_UINT32(value)->Value()));
         

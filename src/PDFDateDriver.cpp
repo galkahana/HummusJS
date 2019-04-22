@@ -46,7 +46,7 @@ unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Local<Date> inDate, con
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Local<v8::Value> value = inDate->Get(NEW_STRING(inFunctionName));
+    Local<v8::Value> value = inDate->Get(GET_CURRENT_CONTEXT, NEW_STRING(inFunctionName)).ToLocalChecked();
     Local<Function> func = Local<Function>::Cast(value);
     Local<Value> result;
     
@@ -59,7 +59,7 @@ int PDFDateDriver::GetIntValueFromDateFunction(Local<Date> inDate, const char* i
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Local<v8::Value> value = inDate->Get(NEW_STRING(inFunctionName));
+    Local<v8::Value> value = inDate->Get(GET_CURRENT_CONTEXT, NEW_STRING(inFunctionName)).ToLocalChecked();
     Local<Function> func = Local<Function>::Cast(value);
     Local<Value> result;
     

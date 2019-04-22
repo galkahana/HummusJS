@@ -1689,7 +1689,7 @@ TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Local<Obj
     
 	if (inObject->Has(GET_CURRENT_CONTEXT, NEW_SYMBOL("encoding")).FromJust())
     {
-        std::string value = *UTF_8_VALUE(inObject->Get(NEW_SYMBOL("encoding"))->TO_STRING());
+        std::string value = *UTF_8_VALUE(inObject->Get(GET_CURRENT_CONTEXT, NEW_SYMBOL("encoding")).ToLocalChecked()->TO_STRING());
         if(value.compare("hex"))
             options.encoding = TextPlacingOptions::EEncodingHex;
         else if(value.compare("code"))
@@ -1724,7 +1724,7 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
         
         mapping.mGlyphCode = TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value();
         for(int j=1; j < itemLength;++j)
-            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(j))->Value());
+            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, j).ToLocalChecked())->Value());
 			
 		glyphList.push_back(mapping);
     }
@@ -1829,7 +1829,7 @@ void AbstractContentContextDriver::SetColor(const Local<Value>& inMaybeOptions,b
             // should be number
             unsigned long colorvalue = (unsigned long)(TO_INT32(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("color")).ToLocalChecked())->Value());
             std::string colorspace = options->Has(GET_CURRENT_CONTEXT, NEW_STRING("colorspace")).FromJust() ?
-            *UTF_8_VALUE(options->Get(NEW_STRING("colorspace")->TO_STRING())) :
+            *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("colorspace")->TO_STRING()).ToLocalChecked()) :
             "rgb";
             if(colorspace.compare("rgb") == 0)
             {
