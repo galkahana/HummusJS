@@ -753,18 +753,18 @@ CMYKRGBColor PDFWriterDriver::colorFromArray(v8::Local<v8::Value> inArray)
     if(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() == 4)
     {
         // cmyk color
-        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(1))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(2))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(3))->Value());
+        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value());
         
     }
-    else if(inArray->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() == 3)
+    else if(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() == 3)
     {
         // rgb color
-        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(0))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(1))->Value(),
-                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(2))->Value());
+        return CMYKRGBColor((unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                            (unsigned char)TO_NUMBER(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value());
     }
     else
     {
@@ -925,21 +925,21 @@ PDFPageRange PDFWriterDriver::ObjectToPageRange(Local<Object> inObject)
         unsigned int length = TO_UINT32(anArray->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
         for(unsigned int i=0; i < length; ++i)
         {
-            if(!anArray->Get(i)->IsArray() ||
-               TO_UINT32(anArray->Get(i)->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value() != 2)
+            if(!anArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->IsArray() ||
+               TO_UINT32(anArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value() != 2)
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
                 break;
             }
-            Local<Object> item = anArray->Get(i)->TO_OBJECT();
-            if(!item->Get(0)->IsNumber() || !item->Get(1)->IsNumber())
+            Local<Object> item = anArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT();
+            if(!item->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked()->IsNumber() || !item->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked()->IsNumber())
             {
                 THROW_EXCEPTION("wrong argument for specificRanges. it should be an array of arrays. each subarray should be of the length of 2, signifying begining page and ending page numbers");
                 break;
             }
             pageRange.mSpecificRanges.push_back(ULongAndULong(
-                                                              TO_UINT32(item->Get(0))->Value(),
-                                                              TO_UINT32(item->Get(1))->Value()));
+                                                              TO_UINT32(item->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                              TO_UINT32(item->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value()));
             
         }
     }
@@ -1169,14 +1169,14 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     if(args.Length() >= 4)
     {
         Local<Object> matrixArray = args[3]->TO_OBJECT();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 6)
+        if(matrixArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         for(int i=0;i<6;++i)
-            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(i))->Value();
+            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
         transformationMatrix = matrixBuffer;
     }
     
@@ -1184,25 +1184,25 @@ METHOD_RETURN_TYPE PDFWriterDriver::CreateFormXObjectsFromPDF(const ARGS_TYPE& a
     if(args.Length() >= 5)
     {
         Local<Object> objectsIDsArray = args[4]->TO_OBJECT();
-        unsigned int arrayLength = objectsIDsArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
+        unsigned int arrayLength = objectsIDsArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
         for(unsigned int i=0;i<arrayLength;++i)
-            extraObjectsList.push_back((ObjectIDType)(TO_UINT32(objectsIDsArray->Get(i))->Value()));
+            extraObjectsList.push_back((ObjectIDType)(TO_UINT32(objectsIDsArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value()));
             
     }
     
     if(args[1]->IsArray())
     {
         Local<Object> boxArray = args[1]->TO_OBJECT();
-        if(boxArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+        if(boxArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
-        PDFRectangle box(TO_NUMBER(boxArray->Get(0))->Value(),
-                            TO_NUMBER(boxArray->Get(1))->Value(),
-                            TO_NUMBER(boxArray->Get(2))->Value(),
-                            TO_NUMBER(boxArray->Get(3))->Value());
+        PDFRectangle box(TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                            TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                            TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                            TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value());
         
         result = pdfWriter->mPDFWriter.CreateFormXObjectsFromPDF(
                                                                  *UTF_8_VALUE(args[0]->TO_STRING()),

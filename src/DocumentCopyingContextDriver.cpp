@@ -113,14 +113,14 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     if(args.Length() == 3)
     {
         Local<Object> matrixArray = args[2]->TO_OBJECT();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 6)
+        if(matrixArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         for(int i=0;i<6;++i)
-            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(i))->Value();
+            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
         transformationMatrix = matrixBuffer;
     }
     
@@ -136,16 +136,16 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     else
     {
         Local<Object> boxArray = args[1]->TO_OBJECT();
-        if(boxArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+        if(boxArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
-        PDFRectangle box(TO_NUMBER(boxArray->Get(0))->Value(),
-                         TO_NUMBER(boxArray->Get(1))->Value(),
-                         TO_NUMBER(boxArray->Get(2))->Value(),
-                         TO_NUMBER(boxArray->Get(3))->Value());
+        PDFRectangle box(TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                         TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                         TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                         TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value());
         
         result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(TO_UINT32(args[0])->Value(),
                                                                                     box,
@@ -383,10 +383,10 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(c
     ObjectIDTypeList objectIDs;
     Local<Object> objectIDsArray = args[0]->TO_OBJECT();
 
-    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
+    unsigned int length = objectIDsArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
     
     for(unsigned int i=0;i <length;++i)
-        objectIDs.push_back(TO_UINT32(objectIDsArray->Get(i))->Value());
+        objectIDs.push_back(TO_UINT32(objectIDsArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
     
     EStatusCode status = copyingContextDriver->CopyingContext->CopyNewObjectsForDirectObject(objectIDs);
     if(status != eSuccess)

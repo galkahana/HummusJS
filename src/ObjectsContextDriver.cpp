@@ -341,9 +341,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteLiteralString(const ARGS_TYPE& arg
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_UINT32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked())->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(string);
 	}
 	else
@@ -371,9 +371,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteHexString(const ARGS_TYPE& args)
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_UINT32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked())->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(string);
 	}
 	else

@@ -127,10 +127,10 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteRectangleValue(const ARGS_TYPE&
         }
         
         driver->DictionaryContextInstance->WriteRectangleValue(PDFRectangle(
-                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(0))->Value(),
-                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(1))->Value(),
-                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(2))->Value(),
-                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(3))->Value()));
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                      TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
         
     }
     else
@@ -199,7 +199,7 @@ METHOD_RETURN_TYPE DictionaryContextDriver::WriteLiteralStringValue(const ARGS_T
 		std::string string;
 		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
 		driver->DictionaryContextInstance->WriteLiteralStringValue(string);
 	}
 	else

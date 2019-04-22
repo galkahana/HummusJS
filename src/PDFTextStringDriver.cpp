@@ -61,7 +61,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
 			std::string buffer;
 
 			for(int i=0;i<bufferSize;++i)
-				buffer.push_back((char)(args[0]->TO_OBJECT()->Get(i)->TO_UINT32Value()));
+				buffer.push_back((char)(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_UINT32Value()));
 			element->mTextString = buffer;
 		}
 	}

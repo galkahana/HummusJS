@@ -222,13 +222,13 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
     
@@ -277,13 +277,13 @@ void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -297,13 +297,13 @@ void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -317,13 +317,13 @@ void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -337,13 +337,13 @@ void PDFPageDriver::SetArtBox(Local<String> property, Local<Value> value, const 
     if(!value->IsArray())
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 

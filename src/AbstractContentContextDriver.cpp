@@ -653,7 +653,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
     int dashArrayLength = TO_INT32(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
     double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
-        dashArray[i] = TO_INT32(args[0]->TO_OBJECT()->Get(i))->Value();
+        dashArray[i] = TO_INT32(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
     
     contentContext->GetContext()->d(dashArray,dashArrayLength,TO_INT32(args[1])->Value());
     
@@ -1713,18 +1713,18 @@ GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8
 
     for(int i=0; i < arrayLength; ++i)
     {
-        if(!arrayObject->Get(i)->IsArray())
+        if(!arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->IsArray())
             continue;
         
-        int itemLength = TO_INT32(arrayObject->Get(i)->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
+        int itemLength = TO_INT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
         if(0 == itemLength)
             continue;
         
         GlyphUnicodeMapping mapping;
         
-        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(i)->TO_OBJECT()->Get(0))->Value();
+        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value();
         for(int j=1; j < itemLength;++j)
-            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(i)->TO_OBJECT()->Get(j))->Value());
+            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(j))->Value());
 			
 		glyphList.push_back(mapping);
     }
@@ -2187,7 +2187,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
                 {
                     imageOptions.transformationMethod = AbstractContentContext::eMatrix;
                     for(int i=0;i<6;++i)
-                        imageOptions.matrix[i] = TO_NUMBER(transformationObject->Get(i))->Value();
+                        imageOptions.matrix[i] = TO_NUMBER(transformationObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
                 }
                 else if(transformationValue->IsObject())
                 {
