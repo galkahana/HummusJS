@@ -243,7 +243,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPER
     
     if(rotate.first) 
     {
-        Handle<Number> result = NEW_NUMBER(rotate.second);
+        Local<Number> result = NEW_NUMBER(rotate.second);
         SET_ACCESSOR_RETURN_VALUE(result)        
     }
     else
@@ -353,7 +353,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetResourcesDictionary(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args.This());
     
-    Handle<Value> newInstance = pageDriver->holder->GetNewResourcesDictionary(args);
+    Local<Value> newInstance = pageDriver->holder->GetNewResourcesDictionary(args);
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(pageDriver->GetPage()->GetResourcesDictionary());
     

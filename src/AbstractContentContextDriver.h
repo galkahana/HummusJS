@@ -52,7 +52,7 @@ class AbstractContentContextDriver : public node::ObjectWrap
 public:
     
     
-    static void Init(v8::Handle<v8::FunctionTemplate>& ioDriverTemplate);
+    static void Init(v8::Local<v8::FunctionTemplate>& ioDriverTemplate);
     
     
     void SetResourcesDictionary(ResourcesDictionary* inResourcesDictionary);
@@ -164,13 +164,13 @@ private:
     static METHOD_RETURN_TYPE WriteFreeCode(const ARGS_TYPE& args);
     
     
-    static TextPlacingOptions ObjectToOptions(const v8::Handle<v8::Object>& inObject);
-	static GlyphUnicodeMappingList ArrayToGlyphsList(const v8::Handle<v8::Value>& inArray);
+    static TextPlacingOptions ObjectToOptions(const v8::Local<v8::Object>& inObject);
+	static GlyphUnicodeMappingList ArrayToGlyphsList(const v8::Local<v8::Value>& inArray);
         
-	void SetupColorAndLineWidth(const v8::Handle<v8::Value>& inMaybeOptions);
-	void SetColor(const v8::Handle<v8::Value>& inMaybeOptions, bool inIsStroke);
-	void FinishPath(const v8::Handle<v8::Value>& inMaybeOptions);
-	void SetFont(const v8::Handle<v8::Value>& inMaybeOptions);
+	void SetupColorAndLineWidth(const v8::Local<v8::Value>& inMaybeOptions);
+	void SetColor(const v8::Local<v8::Value>& inMaybeOptions, bool inIsStroke);
+	void FinishPath(const v8::Local<v8::Value>& inMaybeOptions);
+	void SetFont(const v8::Local<v8::Value>& inMaybeOptions);
     void SetRGBColor(unsigned long inColorValue,bool inIsStroke);
 
 };

@@ -94,7 +94,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::Exists(const ARGS_TYPE& args)
         
     }
     
-    Handle<Boolean> result = NEW_BOOLEAN(driver->TheObject->Exists(*UTF_8_VALUE(args[0]->TO_STRING())));
+    Local<Boolean> result = NEW_BOOLEAN(driver->TheObject->Exists(*UTF_8_VALUE(args[0]->TO_STRING())));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }
@@ -122,7 +122,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::QueryObject(const ARGS_TYPE& args)
     }
     
     RefCountPtr<PDFObject> anObject = driver->TheObject->QueryDirectObject(key);
-    Handle<Value> result = driver->holder->GetInstanceFor(anObject.GetPtr());
+    Local<Value> result = driver->holder->GetInstanceFor(anObject.GetPtr());
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

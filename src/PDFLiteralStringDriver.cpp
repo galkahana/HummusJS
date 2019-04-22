@@ -70,7 +70,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::GetValue(Local<String> property, cons
 	CREATE_ESCAPABLE_SCOPE;
     
     
-    Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFLiteralStringDriver>(info.Holder())->TheObject->GetValue().c_str());
+    Local<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFLiteralStringDriver>(info.Holder())->TheObject->GetValue().c_str());
     SET_ACCESSOR_RETURN_VALUE(result)
 }
 
@@ -82,7 +82,7 @@ METHOD_RETURN_TYPE PDFLiteralStringDriver::ToText(const ARGS_TYPE& args)
     PDFLiteralStringDriver* driver = ObjectWrap::Unwrap<PDFLiteralStringDriver>(args.This());
 
     
-    Handle<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
+    Local<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
     SET_FUNCTION_RETURN_VALUE(result)
 }
 

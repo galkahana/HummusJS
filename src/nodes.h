@@ -92,9 +92,9 @@
 	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
     #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports, context, external);
-    #define DEF_INIT(f) void f(Handle<Object> exports, Handle<Context> context)
-    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports, Handle<Context> context, Handle<External> external)
-    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context, v8::Handle<v8::External> external);
+    #define DEF_INIT(f) void f(Local<Object> exports, Local<Context> context)
+    #define DEF_SUBORDINATE_INIT(f) void f(Local<Object> exports, Local<Context> context, Local<External> external)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Local<v8::Object> exports, v8::Local<v8::Context> context, v8::Local<v8::External> external);
     #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) FunctionTemplate::New(isolate, X, external)
 
     #define EXPOSE_EXTERNAL(C, c, e) C* c = reinterpret_cast<C*>(e->Value());
@@ -125,9 +125,9 @@
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports);
-    #define DEF_INIT(f) void f(Handle<Object> exports)
-    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports)
-    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports);
+    #define DEF_INIT(f) void f(Local<Object> exports)
+    #define DEF_SUBORDINATE_INIT(f) void f(Local<Object> exports)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Local<v8::Object> exports);
     #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) NEW_FUNCTION_TEMPLATE(X)
 
     #define EXPOSE_EXTERNAL(C, c) C* c = C::GetInstance();

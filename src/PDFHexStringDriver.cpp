@@ -68,7 +68,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::GetValue(Local<String> property, const PR
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFHexStringDriver>(info.Holder())->TheObject->GetValue().c_str());
+    Local<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFHexStringDriver>(info.Holder())->TheObject->GetValue().c_str());
     SET_ACCESSOR_RETURN_VALUE(result)
 }
 
@@ -79,7 +79,7 @@ METHOD_RETURN_TYPE PDFHexStringDriver::ToText(const ARGS_TYPE& args)
     PDFHexStringDriver* driver = ObjectWrap::Unwrap<PDFHexStringDriver>(args.This());
 
     
-    Handle<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
+    Local<String> result = NEW_STRING(PDFTextString(driver->TheObject->GetValue()).ToUTF8String().c_str());
     SET_FUNCTION_RETURN_VALUE(result)
 }
 

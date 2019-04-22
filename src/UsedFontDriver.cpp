@@ -106,8 +106,8 @@ METHOD_RETURN_TYPE UsedFontDriver::GetFontMetrics(const ARGS_TYPE& args)
         )
     );
     
-    Handle<Object> result = NEW_OBJECT;
-    Handle<Object> pixelsPerEm = NEW_OBJECT;
+    Local<Object> result = NEW_OBJECT;
+    Local<Object> pixelsPerEm = NEW_OBJECT;
 
     pixelsPerEm->Set(NEW_STRING("x"),NEW_NUMBER(newSize->metrics.x_ppem));
     pixelsPerEm->Set(NEW_STRING("y"),NEW_NUMBER(newSize->metrics.y_ppem));
@@ -239,7 +239,7 @@ METHOD_RETURN_TYPE UsedFontDriver::CalculateTextDimensions(const ARGS_TYPE& args
     }
     
     
-    Handle<Object> result = NEW_OBJECT;
+    Local<Object> result = NEW_OBJECT;
     // file the end object with results
     
     // adapt results to the size, and PDF font size

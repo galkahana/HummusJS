@@ -276,7 +276,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::SetCreationDate(const ARGS_TYPE& args)
     }
 
     
-    Handle<Value> dataDriverValue = driver->holder->GetNewPDFDate(args);
+    Local<Value> dataDriverValue = driver->holder->GetNewPDFDate(args);
     PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->TO_OBJECT());
 
     driver->InfoDictionaryInstance->CreationDate =  *(dateDriver->getInstance());
@@ -297,7 +297,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::SetModDate(const ARGS_TYPE& args)
     }
     
     
-    Handle<Value> dataDriverValue = driver->holder->GetNewPDFDate(args);
+    Local<Value> dataDriverValue = driver->holder->GetNewPDFDate(args);
     PDFDateDriver* dateDriver = ObjectWrap::Unwrap<PDFDateDriver>(dataDriverValue->TO_OBJECT());
     
     driver->InfoDictionaryInstance->ModDate =  *(dateDriver->getInstance());
@@ -417,7 +417,7 @@ METHOD_RETURN_TYPE InfoDictionaryDriver::GetAdditionalInfoEntries(const ARGS_TYP
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Object> anObject = NEW_OBJECT;
+    Local<Object> anObject = NEW_OBJECT;
    
     MapIterator<StringToPDFTextString> it = driver->InfoDictionaryInstance->GetAdditionaEntriesIterator();
 

@@ -36,7 +36,7 @@ using namespace node;
 DEFINE_EXTERNAL_DE_CON_STRUCTORS(ConstructorsHolder)
 
 // creators
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFWriter(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFWriter(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -46,7 +46,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFWriter(const ARGS_TYPE& args)
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewByteReader(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewByteReader(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -54,7 +54,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewByteReader(const ARGS_TYPE& args
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFReader(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFReader(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -62,7 +62,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFReader(const ARGS_TYPE& args)
 	if (args.Length() == 1)
 	{
 		const unsigned argc = 1;
-		Handle<Value> argv[argc] = { args[0] };
+		Local<Value> argv[argc] = { args[0] };
         NEW_INSTANCE_ARGS(PDFReader_constructor, instance, argc, argv);
         PDFReaderDriver* element = node::ObjectWrap::Unwrap<PDFReaderDriver>(instance);
         element->holder = this;
@@ -79,7 +79,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFReader(const ARGS_TYPE& args)
 }
 
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewDocumentCopyingContext(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewDocumentCopyingContext(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -91,7 +91,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewDocumentCopyingContext(const ARG
 }
 
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewByteWriterWithPosition(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewByteWriterWithPosition(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -101,7 +101,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewByteWriterWithPosition(const ARG
 }
 
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewOutputFile(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewOutputFile(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -113,7 +113,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewOutputFile(const ARGS_TYPE& args
 }
 
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewObjectsContext(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewObjectsContext(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -124,7 +124,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewObjectsContext(const ARGS_TYPE& 
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewByteWriter(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewByteWriter(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -133,7 +133,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewByteWriter(const ARGS_TYPE& args
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFStream(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFStream(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -144,7 +144,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFStream(const ARGS_TYPE& args)
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewFormXObject(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewFormXObject(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -155,7 +155,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewFormXObject(const ARGS_TYPE& arg
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPageContentContext(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPageContentContext(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -166,7 +166,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPageContentContext(const ARGS_TY
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewByteReaderWithPosition(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewByteReaderWithPosition(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -175,7 +175,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewByteReaderWithPosition(const ARG
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewInputFile(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewInputFile(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -186,7 +186,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewInputFile(const ARGS_TYPE& args)
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewDictionaryContext(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewDictionaryContext(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -195,7 +195,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewDictionaryContext(const ARGS_TYP
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(DictionaryContext* inDictionaryContextInstance) {
+v8::Local<v8::Value> ConstructorsHolder::GetInstanceFor(DictionaryContext* inDictionaryContextInstance) {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -205,7 +205,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(DictionaryContext* inDi
 	return CLOSE_SCOPE(instance);    
 }	
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewDocumentContext(const ARGS_TYPE& args) {
+v8::Local<v8::Value> ConstructorsHolder::GetNewDocumentContext(const ARGS_TYPE& args) {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -215,7 +215,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewDocumentContext(const ARGS_TYPE&
 	return CLOSE_SCOPE(instance);	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewInfoDictionary(const ARGS_TYPE& args){
+v8::Local<v8::Value> ConstructorsHolder::GetNewInfoDictionary(const ARGS_TYPE& args){
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -225,7 +225,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewInfoDictionary(const ARGS_TYPE& 
 	return CLOSE_SCOPE(instance);	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFDate(const ARGS_TYPE& args) {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFDate(const ARGS_TYPE& args) {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -234,19 +234,19 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFDate(const ARGS_TYPE& args) {
 	if (args.Length() != 1 || (!args[0]->IsDate() && !args[0]->IsString()))
 	{
 		THROW_EXCEPTION("Wrong arguments. Provide 1 argument which is a date");
-		Handle<Value> argv[argc] = { NEW_STRING("") };
+		Local<Value> argv[argc] = { NEW_STRING("") };
 		NEW_INSTANCE_ARGS(PDFDate_constructor, instance, argc, argv);
 
 		return CLOSE_SCOPE(instance);
 	} else {
-		Handle<Value> argv[argc] = { args[0] };
+		Local<Value> argv[argc] = { args[0] };
 		NEW_INSTANCE_ARGS(PDFDate_constructor, instance, argc, argv);
 
 		return CLOSE_SCOPE(instance);
 	}	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewImageXObject(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewImageXObject(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -255,7 +255,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewImageXObject(const ARGS_TYPE& ar
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFArray(){
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFArray(){
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -266,7 +266,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFArray(){
 }
 
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFBoolean() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFBoolean() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -275,7 +275,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFBoolean() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFLiteralString() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFLiteralString() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -284,7 +284,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFLiteralString() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFHexString() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFHexString() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -293,7 +293,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFHexString() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFNull() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFNull() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -302,7 +302,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFNull() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFName() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFName() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -311,7 +311,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFName() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFInteger() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFInteger() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -320,7 +320,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFInteger() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFReal() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFReal() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -329,7 +329,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFReal() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFDictionary() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFDictionary() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -338,7 +338,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFDictionary() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFIndirectObjectReference() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFIndirectObjectReference() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -347,7 +347,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFIndirectObjectReference() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFStreamInput() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFStreamInput() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -356,7 +356,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFStreamInput() {
     element->holder = this;	
 	return CLOSE_SCOPE(instance);	
 }
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFSymbol() {
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFSymbol() {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
@@ -366,7 +366,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFSymbol() {
 	return CLOSE_SCOPE(instance);	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(PDFObject* inObject)
+v8::Local<v8::Value> ConstructorsHolder::GetInstanceFor(PDFObject* inObject)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -452,7 +452,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(PDFObject* inObject)
 	return CLOSE_SCOPE(newInstance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFObjectParser(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFObjectParser(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -463,7 +463,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFObjectParser(const ARGS_TYPE&
 	return CLOSE_SCOPE(instance);	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPageInput(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFPageInput(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -474,7 +474,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPageInput(const ARGS_TYPE& ar
 	return CLOSE_SCOPE(instance);	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewResourcesDictionary(const ARGS_TYPE& args) 
+v8::Local<v8::Value> ConstructorsHolder::GetNewResourcesDictionary(const ARGS_TYPE& args) 
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -485,7 +485,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewResourcesDictionary(const ARGS_T
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewUsedFont(const ARGS_TYPE& args) 
+v8::Local<v8::Value> ConstructorsHolder::GetNewUsedFont(const ARGS_TYPE& args) 
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -494,7 +494,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewUsedFont(const ARGS_TYPE& args)
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewXObjectContentContext(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewXObjectContentContext(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -506,7 +506,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewXObjectContentContext(const ARGS
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFTextString(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFTextString(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -515,12 +515,12 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFTextString(const ARGS_TYPE& a
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(PDFPage* inPage) 
+v8::Local<v8::Value> ConstructorsHolder::GetInstanceFor(PDFPage* inPage) 
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> argv[1] = { NEW_BOOLEAN(false) };
+	Local<Value> argv[1] = { NEW_BOOLEAN(false) };
 	NEW_INSTANCE_ARGS(PDFPage_constructor, instance, 1, argv);
 
 	// this version links to a page and does not own it!
@@ -533,7 +533,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(PDFPage* inPage)
 	return CLOSE_SCOPE(instance);
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(ResourcesDictionary* inResourcesDictionary)
+v8::Local<v8::Value> ConstructorsHolder::GetInstanceFor(ResourcesDictionary* inResourcesDictionary)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -543,7 +543,7 @@ v8::Handle<v8::Value> ConstructorsHolder::GetInstanceFor(ResourcesDictionary* in
 	return CLOSE_SCOPE(instance);   
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPageModifier(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFPageModifier(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -554,12 +554,12 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPageModifier(const ARGS_TYPE&
 	return CLOSE_SCOPE(instance);	
 }
 
-v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPage(const ARGS_TYPE& args)
+v8::Local<v8::Value> ConstructorsHolder::GetNewPDFPage(const ARGS_TYPE& args)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> argv[1] = { NEW_BOOLEAN(false) };
+	Local<Value> argv[1] = { NEW_BOOLEAN(false) };
 	NEW_INSTANCE_ARGS(PDFPage_constructor, instance, 1, argv);
 
 	// this version creates an instance of a page, and owns it. this is the one used by javascript
@@ -580,175 +580,175 @@ v8::Handle<v8::Value> ConstructorsHolder::GetNewPDFPage(const ARGS_TYPE& args)
 	return CLOSE_SCOPE(instance);
 }
 
-bool ConstructorsHolder::IsInstance(v8::Handle<v8::Value> inObject, const v8::Persistent<v8::FunctionTemplate>& constructor_template) {
+bool ConstructorsHolder::IsInstance(v8::Local<v8::Value> inObject, const v8::Persistent<v8::FunctionTemplate>& constructor_template) {
 	CREATE_ISOLATE_CONTEXT;
 
 	return inObject->IsObject() && HAS_INSTANCE(constructor_template, inObject);
 }
 
-bool ConstructorsHolder::IsByteReaderInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsByteReaderInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, ByteReader_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsByteReaderWithPositionInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsByteReaderWithPositionInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, ByteReaderWithPosition_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsByteWriterInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsByteWriterInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, ByteWriter_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsByteWriterWithPositionInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsByteWriterWithPositionInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, ByteWriterWithPosition_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsDictionaryContextInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsDictionaryContextInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, DictionaryContext_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsFormXObjectInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsFormXObjectInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, FormXObject_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsImageXObjectInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsImageXObjectInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, ImageXObject_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsInputFileInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsInputFileInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, InputFile_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsOutputFileInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsOutputFileInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, OutputFile_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPageContentContextInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPageContentContextInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PageContentContext_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFArrayInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFArrayInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFArray_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFBooleanInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFBooleanInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFBoolean_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFDictionaryInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFDictionaryInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFDictionary_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFHexStringInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFHexStringInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFHexString_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFIndirectObjectReferenceInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFIndirectObjectReferenceInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFIndirectObjectReference_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFIntegerInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFIntegerInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFInteger_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFLiteralStringInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFLiteralStringInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFLiteralString_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFNameInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFNameInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFName_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFNullInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFNullInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFNull_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFObjectParserInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFObjectParserInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFObjectParser_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFPageInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFPageInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFPage_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFPageModifierInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFPageModifierInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFPageModifier_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFReaderInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFReaderInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFReader_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFRealInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFRealInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFReal_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFStreamInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFStreamInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFStream_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFStreamInputInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFStreamInputInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFStreamInput_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsPDFSymbolInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsPDFSymbolInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, PDFSymbol_constructor_template );
 }
 
 
-bool ConstructorsHolder::IsUsedFontInstance(v8::Handle<v8::Value> inObject)
+bool ConstructorsHolder::IsUsedFontInstance(v8::Local<v8::Value> inObject)
 {
 	return ConstructorsHolder::IsInstance(inObject, UsedFont_constructor_template );
 }

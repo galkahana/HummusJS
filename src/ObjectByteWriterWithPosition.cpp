@@ -21,7 +21,7 @@
 
 using namespace v8;
 
-ObjectByteWriterWithPosition::ObjectByteWriterWithPosition(Handle<Object> inObject)
+ObjectByteWriterWithPosition::ObjectByteWriterWithPosition(Local<Object> inObject)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -38,22 +38,22 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-    Handle<Object> anArray = NEW_ARRAY((int)inBufferSize);
+    Local<Object> anArray = NEW_ARRAY((int)inBufferSize);
     for(int i=0;i<(int)inBufferSize;++i)
         anArray->Set(NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
     
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("write"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("write"));
     if(value->IsUndefined() || !value->IsFunction())
     {
 		THROW_EXCEPTION("write is not a function, it should be you know...");
         return 0;
     }
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = anArray;
     
-	Handle<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	Local<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
     if(result.IsEmpty())
     {
 		THROW_EXCEPTION("wrong return value. it's empty. return the number of written characters");
@@ -75,10 +75,10 @@ IOBasicTypes::LongFilePositionType ObjectByteWriterWithPosition::GetCurrentPosit
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("getCurrentPosition"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("getCurrentPosition"));
     if(value->IsUndefined())
         return true;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
 	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL))->Value();
 }

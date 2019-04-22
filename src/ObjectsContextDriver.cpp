@@ -134,7 +134,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartDictionary(const ARGS_TYPE& args)
     
     DictionaryContext* dictionaryContext = driver->ObjectsContextInstance->StartDictionary();
     
-    Handle<Value> newInstance = driver->holder->GetNewDictionaryContext(args);
+    Local<Value> newInstance = driver->holder->GetNewDictionaryContext(args);
     ObjectWrap::Unwrap<DictionaryContextDriver>(newInstance->TO_OBJECT())->DictionaryContextInstance = dictionaryContext;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -512,7 +512,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
         aStream = objectsContext->ObjectsContextInstance->StartPDFStream();
     }
     
-    Handle<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
+    Local<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
@@ -548,7 +548,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
         aStream = objectsContext->ObjectsContextInstance->StartUnfilteredPDFStream();
     }
     
-    Handle<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
+    Local<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
@@ -565,7 +565,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartFreeContext(const ARGS_TYPE& args)
     
     ObjectsContextDriver* driver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
-    Handle<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
+    Local<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
     
     ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
     

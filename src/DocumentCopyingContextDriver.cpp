@@ -112,7 +112,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     
     if(args.Length() == 3)
     {
-        Handle<Object> matrixArray = args[2]->TO_OBJECT();
+        Local<Object> matrixArray = args[2]->TO_OBJECT();
         if(matrixArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
@@ -135,7 +135,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     }
     else
     {
-        Handle<Object> boxArray = args[1]->TO_OBJECT();
+        Local<Object> boxArray = args[1]->TO_OBJECT();
         if(boxArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
@@ -267,7 +267,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentParser(const A
 
     DocumentCopyingContextDriver* copyingContext = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
-    Handle<Value> newInstance = copyingContext->holder->GetNewPDFReader(args);
+    Local<Value> newInstance = copyingContext->holder->GetNewPDFReader(args);
     ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->TO_OBJECT())->SetFromOwnedParser(copyingContext->CopyingContext->GetSourceDocumentParser());
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -381,7 +381,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(c
     }
     
     ObjectIDTypeList objectIDs;
-    Handle<Object> objectIDsArray = args[0]->TO_OBJECT();
+    Local<Object> objectIDsArray = args[0]->TO_OBJECT();
 
     unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
     
@@ -475,14 +475,14 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
     // create an object that will serve as the map
     ObjectIDTypeToObjectIDTypeMap resultMap;
     
-    Handle<Object> anObject = args[0]->TO_OBJECT();
+    Local<Object> anObject = args[0]->TO_OBJECT();
     
-    Handle<Array> objectKeys = anObject->GetOwnPropertyNames();
+    Local<Array> objectKeys = anObject->GetOwnPropertyNames();
     
     for(unsigned long i=0; i < objectKeys->Length(); ++i)
     {
-        Handle<String> key  = objectKeys->Get(NEW_NUMBER(0))->TO_STRING();
-        Handle<Value> value = anObject->Get(key);
+        Local<String> key  = objectKeys->Get(NEW_NUMBER(0))->TO_STRING();
+        Local<Value> value = anObject->Get(key);
         
         resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*UTF_8_VALUE(key)),TO_UINT32(value)->Value()));
         
@@ -506,7 +506,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentStream(const A
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
-    Handle<Value> resultDriver = copyingContextDriver->holder->GetNewByteWriterWithPosition(args);
+    Local<Value> resultDriver = copyingContextDriver->holder->GetNewByteWriterWithPosition(args);
 
     ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(resultDriver->TO_OBJECT())->SetStream(
         copyingContextDriver->CopyingContext->GetSourceDocumentStream(),

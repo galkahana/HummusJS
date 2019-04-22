@@ -69,7 +69,7 @@ METHOD_RETURN_TYPE PDFStreamInputDriver::GetDictionary(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     PDFStreamInputDriver* driver = ObjectWrap::Unwrap<PDFStreamInputDriver>(args.This());
     RefCountPtr<PDFDictionary> streamDict = driver->TheObject->QueryStreamDictionary();
-    Handle<Value> result = driver->holder->GetInstanceFor(streamDict.GetPtr());
+    Local<Value> result = driver->holder->GetInstanceFor(streamDict.GetPtr());
 
     SET_FUNCTION_RETURN_VALUE(result)
 }
@@ -79,7 +79,7 @@ METHOD_RETURN_TYPE PDFStreamInputDriver::GetStreamContentStart(const ARGS_TYPE& 
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     PDFStreamInputDriver* driver = ObjectWrap::Unwrap<PDFStreamInputDriver>(args.This());
-    Handle<Number> result = NEW_NUMBER(driver->TheObject->GetStreamContentStart());
+    Local<Number> result = NEW_NUMBER(driver->TheObject->GetStreamContentStart());
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

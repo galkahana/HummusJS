@@ -35,7 +35,7 @@ private:
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE ToString(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE SetToCurrentTime(const ARGS_TYPE& args);
-    static int GetIntValueFromDateFunction(v8::Handle<v8::Date> inDate, const char* inFunctionName);
-    static unsigned int GetUIntValueFromDateFunction(v8::Handle<v8::Date> inDate, const char* inFunctionName);
+    static int GetIntValueFromDateFunction(v8::Local<v8::Date> inDate, const char* inFunctionName);
+    static unsigned int GetUIntValueFromDateFunction(v8::Local<v8::Date> inDate, const char* inFunctionName);
 
 };

@@ -81,7 +81,7 @@ METHOD_RETURN_TYPE  PDFPageInputDriver::GetDictionary(const ARGS_TYPE& args)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
-    Handle<Value> newInstance;
+    Local<Value> newInstance;
 
     newInstance = element->holder->GetNewPDFDictionary();
     ObjectWrap::Unwrap<PDFDictionaryDriver>(newInstance->TO_OBJECT())->TheObject = element->PageInputDictionary;
@@ -104,7 +104,7 @@ METHOD_RETURN_TYPE PDFPageInputDriver::GetMediaBox(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(GetArrayForPDFRectangle(element->PageInput->GetMediaBox()))
 }
 
-Handle<Value> PDFPageInputDriver::GetArrayForPDFRectangle(const PDFRectangle& inRectangle)
+Local<Value> PDFPageInputDriver::GetArrayForPDFRectangle(const PDFRectangle& inRectangle)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;

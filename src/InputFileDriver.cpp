@@ -200,7 +200,7 @@ METHOD_RETURN_TYPE InputFileDriver::GetInputStream(const ARGS_TYPE& args)
     
     if(driver->mInputFileInstance && driver->mInputFileInstance->GetInputStream())
     {
-        Handle<Value> result = driver->holder->GetNewByteReaderWithPosition(args);
+        Local<Value> result = driver->holder->GetNewByteReaderWithPosition(args);
         
         ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->mInputFileInstance->GetInputStream(), false);
         

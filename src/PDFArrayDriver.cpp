@@ -112,7 +112,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::QueryObject(const ARGS_TYPE& args)
     }
     
     RefCountPtr<PDFObject> anObject = arrayDriver->TheObject->QueryObject(TO_UINT32(args[0])->Value());
-    Handle<Value> result = arrayDriver->holder->GetInstanceFor(anObject.GetPtr());
+    Local<Value> result = arrayDriver->holder->GetInstanceFor(anObject.GetPtr());
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

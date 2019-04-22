@@ -75,7 +75,7 @@ METHOD_RETURN_TYPE PDFStreamDriver::GetWriteStream(const ARGS_TYPE& args)
     PDFStreamDriver* stream = ObjectWrap::Unwrap<PDFStreamDriver>(args.This());
 
 
-    Handle<Value> result = stream->holder->GetNewByteWriter(args);
+    Local<Value> result = stream->holder->GetNewByteWriter(args);
     
     ObjectWrap::Unwrap<ByteWriterDriver>(result->TO_OBJECT())->SetStream(stream->PDFStreamInstance->GetWriteStream(), false);
     

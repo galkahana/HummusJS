@@ -65,7 +65,7 @@ public:
                                     EPDFVersion inPDFVersion,
                                     const LogConfiguration& inLogConfiguration,
                                     const PDFCreationSettings& inCreationSettings);
-    PDFHummus::EStatusCode StartPDF(v8::Handle<v8::Object> inStreamObject,
+    PDFHummus::EStatusCode StartPDF(v8::Local<v8::Object> inStreamObject,
                                     EPDFVersion inPDFVersion,
                                     const LogConfiguration& inLogConfiguration,
                                     const PDFCreationSettings& inCreationSettings);
@@ -75,9 +75,9 @@ public:
                                        const std::string& inOptionalOtherOutputFile,
                                        const LogConfiguration& inLogConfiguration);
 
-    PDFHummus::EStatusCode ContinuePDF(v8::Handle<v8::Object>  inOutputStream,
+    PDFHummus::EStatusCode ContinuePDF(v8::Local<v8::Object>  inOutputStream,
                                        const std::string& inStateFilePath,
-                                       v8::Handle<v8::Object>  inModifiedSourceStream,
+                                       v8::Local<v8::Object>  inModifiedSourceStream,
                                        const LogConfiguration& inLogConfiguration);
     
     
@@ -87,8 +87,8 @@ public:
                                      const LogConfiguration& inLogConfiguration,
                                      const PDFCreationSettings& inCreationSettings);
 
-    PDFHummus::EStatusCode ModifyPDF(v8::Handle<v8::Object>  inSourceStream,
-                                     v8::Handle<v8::Object>  inDestinationStream,
+    PDFHummus::EStatusCode ModifyPDF(v8::Local<v8::Object>  inSourceStream,
+                                     v8::Local<v8::Object>  inDestinationStream,
                                      EPDFVersion inPDFVersion,
                                      const LogConfiguration& inLogConfiguration,
                                      const PDFCreationSettings& inCreationSettings);
@@ -220,11 +220,11 @@ private:
     static METHOD_RETURN_TYPE RegisterAnnotationReferenceForNextPageWrite(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE RequireCatalogUpdate(const ARGS_TYPE& args);
     
-    static CMYKRGBColor colorFromArray(v8::Handle<v8::Value> inArray);
-    static PDFPageRange ObjectToPageRange(v8::Handle<v8::Object> inObject);
+    static CMYKRGBColor colorFromArray(v8::Local<v8::Value> inArray);
+    static PDFPageRange ObjectToPageRange(v8::Local<v8::Object> inObject);
 
     PDFHummus::EStatusCode setupListenerIfOK(PDFHummus::EStatusCode inCode);
-    PDFHummus::EStatusCode triggerEvent(const std::string& inEventName, v8::Handle<v8::Object> inParams);
+    PDFHummus::EStatusCode triggerEvent(const std::string& inEventName, v8::Local<v8::Object> inParams);
     
     bool mStartedWithStream;
 	bool mIsCatalogUpdateRequired;    
