@@ -62,7 +62,7 @@ METHOD_RETURN_TYPE PDFIntegerDriver::GetValue(Local<String> property, const PROP
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<Number> result = NEW_NUMBER(ObjectWrap::Unwrap<PDFIntegerDriver>(info.Holder())->TheObject->GetValue());
+    Local<Number> result = NEW_NUMBER(ObjectWrap::Unwrap<PDFIntegerDriver>(info.Holder())->TheObject->GetValue());
     SET_ACCESSOR_RETURN_VALUE(result)
 }
 

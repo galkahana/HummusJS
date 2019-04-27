@@ -21,7 +21,7 @@
 
 using namespace v8;
 
-ObjectByteReaderWithPosition::ObjectByteReaderWithPosition(Handle<Object> inObject)
+ObjectByteReaderWithPosition::ObjectByteReaderWithPosition(Local<Object> inObject)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -38,20 +38,20 @@ IOBasicTypes::LongBufferSizeType ObjectByteReaderWithPosition::Read(IOBasicTypes
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("read"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("read")).ToLocalChecked();
     if(value->IsUndefined())
         return 0;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = NEW_NUMBER(inBufferSize);
     
-	Handle<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	Local<Value> result = func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
     
     if(!result->IsArray())
         return 0;
     
-    IOBasicTypes::LongBufferSizeType bufferLength = result->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value();
+    IOBasicTypes::LongBufferSizeType bufferLength = result->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
         inBuffer[i] = (IOBasicTypes::Byte)(TO_UINT32(result->TO_OBJECT()->Get((uint32_t)i))->Value());
     
@@ -64,12 +64,12 @@ bool ObjectByteReaderWithPosition::NotEnded()
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("notEnded"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("notEnded")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->TO_BOOLEAN()->Value());
+	return (func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked()->TO_BOOLEAN()->Value());
 }
 
 void ObjectByteReaderWithPosition::SetPosition(LongFilePositionType inOffsetFromStart)
@@ -77,14 +77,14 @@ void ObjectByteReaderWithPosition::SetPosition(LongFilePositionType inOffsetFrom
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("setPosition"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("setPosition")).ToLocalChecked();
     if(value->IsUndefined())
         return;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = NEW_NUMBER(inOffsetFromStart);
-	func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
 }
 
 void ObjectByteReaderWithPosition::SetPositionFromEnd(LongFilePositionType inOffsetFromStart)
@@ -92,14 +92,14 @@ void ObjectByteReaderWithPosition::SetPositionFromEnd(LongFilePositionType inOff
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("setPositionFromEnd"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("setPositionFromEnd")).ToLocalChecked();
     if(value->IsUndefined())
         return;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = NEW_NUMBER(inOffsetFromStart);
-	func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
 }
 
 LongFilePositionType ObjectByteReaderWithPosition::GetCurrentPosition()
@@ -107,12 +107,12 @@ LongFilePositionType ObjectByteReaderWithPosition::GetCurrentPosition()
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("getCurrentPosition"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("getCurrentPosition")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-	return TO_NUMBER(func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL))->Value();
+	return TO_NUMBER(func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked())->Value();
 }
 
 void ObjectByteReaderWithPosition::Skip(LongBufferSizeType inSkipSize)
@@ -120,12 +120,12 @@ void ObjectByteReaderWithPosition::Skip(LongBufferSizeType inSkipSize)
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("skip"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("skip")).ToLocalChecked();
     if(value->IsUndefined())
         return;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = NEW_NUMBER(inSkipSize);
-	func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
 }

@@ -30,7 +30,7 @@ class PDFObjectDriver : public node::ObjectWrap
 public:
     
     
-    static void Init(v8::Handle<v8::FunctionTemplate>& ioDriverTemplate);
+    static void Init(v8::Local<v8::FunctionTemplate>& ioDriverTemplate);
     
     virtual PDFObject* GetObject() = 0;
 

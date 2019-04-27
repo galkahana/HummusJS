@@ -189,7 +189,7 @@ METHOD_RETURN_TYPE OutputFileDriver::GetOutputStream(const ARGS_TYPE& args)
     
     if(driver->mOutputFileInstance && driver->mOutputFileInstance->GetOutputStream())
     {
-        Handle<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
+        Local<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
         
         ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->mOutputFileInstance->GetOutputStream(),false);
         

@@ -182,7 +182,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetTrailer(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(reader->holder->GetInstanceFor(trailer))
 }
 
-PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(v8::Handle<v8::Object> inStreamObject,const PDFParsingOptions& inParsingOptions)
+PDFHummus::EStatusCode PDFReaderDriver::StartPDFParsing(v8::Local<v8::Object> inStreamObject,const PDFParsingOptions& inParsingOptions)
 {
     if(!mPDFReader && !mOwnsParser)
     {
@@ -331,7 +331,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::ParsePage(const ARGS_TYPE& args)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     else {
-        Handle<Value> newInstance = reader->holder->GetNewPDFPageInput(args);
+        Local<Value> newInstance = reader->holder->GetNewPDFPageInput(args);
         ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->TO_OBJECT())->PageInput = new PDFPageInput(reader->mPDFReader,newObject);
         ObjectWrap::Unwrap<PDFPageInputDriver>(newInstance->TO_OBJECT())->PageInputDictionary = newObject.GetPtr();
         SET_FUNCTION_RETURN_VALUE(newInstance)
@@ -386,11 +386,11 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetXrefEntry(const ARGS_TYPE& args)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)   
     }
     
-    Handle<Object> anObject = NEW_OBJECT;
+    Local<Object> anObject = NEW_OBJECT;
     
-    anObject->Set(NEW_STRING("objectPosition"),NEW_NUMBER(xrefEntry->mObjectPosition));
-    anObject->Set(NEW_STRING("revision"),NEW_NUMBER(xrefEntry->mRivision));
-    anObject->Set(NEW_STRING("type"),NEW_NUMBER(xrefEntry->mType));
+    anObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("objectPosition"),NEW_NUMBER(xrefEntry->mObjectPosition));
+    anObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("revision"),NEW_NUMBER(xrefEntry->mRivision));
+    anObject->Set(GET_CURRENT_CONTEXT, NEW_SYMBOL("type"),NEW_NUMBER(xrefEntry->mType));
 
     SET_FUNCTION_RETURN_VALUE(anObject)
 }
@@ -423,7 +423,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::StartReadingFromStream(const ARGS_TYPE& args
     
     IByteReader* byteReader = reader->mPDFReader->StartReadingFromStream(streamInput->TheObject.GetPtr());
     
-    Handle<Value> driver = reader->holder->GetNewByteReader(args);  
+    Local<Value> driver = reader->holder->GetNewByteReader(args);  
     ObjectWrap::Unwrap<ByteReaderDriver>(driver->TO_OBJECT())->SetStream(byteReader,true);
     
     SET_FUNCTION_RETURN_VALUE(driver)
@@ -446,7 +446,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::StartReadingFromStreamForPlainCopying(const 
     
     IByteReader* byteReader = reader->mPDFReader->StartReadingFromStreamForPlainCopying(streamInput->TheObject.GetPtr());
     
-    Handle<Value> driver = reader->holder->GetNewByteReader(args);        
+    Local<Value> driver = reader->holder->GetNewByteReader(args);        
     ObjectWrap::Unwrap<ByteReaderDriver>(driver->TO_OBJECT())->SetStream(byteReader,true);
     
     SET_FUNCTION_RETURN_VALUE(driver)
@@ -469,7 +469,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::StartReadingObjectsFromStream(const ARGS_TYP
     
     PDFObjectParser* objectReader = reader->mPDFReader->StartReadingObjectsFromStream(streamInput->TheObject.GetPtr());
     
-    Handle<Value> driver = reader->holder->GetNewPDFObjectParser(args);
+    Local<Value> driver = reader->holder->GetNewPDFObjectParser(args);
     ObjectWrap::Unwrap<PDFObjectParserDriver>(driver->TO_OBJECT())->PDFObjectParserInstance= objectReader;
     
     SET_FUNCTION_RETURN_VALUE(driver)
@@ -492,7 +492,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::StartReadingObjectsFromStreams(const ARGS_TY
     
     PDFObjectParser* objectReader = reader->mPDFReader->StartReadingObjectsFromStreams(arrayInput->TheObject.GetPtr());
     
-    Handle<Value> driver = reader->holder->GetNewPDFObjectParser(args);
+    Local<Value> driver = reader->holder->GetNewPDFObjectParser(args);
     ObjectWrap::Unwrap<PDFObjectParserDriver>(driver->TO_OBJECT())->PDFObjectParserInstance= objectReader;
     
     SET_FUNCTION_RETURN_VALUE(driver)
@@ -505,7 +505,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetParserStream(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
 
-    Handle<Value> driver = reader->holder->GetNewByteWriterWithPosition(args);
+    Local<Value> driver = reader->holder->GetNewByteWriterWithPosition(args);
     ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(driver->TO_OBJECT())->SetStream(reader->mPDFReader->GetParserStream(),false);
     
     SET_FUNCTION_RETURN_VALUE(driver)

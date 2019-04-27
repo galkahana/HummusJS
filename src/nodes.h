@@ -22,7 +22,7 @@
 #define METHOD_RETURN_TYPE void
 #define CREATE_ISOLATE_CONTEXT Isolate* isolate = Isolate::GetCurrent()
 #define NEW_FUNCTION_TEMPLATE(X) FunctionTemplate::New(isolate, X)
-#define NEW_STRING(X) String::NewFromUtf8(isolate, X)
+#define NEW_STRING(X) String::NewFromUtf8(isolate, X, v8::NewStringType::kNormal).ToLocalChecked()
 #define NEW_SYMBOL(X) NEW_STRING(X)
 #define NEW_NUMBER(X) Number::New(isolate,X)
 #define NEW_INTEGER(X) Integer::New(isolate,X)
@@ -31,7 +31,7 @@
 #define NEW_OBJECT Object::New(isolate)
 #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f);
 #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f,g);
-#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction())
+#define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
 #define SET_PROTOTYPE_METHOD(t, s, f) NODE_SET_PROTOTYPE_METHOD(t,s,f)
 #define SET_PERSISTENT_OBJECT(c,ot,t) c.Reset(isolate,t)
 #define CREATE_SCOPE HandleScope scope(isolate)
@@ -40,7 +40,7 @@
 #define SET_ACCESSOR_RETURN_VALUE(v) {info.GetReturnValue().Set(v); return;}
 #define HAS_INSTANCE(c,o) Local<FunctionTemplate>::New(isolate, c)->HasInstance(o->TO_OBJECT())
 #define UNDEFINED Undefined(isolate)
-#define THROW_EXCEPTION(s) isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,s)))
+#define THROW_EXCEPTION(s) isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate,s,v8::NewStringType::kNormal).ToLocalChecked()))
 #define DISPOSE_PERSISTENT(p) p.Reset()
 #define OBJECT_FROM_PERSISTENT(p) Local<Object>::New(isolate, p)
 #define GET_CURRENT_CONTEXT v8::Isolate::GetCurrent()->GetCurrentContext()
@@ -62,7 +62,7 @@
 
 #else 
 
-#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction())
+#define SET_CONSTRUCTOR(c,t) c.Reset(isolate, t->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
 #define NEW_INSTANCE(c,i) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance()
 #define NEW_INSTANCE_ARGS(c,i,argc,argv) Local<Object> i = Local<Function>::New(isolate, c)->NewInstance(argc,argv)
 #define TO_NUMBER(x) x->ToNumber()
@@ -76,7 +76,7 @@
 #if IS_CONTEXT_AWARE
     #define TO_STRING() ToString(GET_CURRENT_CONTEXT).FromMaybe(Local<String>())
     #define TO_OBJECT() ToObject(GET_CURRENT_CONTEXT).FromMaybe(Local<Object>())
-    #define TO_BOOLEAN() ToBoolean(GET_CURRENT_CONTEXT).FromMaybe(Local<Boolean>())
+    #define TO_BOOLEAN() ToBoolean(isolate)
     #define UTF_8_VALUE(x) String::Utf8Value(isolate, x)
 
 #else 
@@ -92,9 +92,9 @@
 	#define NODES_MODULE(m,f) NODE_MODULE_INIT() {f(exports, context);}
     #define EXPORTS_SET(e,k,v) e->Set(context, k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports, context, external);
-    #define DEF_INIT(f) void f(Handle<Object> exports, Handle<Context> context)
-    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports, Handle<Context> context, Handle<External> external)
-    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports, v8::Handle<v8::Context> context, v8::Handle<v8::External> external);
+    #define DEF_INIT(f) void f(Local<Object> exports, Local<Context> context)
+    #define DEF_SUBORDINATE_INIT(f) void f(Local<Object> exports, Local<Context> context, Local<External> external)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Local<v8::Object> exports, v8::Local<v8::Context> context, v8::Local<v8::External> external);
     #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) FunctionTemplate::New(isolate, X, external)
 
     #define EXPOSE_EXTERNAL(C, c, e) C* c = reinterpret_cast<C*>(e->Value());
@@ -125,9 +125,9 @@
 	#define NODES_MODULE(m,f) NODE_MODULE(m, f)
     #define EXPORTS_SET(e,k,v) e->Set(k,v);
     #define CALL_INIT_WITH_EXPORTS(f) f(exports);
-    #define DEF_INIT(f) void f(Handle<Object> exports)
-    #define DEF_SUBORDINATE_INIT(f) void f(Handle<Object> exports)
-    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Handle<v8::Object> exports);
+    #define DEF_INIT(f) void f(Local<Object> exports)
+    #define DEF_SUBORDINATE_INIT(f) void f(Local<Object> exports)
+    #define DEC_SUBORDINATE_INIT(f) static void f(v8::Local<v8::Object> exports);
     #define NEW_FUNCTION_TEMPLATE_EXTERNAL(X) NEW_FUNCTION_TEMPLATE(X)
 
     #define EXPOSE_EXTERNAL(C, c) C* c = C::GetInstance();

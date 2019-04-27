@@ -27,7 +27,7 @@ class ObjectByteWriter : public IByteWriter
 {
 public:
     
-    ObjectByteWriter(v8::Handle<v8::Object> inObject);
+    ObjectByteWriter(v8::Local<v8::Object> inObject);
     virtual ~ObjectByteWriter();
     
     // IByteWriter implementation

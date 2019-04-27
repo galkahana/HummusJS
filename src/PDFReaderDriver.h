@@ -38,7 +38,7 @@ public:
     
     // two methods to create parser - owned, from file, or not owned, from another pointer
     PDFHummus::EStatusCode StartPDFParsing(const std::string& inParsedFilePath,const PDFParsingOptions& inParsingOptions);
-    PDFHummus::EStatusCode StartPDFParsing(v8::Handle<v8::Object> inStreamObject,const PDFParsingOptions& inParsingOptions);
+    PDFHummus::EStatusCode StartPDFParsing(v8::Local<v8::Object> inStreamObject,const PDFParsingOptions& inParsingOptions);
     void SetFromOwnedParser(PDFParser* inParser);
     PDFParser* GetParser();
     

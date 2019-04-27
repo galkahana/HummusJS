@@ -74,7 +74,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::ToJSArray(const ARGS_TYPE& args)
     for(unsigned long i=0; i < arrayDriver->TheObject->GetLength();++i)
     {
         RefCountPtr<PDFObject> anObject(arrayDriver->TheObject->QueryObject(i));
-        result->Set(NEW_NUMBER(i),arrayDriver->holder->GetInstanceFor(anObject.GetPtr()));
+        result->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(i),arrayDriver->holder->GetInstanceFor(anObject.GetPtr()));
     }
 
     SET_FUNCTION_RETURN_VALUE(result)
@@ -112,7 +112,7 @@ METHOD_RETURN_TYPE PDFArrayDriver::QueryObject(const ARGS_TYPE& args)
     }
     
     RefCountPtr<PDFObject> anObject = arrayDriver->TheObject->QueryObject(TO_UINT32(args[0])->Value());
-    Handle<Value> result = arrayDriver->holder->GetInstanceFor(anObject.GetPtr());
+    Local<Value> result = arrayDriver->holder->GetInstanceFor(anObject.GetPtr());
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

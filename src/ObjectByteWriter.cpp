@@ -21,7 +21,7 @@
 
 using namespace v8;
 
-ObjectByteWriter::ObjectByteWriter(Handle<Object> inObject)
+ObjectByteWriter::ObjectByteWriter(Local<Object> inObject)
 {
 	CREATE_ISOLATE_CONTEXT;
 
@@ -38,18 +38,18 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriter::Write(const IOBasicTypes::Byt
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-    Handle<Object> anArray = NEW_ARRAY((int)inBufferSize);
+    Local<Object> anArray = NEW_ARRAY((int)inBufferSize);
     for(int i=0;i<(int)inBufferSize;++i)
-        anArray->Set(NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
+        anArray->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(i),NEW_NUMBER(inBuffer[i]));
     
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("write"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("write")).ToLocalChecked();
     if(value->IsUndefined())
         return 0;
-    Handle<Function> func = Handle<Function>::Cast(value);
-    Handle<Value> result;
+    Local<Function> func = Local<Function>::Cast(value);
+    Local<Value> result;
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = anArray;
     
-	return TO_UINT32(func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args))->Value();
+	return TO_UINT32(func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked())->Value();
 }

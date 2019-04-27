@@ -50,7 +50,7 @@
 
 using namespace v8;
 
-void PDFObjectDriver::Init(Handle<FunctionTemplate>& ioDriverTemplate)
+void PDFObjectDriver::Init(Local<FunctionTemplate>& ioDriverTemplate)
 {
 	SET_PROTOTYPE_METHOD(ioDriverTemplate, "getType", GetType);
 	SET_PROTOTYPE_METHOD(ioDriverTemplate, "toPDFIndirectObjectReference", ToPDFIndirectObjectReference);
@@ -87,7 +87,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFIndirectObjectReference(const ARGS_TYPE
     if(anObject->GetType() != PDFObject::ePDFObjectIndirectObjectReference)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFIndirectObjectReference();
+	Local<Value> newInstance = driver->holder->GetNewPDFIndirectObjectReference();
     ObjectWrap::Unwrap<PDFIndirectObjectReferenceDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -102,7 +102,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFArray(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectArray)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFArray();
+	Local<Value> newInstance = driver->holder->GetNewPDFArray();
     ObjectWrap::Unwrap<PDFArrayDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -117,7 +117,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFDictionary(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectDictionary)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFDictionary();
+	Local<Value> newInstance = driver->holder->GetNewPDFDictionary();
     ObjectWrap::Unwrap<PDFDictionaryDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -132,7 +132,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFStream(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectStream)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-    Handle<Value> newInstance = driver->holder->GetNewPDFStreamInput();
+    Local<Value> newInstance = driver->holder->GetNewPDFStreamInput();
     ObjectWrap::Unwrap<PDFStreamInputDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -147,7 +147,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFBoolean(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectBoolean)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFBoolean();
+	Local<Value> newInstance = driver->holder->GetNewPDFBoolean();
     ObjectWrap::Unwrap<PDFBooleanDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -162,7 +162,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFLiteralString(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectLiteralString)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFLiteralString();
+	Local<Value> newInstance = driver->holder->GetNewPDFLiteralString();
     ObjectWrap::Unwrap<PDFLiteralStringDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -177,7 +177,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFHexString(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectHexString)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFHexString();
+	Local<Value> newInstance = driver->holder->GetNewPDFHexString();
     ObjectWrap::Unwrap<PDFHexStringDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -192,7 +192,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFNull(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectNull)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFNull();
+	Local<Value> newInstance = driver->holder->GetNewPDFNull();
     ObjectWrap::Unwrap<PDFNullDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -207,7 +207,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFName(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectName)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFName();
+	Local<Value> newInstance = driver->holder->GetNewPDFName();
     ObjectWrap::Unwrap<PDFNameDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -222,7 +222,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFInteger(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectInteger)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-	Handle<Value> newInstance = driver->holder->GetNewPDFInteger();
+	Local<Value> newInstance = driver->holder->GetNewPDFInteger();
     ObjectWrap::Unwrap<PDFIntegerDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -237,7 +237,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFReal(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectReal)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-    Handle<Value> newInstance = driver->holder->GetNewPDFReal();
+    Local<Value> newInstance = driver->holder->GetNewPDFReal();
     ObjectWrap::Unwrap<PDFRealDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -252,7 +252,7 @@ METHOD_RETURN_TYPE PDFObjectDriver::ToPDFSymbol(const ARGS_TYPE& args)
     if(anObject->GetType() != PDFObject::ePDFObjectSymbol)
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     
-    Handle<Value> newInstance = driver->holder->GetNewPDFSymbol();
+    Local<Value> newInstance = driver->holder->GetNewPDFSymbol();
     ObjectWrap::Unwrap<PDFSymbolDriver>(newInstance->TO_OBJECT())->TheObject = anObject;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }

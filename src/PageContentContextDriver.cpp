@@ -84,7 +84,7 @@ METHOD_RETURN_TYPE PageContentContextDriver::GetCurrentPageContentStream(const A
     
     PageContentContextDriver* driver = ObjectWrap::Unwrap<PageContentContextDriver>(args.This());
     
-    Handle<Value> newInstance = driver->holder->GetNewPDFStream(args);
+    Local<Value> newInstance = driver->holder->GetNewPDFStream(args);
     ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT())->PDFStreamInstance = driver->ContentContext->GetCurrentPageContentStream();
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }

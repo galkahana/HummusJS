@@ -21,7 +21,7 @@
 
 using namespace v8;
 
-ObjectByteReader::ObjectByteReader(Handle<Object> inObject)
+ObjectByteReader::ObjectByteReader(Local<Object> inObject)
 {
 	CREATE_ISOLATE_CONTEXT;
 	
@@ -38,21 +38,21 @@ IOBasicTypes::LongBufferSizeType ObjectByteReader::Read(IOBasicTypes::Byte* inBu
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("read"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("read")).ToLocalChecked();
 
     if(value->IsUndefined())
         return 0;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-    Handle<Value> args[1];
+    Local<Value> args[1];
     args[0] = NEW_NUMBER(inBufferSize);
     
-	Handle<Value> result = func->Call(OBJECT_FROM_PERSISTENT(mObject), 1, args);
+	Local<Value> result = func->Call(GET_CURRENT_CONTEXT, OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
     
     if(!result->IsArray())
         return 0;
     
-    IOBasicTypes::LongBufferSizeType bufferLength = result->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
+    IOBasicTypes::LongBufferSizeType bufferLength = result->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
     for(IOBasicTypes::LongBufferSizeType i=0;i < bufferLength;++i)
         inBuffer[i] = (IOBasicTypes::Byte)(TO_UINT32(value->TO_OBJECT()->Get((uint32_t)i))->Value());
     
@@ -64,10 +64,10 @@ bool ObjectByteReader::NotEnded()
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 
-	Handle<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(NEW_STRING("notEnded"));
+	Local<Value> value = OBJECT_FROM_PERSISTENT(mObject)->Get(GET_CURRENT_CONTEXT, NEW_STRING("notEnded")).ToLocalChecked();
     if(value->IsUndefined())
         return true;
-    Handle<Function> func = Handle<Function>::Cast(value);
+    Local<Function> func = Local<Function>::Cast(value);
     
-	return (func->Call(OBJECT_FROM_PERSISTENT(mObject), 0, NULL)->TO_BOOLEAN()->Value());
+	return (func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 0, NULL).ToLocalChecked()->TO_BOOLEAN()->Value());
 }

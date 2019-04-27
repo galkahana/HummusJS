@@ -27,7 +27,7 @@ class ObjectByteReaderWithPosition : public IByteReaderWithPosition
 {
 public:
     
-    ObjectByteReaderWithPosition(v8::Handle<v8::Object> inObject);
+    ObjectByteReaderWithPosition(v8::Local<v8::Object> inObject);
     virtual ~ObjectByteReaderWithPosition();
     
     

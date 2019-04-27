@@ -112,15 +112,15 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     
     if(args.Length() == 3)
     {
-        Handle<Object> matrixArray = args[2]->TO_OBJECT();
-        if(matrixArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 6)
+        Local<Object> matrixArray = args[2]->TO_OBJECT();
+        if(matrixArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 6)
         {
             THROW_EXCEPTION("matrix array should be 6 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
         for(int i=0;i<6;++i)
-            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(i))->Value();
+            matrixBuffer[i] = TO_NUMBER(matrixArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
         transformationMatrix = matrixBuffer;
     }
     
@@ -135,17 +135,17 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CreateFormXObjectFromPDFPage(co
     }
     else
     {
-        Handle<Object> boxArray = args[1]->TO_OBJECT();
-        if(boxArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+        Local<Object> boxArray = args[1]->TO_OBJECT();
+        if(boxArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         {
             THROW_EXCEPTION("box dimensions array should be 4 numbers long");
             SET_FUNCTION_RETURN_VALUE(UNDEFINED)
         }
         
-        PDFRectangle box(TO_NUMBER(boxArray->Get(0))->Value(),
-                         TO_NUMBER(boxArray->Get(1))->Value(),
-                         TO_NUMBER(boxArray->Get(2))->Value(),
-                         TO_NUMBER(boxArray->Get(3))->Value());
+        PDFRectangle box(TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                         TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                         TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                         TO_NUMBER(boxArray->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value());
         
         result = copyingContextDriver->CopyingContext->CreateFormXObjectFromPDFPage(TO_UINT32(args[0])->Value(),
                                                                                     box,
@@ -267,7 +267,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentParser(const A
 
     DocumentCopyingContextDriver* copyingContext = ObjectWrap::Unwrap<DocumentCopyingContextDriver>(args.This());
     
-    Handle<Value> newInstance = copyingContext->holder->GetNewPDFReader(args);
+    Local<Value> newInstance = copyingContext->holder->GetNewPDFReader(args);
     ObjectWrap::Unwrap<PDFReaderDriver>(newInstance->TO_OBJECT())->SetFromOwnedParser(copyingContext->CopyingContext->GetSourceDocumentParser());
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -354,7 +354,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyDirectObjectWithDeepCopy(co
     
     ObjectIDTypeList::iterator it = result.second.begin();
     for(; it != result.second.end();++it)
-        resultObjectIDs->Set(NEW_NUMBER(index++),NEW_NUMBER(*it));
+        resultObjectIDs->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(index++),NEW_NUMBER(*it));
     
     SET_FUNCTION_RETURN_VALUE(resultObjectIDs)
 }
@@ -381,12 +381,12 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::CopyNewObjectsForDirectObject(c
     }
     
     ObjectIDTypeList objectIDs;
-    Handle<Object> objectIDsArray = args[0]->TO_OBJECT();
+    Local<Object> objectIDsArray = args[0]->TO_OBJECT();
 
-    unsigned int length = objectIDsArray->Get(v8::NEW_STRING("length"))->TO_UINT32Value();
+    unsigned int length = objectIDsArray->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
     
     for(unsigned int i=0;i <length;++i)
-        objectIDs.push_back(TO_UINT32(objectIDsArray->Get(i))->Value());
+        objectIDs.push_back(TO_UINT32(objectIDsArray->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
     
     EStatusCode status = copyingContextDriver->CopyingContext->CopyNewObjectsForDirectObject(objectIDs);
     if(status != eSuccess)
@@ -446,7 +446,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetCopiedObjects(const ARGS_TYP
 	MapIterator<ObjectIDTypeToObjectIDTypeMap> it = copyingContextDriver->CopyingContext->GetCopiedObjectsMappingIterator();
     
     while(it.MoveNext())
-        result->Set(NEW_STRING(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),NEW_NUMBER(it.GetValue()));
+        result->Set(GET_CURRENT_CONTEXT, NEW_STRING(ObjectIDTypeObject(it.GetKey()).ToString().c_str()),NEW_NUMBER(it.GetValue()));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }
@@ -475,14 +475,14 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::ReplaceSourceObjects(const ARGS
     // create an object that will serve as the map
     ObjectIDTypeToObjectIDTypeMap resultMap;
     
-    Handle<Object> anObject = args[0]->TO_OBJECT();
+    Local<Object> anObject = args[0]->TO_OBJECT();
     
-    Handle<Array> objectKeys = anObject->GetOwnPropertyNames();
+    Local<Array> objectKeys = anObject->GetOwnPropertyNames(GET_CURRENT_CONTEXT).ToLocalChecked();
     
     for(unsigned long i=0; i < objectKeys->Length(); ++i)
     {
-        Handle<String> key  = objectKeys->Get(NEW_NUMBER(0))->TO_STRING();
-        Handle<Value> value = anObject->Get(key);
+        Local<String> key  = objectKeys->Get(GET_CURRENT_CONTEXT, NEW_NUMBER(0)).ToLocalChecked()->TO_STRING();
+        Local<Value> value = anObject->Get(GET_CURRENT_CONTEXT, key).ToLocalChecked();
         
         resultMap.insert(ObjectIDTypeToObjectIDTypeMap::value_type(ObjectIDTypeObject(*UTF_8_VALUE(key)),TO_UINT32(value)->Value()));
         
@@ -506,7 +506,7 @@ METHOD_RETURN_TYPE DocumentCopyingContextDriver::GetSourceDocumentStream(const A
         SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
 
-    Handle<Value> resultDriver = copyingContextDriver->holder->GetNewByteWriterWithPosition(args);
+    Local<Value> resultDriver = copyingContextDriver->holder->GetNewByteWriterWithPosition(args);
 
     ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(resultDriver->TO_OBJECT())->SetStream(
         copyingContextDriver->CopyingContext->GetSourceDocumentStream(),

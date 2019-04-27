@@ -161,7 +161,7 @@ METHOD_RETURN_TYPE PDFPageModifierDriver::GetContext(const ARGS_TYPE& args)
 
         }
 
-        Handle<Value> newInstance = driver->holder->GetNewXObjectContentContext(args);
+        Local<Value> newInstance = driver->holder->GetNewXObjectContentContext(args);
         XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->TO_OBJECT());
         contentContextDriver->ContentContext = 
             driver->mModifierPageInstance->GetCurrentFormContext() ? 

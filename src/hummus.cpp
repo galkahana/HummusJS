@@ -79,7 +79,7 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
-    Handle<Value> instance = holder->GetNewPDFWriter(args);        
+    Local<Value> instance = holder->GetNewPDFWriter(args);        
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
 
@@ -99,10 +99,10 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
     
     if(args.Length() == 2 && args[1]->IsObject())
     {
-        Handle<Object> anObject = args[1]->TO_OBJECT();
-        if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
+        Local<Object> anObject = args[1]->TO_OBJECT();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("version")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("version")).ToLocalChecked()->IsNumber())
         {
-            long pdfVersionValue = TO_INT32(anObject->Get(NEW_STRING("version")))->Value();
+            long pdfVersionValue = TO_INT32(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("version")).ToLocalChecked())->Value();
             
             if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
             {
@@ -112,29 +112,29 @@ METHOD_RETURN_TYPE CreateWriter(const ARGS_TYPE& args)
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
             
-        if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->TO_BOOLEAN()->Value();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("compress")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("compress")).ToLocalChecked()->IsBoolean())
+            pdfCreationSettings.CompressStreams = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("compress")).ToLocalChecked()->TO_BOOLEAN()->Value();
 
-        if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("log")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->IsString())
         {
             logConfig.ShouldLog = true;
-            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->TO_STRING());
+            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).ToLocalChecked()->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
-            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("userPassword"))->TO_STRING());
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).ToLocalChecked()->IsString())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("ownerPassword"))->TO_STRING());
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).ToLocalChecked()->IsNumber())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_INT32(anObject->Get(NEW_STRING("userProtectionFlag")))->Value();
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_INT32(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).ToLocalChecked())->Value();
         }
         else // default to print only
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
@@ -211,10 +211,10 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
     
     if(args.Length() == 3 && args[2]->IsObject())
     {
-        Handle<Object> anObject = args[2]->TO_OBJECT();
-        if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsNumber())
+        Local<Object> anObject = args[2]->TO_OBJECT();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("version")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("version")).ToLocalChecked()->IsNumber())
         {
-            long pdfVersionValue = TO_INT32(anObject->Get(NEW_STRING("version")))->Value();
+            long pdfVersionValue = TO_INT32(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("version")).ToLocalChecked())->Value();
             
             if(pdfVersionValue != ePDFVersionUndefined && (pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue))
             {
@@ -224,34 +224,34 @@ METHOD_RETURN_TYPE Recrypt(const ARGS_TYPE& args)
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
             
-        if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->TO_BOOLEAN()->Value();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("compress")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("compress")).ToLocalChecked()->IsBoolean())
+            pdfCreationSettings.CompressStreams = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("compress")).ToLocalChecked()->TO_BOOLEAN()->Value();
 
-        if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("log")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->IsString())
         {
             logConfig.ShouldLog = true;
-            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->TO_STRING());
+            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("password")) && anObject->Get(NEW_STRING("password"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            originalPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("password"))->TO_STRING());
+            originalPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).ToLocalChecked()->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
-            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("userPassword"))->TO_STRING());
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).ToLocalChecked()->IsString())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("ownerPassword"))->TO_STRING());
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).ToLocalChecked()->IsNumber())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_INT32(anObject->Get(NEW_STRING("userProtectionFlag")))->Value();
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_INT32(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).ToLocalChecked())->Value();
         }
         else // default to print only
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;
@@ -294,7 +294,7 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
-    Handle<Value> instance = holder->GetNewPDFWriter(args);    
+    Local<Value> instance = holder->GetNewPDFWriter(args);    
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
     
@@ -307,27 +307,27 @@ METHOD_RETURN_TYPE CreateWriterToContinue(const ARGS_TYPE& args)
 	}
     
     std::string alternativePath;
-    Handle<Object> alternativeStream;
+    Local<Object> alternativeStream;
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
    
     if(args.Length() == 2 && args[1]->IsObject())
     {
-        Handle<Object> anObject = args[1]->TO_OBJECT();
+        Local<Object> anObject = args[1]->TO_OBJECT();
         
-        if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
-            alternativePath = *UTF_8_VALUE(anObject->Get(NEW_STRING("modifiedFilePath"))->TO_STRING());
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("modifiedFilePath")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("modifiedFilePath")).ToLocalChecked()->IsString())
+            alternativePath = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("modifiedFilePath")).ToLocalChecked()->TO_STRING());
 
-        if(anObject->Has(NEW_STRING("modifiedStream")) && anObject->Get(NEW_STRING("modifiedStream"))->IsObject())
-            alternativeStream = anObject->Get(NEW_STRING("modifiedStream"))->TO_OBJECT();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("modifiedStream")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("modifiedStream")).ToLocalChecked()->IsObject())
+            alternativeStream = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("modifiedStream")).ToLocalChecked()->TO_OBJECT();
         
         
-        if(anObject->Has(NEW_STRING("log")))
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("log")).FromJust())
         {
-            Handle<Value> value = anObject->Get(NEW_STRING("log"));
+            Local<Value> value = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked();
             if(value->IsString())
             {
                 logConfig.ShouldLog = true;
-                logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->TO_STRING());
+                logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->TO_STRING());
                 logConfig.LogStream = NULL;
             }
             else if(value->IsObject())
@@ -371,7 +371,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
-    Handle<Value> instance = holder->GetNewPDFWriter(args);  
+    Local<Value> instance = holder->GetNewPDFWriter(args);  
     
     PDFWriterDriver* driver = ObjectWrap::Unwrap<PDFWriterDriver>(instance->TO_OBJECT());
     
@@ -387,7 +387,7 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     
     EPDFVersion pdfVersion = ePDFVersion10;
     std::string alternativePath;
-    Handle<Value> alternativeStream;
+    Local<Value> alternativeStream;
     PDFCreationSettings pdfCreationSettings(true,true);
     LogConfiguration logConfig = LogConfiguration::DefaultLogConfiguration();
     
@@ -395,10 +395,10 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
     
     if(args.Length() == (optionsObjectIndex+1) && args[optionsObjectIndex]->IsObject())
     {
-        Handle<Object> anObject = args[optionsObjectIndex]->TO_OBJECT();
-        if(anObject->Has(NEW_STRING("version")) && anObject->Get(NEW_STRING("version"))->IsString())
+        Local<Object> anObject = args[optionsObjectIndex]->TO_OBJECT();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("version")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("version")).ToLocalChecked()->IsString())
         {
-            long pdfVersionValue = TO_INT32(anObject->Get(NEW_STRING("version")))->Value();
+            long pdfVersionValue = TO_INT32(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("version")).ToLocalChecked())->Value();
             
             if(pdfVersionValue < ePDFVersion10 || ePDFVersionMax < pdfVersionValue)
             {
@@ -408,32 +408,32 @@ METHOD_RETURN_TYPE CreateWriterToModify(const ARGS_TYPE& args)
             pdfVersion = (EPDFVersion)pdfVersionValue;
         }
         
-        if(anObject->Has(NEW_STRING("compress")) && anObject->Get(NEW_STRING("compress"))->IsBoolean())
-            pdfCreationSettings.CompressStreams = anObject->Get(NEW_STRING("compress"))->TO_BOOLEAN()->Value();
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("compress")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("compress")).ToLocalChecked()->IsBoolean())
+            pdfCreationSettings.CompressStreams = anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("compress")).ToLocalChecked()->TO_BOOLEAN()->Value();
         
-        if(anObject->Has(NEW_STRING("modifiedFilePath")) && anObject->Get(NEW_STRING("modifiedFilePath"))->IsString())
-            alternativePath = *UTF_8_VALUE(anObject->Get(NEW_STRING("modifiedFilePath"))->TO_STRING());
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("modifiedFilePath")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("modifiedFilePath")).ToLocalChecked()->IsString())
+            alternativePath = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("modifiedFilePath")).ToLocalChecked()->TO_STRING());
 
-        if(anObject->Has(NEW_STRING("log")) && anObject->Get(NEW_STRING("log"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("log")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->IsString())
         {
             logConfig.ShouldLog = true;
-            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(NEW_STRING("log"))->TO_STRING());
+            logConfig.LogFileLocation = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("log")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("userPassword")) && anObject->Get(NEW_STRING("userPassword"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).ToLocalChecked()->IsString())
         {
             pdfCreationSettings.DocumentEncryptionOptions.ShouldEncrypt = true;
-            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("userPassword"))->TO_STRING());
+            pdfCreationSettings.DocumentEncryptionOptions.UserPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userPassword")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("ownerPassword")) && anObject->Get(NEW_STRING("ownerPassword"))->IsString())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).ToLocalChecked()->IsString())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(NEW_STRING("ownerPassword"))->TO_STRING());
+            pdfCreationSettings.DocumentEncryptionOptions.OwnerPassword = *UTF_8_VALUE(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("ownerPassword")).ToLocalChecked()->TO_STRING());
         }
 
-        if(anObject->Has(NEW_STRING("userProtectionFlag")) && anObject->Get(NEW_STRING("userProtectionFlag"))->IsNumber())
+        if(anObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).FromJust() && anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).ToLocalChecked()->IsNumber())
         {
-            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_INT32(anObject->Get(NEW_STRING("userProtectionFlag")))->Value();
+            pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = TO_INT32(anObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("userProtectionFlag")).ToLocalChecked())->Value();
         }
         else // default to print only
             pdfCreationSettings.DocumentEncryptionOptions.UserProtectionOptionsFlag = 4;  
@@ -470,7 +470,7 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     EXPOSE_EXTERNAL_ARGS(ConstructorsHolder, holder)
-    Handle<Value> instance = holder->GetNewPDFReader(args);      
+    Local<Value> instance = holder->GetNewPDFReader(args);      
     
     PDFReaderDriver* driver = ObjectWrap::Unwrap<PDFReaderDriver>(instance->TO_OBJECT());
     
@@ -488,10 +488,10 @@ METHOD_RETURN_TYPE CreateReader(const ARGS_TYPE& args)
 
     if(args.Length() >= 2) 
     {
-        Handle<Object> options = args[1]->TO_OBJECT();
-        if(options->Has(NEW_STRING("password")) && options->Get(NEW_STRING("password"))->IsString())
+        Local<Object> options = args[1]->TO_OBJECT();
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            parsingOptions.Password = *UTF_8_VALUE(options->Get(NEW_STRING("password"))->TO_STRING());
+            parsingOptions.Password = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }
     }
         
@@ -527,7 +527,7 @@ METHOD_RETURN_TYPE GetTypeLabel(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
     }
     
-    Handle<Value> result = NEW_STRING(PDFObject::scPDFObjectTypeLabel((PDFObject::EPDFObjectType)value));
+    Local<Value> result = NEW_STRING(PDFObject::scPDFObjectTypeLabel((PDFObject::EPDFObjectType)value));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }
@@ -578,11 +578,11 @@ DEF_INIT(HummusInit) {
 
     
     // define methods
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriter)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToContinue)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToModify)->GetFunction())
-	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateReader)->GetFunction())
-    EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriter"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriter)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToContinue"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToContinue)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+	EXPORTS_SET(exports,NEW_SYMBOL("createWriterToModify"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateWriterToModify)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+	EXPORTS_SET(exports,NEW_SYMBOL("createReader"), NEW_FUNCTION_TEMPLATE_EXTERNAL(CreateReader)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
+    EXPORTS_SET(exports,NEW_SYMBOL("recrypt"), NEW_FUNCTION_TEMPLATE(Recrypt)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
     
     // define pdf versions enum
     EXPORTS_SET(exports,NEW_SYMBOL("ePDFVersion10"),NEW_NUMBER(ePDFVersion10))
@@ -627,7 +627,7 @@ DEF_INIT(HummusInit) {
     EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectStream"),NEW_NUMBER(PDFObject::ePDFObjectStream))
     EXPORTS_SET(exports,NEW_SYMBOL("ePDFObjectSymbol"),NEW_NUMBER(PDFObject::ePDFObjectSymbol))
     // getter for string represenation of type enum
-	EXPORTS_SET(exports,NEW_SYMBOL("getTypeLabel"), NEW_FUNCTION_TEMPLATE(GetTypeLabel)->GetFunction())
+	EXPORTS_SET(exports,NEW_SYMBOL("getTypeLabel"), NEW_FUNCTION_TEMPLATE(GetTypeLabel)->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
     
     // ETokenSeparator
     EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorSpace"),NEW_NUMBER(eTokenSeparatorSpace))

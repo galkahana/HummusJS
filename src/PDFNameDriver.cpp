@@ -64,7 +64,7 @@ METHOD_RETURN_TYPE PDFNameDriver::GetValue(Local<String> property, const PROPERT
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFNameDriver>(info.Holder())->TheObject->GetValue().c_str());
+    Local<String> result = NEW_STRING(ObjectWrap::Unwrap<PDFNameDriver>(info.Holder())->TheObject->GetValue().c_str());
     SET_ACCESSOR_RETURN_VALUE(result)
 }
 

@@ -94,7 +94,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentContext(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
   
-    Handle<Value> newInstance = formDriver->holder->GetNewXObjectContentContext(args);
+    Local<Value> newInstance = formDriver->holder->GetNewXObjectContentContext(args);
     XObjectContentContextDriver* contentContextDriver = ObjectWrap::Unwrap<XObjectContentContextDriver>(newInstance->TO_OBJECT());
     contentContextDriver->ContentContext = formDriver->FormXObject->GetContentContext();
     contentContextDriver->FormOfContext = formDriver->FormXObject;
@@ -109,7 +109,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetResourcesDictionary(const ARGS_TYPE& ar
 	CREATE_ESCAPABLE_SCOPE;
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
     
-    Handle<Value> newInstance = formDriver->holder->GetNewResourcesDictionary(args);
+    Local<Value> newInstance = formDriver->holder->GetNewResourcesDictionary(args);
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(formDriver->FormXObject->GetResourcesDictionary());
     
@@ -123,7 +123,7 @@ METHOD_RETURN_TYPE FormXObjectDriver::GetContentStream(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     FormXObjectDriver* formDriver = ObjectWrap::Unwrap<FormXObjectDriver>(args.This());
     
-    Handle<Value> newInstance = formDriver->holder->GetNewPDFStream(args);
+    Local<Value> newInstance = formDriver->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = formDriver->FormXObject->GetContentStream();
     

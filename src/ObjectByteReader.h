@@ -27,7 +27,7 @@ class ObjectByteReader : public IByteReader
 {
 public:
 
-    ObjectByteReader(v8::Handle<v8::Object> inObject);
+    ObjectByteReader(v8::Local<v8::Object> inObject);
     virtual ~ObjectByteReader();
 
     // IByteReader implementation

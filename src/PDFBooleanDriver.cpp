@@ -65,7 +65,7 @@ METHOD_RETURN_TYPE PDFBooleanDriver::GetValue(Local<String> property, const PROP
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<Boolean> result = NEW_BOOLEAN(ObjectWrap::Unwrap<PDFBooleanDriver>(info.Holder())->TheObject->GetValue());
+    Local<Boolean> result = NEW_BOOLEAN(ObjectWrap::Unwrap<PDFBooleanDriver>(info.Holder())->TheObject->GetValue());
 
     
     SET_ACCESSOR_RETURN_VALUE(result)

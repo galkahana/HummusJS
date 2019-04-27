@@ -134,7 +134,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartDictionary(const ARGS_TYPE& args)
     
     DictionaryContext* dictionaryContext = driver->ObjectsContextInstance->StartDictionary();
     
-    Handle<Value> newInstance = driver->holder->GetNewDictionaryContext(args);
+    Local<Value> newInstance = driver->holder->GetNewDictionaryContext(args);
     ObjectWrap::Unwrap<DictionaryContextDriver>(newInstance->TO_OBJECT())->DictionaryContextInstance = dictionaryContext;
     SET_FUNCTION_RETURN_VALUE(newInstance)
 }
@@ -341,9 +341,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteLiteralString(const ARGS_TYPE& arg
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_UINT32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked())->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteLiteralString(string);
 	}
 	else
@@ -371,9 +371,9 @@ METHOD_RETURN_TYPE ObjectsContextDriver::WriteHexString(const ARGS_TYPE& args)
 	if(args[0]->IsArray())
 	{
 		std::string string;
-		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(v8::NEW_STRING("length")))->TO_UINT32Value();
+		unsigned long arrayLength = (args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked())->TO_UINT32Value();
 		for(unsigned long i=0;i<arrayLength;++i)
-			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(i))->Value());
+			string.push_back((unsigned char)TO_NUMBER(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value());
 		ObjectWrap::Unwrap<ObjectsContextDriver>(args.This())->ObjectsContextInstance->WriteHexString(string);
 	}
 	else
@@ -512,7 +512,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartPDFStream(const ARGS_TYPE& args)
         aStream = objectsContext->ObjectsContextInstance->StartPDFStream();
     }
     
-    Handle<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
+    Local<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
@@ -548,7 +548,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartUnfilteredPDFStream(const ARGS_TYP
         aStream = objectsContext->ObjectsContextInstance->StartUnfilteredPDFStream();
     }
     
-    Handle<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
+    Local<Value> newInstance = objectsContext->holder->GetNewPDFStream(args);
     PDFStreamDriver* streamDriver = ObjectWrap::Unwrap<PDFStreamDriver>(newInstance->TO_OBJECT());
     streamDriver->PDFStreamInstance = aStream;
     streamDriver->mOwns = true;
@@ -565,7 +565,7 @@ METHOD_RETURN_TYPE ObjectsContextDriver::StartFreeContext(const ARGS_TYPE& args)
     
     ObjectsContextDriver* driver = ObjectWrap::Unwrap<ObjectsContextDriver>(args.This());
     
-    Handle<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
+    Local<Value> result = driver->holder->GetNewByteWriterWithPosition(args);
     
     ObjectWrap::Unwrap<ByteWriterWithPositionDriver>(result->TO_OBJECT())->SetStream(driver->ObjectsContextInstance->StartFreeContext(), false);
     

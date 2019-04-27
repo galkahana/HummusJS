@@ -100,10 +100,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROP
     
     Local<Array> mediaBox = NEW_ARRAY(4);
     
-    mediaBox->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftX));
-    mediaBox->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftY));
-    mediaBox->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightX));
-    mediaBox->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightY));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftX));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().LowerLeftY));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightX));
+    mediaBox->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(pageDriver->mPDFPage->GetMediaBox().UpperRightY));
 
     SET_ACCESSOR_RETURN_VALUE(mediaBox)
 }
@@ -121,10 +121,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPE
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(cropBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(cropBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(cropBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(cropBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(cropBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(cropBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(cropBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(cropBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -147,10 +147,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(Local<String> property, const PROP
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(bleedBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(bleedBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(bleedBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(bleedBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(bleedBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(bleedBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(bleedBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(bleedBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -173,10 +173,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(Local<String> property, const PROPE
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(trimBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(trimBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(trimBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(trimBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(trimBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(trimBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(trimBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(trimBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -199,10 +199,10 @@ METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(Local<String> property, const PROPER
     {
         Local<Array> box = NEW_ARRAY(4);
         
-        box->Set(v8::NEW_NUMBER(0),v8::NEW_NUMBER(artBox.second.LowerLeftX));
-        box->Set(v8::NEW_NUMBER(1),v8::NEW_NUMBER(artBox.second.LowerLeftY));
-        box->Set(v8::NEW_NUMBER(2),v8::NEW_NUMBER(artBox.second.UpperRightX));
-        box->Set(v8::NEW_NUMBER(3),v8::NEW_NUMBER(artBox.second.UpperRightY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(0),v8::NEW_NUMBER(artBox.second.LowerLeftX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(1),v8::NEW_NUMBER(artBox.second.LowerLeftY));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(2),v8::NEW_NUMBER(artBox.second.UpperRightX));
+        box->Set(GET_CURRENT_CONTEXT, v8::NEW_NUMBER(3),v8::NEW_NUMBER(artBox.second.UpperRightY));
     
         SET_ACCESSOR_RETURN_VALUE(box)
     }
@@ -222,13 +222,13 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Media box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetMediaBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
     
@@ -243,7 +243,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPER
     
     if(rotate.first) 
     {
-        Handle<Number> result = NEW_NUMBER(rotate.second);
+        Local<Number> result = NEW_NUMBER(rotate.second);
         SET_ACCESSOR_RETURN_VALUE(result)        
     }
     else
@@ -277,13 +277,13 @@ void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Crop box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetCropBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -297,13 +297,13 @@ void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, cons
     if(!value->IsArray())
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Bleed box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetBleedBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -317,13 +317,13 @@ void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const
     if(!value->IsArray())
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Trim box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetTrimBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -337,13 +337,13 @@ void PDFPageDriver::SetArtBox(Local<String> property, Local<Value> value, const 
     if(!value->IsArray())
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    if(value->TO_OBJECT()->Get(v8::NEW_STRING("length"))->TO_UINT32Value() != 4)
+    if(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, v8::NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value() != 4)
         THROW_EXCEPTION("Art box is set to a value which is not a 4 numbers array");
     
-    pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(0))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(1))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(2))->Value(),
-                                                  TO_NUMBER(value->TO_OBJECT()->Get(3))->Value()));
+    pageDriver->mPDFPage->SetArtBox(PDFRectangle(TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 1).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 2).ToLocalChecked())->Value(),
+                                                  TO_NUMBER(value->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 3).ToLocalChecked())->Value()));
     
 }
 
@@ -353,7 +353,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetResourcesDictionary(const ARGS_TYPE& args)
 	CREATE_ESCAPABLE_SCOPE;
     PDFPageDriver* pageDriver = ObjectWrap::Unwrap<PDFPageDriver>(args.This());
     
-    Handle<Value> newInstance = pageDriver->holder->GetNewResourcesDictionary(args);
+    Local<Value> newInstance = pageDriver->holder->GetNewResourcesDictionary(args);
     ResourcesDictionaryDriver* resourceDictionaryDriver = ObjectWrap::Unwrap<ResourcesDictionaryDriver>(newInstance->TO_OBJECT());
     resourceDictionaryDriver->ResourcesDictionaryInstance = &(pageDriver->GetPage()->GetResourcesDictionary());
     

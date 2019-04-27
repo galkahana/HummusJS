@@ -27,7 +27,7 @@ class ObjectByteWriterWithPosition : public IByteWriterWithPosition
 {
 public:
     
-    ObjectByteWriterWithPosition(v8::Handle<v8::Object> inObject);
+    ObjectByteWriterWithPosition(v8::Local<v8::Object> inObject);
     virtual ~ObjectByteWriterWithPosition();
     
     // IByteWriterWithPosition implementation

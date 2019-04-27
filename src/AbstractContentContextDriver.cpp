@@ -93,7 +93,7 @@ void AbstractContentContextDriver::SetResourcesDictionary(ResourcesDictionary* i
     mResourcesDictionary = inResourcesDictionary;
 }
 
-void AbstractContentContextDriver::Init(Handle<FunctionTemplate>& ioDriverTemplate)
+void AbstractContentContextDriver::Init(Local<FunctionTemplate>& ioDriverTemplate)
 {
 	SET_PROTOTYPE_METHOD(ioDriverTemplate,"b",b);
 	SET_PROTOTYPE_METHOD(ioDriverTemplate, "B", B);
@@ -650,10 +650,10 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::d(const ARGS_TYPE& args)
 		SET_FUNCTION_RETURN_VALUE(UNDEFINED)
 	}
 
-    int dashArrayLength = TO_INT32(args[0]->TO_OBJECT()->Get(NEW_STRING("length")))->Value();
+    int dashArrayLength = TO_INT32(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
     double* dashArray = new double[dashArrayLength];
     for(int i=0; i < dashArrayLength;++i)
-        dashArray[i] = TO_INT32(args[0]->TO_OBJECT()->Get(i))->Value();
+        dashArray[i] = TO_INT32(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
     
     contentContext->GetContext()->d(dashArray,dashArrayLength,TO_INT32(args[1])->Value());
     
@@ -1682,14 +1682,14 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::TJ(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
-TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Handle<Object>& inObject)
+TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Local<Object>& inObject)
 {
 	CREATE_ISOLATE_CONTEXT;
 	TextPlacingOptions options;
     
-	if (inObject->Has(NEW_SYMBOL("encoding")))
+	if (inObject->Has(GET_CURRENT_CONTEXT, NEW_SYMBOL("encoding")).FromJust())
     {
-        std::string value = *UTF_8_VALUE(inObject->Get(NEW_SYMBOL("encoding"))->TO_STRING());
+        std::string value = *UTF_8_VALUE(inObject->Get(GET_CURRENT_CONTEXT, NEW_SYMBOL("encoding")).ToLocalChecked()->TO_STRING());
         if(value.compare("hex"))
             options.encoding = TextPlacingOptions::EEncodingHex;
         else if(value.compare("code"))
@@ -1701,30 +1701,30 @@ TextPlacingOptions AbstractContentContextDriver::ObjectToOptions(const Handle<Ob
     return options;
 }
 
-GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8::Handle<v8::Value>& inArray)
+GlyphUnicodeMappingList AbstractContentContextDriver::ArrayToGlyphsList(const v8::Local<v8::Value>& inArray)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
 	
 	GlyphUnicodeMappingList glyphList;
 
-    int arrayLength =TO_INT32(inArray->TO_OBJECT()->Get(NEW_STRING("length")))->Value();
+    int arrayLength =TO_INT32(inArray->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
     Local<Object> arrayObject = inArray->TO_OBJECT();
 
     for(int i=0; i < arrayLength; ++i)
     {
-        if(!arrayObject->Get(i)->IsArray())
+        if(!arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->IsArray())
             continue;
         
-        int itemLength = TO_INT32(arrayObject->Get(i)->TO_OBJECT()->Get(NEW_STRING("length")))->Value();
+        int itemLength = TO_INT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value();
         if(0 == itemLength)
             continue;
         
         GlyphUnicodeMapping mapping;
         
-        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(i)->TO_OBJECT()->Get(0))->Value();
+        mapping.mGlyphCode = TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, 0).ToLocalChecked())->Value();
         for(int j=1; j < itemLength;++j)
-            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(i)->TO_OBJECT()->Get(j))->Value());
+            mapping.mUnicodeValues.push_back(TO_UINT32(arrayObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, j).ToLocalChecked())->Value());
 			
 		glyphList.push_back(mapping);
     }
@@ -1790,7 +1790,7 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawPath(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
-void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& inMaybeOptions)
+void AbstractContentContextDriver::SetupColorAndLineWidth(const Local<Value>& inMaybeOptions)
 {
 	CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -1798,38 +1798,38 @@ void AbstractContentContextDriver::SetupColorAndLineWidth(const Handle<Value>& i
     if(!inMaybeOptions->IsObject())
         return;
     
-    Handle<Object> options = inMaybeOptions->TO_OBJECT();
+    Local<Object> options = inMaybeOptions->TO_OBJECT();
     
-    bool isStroke = !options->Has(NEW_STRING("type")) ||
-                    strcmp(*UTF_8_VALUE(options->Get(NEW_STRING("type"))),"stroke") == 0;
+    bool isStroke = !options->Has(GET_CURRENT_CONTEXT, NEW_STRING("type")).FromJust() ||
+                    strcmp(*UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("type")).ToLocalChecked()),"stroke") == 0;
     SetColor(inMaybeOptions,isStroke);
     
-    if(isStroke && options->Has(NEW_STRING("width")))
-        GetContext()->w(TO_NUMBER(options->Get(NEW_STRING("width")))->Value());
+    if(isStroke && options->Has(GET_CURRENT_CONTEXT, NEW_STRING("width")).FromJust())
+        GetContext()->w(TO_NUMBER(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("width")).ToLocalChecked())->Value());
 }
 
-void AbstractContentContextDriver::SetColor(const Handle<Value>& inMaybeOptions,bool inIsStroke)
+void AbstractContentContextDriver::SetColor(const Local<Value>& inMaybeOptions,bool inIsStroke)
 {
 	CREATE_ISOLATE_CONTEXT;
 	
 	if (!inMaybeOptions->IsObject())
         return;
     
-    Handle<Object> options = inMaybeOptions->TO_OBJECT();
+    Local<Object> options = inMaybeOptions->TO_OBJECT();
 
-    if(options->Has(NEW_STRING("color")))
+    if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("color")).FromJust())
     {
-        if(options->Get(NEW_STRING("color"))->IsString())
+        if(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("color")).ToLocalChecked()->IsString())
         {
             // string, named color. always RGB (for now)
-            SetRGBColor(sColorMap.GetRGBForColorName(*UTF_8_VALUE(options->Get(NEW_STRING("color"))->TO_STRING())),inIsStroke);
+            SetRGBColor(sColorMap.GetRGBForColorName(*UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("color")).ToLocalChecked()->TO_STRING())),inIsStroke);
         }
         else
         {
             // should be number
-            unsigned long colorvalue = (unsigned long)(TO_INT32(options->Get(NEW_STRING("color")))->Value());
-            std::string colorspace = options->Has(NEW_STRING("colorspace")) ?
-            *UTF_8_VALUE(options->Get(NEW_STRING("colorspace")->TO_STRING())) :
+            unsigned long colorvalue = (unsigned long)(TO_INT32(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("color")).ToLocalChecked())->Value());
+            std::string colorspace = options->Has(GET_CURRENT_CONTEXT, NEW_STRING("colorspace")).FromJust() ?
+            *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("colorspace")->TO_STRING()).ToLocalChecked()) :
             "rgb";
             if(colorspace.compare("rgb") == 0)
             {
@@ -1872,7 +1872,7 @@ void AbstractContentContextDriver::SetRGBColor(unsigned long inColorValue,bool i
         GetContext()->rg(r/255,g/255,b/255);
 }
 
-void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOptions)
+void AbstractContentContextDriver::FinishPath(const Local<Value>& inMaybeOptions)
 {
 	CREATE_ISOLATE_CONTEXT;
 	
@@ -1882,13 +1882,13 @@ void AbstractContentContextDriver::FinishPath(const Handle<Value>& inMaybeOption
     if(inMaybeOptions->IsObject())
     {
     
-        Handle<Object> options = inMaybeOptions->TO_OBJECT();
+        Local<Object> options = inMaybeOptions->TO_OBJECT();
     
-        if(options->Has(NEW_STRING("type")))
-            type = *UTF_8_VALUE(options->Get(NEW_STRING("type")));
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("type")).FromJust())
+            type = *UTF_8_VALUE(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("type")).ToLocalChecked());
         
-        if(options->Has(NEW_STRING("close")))
-            closePath = options->Get(NEW_STRING("close"))->TO_BOOLEAN()->Value();
+        if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("close")).FromJust())
+            closePath = options->Get(GET_CURRENT_CONTEXT, NEW_STRING("close")).ToLocalChecked()->TO_BOOLEAN()->Value();
     }
     
     if(type.compare("stroke") == 0)
@@ -2093,15 +2093,15 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
 	// underline
 	if(args.Length() >= 4 && args[3]->IsObject())
 	{
-		Handle<Object> options = args[3]->TO_OBJECT();
-		if(options->Has(NEW_STRING("underline")) && 
-				options->Get(NEW_STRING("underline"))->TO_BOOLEAN()->Value() &&
-				contentContext->holder->IsUsedFontInstance(options->Get(NEW_STRING("font"))))
+		Local<Object> options = args[3]->TO_OBJECT();
+		if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("underline")).FromJust() && 
+				options->Get(GET_CURRENT_CONTEXT, NEW_STRING("underline")).ToLocalChecked()->TO_BOOLEAN()->Value() &&
+				contentContext->holder->IsUsedFontInstance(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("font")).ToLocalChecked()))
 		{
 			// draw underline. use font data for position and thickness
-			double fontSize = options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1;
+			double fontSize = options->Has(GET_CURRENT_CONTEXT, NEW_STRING("size")).FromJust() ? TO_NUMBER(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("size")).ToLocalChecked())->Value():1;
 
-			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->TO_OBJECT())->UsedFont;
+			PDFUsedFont* font = ObjectWrap::Unwrap<UsedFontDriver>(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("font")).ToLocalChecked()->TO_OBJECT())->UsedFont;
 			FreeTypeFaceWrapper*  ftWrapper = font->GetFreeTypeFont();
 
 			contentContext->SetColor(args[3],true);
@@ -2116,19 +2116,19 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::WriteText(const ARGS_TYPE& args
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
-void AbstractContentContextDriver::SetFont(const v8::Handle<v8::Value>& inMaybeOptions)
+void AbstractContentContextDriver::SetFont(const v8::Local<v8::Value>& inMaybeOptions)
 {
 	CREATE_ISOLATE_CONTEXT;
 	
 	if (!inMaybeOptions->IsObject())
         return;
     
-    Handle<Object> options = inMaybeOptions->TO_OBJECT();
+    Local<Object> options = inMaybeOptions->TO_OBJECT();
     
-    if(options->Has(NEW_STRING("font")) &&
-       holder->IsUsedFontInstance(options->Get(NEW_STRING("font"))))
-        GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(NEW_STRING("font"))->TO_OBJECT())->UsedFont,
-                         options->Has(NEW_STRING("size")) ? TO_NUMBER(options->Get(NEW_STRING("size")))->Value():1);
+    if(options->Has(GET_CURRENT_CONTEXT, NEW_STRING("font")).FromJust() &&
+       holder->IsUsedFontInstance(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("font")).ToLocalChecked()))
+        GetContext()->Tf(ObjectWrap::Unwrap<UsedFontDriver>(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("font")).ToLocalChecked()->TO_OBJECT())->UsedFont,
+                         options->Has(GET_CURRENT_CONTEXT, NEW_STRING("size")).FromJust() ? TO_NUMBER(options->Get(GET_CURRENT_CONTEXT, NEW_STRING("size")).ToLocalChecked())->Value():1);
 }
 
 METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args)
@@ -2170,45 +2170,45 @@ METHOD_RETURN_TYPE AbstractContentContextDriver::DrawImage(const ARGS_TYPE& args
     
     if(args.Length() >= 4)
     {
-        Handle<Object> optionsObject = args[3]->TO_OBJECT();
+        Local<Object> optionsObject = args[3]->TO_OBJECT();
         
-        if(optionsObject->Has(NEW_STRING("index")))
-            imageOptions.imageIndex = TO_UINT32(optionsObject->Get(NEW_STRING("index")))->Value();
+        if(optionsObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("index")).FromJust())
+            imageOptions.imageIndex = TO_UINT32(optionsObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("index")).ToLocalChecked())->Value();
         
-        if(optionsObject->Has(NEW_STRING("transformation")))
+        if(optionsObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("transformation")).FromJust())
         {
-            Handle<Value> transformationValue = optionsObject->Get(NEW_STRING("transformation"));
+            Local<Value> transformationValue = optionsObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("transformation")).ToLocalChecked();
             
             if(transformationValue->IsArray() || transformationValue->IsObject())
             {
-                Handle<Object> transformationObject = transformationValue->TO_OBJECT();
+                Local<Object> transformationObject = transformationValue->TO_OBJECT();
                 
-                if(transformationValue->IsArray() && TO_NUMBER(transformationObject->Get(NEW_STRING("length")))->Value() == 6)
+                if(transformationValue->IsArray() && TO_NUMBER(transformationObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked())->Value() == 6)
                 {
                     imageOptions.transformationMethod = AbstractContentContext::eMatrix;
                     for(int i=0;i<6;++i)
-                        imageOptions.matrix[i] = TO_NUMBER(transformationObject->Get(i))->Value();
+                        imageOptions.matrix[i] = TO_NUMBER(transformationObject->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked())->Value();
                 }
                 else if(transformationValue->IsObject())
                 {
                     // fitting object, determine transformation according to image dimensions relation to width/height
                     imageOptions.transformationMethod = AbstractContentContext::eFit;
-                    imageOptions.boundingBoxWidth = TO_NUMBER(transformationObject->Get(NEW_STRING("width")))->Value();
-                    imageOptions.boundingBoxHeight = TO_NUMBER(transformationObject->Get(NEW_STRING("height")))->Value();
-                    imageOptions.fitProportional = transformationObject->Has(NEW_STRING("proportional")) ?
-                                            transformationObject->Get(NEW_STRING("proportional"))->TO_BOOLEAN()->Value() :
+                    imageOptions.boundingBoxWidth = TO_NUMBER(transformationObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("width")).ToLocalChecked())->Value();
+                    imageOptions.boundingBoxHeight = TO_NUMBER(transformationObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("height")).ToLocalChecked())->Value();
+                    imageOptions.fitProportional = transformationObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("proportional")).FromJust() ?
+                                            transformationObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("proportional")).ToLocalChecked()->TO_BOOLEAN()->Value() :
                                             false;
-                    imageOptions.fitPolicy = transformationObject->Has(NEW_STRING("fit")) ?
-                                    (strcmp("always",*UTF_8_VALUE(transformationObject->Get(NEW_STRING("fit"))->TO_STRING())) == 0 ? AbstractContentContext::eAlways : AbstractContentContext::eOverflow):
+                    imageOptions.fitPolicy = transformationObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("fit")).FromJust() ?
+                                    (strcmp("always",*UTF_8_VALUE(transformationObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("fit")).ToLocalChecked()->TO_STRING())) == 0 ? AbstractContentContext::eAlways : AbstractContentContext::eOverflow):
                                     AbstractContentContext::eOverflow;
                 }
                 
             }
         }
 
-        if(optionsObject->Has(NEW_STRING("password")) && optionsObject->Get(NEW_STRING("password"))->IsString())
+        if(optionsObject->Has(GET_CURRENT_CONTEXT, NEW_STRING("password")).FromJust() && optionsObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->IsString())
         {
-            imageOptions.pdfParsingOptions.Password = *UTF_8_VALUE(optionsObject->Get(NEW_STRING("password"))->TO_STRING());
+            imageOptions.pdfParsingOptions.Password = *UTF_8_VALUE(optionsObject->Get(GET_CURRENT_CONTEXT, NEW_STRING("password")).ToLocalChecked()->TO_STRING());
         }        
 
     }

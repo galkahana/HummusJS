@@ -41,29 +41,29 @@ DEF_SUBORDINATE_INIT(PDFDateDriver::Init)
     SET_CONSTRUCTOR(holder->PDFDate_constructor, t);      
 }
 
-unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Handle<Date> inDate, const char* inFunctionName)
+unsigned int PDFDateDriver::GetUIntValueFromDateFunction(Local<Date> inDate, const char* inFunctionName)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<v8::Value> value = inDate->Get(NEW_STRING(inFunctionName));
-    Handle<Function> func = Handle<Function>::Cast(value);
-    Handle<Value> result;
+    Local<v8::Value> value = inDate->Get(GET_CURRENT_CONTEXT, NEW_STRING(inFunctionName)).ToLocalChecked();
+    Local<Function> func = Local<Function>::Cast(value);
+    Local<Value> result;
     
-    result = func->Call(inDate, 0, NULL);
+    result = func->Call(GET_CURRENT_CONTEXT, inDate, 0, NULL).ToLocalChecked();
     return TO_UINT32(result)->Value();
 }
 
-int PDFDateDriver::GetIntValueFromDateFunction(Handle<Date> inDate, const char* inFunctionName)
+int PDFDateDriver::GetIntValueFromDateFunction(Local<Date> inDate, const char* inFunctionName)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
     
-    Handle<v8::Value> value = inDate->Get(NEW_STRING(inFunctionName));
-    Handle<Function> func = Handle<Function>::Cast(value);
-    Handle<Value> result;
+    Local<v8::Value> value = inDate->Get(GET_CURRENT_CONTEXT, NEW_STRING(inFunctionName)).ToLocalChecked();
+    Local<Function> func = Local<Function>::Cast(value);
+    Local<Value> result;
     
-    result = func->Call(inDate, 0, NULL);
+    result = func->Call(GET_CURRENT_CONTEXT, inDate, 0, NULL).ToLocalChecked();
     return TO_INT32(result)->Value();
 }
 

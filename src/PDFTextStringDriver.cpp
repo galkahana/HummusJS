@@ -57,11 +57,11 @@ METHOD_RETURN_TYPE PDFTextStringDriver::New(const ARGS_TYPE& args)
 		}
 		else if(args[0]->IsArray()) {
 			// bytes array, init as is
-			int bufferSize = args[0]->TO_OBJECT()->Get(NEW_STRING("length"))->TO_UINT32Value();
+			int bufferSize = args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, NEW_STRING("length")).ToLocalChecked()->TO_UINT32Value();
 			std::string buffer;
 
 			for(int i=0;i<bufferSize;++i)
-				buffer.push_back((char)(args[0]->TO_OBJECT()->Get(i)->TO_UINT32Value()));
+				buffer.push_back((char)(args[0]->TO_OBJECT()->Get(GET_CURRENT_CONTEXT, i).ToLocalChecked()->TO_UINT32Value()));
 			element->mTextString = buffer;
 		}
 	}
@@ -82,7 +82,7 @@ METHOD_RETURN_TYPE PDFTextStringDriver::ToBytesArray(const ARGS_TYPE& args)
 	Local<Array> result = NEW_ARRAY(aString.length());
 
 	for(std::string::size_type i=0;i<aString.length();++i)
-		result->Set(NEW_NUMBER(i),NEW_NUMBER((IOBasicTypes::Byte)(aString[i])));
+		result->Set(GET_CURRENT_CONTEXT, NEW_NUMBER(i),NEW_NUMBER((IOBasicTypes::Byte)(aString[i])));
 
 	SET_FUNCTION_RETURN_VALUE(result)
 }
