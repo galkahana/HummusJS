@@ -1,12 +1,11 @@
 {
   "name": "hummus",
-  "version": "1.0.102",
+  "version": "1.0.103",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
   "license": "Apache-2.0",
   "author": "Gal Kahana <gal.kahana@hotmail.com>",
   "main": "./hummus.js",
-  "types": "./hummus.d.ts",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build $EXTRA_NODE_PRE_GYP_FLAGS",
     "test": "mocha -R tap ./tests/*.js --timeout 15000"
@@ -26,8 +25,7 @@
     "PDFRStreamForFile.js",
     "PDFStreamForResponse.js",
     "PDFWStreamForFile.js",
-    "PDFRStreamForBuffer.js",
-    "hummus.d.ts"
+    "PDFRStreamForBuffer.js"
   ],
   "dependencies": {
     "node-pre-gyp": "^0.10.0"
