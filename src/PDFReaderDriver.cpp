@@ -505,7 +505,7 @@ METHOD_RETURN_TYPE PDFReaderDriver::GetParserStream(const ARGS_TYPE& args)
     
     PDFReaderDriver* reader = ObjectWrap::Unwrap<PDFReaderDriver>(args.This());
 
-    Local<Value> driver = reader->holder->GetNewByteWriterWithPosition(args);
+    Local<Value> driver = reader->holder->GetNewByteReaderWithPosition(args);
     ObjectWrap::Unwrap<ByteReaderWithPositionDriver>(driver->TO_OBJECT())->SetStream(reader->mPDFReader->GetParserStream(),false);
     
     SET_FUNCTION_RETURN_VALUE(driver)
