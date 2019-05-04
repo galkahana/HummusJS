@@ -7,4 +7,6 @@ if [ "$MOCHA_RUNTIME_VERSION" = "" ]; then
 else
     npm install -g electron-mocha@$MOCHA_RUNTIME_VERSION
 fi
-electron-mocha -R tap ./tests/*.js --timeout 15000
+
+npm install -g xvfb-maybe
+xvfb-maybe electron-mocha -R tap ./tests/*.js --timeout 15000
