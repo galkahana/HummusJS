@@ -76,6 +76,8 @@ install:
 script:
   - if [[ $MUSL ]]; then
     scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
+    elif [[ $ELECTRON_VERSION ]]; then
+    scripts/electron-test.sh ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
     else
     ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
     npm test;
