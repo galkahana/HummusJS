@@ -10,6 +10,7 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+      - xvfb
 services:
   - docker
 env:
@@ -51,6 +52,8 @@ before_install:
     export npm_config_target_arch=x64;
     export npm_config_disturl=https://atom.io/download/electron;
     export npm_config_runtime=electron;
+    export DISPLAY=':99.0';
+    Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &;
     fi
   - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
   - PUBLISH_BINARY=false
