@@ -49,6 +49,9 @@ before_install:
     export npm_config_target_arch=x64;
     export npm_config_disturl=https://atom.io/download/electron;
     export npm_config_runtime=electron;
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
+    export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start;
+    fi
     fi
   - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
   - PUBLISH_BINARY=false

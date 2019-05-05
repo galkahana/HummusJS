@@ -8,8 +8,4 @@ else
     npm install -g electron-mocha@$MOCHA_RUNTIME_VERSION
 fi
 
-if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then 
-    export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
-fi
-
 electron-mocha -R tap ./tests/*.js --timeout 15000
