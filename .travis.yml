@@ -31,14 +31,12 @@ env:
     - MUSL=true NODE_NVM_VERSION="11.2.0"    
 matrix:
   exclude:
-    # musl irrelevant for osx
     - os: osx
       env: MUSL=true NODE_NVM_VERSION="9.11.1"
     - os: osx
       env: MUSL=true NODE_NVM_VERSION="10.8.0"
     - os: osx
       env: MUSL=true NODE_NVM_VERSION="11.2.0"
-    # electron mocha crashes tests on linux...yeah yeah event with this xvfb thing
     - os: linux
       env: ELECTRON_VERSION="3.0.10" ELECTRON_MOCHA=true
     - os: linux
@@ -65,7 +63,7 @@ before_install:
     EXTRA_NODE_PRE_GYP_FLAGS="--target_libc=musl";
     fi;
   - git clone https://github.com/creationix/nvm.git ../.nvm && source ../.nvm/nvm.sh
-  - : "${NODE_NVM_VERSION:='11.2.0'}"
+  - NODE_NVM_VERSION="${NODE_NVM_VERSION:='11.2.0'}"
   - nvm install $NODE_NVM_VERSION
   - nvm use $NODE_NVM_VERSION
   - echo $PUBLISH_BINARY
