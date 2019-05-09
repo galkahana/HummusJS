@@ -63,7 +63,7 @@ before_install:
     EXTRA_NODE_PRE_GYP_FLAGS="--target_libc=musl";
     fi;
   - git clone https://github.com/creationix/nvm.git ../.nvm && source ../.nvm/nvm.sh
-  - NODE_NVM_VERSION="${NODE_NVM_VERSION:='11.2.0'}"
+  - NODE_NVM_VERSION="${NODE_NVM_VERSION:=11.2.0}"
   - nvm install $NODE_NVM_VERSION
   - nvm use $NODE_NVM_VERSION
   - echo $PUBLISH_BINARY
