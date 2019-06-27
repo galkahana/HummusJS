@@ -275,7 +275,7 @@ void HandlePngError(png_structp png_ptr, png_const_charp error_message) {
 		if (error_message)
 			TRACE_LOG1("LibPNG Error: %s", error_message);
 	}
-	png_longjmp(png_ptr, 1);
+	// png_longjmp(png_ptr, 1);
 }
 
 void HandlePngWarning(png_structp png_ptr, png_const_charp warning_message) {
