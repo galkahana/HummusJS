@@ -79,7 +79,7 @@ install:
     npm install --build-from-source;
     fi
 before_script:
-  - export DISPLAY=:99.0
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export DISPLAY=:99.0; fi
 script:
   - if [[ $MUSL ]]; then
     scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
