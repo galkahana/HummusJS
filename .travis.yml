@@ -77,7 +77,7 @@ install:
     npm install --build-from-source;
     fi
 before_script:
-  - if [[ ${TRAVIS_OS_NAME} == "linux" ]]; then export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start; fi
+  - export DISPLAY=:99.0
 script:
   - if [[ $MUSL ]]; then
     scripts/alpine-test.sh ./node_modules/.bin/node-pre-gyp package testpackage $EXTRA_NODE_PRE_GYP_FLAGS;
