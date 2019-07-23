@@ -13,6 +13,7 @@ addons:
       - g++-4.8
 services:
   - docker
+  - xvfb
 env:
   matrix:
     - NODE_NVM_VERSION="6.14.1"
