@@ -4,6 +4,7 @@ compiler:
 os:
   - linux
   - osx
+dist: xenial
 addons:
   apt:
     sources:
