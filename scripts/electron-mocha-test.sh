@@ -9,3 +9,4 @@ else
 fi
 
 electron-mocha -R tap ./tests/*.js --timeout 15000
+$*
