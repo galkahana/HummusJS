@@ -13,7 +13,11 @@ environment:
     # electron
     - nodejs_version: 12
       NODE_RUNTIME: electron
-      NODE_RUNTIME_VERSION: 5.0.0
+      NODE_RUNTIME_VERSION: 6.0.2
+      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+    - nodejs_version: 12
+      NODE_RUNTIME: electron
+      NODE_RUNTIME_VERSION: 5.0.9
       TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
     - nodejs_version: 10
       NODE_RUNTIME: electron
