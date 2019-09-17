@@ -668,7 +668,7 @@ SET_PROTOTYPE_METHOD(t, "allocateNewObjectID", AllocateNewObjectID);
     createPDFTextString();
     createPDFDate();
     */
-    getImageDimensions(inFontFilePath: FilePath): RectangleDimension;
+    getImageDimensions(inFontFilePath: FilePath | ReadStream): RectangleDimension;
     /*
     getImagePagesCount();
     getImageType();

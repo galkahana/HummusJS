@@ -16,7 +16,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   
+
 */
 #pragma once
 
@@ -93,7 +93,7 @@ namespace PDFHummus
 	struct HummusImageInformation
 	{
 		HummusImageInformation(){writtenObjectID = 0;imageType=eUndefined;imageWidth=-1;imageHeight=-1;}
-    
+
 		ObjectIDType writtenObjectID;
 		EHummusImageType imageType;
 		double imageWidth;
@@ -145,7 +145,7 @@ namespace PDFHummus
 
 		// Determine whether this page already has a content context
 		bool HasContentContext(PDFPage* inPage);
-		
+
 		EStatusCodeAndObjectIDType WritePage(PDFPage* inPage);
 		EStatusCodeAndObjectIDType WritePageAndRelease(PDFPage* inPage);
 
@@ -180,12 +180,12 @@ namespace PDFHummus
 		PDFHummus::EStatusCode EndTiledPatternAndRelease(PDFTiledPattern* inTiledPattern);
 
 
-		// Image XObject creating. 
+		// Image XObject creating.
 		// note that as oppose to other methods, create the image xobject also writes it, so there's no "WriteXXXXAndRelease" for image.
 		// So...release the object yourself [just delete it]
 
 		// JPEG - two variants
-		
+
 		// will return image xobject sized at 1X1
 		PDFImageXObject* CreateImageXObjectFromJPGFile(const std::string& inJPGFilePath);
 		PDFImageXObject* CreateImageXObjectFromJPGStream(IByteReaderWithPosition* inJPGStream);
@@ -217,7 +217,7 @@ namespace PDFHummus
 #endif
 
 		// PDF
-		// CreateFormXObjectsFromPDF is for using input PDF pages as objects in one page or more. you can used the returned IDs to place the 
+		// CreateFormXObjectsFromPDF is for using input PDF pages as objects in one page or more. you can used the returned IDs to place the
 		// created form xobjects (note that you can provide your own as the inPredefinedFormIds...just make sure the list is same size as pages list)
 		EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
 																 const PDFParsingOptions& inParsingOptions,
@@ -234,7 +234,7 @@ namespace PDFHummus
 																 const double* inTransformationMatrix = NULL,
 																 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
 																 const ObjectIDTypeList& inPredefinedFormIDs = ObjectIDTypeList());
-		
+
 		// CreateFormXObjectsFromPDF is an override to allow you to determine a custom crop for the page embed
 		EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
 																const PDFParsingOptions& inParsingOptions,
@@ -257,7 +257,7 @@ namespace PDFHummus
 															const PDFParsingOptions& inParsingOptions,
 															const PDFPageRange& inPageRange,
 															const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList());
-		
+
 		EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(IByteReaderWithPosition* inPDFStream,
 															const PDFParsingOptions& inParsingOptions,
 															const PDFPageRange& inPageRange,
@@ -283,7 +283,9 @@ namespace PDFHummus
 
 		// some public image info services, for users of hummus
 		DoubleAndDoublePair GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex = 0, const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
-		EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+    DoubleAndDoublePair GetImageDimensions(IByteReaderWithPosition* inImageStream,unsigned long inImageIndex = 0, const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
+    EHummusImageType GetImageType(const std::string& inImageFile,unsigned long inImageIndex);
+    EHummusImageType GetImageType(IByteReaderWithPosition* inImageStream,unsigned long inImageIndex);
 		unsigned long GetImagePagesCount(const std::string& inImageFile, const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 
 
@@ -299,7 +301,7 @@ namespace PDFHummus
 		void AddDocumentContextExtender(IDocumentContextExtender* inExtender);
 		void RemoveDocumentContextExtender(IDocumentContextExtender* inExtender);
 		void SetParserExtender(IPDFParserExtender* inParserExtender);
-        
+
         // Extensibility option. a method of adding direct objects to a resource dictionary of a form or page.
         // resource writing tasks are one time objects (deleted when done, owned by documentcontext) that
         // are called when a certain resoruce category for a certain form is written. each task
@@ -318,7 +320,7 @@ namespace PDFHummus
 		std::string AddExtendedResourceMapping(ResourcesDictionary* inResourceDictionary,
                                           const std::string& inResourceCategoryName,
                                           IResourceWritingTask* inWritingTask);
-        
+
         // Extensibility option. option of writing a single time task for when a particular form ends
         void RegisterFormEndWritingTask(PDFFormXObject* inFormXObject,IFormEndWritingTask* inWritingTask);
         // Extensibility option. option of writing a single time task for when a particular page ends
@@ -331,10 +333,10 @@ namespace PDFHummus
 		PDFHummus::EStatusCode ReadState(PDFParser* inStateReader,ObjectIDType inObjectID);
 
 		void Cleanup();
-        
+
         // modification scenario
         PDFHummus::EStatusCode SetupModifiedFile(PDFParser* inModifiedFileParser);
-		
+
 		// internal methods for copying context listeners handling
 		void RegisterCopyingContext(PDFDocumentCopyingContext* inCopyingContext);
 		void UnRegisterCopyingContext(PDFDocumentCopyingContext* inCopyingContext);
@@ -354,7 +356,7 @@ namespace PDFHummus
 #ifndef PDFHUMMUS_NO_TIFF
         TIFFImageHandler&  GetTIFFImageHandler();
 #endif
-		
+
 		// get annotations, for complex scenarios where writing a page can happen outside of document context
 		ObjectIDTypeSet& GetAnnotations();
 
@@ -386,7 +388,7 @@ namespace PDFHummus
 		PDFTiledPatternToITiledPatternEndWritingTaskListMap mTiledPatternEndTasks;
 	    StringAndULongPairToHummusImageInformationMap mImagesInformation;
 		EncryptionHelper mEncryptionHelper;
-		
+
 		void WriteHeaderComment(EPDFVersion inPDFVersion);
 		void Write4BinaryBytes();
 		PDFHummus::EStatusCode WriteCatalogObjectOfNewPDF();
@@ -424,7 +426,7 @@ namespace PDFHummus
 
 		void WritePageTreeState(ObjectsContext* inStateWriter,ObjectIDType inObjectID,PageTree* inPageTree);
 		void ReadPageTreeState(PDFParser* inStateReader,PDFDictionary* inPageTreeState,PageTree* inPageTree);
-        
+
         ObjectReference GetOriginalDocumentPageTreeRoot(PDFParser* inModifiedFileParser);
         bool DocumentHasNewPages();
         ObjectIDType WriteCombinedPageTree(PDFParser* inModifiedFileParser);
