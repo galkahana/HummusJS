@@ -2905,7 +2905,7 @@ static const Byte scMagicPng[] = { 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0
 
 PDFHummus::EHummusImageType DocumentContext::GetImageType(IByteReaderWithPosition* inImageStream,unsigned long inImageIndex)
 {
-	// The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF
+	// The types of images that are discovered here are those familiar to Hummus - JPG, TIFF and PDF.
 	// PDF is recognized by starting with "%PDF"
 	// JPG will start with "0xff,0xd8"
 	// TIFF will start with "0x49,0x49" (little endian) or "0x4D,0x4D" (big endian)
