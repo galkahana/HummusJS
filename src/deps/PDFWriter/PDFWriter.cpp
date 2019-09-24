@@ -16,7 +16,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   
+
 */
 
 #include "PDFWriter.h"
@@ -74,7 +74,7 @@ EStatusCode PDFWriter::StartPDF(
 		return status;
 
 	mObjectsContext.SetOutputStream(mOutputFile.GetOutputStream());
-	mDocumentContext.SetOutputFileInformation(&mOutputFile);    
+	mDocumentContext.SetOutputFileInformation(&mOutputFile);
 
 	if (inPDFCreationSettings.DocumentEncryptionOptions.ShouldEncrypt) {
 		mDocumentContext.SetupEncryption(inPDFCreationSettings.DocumentEncryptionOptions, thisOrDefaultVersion(inPDFVersion));
@@ -85,19 +85,19 @@ EStatusCode PDFWriter::StartPDF(
 	}
 
 	mIsModified = false;
-	
+
 	return mDocumentContext.WriteHeader(thisOrDefaultVersion(inPDFVersion));
 }
 
 EStatusCode PDFWriter::EndPDF()
 {
-    
+
 	EStatusCode status;
 	do
 	{
         if(mIsModified)
             status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion);
-        else    
+        else
             status = mDocumentContext.FinalizeNewPDF();
 		if(status != eSuccess)
 		{
@@ -109,13 +109,13 @@ EStatusCode PDFWriter::EndPDF()
         {
             TRACE_LOG("PDFWriter::EndPDF, Could not close output file");
             break;
-    
+
         }
         mModifiedFileParser.ResetParser();
         status = mModifiedFile.CloseFile();
 	}
 	while(false);
-    
+
     if(status != eSuccess)
     {
         mOutputFile.CloseFile();
@@ -233,18 +233,18 @@ EStatusCode PDFWriter::EndFormXObjectAndRelease(PDFFormXObject* inFormXObject)
 
 PDFImageXObject* PDFWriter::CreateImageXObjectFromJPGFile(const std::string& inJPGFilePath)
 {
-	return mDocumentContext.CreateImageXObjectFromJPGFile(inJPGFilePath); 
+	return mDocumentContext.CreateImageXObjectFromJPGFile(inJPGFilePath);
 }
 
 PDFFormXObject* PDFWriter::CreateFormXObjectFromJPGFile(const std::string& inJPGFilePath)
 {
-	return mDocumentContext.CreateFormXObjectFromJPGFile(inJPGFilePath); 
+	return mDocumentContext.CreateFormXObjectFromJPGFile(inJPGFilePath);
 }
 
 #ifndef PDFHUMMUS_NO_TIFF
 PDFFormXObject* PDFWriter::CreateFormXObjectFromTIFFFile(const std::string& inTIFFFilePath,const TIFFUsageParameters& inTIFFUsageParameters)
 {
-	return mDocumentContext.CreateFormXObjectFromTIFFFile(inTIFFFilePath,inTIFFUsageParameters); 
+	return mDocumentContext.CreateFormXObjectFromTIFFFile(inTIFFFilePath,inTIFFUsageParameters);
 }
 
 PDFFormXObject* PDFWriter::CreateFormXObjectFromTIFFFile(const std::string& inTIFFFilePath,ObjectIDType inFormXObjectID, const TIFFUsageParameters& inTIFFUsageParameters)
@@ -294,12 +294,12 @@ PDFFormXObject* PDFWriter::CreateFormXObjectFromPNGStream(IByteReaderWithPositio
 
 PDFImageXObject* PDFWriter::CreateImageXObjectFromJPGFile(const std::string& inJPGFilePath,ObjectIDType inImageXObjectID)
 {
-	return mDocumentContext.CreateImageXObjectFromJPGFile(inJPGFilePath,inImageXObjectID); 
+	return mDocumentContext.CreateImageXObjectFromJPGFile(inJPGFilePath,inImageXObjectID);
 }
 
 PDFFormXObject* PDFWriter::CreateFormXObjectFromJPGFile(const std::string& inJPGFilePath,ObjectIDType inImageXObjectID)
 {
-	return mDocumentContext.CreateFormXObjectFromJPGFile(inJPGFilePath,inImageXObjectID); 
+	return mDocumentContext.CreateFormXObjectFromJPGFile(inJPGFilePath,inImageXObjectID);
 }
 
 
@@ -393,7 +393,7 @@ EStatusCode PDFWriter::Shutdown(const std::string& inStateFilePath)
             pdfWriterDictionary->WriteKey("mModifiedFileVersion");
             pdfWriterDictionary->WriteIntegerValue(mModifiedFileVersion);
         }
-        
+
 		writer.GetObjectsWriter()->EndDictionary(pdfWriterDictionary);
 		writer.GetObjectsWriter()->EndIndirectObject();
 
@@ -431,7 +431,7 @@ EStatusCode PDFWriter::ContinuePDF(const std::string& inOutputFilePath,
                                    const std::string& inOptionalModifiedFile,
 								   const LogConfiguration& inLogConfiguration)
 {
-	
+
 
 	SetupLog(inLogConfiguration);
 	EStatusCode status = mOutputFile.OpenFile(inOutputFilePath,true);
@@ -444,12 +444,12 @@ EStatusCode PDFWriter::ContinuePDF(const std::string& inOutputFilePath,
         status = mModifiedFile.OpenFile(inOptionalModifiedFile);
         if(status != eSuccess)
             return status;
-        
+
         status = mModifiedFileParser.StartPDFParsing(mModifiedFile.GetInputStream());
         if(status != eSuccess)
             return status;
     }
-    
+
 	mObjectsContext.SetOutputStream(mOutputFile.GetOutputStream());
 	mDocumentContext.SetOutputFileInformation(&mOutputFile);
 
@@ -477,7 +477,7 @@ EStatusCode PDFWriter::SetupState(const std::string& inStateFilePath)
 
         PDFObjectCastPtr<PDFBoolean> isModifiedObject(pdfWriterDictionary->QueryDirectObject("mIsModified"));
         mIsModified = isModifiedObject->GetValue();
-        
+
         if(mIsModified)
         {
             PDFObjectCastPtr<PDFInteger> isModifiedFileVersionObject(pdfWriterDictionary->QueryDirectObject("mModifiedFileVersion"));
@@ -508,11 +508,11 @@ EStatusCode PDFWriter::ContinuePDFForStream(IByteWriterWithPosition* inOutputStr
 			 								const LogConfiguration& inLogConfiguration)
 {
 	SetupLog(inLogConfiguration);
-    
+
     if(inModifiedSourceStream)
         if(mModifiedFileParser.StartPDFParsing(inModifiedSourceStream) != eSuccess)
             return eFailure;
- 
+
 	mObjectsContext.SetOutputStream(inOutputStream);
 
 	return SetupState(inStateFilePath);
@@ -559,16 +559,16 @@ EStatusCode PDFWriter::StartPDFForStream(IByteWriterWithPosition* inOutputStream
 
 	mObjectsContext.SetOutputStream(inOutputStream);
     mIsModified = false;
-	
+
 	return mDocumentContext.WriteHeader(thisOrDefaultVersion(inPDFVersion));
 }
 EStatusCode PDFWriter::EndPDFForStream()
 {
     EStatusCode status;
-    
+
     if(mIsModified)
         status = mDocumentContext.FinalizeModifiedPDF(&mModifiedFileParser,mModifiedFileVersion);
-    else    
+    else
         status = mDocumentContext.FinalizeNewPDF();
     mModifiedFileParser.ResetParser();
 	Cleanup();
@@ -635,7 +635,7 @@ EStatusCode PDFWriter::MergePDFPagesToPage(	PDFPage* inPage,
 
 PDFDocumentCopyingContext* PDFWriter::CreatePDFCopyingContext(IByteReaderWithPosition* inPDFStream, const PDFParsingOptions& inOptions)
 {
-	return mDocumentContext.CreatePDFCopyingContext(inPDFStream,inOptions);	
+	return mDocumentContext.CreatePDFCopyingContext(inPDFStream,inOptions);
 }
 
 EStatusCode PDFWriter::ModifyPDF(const std::string& inModifiedFile,
@@ -645,11 +645,11 @@ EStatusCode PDFWriter::ModifyPDF(const std::string& inModifiedFile,
                                             const PDFCreationSettings& inPDFCreationSettings)
 {
     EStatusCode status = eSuccess;
-    
+
     SetupLog(inLogConfiguration);
 	SetupCreationSettings(inPDFCreationSettings);
-	
-    do 
+
+    do
     {
         // either append to original file, or create a new copy and "modify" it. depending on users choice
         if(inOptionalAlternativeOutputFile.size() == 0 || (inOptionalAlternativeOutputFile == inModifiedFile))
@@ -664,13 +664,13 @@ EStatusCode PDFWriter::ModifyPDF(const std::string& inModifiedFile,
             status = mOutputFile.OpenFile(inOptionalAlternativeOutputFile);
             if(status != eSuccess)
                break;
-            
+
             // copy original to new output file
             InputFile modifiedFileInput;
             status = modifiedFileInput.OpenFile(inModifiedFile);
             if(status != eSuccess)
                 break;
-            
+
             OutputStreamTraits traits(mOutputFile.GetOutputStream());
             status = traits.CopyToOutputStream(modifiedFileInput.GetInputStream());
             if(status != eSuccess)
@@ -680,15 +680,15 @@ EStatusCode PDFWriter::ModifyPDF(const std::string& inModifiedFile,
 			mObjectsContext.SetOutputStream(mOutputFile.GetOutputStream());
 			mObjectsContext.WriteTokenSeparator(eTokenSeparatorEndLine);
         }
-        
+
         mDocumentContext.SetOutputFileInformation(&mOutputFile);
-        
-        // do setup for modification 
+
+        // do setup for modification
         mIsModified = true;
         status = SetupStateFromModifiedFile(inModifiedFile, thisOrDefaultVersion(inPDFVersion), inPDFCreationSettings);
-    } 
+    }
     while (false);
-           
+
     return status;
 }
 
@@ -699,10 +699,10 @@ EStatusCode PDFWriter::ModifyPDFForStream(
                                       EPDFVersion inPDFVersion,
                                       const LogConfiguration& inLogConfiguration,
                                       const PDFCreationSettings& inPDFCreationSettings)
-{    
+{
     SetupLog(inLogConfiguration);
 	SetupCreationSettings(inPDFCreationSettings);
-    
+
     if(!inAppendOnly)
     {
         // copy original to new output stream
@@ -712,11 +712,11 @@ EStatusCode PDFWriter::ModifyPDFForStream(
             return status;
         inModifiedSourceStream->SetPosition(0);
     }
-	
+
     mObjectsContext.SetOutputStream(inModifiedDestinationStream);
-        
+
     mIsModified = true;
-        
+
     return SetupStateFromModifiedStream(inModifiedSourceStream, thisOrDefaultVersion(inPDFVersion), inPDFCreationSettings);
 }
 
@@ -726,7 +726,7 @@ EStatusCode PDFWriter::SetupStateFromModifiedStream(IByteReaderWithPosition* inM
 {
     EStatusCode status;
 	PDFParsingOptions parsingOptions;
-    
+
 	// this bit here is actually interesting. in order to modify an already encrypted document
 	// and add more content to it, i just need the user password. not the owner one.
 	// in fact, passing the owner password here will create the wrong encryption key.
@@ -734,18 +734,18 @@ EStatusCode PDFWriter::SetupStateFromModifiedStream(IByteReaderWithPosition* inM
 	if (inPDFCreationSettings.DocumentEncryptionOptions.ShouldEncrypt)
 		parsingOptions.Password = inPDFCreationSettings.DocumentEncryptionOptions.UserPassword;
 
-    do 
+    do
     {
         status = mModifiedFileParser.StartPDFParsing(inModifiedSourceStream, parsingOptions);
         if(status != eSuccess)
-            break;    
-        
+            break;
+
         mObjectsContext.SetupModifiedFile(&mModifiedFileParser);
-        
+
         status = mDocumentContext.SetupModifiedFile(&mModifiedFileParser);
         if(status != eSuccess)
             break;
-        
+
 		if (mModifiedFileParser.IsEncrypted() && mModifiedFileParser.IsEncryptionSupported()) {
 			mDocumentContext.SetupEncryption(&mModifiedFileParser);
 			if (!mDocumentContext.SupportsEncryption()) {
@@ -755,26 +755,26 @@ EStatusCode PDFWriter::SetupStateFromModifiedStream(IByteReaderWithPosition* inM
 		}
 
         mModifiedFileVersion = thisOrDefaultVersion(inPDFVersion);
-    } 
+    }
     while (false);
-    
+
     return status;
 }
 
 EStatusCode PDFWriter::SetupStateFromModifiedFile(const std::string& inModifiedFile,EPDFVersion inPDFVersion, const PDFCreationSettings& inPDFCreationSettings)
 {
     EStatusCode status;
-    
+
     do
     {
         status = mModifiedFile.OpenFile(inModifiedFile);
         if(status != eSuccess)
             break;
-        
+
         status = SetupStateFromModifiedStream(mModifiedFile.GetInputStream(), thisOrDefaultVersion(inPDFVersion), inPDFCreationSettings);
     }
     while(false);
-    
+
     return status;
 }
 
@@ -790,12 +790,17 @@ InputFile& PDFWriter::GetModifiedInputFile()
 
 PDFDocumentCopyingContext* PDFWriter::CreatePDFCopyingContextForModifiedFile()
 {
-	return mDocumentContext.CreatePDFCopyingContext(&mModifiedFileParser);    
+	return mDocumentContext.CreatePDFCopyingContext(&mModifiedFileParser);
 }
 
 DoubleAndDoublePair PDFWriter::GetImageDimensions(const std::string& inImageFile,unsigned long inImageIndex, const PDFParsingOptions& inParsingOptions)
 {
 	return mDocumentContext.GetImageDimensions(inImageFile,inImageIndex,inParsingOptions);
+}
+
+DoubleAndDoublePair PDFWriter::GetImageDimensions(IByteReaderWithPosition* inImageStream,unsigned long inImageIndex, const PDFParsingOptions& inParsingOptions)
+{
+	return mDocumentContext.GetImageDimensions(inImageStream,inImageIndex,inParsingOptions);
 }
 
 PDFHummus::EHummusImageType PDFWriter::GetImageType(const std::string& inImageFile,unsigned long inImageIndex)
@@ -815,7 +820,7 @@ PDFHummus::EStatusCode PDFWriter::RecryptPDF(
 	const LogConfiguration& inLogConfiguration,
 	const PDFCreationSettings& inPDFCreationSettings,
 	EPDFVersion inOveridePDFVersion) {
-	
+
 	InputFile originalPDF;
 	OutputFile newPDF;
 
