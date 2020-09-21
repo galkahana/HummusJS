@@ -378,6 +378,11 @@ void ObjectsContext::SetCompressStreams(bool inCompressStreams)
 	mCompressStreams = inCompressStreams;
 }
 
+bool ObjectsContext::IsCompressingStreams() 
+{
+	return mCompressStreams;
+}
+
 static const std::string scLength = "Length";
 static const std::string scStream = "stream";
 static const std::string scEndStream = "endstream";

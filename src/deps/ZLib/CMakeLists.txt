@@ -1,6 +1,16 @@
 cmake_minimum_required (VERSION 2.6) 
 project (Zlib)
 
+include(CheckIncludeFile)
+
+#
+# Check for unistd.h
+#
+check_include_file(unistd.h Z_HAVE_UNISTD_H)
+if(Z_HAVE_UNISTD_H)
+ADD_DEFINITIONS(-DHAVE_UNISTD_H=1)
+endif(Z_HAVE_UNISTD_H)
+
 set(ZLIB_INCLUDE_DIRS ${Zlib_SOURCE_DIR} PARENT_SCOPE)
 set(ZLIB_LDFLAGS Zlib PARENT_SCOPE)
 
@@ -23,6 +33,8 @@ uncompr.c
 zutil.c
 
 #headers
+zconf.h
+zlib.h
 crc32.h
 deflate.h
 gzguts.h
@@ -31,8 +43,6 @@ inffixed.h
 inflate.h
 inftrees.h
 trees.h
-zconf.h
-zlib.h
 zutil.h
 )
 
