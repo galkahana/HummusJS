@@ -15,7 +15,7 @@ PDFWStreamForFile.prototype.write = function(inBytesArray)
 {
     if(inBytesArray.length > 0)
     {
-        this.ws.write(new Buffer(inBytesArray));
+        this.ws.write(Buffer.from(inBytesArray));
         this.position+=inBytesArray.length;
         return inBytesArray.length;
     }
