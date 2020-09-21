@@ -53,7 +53,7 @@ IOBasicTypes::LongBufferSizeType InputStreamSkipperStream::Read(IOBasicTypes::By
 
 bool InputStreamSkipperStream::NotEnded()
 {
-	return mStream->NotEnded();
+	return mStream ? mStream->NotEnded() : false;
 }
 
 

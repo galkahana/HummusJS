@@ -13,7 +13,7 @@ function PDFRStreamForFile(inPath)
 
 PDFRStreamForFile.prototype.read = function(inAmount)
 {
-    var buffer = new Buffer(inAmount*2);
+    var buffer = Buffer.alloc(inAmount*2);
     var bytesRead = fs.readSync(this.rs, buffer, 0, inAmount,this.rposition);
     var arr = [];
 

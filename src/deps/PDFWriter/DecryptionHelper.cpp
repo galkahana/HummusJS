@@ -369,12 +369,13 @@ std::string DecryptionHelper::DecryptString(const std::string& inStringToDecrypt
 	if (!IsDecrypting() || !mXcryptStrings)
 		return inStringToDecrypt;
 
-	std::auto_ptr<IByteReader> pDecryptStream(CreateDecryptionReader(new InputStringStream(inStringToDecrypt), mXcryptStrings->GetCurrentObjectKey(), mXcryptStrings->IsUsingAES()));
-	if (pDecryptStream.get()) {
+	IByteReader* decryptStream = CreateDecryptionReader(new InputStringStream(inStringToDecrypt), mXcryptStrings->GetCurrentObjectKey(), mXcryptStrings->IsUsingAES());
+	if (decryptStream) {
 		OutputStringBufferStream outputStream;
 		OutputStreamTraits traits(&outputStream);
-		traits.CopyToOutputStream(pDecryptStream.get());
+		traits.CopyToOutputStream(decryptStream);
 
+		delete decryptStream;
 		return outputStream.ToString();
 	}
 	else

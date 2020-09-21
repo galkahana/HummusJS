@@ -3,6 +3,14 @@
         {
             'target_name': 'zlib',
             'type': 'static_library',
+            'conditions': [
+                ['OS == "win"', {            
+                }, {
+                    "defines": [
+                        'HAVE_UNISTD_H=1'
+                    ]
+                }]
+            ],
             'sources': [
                 'adler32.c',
                 'compress.c',

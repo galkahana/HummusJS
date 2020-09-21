@@ -83,6 +83,7 @@ private:
 
 	void SkipTillToken();
 
+	bool CanGetNextByte();
 	// failure in GetNextByteForToken actually marks a true read failure, if you checked end of file before calling it...
 	PDFHummus::EStatusCode GetNextByteForToken(IOBasicTypes::Byte& outByte);
 

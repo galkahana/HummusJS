@@ -5,7 +5,7 @@ var assert = require('chai').assert;
 describe('BufferRead', function() {
 	it('should read buffer correctly', function() {
         var originalString = 'hello world';
-        var buffer = new Buffer(originalString);
+        var buffer = Buffer.from(originalString);
         var stream = new hummus.PDFRStreamForBuffer(buffer);
 		assert.equal(stream.read(originalString.length * 10).length, originalString.length);
     });

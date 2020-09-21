@@ -75,7 +75,7 @@ METHOD_RETURN_TYPE PDFDictionaryDriver::ToJSObject(const ARGS_TYPE& args)
 	MapIterator<PDFNameToPDFObjectMap> it = driver->TheObject->GetIterator();
     
     while(it.MoveNext())
-        result->Set(NEW_STRING(it.GetKey()->GetValue().c_str()),driver->holder->GetInstanceFor(it.GetValue()));
+        result->Set(GET_CURRENT_CONTEXT, NEW_STRING(it.GetKey()->GetValue().c_str()),driver->holder->GetInstanceFor(it.GetValue()));
     
     SET_FUNCTION_RETURN_VALUE(result)
 }

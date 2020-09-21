@@ -36,6 +36,7 @@
 #include "PDFStreamInput.h"
 #include "InputLimitedStream.h"
 #include "InputFlateDecodeStream.h"
+#include "InputLZWDecodeStream.h"
 #include "InputStreamSkipperStream.h"
 #include "InputPredictorPNGOptimumStream.h"
 #include "InputPredictorTIFFSubStream.h"
@@ -1925,27 +1926,39 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 	do
 	{
 
-		if(inFilterName->GetValue() == "FlateDecode")
+		if(inFilterName->GetValue() == "FlateDecode" || inFilterName->GetValue() == "LZWDecode")
 		{
-			InputFlateDecodeStream* flateStream;
-			flateStream = new InputFlateDecodeStream(NULL); // assigning null, so later delete, if failure occurs won't delete the input stream
-			result = flateStream;
+			if (inFilterName->GetValue() == "FlateDecode")
+			{
+				InputFlateDecodeStream* flateStream;
+				flateStream = new InputFlateDecodeStream(NULL); // assigning null, so later delete, if failure occurs won't delete the input stream
+				flateStream->Assign(inStream);
+				result = flateStream;
+			}
+			else if (inFilterName->GetValue() == "LZWDecode")
+			{
+				InputLZWDecodeStream* lzwStream;
+				int early = 1;
+				if (inDecodeParams)
+				{
+					PDFObjectCastPtr<PDFInteger> earlyObj(QueryDictionaryObject(inDecodeParams, "EarlyChange"));
+					early = earlyObj->GetValue();
+				}
+				lzwStream = new InputLZWDecodeStream(early);
+				lzwStream->Assign(inStream);
+				result = lzwStream;
+			}
 
 			// check for predictor n' such
-			if(!inDecodeParams)
-			{
+			if (!inDecodeParams)
 				// no predictor, stop here
-				flateStream->Assign(inStream);
-				break;
-			}
+				break;			
 
 			// read predictor, and apply the relevant predictor function
 			PDFObjectCastPtr<PDFInteger> predictor(QueryDictionaryObject(inDecodeParams,"Predictor"));
 
 			if(!predictor || predictor->GetValue() == 1)
 			{
-				// no predictor or default, stop here
-				flateStream->Assign(inStream);
 				break;
 			}
 
@@ -1994,7 +2007,6 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 					break;
 				}
 			}
-			flateStream->Assign(inStream);
 		}
 		else if (inFilterName->GetValue() == "ASCIIHexDecode")
 		{
@@ -2028,7 +2040,7 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 		}
 		else
 		{
-			TRACE_LOG("PDFParser::CreateFilterForStream, supporting only flate decode and ascii 85 decode, failing");
+			TRACE_LOG("PDFParser::CreateFilterForStream, supporting only flate decode, lzw, dct, crypt and ascii 85+hex decode, failing");
 			status = PDFHummus::eFailure;
 			break;
 		}
