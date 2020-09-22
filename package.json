@@ -38,7 +38,7 @@
     "aws-sdk": "~2.0.0-rc.15",
     "chai": "^3.4.0",
     "mocha": "^2.3.3",
-    "npm": "^5.8.0"
+    "npm": "^6.14.8"
   },
   "binary": {
     "module_name": "hummus",
