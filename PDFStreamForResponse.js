@@ -12,7 +12,7 @@ PDFStreamForResponse.prototype.write = function(inBytesArray)
 {
     if(inBytesArray.length > 0)
     {
-        this.response.write(Bufer.from(inBytesArray));
+        this.response.write(Buffer.from(inBytesArray));
         this.position+=inBytesArray.length;
         return inBytesArray.length;
     }
