@@ -1,5 +1,3 @@
-/* $Id: tif_fax3.h,v 1.5.2.1 2010-06-08 18:50:42 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1990-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -39,7 +37,7 @@
 
 /*
  * To override the default routine used to image decoded
- * spans one can use the pseduo tag TIFFTAG_FAXFILLFUNC.
+ * spans one can use the pseudo tag TIFFTAG_FAXFILLFUNC.
  * The routine must have the type signature given below;
  * for example:
  *
@@ -52,7 +50,7 @@
  * data in the run array as needed (e.g. to append zero runs to bring
  * the count up to a nice multiple).
  */
-typedef	void (*TIFFFaxFillFunc)(unsigned char*, uint32*, uint32*, uint32);
+typedef void (*TIFFFaxFillFunc)(unsigned char*, uint32*, uint32*, uint32);
 
 /*
  * The default run filler; made external for other decoders.
@@ -60,36 +58,38 @@ typedef	void (*TIFFFaxFillFunc)(unsigned char*, uint32*, uint32*, uint32);
 #if defined(__cplusplus)
 extern "C" {
 #endif
-extern	void _TIFFFax3fillruns(unsigned char*, uint32*, uint32*, uint32);
+extern void _TIFFFax3fillruns(unsigned char*, uint32*, uint32*, uint32);
 #if defined(__cplusplus)
 }
 #endif
 
 
 /* finite state machine codes */
-#define S_Null		0
-#define S_Pass		1
-#define S_Horiz		2
-#define S_V0		3
-#define S_VR		4
-#define S_VL		5
-#define S_Ext		6
-#define S_TermW		7
-#define S_TermB		8
-#define S_MakeUpW	9
-#define S_MakeUpB	10
-#define S_MakeUp	11
-#define S_EOL		12
+#define S_Null     0
+#define S_Pass     1
+#define S_Horiz    2
+#define S_V0       3
+#define S_VR       4
+#define S_VL       5
+#define S_Ext      6
+#define S_TermW    7
+#define S_TermB    8
+#define S_MakeUpW  9
+#define S_MakeUpB  10
+#define S_MakeUp   11
+#define S_EOL      12
 
-typedef struct {		/* state table entry */
-	unsigned char State;	/* see above */
-	unsigned char Width;	/* width of code in bits */
-	uint32	Param;		/* unsigned 32-bit run length in bits */
+/* WARNING: do not change the layout of this structure as the HylaFAX software */
+/* really depends on it. See http://bugzilla.maptools.org/show_bug.cgi?id=2636 */
+typedef struct {                /* state table entry */
+	unsigned char State;    /* see above */
+	unsigned char Width;    /* width of code in bits */
+	uint32 Param;           /* unsigned 32-bit run length in bits (holds on 16 bit actually, but cannot be changed. See above warning) */
 } TIFFFaxTabEnt;
 
-extern	const TIFFFaxTabEnt TIFFFaxMainTable[];
-extern	const TIFFFaxTabEnt TIFFFaxWhiteTable[];
-extern	const TIFFFaxTabEnt TIFFFaxBlackTable[];
+extern const TIFFFaxTabEnt TIFFFaxMainTable[];
+extern const TIFFFaxTabEnt TIFFFaxWhiteTable[];
+extern const TIFFFaxTabEnt TIFFFaxBlackTable[];
 
 /*
  * The following macros define the majority of the G3/G4 decoder
@@ -240,6 +240,11 @@ static const char* StateNames[] = {
  * current row and reset decoding state.
  */
 #define SETVALUE(x) do {							\
+    if (pa >= thisrun + sp->nruns) {					\
+        TIFFErrorExt(tif->tif_clientdata, module, "Buffer overflow at line %u of %s %u",	\
+                    sp->line, isTiled(tif) ? "tile" : "strip", isTiled(tif) ? tif->tif_curtile : tif->tif_curstrip);	\
+        return (-1);							\
+    }									\
     *pa++ = RunLength + (x);						\
     a0 += (x);								\
     RunLength = 0;							\
@@ -377,6 +382,11 @@ done1d:									\
  */
 #define CHECK_b1 do {							\
     if (pa != thisrun) while (b1 <= a0 && b1 < lastx) {			\
+	if( pb + 1 >= sp->refruns + sp->nruns) { 			\
+	    TIFFErrorExt(tif->tif_clientdata, module, "Buffer overflow at line %u of %s %u",	\
+	                sp->line, isTiled(tif) ? "tile" : "strip", isTiled(tif) ? tif->tif_curtile : tif->tif_curstrip);	\
+	    return (-1);						\
+	}								\
 	b1 += pb[0] + pb[1];						\
 	pb += 2;							\
     }									\
@@ -387,10 +397,20 @@ done1d:									\
  */
 #define EXPAND2D(eoflab) do {						\
     while (a0 < lastx) {						\
+	if (pa >= thisrun + sp->nruns) {				\
+		TIFFErrorExt(tif->tif_clientdata, module, "Buffer overflow at line %u of %s %u",	\
+		             sp->line, isTiled(tif) ? "tile" : "strip", isTiled(tif) ? tif->tif_curtile : tif->tif_curstrip);	\
+		return (-1);						\
+	}								\
 	LOOKUP8(7, TIFFFaxMainTable, eof2d);				\
 	switch (TabEnt->State) {					\
 	case S_Pass:							\
 	    CHECK_b1;							\
+	    if( pb + 1 >= sp->refruns + sp->nruns) { 			\
+	        TIFFErrorExt(tif->tif_clientdata, module, "Buffer overflow at line %u of %s %u",	\
+	                sp->line, isTiled(tif) ? "tile" : "strip", isTiled(tif) ? tif->tif_curtile : tif->tif_curstrip);	\
+	        return (-1);						\
+	    }								\
 	    b1 += *pb++;						\
 	    RunLength += b1 - a0;					\
 	    a0 = b1;							\
@@ -469,15 +489,29 @@ done1d:									\
 	case S_V0:							\
 	    CHECK_b1;							\
 	    SETVALUE(b1 - a0);						\
+	    if( pb >= sp->refruns + sp->nruns) { 			\
+	        TIFFErrorExt(tif->tif_clientdata, module, "Buffer overflow at line %u of %s %u",	\
+	                sp->line, isTiled(tif) ? "tile" : "strip", isTiled(tif) ? tif->tif_curtile : tif->tif_curstrip);	\
+	        return (-1);						\
+	    }								\
 	    b1 += *pb++;						\
 	    break;							\
 	case S_VR:							\
 	    CHECK_b1;							\
 	    SETVALUE(b1 - a0 + TabEnt->Param);				\
+	    if( pb >= sp->refruns + sp->nruns) { 			\
+	        TIFFErrorExt(tif->tif_clientdata, module, "Buffer overflow at line %u of %s %u",	\
+	                sp->line, isTiled(tif) ? "tile" : "strip", isTiled(tif) ? tif->tif_curtile : tif->tif_curstrip);	\
+	        return (-1);						\
+	    }								\
 	    b1 += *pb++;						\
 	    break;							\
 	case S_VL:							\
 	    CHECK_b1;							\
+	    if (b1 < (int) (a0 + TabEnt->Param)) {			\
+		unexpected("VL", a0);				\
+		goto eol2d;						\
+	    }								\
 	    SETVALUE(b1 - a0 - TabEnt->Param);				\
 	    b1 -= *--pb;						\
 	    break;							\
@@ -523,6 +557,7 @@ eol2d:									\
     CLEANUP_RUNS();							\
 } while (0)
 #endif /* _FAX3_ */
+/* vim: set ts=8 sts=4 sw=4 noet: */
 /*
  * Local Variables:
  * mode: c

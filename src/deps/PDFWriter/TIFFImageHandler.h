@@ -136,6 +136,9 @@ typedef uint32 tsize_t_compat;
 	you can set the required definition with this macro.
 	
 */
+
+#define _USE_TIFF_TSIZE_AS_FOLLOWS long
+
 #ifndef _USE_TIFF_TSIZE_AS_FOLLOWS
 
 typedef int32 tsize_t;          /* i/o size in bytes */

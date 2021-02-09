@@ -2398,7 +2398,7 @@ EStatusCode TIFFImageHandler::WriteImageTileData(PDFStream* inImageStream,int in
 			}
 			TIFFReadRawTile(mT2p->input, inTileIndex, (tdata_t) buffer, mT2p->tiff_datasize);
 			if (mT2p->tiff_fillorder==FILLORDER_LSB2MSB)
-					TIFFReverseBits(buffer, mT2p->tiff_datasize);
+					TIFFReverseBits((uint8*) buffer, mT2p->tiff_datasize);
 			inImageStream->GetWriteStream()->Write(
 									(const IOBasicTypes::Byte*)buffer,mT2p->tiff_datasize);
 			_TIFFfree(buffer);
@@ -2826,7 +2826,7 @@ EStatusCode TIFFImageHandler::WriteImageData(PDFStream* inImageStream)
 				}
 				TIFFReadRawStrip(mT2p->input, 0, (tdata_t)buffer,mT2p->tiff_datasize);
 				if (mT2p->tiff_fillorder==FILLORDER_LSB2MSB)
-					TIFFReverseBits(buffer,mT2p->tiff_datasize);
+					TIFFReverseBits((uint8*)buffer,mT2p->tiff_datasize);
 				inImageStream->GetWriteStream()->Write(
 										(const IOBasicTypes::Byte*)buffer,mT2p->tiff_datasize);
 				_TIFFfree(buffer);

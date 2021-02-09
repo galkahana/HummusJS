@@ -1,5 +1,3 @@
-/* $Id: tiff.h,v 1.43.2.1 2010-06-08 18:50:43 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1988-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -39,86 +37,74 @@
  *    Suite 200
  *    Seattle, WA  98104
  *    206-622-5500
- *    
+ *
  *    (http://partners.adobe.com/asn/developer/PDFS/TN/TIFF6.pdf)
  *
- * For Big TIFF design notes see the following link
+ * For BigTIFF design notes see the following links
  *    http://www.remotesensing.org/libtiff/bigtiffdesign.html
+ *    http://www.awaresystems.be/imaging/tiff/bigtiff.html
  */
-#define	TIFF_VERSION	        42
-#define TIFF_BIGTIFF_VERSION    43
 
-#define	TIFF_BIGENDIAN		0x4d4d
-#define	TIFF_LITTLEENDIAN	0x4949
-#define	MDI_LITTLEENDIAN        0x5045
-#define	MDI_BIGENDIAN           0x4550
+#define TIFF_VERSION_CLASSIC 42
+#define TIFF_VERSION_BIG 43
+
+#define TIFF_BIGENDIAN      0x4d4d
+#define TIFF_LITTLEENDIAN   0x4949
+#define MDI_LITTLEENDIAN    0x5045
+#define MDI_BIGENDIAN       0x4550
+
 /*
  * Intrinsic data types required by the file format:
  *
- * 8-bit quantities	int8/uint8
- * 16-bit quantities	int16/uint16
- * 32-bit quantities	int32/uint32
- * strings		unsigned char*
+ * 8-bit quantities     int8/uint8
+ * 16-bit quantities    int16/uint16
+ * 32-bit quantities    int32/uint32
+ * 64-bit quantities    int64/uint64
+ * strings              unsigned char*
  */
 
-#ifndef HAVE_INT8
-typedef	signed char int8;	/* NB: non-ANSI compilers may not grok */
-#endif
-typedef	unsigned char uint8;
-#ifndef HAVE_INT16
-typedef	short int16;
-#endif
-typedef	unsigned short uint16;	/* sizeof (uint16) must == 2 */
-#if SIZEOF_INT == 4
-#ifndef HAVE_INT32
-typedef	int int32;
-#endif
-typedef	unsigned int uint32;	/* sizeof (uint32) must == 4 */
-#elif SIZEOF_LONG == 4
-#ifndef HAVE_INT32
-typedef	long int32;
-#endif
-typedef	unsigned long uint32;	/* sizeof (uint32) must == 4 */
-#endif
+typedef TIFF_INT8_T   int8;
+typedef TIFF_UINT8_T  uint8;
 
-/* For TIFFReassignTagToIgnore */
-enum TIFFIgnoreSense /* IGNORE tag table */
-{
-	TIS_STORE,
-	TIS_EXTRACT,
-	TIS_EMPTY
-};
+typedef TIFF_INT16_T  int16;
+typedef TIFF_UINT16_T uint16;
+
+typedef TIFF_INT32_T  int32;
+typedef TIFF_UINT32_T uint32;
+
+typedef TIFF_INT64_T  int64;
+typedef TIFF_UINT64_T uint64;
+
+/*
+ * Some types as promoted in a variable argument list
+ * We use uint16_vap rather then directly using int, because this way
+ * we document the type we actually want to pass through, conceptually,
+ * rather then confusing the issue by merely stating the type it gets
+ * promoted to
+ */
+
+typedef int uint16_vap;
 
 /*
  * TIFF header.
  */
-typedef	struct {
-	uint16	tiff_magic;	/* magic number (defines byte order) */
-#define TIFF_MAGIC_SIZE		2
-	uint16	tiff_version;	/* TIFF version number */
-#define TIFF_VERSION_SIZE	2
-	uint32	tiff_diroff;	/* byte offset to first directory */
-#define TIFF_DIROFFSET_SIZE	4
-} TIFFHeader;
+typedef struct {
+	uint16 tiff_magic;      /* magic number (defines byte order) */
+	uint16 tiff_version;    /* TIFF version number */
+} TIFFHeaderCommon;
+typedef struct {
+	uint16 tiff_magic;      /* magic number (defines byte order) */
+	uint16 tiff_version;    /* TIFF version number */
+	uint32 tiff_diroff;     /* byte offset to first directory */
+} TIFFHeaderClassic;
+typedef struct {
+	uint16 tiff_magic;      /* magic number (defines byte order) */
+	uint16 tiff_version;    /* TIFF version number */
+	uint16 tiff_offsetsize; /* size of offsets, should be 8 */
+	uint16 tiff_unused;     /* unused word, should be 0 */
+	uint64 tiff_diroff;     /* byte offset to first directory */
+} TIFFHeaderBig;
 
-
-/*
- * TIFF Image File Directories are comprised of a table of field
- * descriptors of the form shown below.  The table is sorted in
- * ascending order by tag.  The values associated with each entry are
- * disjoint and may appear anywhere in the file (so long as they are
- * placed on a word boundary).
- *
- * If the value is 4 bytes or less, then it is placed in the offset
- * field to save space.  If the value is less than 4 bytes, it is
- * left-justified in the offset field.
- */
-typedef	struct {
-	uint16		tdir_tag;	/* see below */
-	uint16		tdir_type;	/* data type; see below */
-	uint32		tdir_count;	/* number of items; length in spec */
-	uint32		tdir_offset;	/* byte offset to field data */
-} TIFFDirEntry;
 
 /*
  * NB: In the comments below,
@@ -133,22 +119,30 @@ typedef	struct {
  * Tag data type information.
  *
  * Note: RATIONALs are the ratio of two 32-bit integer values.
+ *--:
+ * Note2: TIFF_IFD8 data type is used in tiffFields[]-tag definition in order to distinguish the write-handling 
+          of those tags between ClassicTIFF and BigTiff:
+		  For ClassicTIFF libtiff writes a 32-bit value and the TIFF_IFD type-id into the file
+		  For BigTIFF     libtiff writes a 64-bit value and the TIFF_IFD8 type-id into the file
  */
-typedef	enum {
-	TIFF_NOTYPE	= 0,	/* placeholder */
-	TIFF_BYTE	= 1,	/* 8-bit unsigned integer */
-	TIFF_ASCII	= 2,	/* 8-bit bytes w/ last byte null */
-	TIFF_SHORT	= 3,	/* 16-bit unsigned integer */
-	TIFF_LONG	= 4,	/* 32-bit unsigned integer */
-	TIFF_RATIONAL	= 5,	/* 64-bit unsigned fraction */
-	TIFF_SBYTE	= 6,	/* !8-bit signed integer */
-	TIFF_UNDEFINED	= 7,	/* !8-bit untyped data */
-	TIFF_SSHORT	= 8,	/* !16-bit signed integer */
-	TIFF_SLONG	= 9,	/* !32-bit signed integer */
-	TIFF_SRATIONAL	= 10,	/* !64-bit signed fraction */
-	TIFF_FLOAT	= 11,	/* !32-bit IEEE floating point */
-	TIFF_DOUBLE	= 12,	/* !64-bit IEEE floating point */
-	TIFF_IFD	= 13	/* %32-bit unsigned integer (offset) */
+typedef enum {
+	TIFF_NOTYPE = 0,      /* placeholder */
+	TIFF_BYTE = 1,        /* 8-bit unsigned integer */
+	TIFF_ASCII = 2,       /* 8-bit bytes w/ last byte null */
+	TIFF_SHORT = 3,       /* 16-bit unsigned integer */
+	TIFF_LONG = 4,        /* 32-bit unsigned integer */
+	TIFF_RATIONAL = 5,    /* 64-bit unsigned fraction */
+	TIFF_SBYTE = 6,       /* !8-bit signed integer */
+	TIFF_UNDEFINED = 7,   /* !8-bit untyped data */
+	TIFF_SSHORT = 8,      /* !16-bit signed integer */
+	TIFF_SLONG = 9,       /* !32-bit signed integer */
+	TIFF_SRATIONAL = 10,  /* !64-bit signed fraction */
+	TIFF_FLOAT = 11,      /* !32-bit IEEE floating point */
+	TIFF_DOUBLE = 12,     /* !64-bit IEEE floating point */
+	TIFF_IFD = 13,        /* %32-bit unsigned integer (offset) */
+	TIFF_LONG8 = 16,      /* BigTIFF 64-bit unsigned integer */
+	TIFF_SLONG8 = 17,     /* BigTIFF 64-bit signed integer */
+	TIFF_IFD8 = 18        /* BigTIFF 64-bit unsigned integer (offset) */
 } TIFFDataType;
 
 /*
@@ -175,6 +169,8 @@ typedef	enum {
 #define	    COMPRESSION_LZW		5       /* Lempel-Ziv  & Welch */
 #define	    COMPRESSION_OJPEG		6	/* !6.0 JPEG */
 #define	    COMPRESSION_JPEG		7	/* %JPEG DCT compression */
+#define     COMPRESSION_T85			9	/* !TIFF/FX T.85 JBIG compression */
+#define     COMPRESSION_T43			10	/* !TIFF/FX T.43 colour by layered JBIG compression */
 #define	    COMPRESSION_NEXT		32766	/* NeXT 2-bit RLE */
 #define	    COMPRESSION_CCITTRLEW	32771	/* #1 w/ word alignment */
 #define	    COMPRESSION_PACKBITS	32773	/* Macintosh RLE */
@@ -196,6 +192,11 @@ typedef	enum {
 #define     COMPRESSION_SGILOG		34676	/* SGI Log Luminance RLE */
 #define     COMPRESSION_SGILOG24	34677	/* SGI Log 24-bit packed */
 #define     COMPRESSION_JP2000          34712   /* Leadtools JPEG2000 */
+#define     COMPRESSION_LERC            34887   /* ESRI Lerc codec: https://github.com/Esri/lerc */
+/* compression codes 34887-34889 are reserved for ESRI */
+#define	    COMPRESSION_LZMA		34925	/* LZMA2 */
+#define	    COMPRESSION_ZSTD		50000	/* ZSTD: WARNING not registered in Adobe-maintained registry */
+#define	    COMPRESSION_WEBP		50001	/* WEBP: WARNING not registered in Adobe-maintained registry */
 #define	TIFFTAG_PHOTOMETRIC		262	/* photometric interpretation */
 #define	    PHOTOMETRIC_MINISWHITE	0	/* min value is white */
 #define	    PHOTOMETRIC_MINISBLACK	1	/* min value is black */
@@ -207,6 +208,7 @@ typedef	enum {
 #define	    PHOTOMETRIC_CIELAB		8	/* !1976 CIE L*a*b* */
 #define	    PHOTOMETRIC_ICCLAB		9	/* ICC L*a*b* [Adobe TIFF Technote 4] */
 #define	    PHOTOMETRIC_ITULAB		10	/* ITU L*a*b* */
+#define	    PHOTOMETRIC_CFA		32803	/* color filter array */
 #define     PHOTOMETRIC_LOGL		32844	/* CIE Log2(L) */
 #define     PHOTOMETRIC_LOGLUV		32845	/* CIE Log2(L) (u',v') */
 #define	TIFFTAG_THRESHHOLDING		263	/* +thresholding used on data */
@@ -284,7 +286,7 @@ typedef	enum {
 #define     PREDICTOR_FLOATINGPOINT	3	/* floating point predictor */
 #define	TIFFTAG_WHITEPOINT		318	/* image white point */
 #define	TIFFTAG_PRIMARYCHROMATICITIES	319	/* !primary chromaticities */
-#define	TIFFTAG_COLORMAP		320	/* RGB map for pallette image */
+#define	TIFFTAG_COLORMAP		320	/* RGB map for palette image */
 #define	TIFFTAG_HALFTONEHINTS		321	/* !highlight+shadow info */
 #define	TIFFTAG_TILEWIDTH		322	/* !tile width in pixels */
 #define	TIFFTAG_TILELENGTH		323	/* !tile height in pixels */
@@ -327,6 +329,30 @@ typedef	enum {
 						   [Adobe TIFF Technote 3] */
 #define	TIFFTAG_JPEGTABLES		347	/* %JPEG table stream */
 #define	TIFFTAG_OPIPROXY		351	/* %OPI Proxy [Adobe TIFF technote] */
+/* Tags 400-435 are from the TIFF/FX spec */
+#define TIFFTAG_GLOBALPARAMETERSIFD	400	/* ! */
+#define TIFFTAG_PROFILETYPE			401	/* ! */
+#define     PROFILETYPE_UNSPECIFIED	0	/* ! */
+#define     PROFILETYPE_G3_FAX		1	/* ! */
+#define TIFFTAG_FAXPROFILE			402	/* ! */
+#define     FAXPROFILE_S			1	/* !TIFF/FX FAX profile S */
+#define     FAXPROFILE_F			2	/* !TIFF/FX FAX profile F */
+#define     FAXPROFILE_J			3	/* !TIFF/FX FAX profile J */
+#define     FAXPROFILE_C			4	/* !TIFF/FX FAX profile C */
+#define     FAXPROFILE_L			5	/* !TIFF/FX FAX profile L */
+#define     FAXPROFILE_M			6	/* !TIFF/FX FAX profile LM */
+#define TIFFTAG_CODINGMETHODS		403	/* !TIFF/FX coding methods */
+#define     CODINGMETHODS_T4_1D		(1 << 1)	/* !T.4 1D */
+#define     CODINGMETHODS_T4_2D		(1 << 2)	/* !T.4 2D */
+#define     CODINGMETHODS_T6		(1 << 3)	/* !T.6 */
+#define     CODINGMETHODS_T85 		(1 << 4)	/* !T.85 JBIG */
+#define     CODINGMETHODS_T42 		(1 << 5)	/* !T.42 JPEG */
+#define     CODINGMETHODS_T43		(1 << 6)	/* !T.43 colour by layered JBIG */
+#define TIFFTAG_VERSIONYEAR			404	/* !TIFF/FX version year */
+#define TIFFTAG_MODENUMBER			405	/* !TIFF/FX mode number */
+#define TIFFTAG_DECODE				433	/* !TIFF/FX decode */
+#define TIFFTAG_IMAGEBASECOLOR		434	/* !TIFF/FX image base colour */
+#define TIFFTAG_T82OPTIONS			435	/* !TIFF/FX T.82 options */
 /*
  * Tags 512-521 are obsoleted by Technical Note #2 which specifies a
  * revised JPEG-in-TIFF scheme.
@@ -339,7 +365,7 @@ typedef	enum {
 #define	TIFFTAG_JPEGRESTARTINTERVAL	515	/* !restart interval length */
 #define	TIFFTAG_JPEGLOSSLESSPREDICTORS	517	/* !lossless proc predictor */
 #define	TIFFTAG_JPEGPOINTTRANSFORM	518	/* !lossless point transform */
-#define	TIFFTAG_JPEGQTABLES		519	/* !Q matrice offsets */
+#define	TIFFTAG_JPEGQTABLES		519	/* !Q matrix offsets */
 #define	TIFFTAG_JPEGDCTABLES		520	/* !DCT table offsets */
 #define	TIFFTAG_JPEGACTABLES		521	/* !AC coefficient offsets */
 #define	TIFFTAG_YCBCRCOEFFICIENTS	529	/* !RGB -> YCbCr transform */
@@ -348,11 +374,13 @@ typedef	enum {
 #define	    YCBCRPOSITION_CENTERED	1	/* !as in PostScript Level 2 */
 #define	    YCBCRPOSITION_COSITED	2	/* !as in CCIR 601-1 */
 #define	TIFFTAG_REFERENCEBLACKWHITE	532	/* !colorimetry info */
+#define TIFFTAG_STRIPROWCOUNTS		559 /* !TIFF/FX strip row counts */
 #define	TIFFTAG_XMLPACKET		700	/* %XML packet
 						   [Adobe XMP Specification,
 						   January 2004 */
 #define TIFFTAG_OPIIMAGEID		32781	/* %OPI ImageID
 						   [Adobe TIFF technote] */
+#define	TIFFTAG_TIFFANNOTATIONDATA	32932	/* http://web.archive.org/web/20050309141348/http://www.kofile.com/support%20pro/faqs/annospec.htm */
 /* tags 32952-32956 are private tags registered to Island Graphics */
 #define TIFFTAG_REFPTS			32953	/* image reference points */
 #define TIFFTAG_REGIONTACKPOINT		32954	/* region-xform tack point */
@@ -383,10 +411,27 @@ typedef	enum {
 #define TIFFTAG_PIXAR_MATRIX_WORLDTOCAMERA 33306
 /* tag 33405 is a private tag registered to Eastman Kodak */
 #define TIFFTAG_WRITERSERIALNUMBER      33405   /* device serial number */
+#define TIFFTAG_CFAREPEATPATTERNDIM	33421	/* dimensions of CFA pattern */
+#define TIFFTAG_CFAPATTERN		33422	/* color filter array pattern */
 /* tag 33432 is listed in the 6.0 spec w/ unknown ownership */
 #define	TIFFTAG_COPYRIGHT		33432	/* copyright string */
+/* Tags 33445-33452 are used for GEL fileformat, see
+ * http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf
+ */
+#define	TIFFTAG_MD_FILETAG		33445	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_SCALEPIXEL	33446	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_COLORTABLE	33447	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_LABNAME	33448	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_SAMPLEINFO	33449	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_PREPDATE	33450	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_PREPTIME	33451	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
+#define	TIFFTAG_MD_FILEUNITS	33452	/* http://research.stowers-institute.org/mcm/efg/ScientificSoftware/Utility/TiffTags/GEL-FileFormat.pdf */
 /* IPTC TAG from RichTIFF specifications */
 #define TIFFTAG_RICHTIFFIPTC		33723
+#define	TIFFTAG_INGR_PACKET_DATA_TAG	33918	/* Intergraph Application specific storage. */
+#define	TIFFTAG_INGR_FLAG_REGISTERS	33919	/* Intergraph Application specific flags. */
+#define	TIFFTAG_IRASB_TRANSORMATION_MATRIX	33920	/* Originally part of Intergraph's GeoTIFF tags, but likely understood by IrasB only. */
+#define	TIFFTAG_MODELTIEPOINTTAG	33922	/* GeoTIFF */
 /* 34016-34029 are reserved for ANSI IT8 TIFF/IT <dkelly@apago.com) */
 #define TIFFTAG_IT8SITE			34016	/* site name */
 #define TIFFTAG_IT8COLORSEQUENCE	34017	/* color seq. [RGB,CMYK,etc] */
@@ -408,12 +453,14 @@ typedef	enum {
 #define TIFFTAG_IT8CMYKEQUIVALENT	34032	/* CMYK color equivalents */
 /* tags 34232-34236 are private tags registered to Texas Instruments */
 #define TIFFTAG_FRAMECOUNT              34232   /* Sequence Frame Count */
+#define TIFFTAG_MODELTRANSFORMATIONTAG	34264	/* Used in interchangeable GeoTIFF files */
 /* tag 34377 is private tag registered to Adobe for PhotoShop */
 #define TIFFTAG_PHOTOSHOP		34377 
 /* tags 34665, 34853 and 40965 are documented in EXIF specification */
 #define TIFFTAG_EXIFIFD			34665	/* Pointer to EXIF private directory */
 /* tag 34750 is a private tag registered to Adobe? */
 #define TIFFTAG_ICCPROFILE		34675	/* ICC profile data */
+#define TIFFTAG_IMAGELAYER		34732	/* !TIFF/FX image layer information */
 /* tag 34750 is a private tag registered to Pixel Magic */
 #define	TIFFTAG_JBIGOPTIONS		34750	/* JBIG options */
 #define TIFFTAG_GPSIFD			34853	/* Pointer to GPS private directory */
@@ -426,7 +473,17 @@ typedef	enum {
 #define TIFFTAG_STONITS			37439	/* Sample value to Nits */
 /* tag 34929 is a private tag registered to FedEx */
 #define	TIFFTAG_FEDEX_EDR		34929	/* unknown use */
+#define	TIFFTAG_IMAGESOURCEDATA		37724	/* http://justsolve.archiveteam.org/wiki/PSD, http://www.adobe.com/devnet-apps/photoshop/fileformatashtml/ */
 #define TIFFTAG_INTEROPERABILITYIFD	40965	/* Pointer to Interoperability private directory */
+#define	TIFFTAG_GDAL_METADATA		42112	/* Used by the GDAL library */
+#define	TIFFTAG_GDAL_NODATA		42113	/* Used by the GDAL library */
+#define	TIFFTAG_OCE_SCANJOB_DESCRIPTION	50215	/* Used in the Oce scanning process */
+#define	TIFFTAG_OCE_APPLICATION_SELECTOR	50216	/* Used in the Oce scanning process. */
+#define	TIFFTAG_OCE_IDENTIFICATION_NUMBER	50217
+#define	TIFFTAG_OCE_IMAGELOGIC_CHARACTERISTICS	50218
+
+/* tags 50674 to 50677 are reserved for ESRI */
+#define TIFFTAG_LERC_PARAMETERS         50674   /* Stores LERC version and additional compression method */
 /* Adobe Digital Negative (DNG) format tags */
 #define TIFFTAG_DNGVERSION		50706	/* &DNG version number */
 #define TIFFTAG_DNGBACKWARDVERSION	50707	/* &DNG compatibility version */
@@ -508,6 +565,17 @@ typedef	enum {
 						   into ICC profile space */
 #define TIFFTAG_CURRENTICCPROFILE	50833	/* & */
 #define TIFFTAG_CURRENTPREPROFILEMATRIX	50834	/* & */
+
+#define TIFFTAG_RPCCOEFFICIENT          50844   /* Define by GDAL for geospatial georeferencing through RPC: http://geotiff.maptools.org/rpc_prop.html */
+
+#define	TIFFTAG_ALIAS_LAYER_METADATA	50784	/* Alias Sketchbook Pro layer usage description. */
+
+/* GeoTIFF DGIWG */
+#define TIFFTAG_TIFF_RSID               50908   /* https://www.awaresystems.be/imaging/tiff/tifftags/tiff_rsid.html */
+#define TIFFTAG_GEO_METADATA            50909   /* https://www.awaresystems.be/imaging/tiff/tifftags/geo_metadata.html */
+
+#define TIFFTAG_EXTRACAMERAPROFILES 50933  /* http://wwwimages.adobe.com/www.adobe.com/content/dam/Adobe/en/products/photoshop/pdfs/dng_spec_1.4.0.0.pdf */
+
 /* tag 65535 is an undefined tag used by Eastman Kodak */
 #define TIFFTAG_DCSHUESHIFTVALUES       65535   /* hue shift correction data */
 
@@ -576,6 +644,23 @@ typedef	enum {
 #define TIFFTAG_SGILOGENCODE		65561 /* SGILog data encoding control*/
 #define     SGILOGENCODE_NODITHER	0     /* do not dither encoded values*/
 #define     SGILOGENCODE_RANDITHER	1     /* randomly dither encd values */
+#define	TIFFTAG_LZMAPRESET		65562	/* LZMA2 preset (compression level) */
+#define TIFFTAG_PERSAMPLE       65563	/* interface for per sample tags */
+#define     PERSAMPLE_MERGED        0	/* present as a single value */
+#define     PERSAMPLE_MULTI         1	/* present as multiple values */
+#define TIFFTAG_ZSTD_LEVEL      65564    /* ZSTD compression level */
+#define TIFFTAG_LERC_VERSION            65565 /* LERC version */
+#define     LERC_VERSION_2_4            4
+#define TIFFTAG_LERC_ADD_COMPRESSION    65566 /* LERC additional compression */
+#define     LERC_ADD_COMPRESSION_NONE    0
+#define     LERC_ADD_COMPRESSION_DEFLATE 1
+#define     LERC_ADD_COMPRESSION_ZSTD    2
+#define TIFFTAG_LERC_MAXZERROR          65567    /* LERC maximum error */
+#define TIFFTAG_WEBP_LEVEL		  65568	/* WebP compression level */
+#define TIFFTAG_WEBP_LOSSLESS		65569	/* WebP lossless/lossy */
+#define	TIFFTAG_DEFLATE_SUBCODEC	65570	/* ZIP codec: to get/set the sub-codec to use. Will default to libdeflate when available */
+#define     DEFLATE_SUBCODEC_ZLIB       0
+#define     DEFLATE_SUBCODEC_LIBDEFLATE 1
 
 /*
  * EXIF tags
@@ -585,8 +670,8 @@ typedef	enum {
 #define EXIFTAG_EXPOSUREPROGRAM		34850	/* Exposure program */
 #define EXIFTAG_SPECTRALSENSITIVITY	34852	/* Spectral sensitivity */
 #define EXIFTAG_ISOSPEEDRATINGS		34855	/* ISO speed rating */
-#define EXIFTAG_OECF			34856	/* Optoelectric conversion
-						   factor */
+#define EXIFTAG_PHOTOGRAPHICSENSITIVITY	34855 /* Photographic Sensitivity (new name for tag 34855) */
+#define EXIFTAG_OECF			34856	/* Optoelectric conversion factor */
 #define EXIFTAG_EXIFVERSION		36864	/* Exif version */
 #define EXIFTAG_DATETIMEORIGINAL	36867	/* Date and time of original
 						   data generation */
@@ -638,9 +723,70 @@ typedef	enum {
 #define EXIFTAG_SHARPNESS		41994	/* Sharpness */
 #define EXIFTAG_DEVICESETTINGDESCRIPTION 41995	/* Device settings description */
 #define EXIFTAG_SUBJECTDISTANCERANGE	41996	/* Subject distance range */
-#define EXIFTAG_GAINCONTROL		41991	/* Gain control */
-#define EXIFTAG_GAINCONTROL		41991	/* Gain control */
 #define EXIFTAG_IMAGEUNIQUEID		42016	/* Unique image ID */
+
+/*--: New for EXIF-Version 2.32, May 2019 ... */
+#define EXIFTAG_SENSITIVITYTYPE		34864		/* The SensitivityType tag indicates which one of the parameters of ISO12232 is the PhotographicSensitivity tag. */
+#define EXIFTAG_STANDARDOUTPUTSENSITIVITY		34865		/* This tag indicates the standard output sensitivity value of a camera or input device defined in ISO 12232. */
+#define EXIFTAG_RECOMMENDEDEXPOSUREINDEX		34866		/* recommended exposure index */
+#define EXIFTAG_ISOSPEED		34867		/* ISO speed value */
+#define EXIFTAG_ISOSPEEDLATITUDEYYY		34868		/* ISO speed latitude yyy */
+#define EXIFTAG_ISOSPEEDLATITUDEZZZ		34869		/* ISO speed latitude zzz */
+#define EXIFTAG_OFFSETTIME		36880		/* offset from UTC of the time of DateTime tag. */
+#define EXIFTAG_OFFSETTIMEORIGINAL		36881		/* offset from UTC of the time of DateTimeOriginal tag. */
+#define EXIFTAG_OFFSETTIMEDIGITIZED		36882		/* offset from UTC of the time of DateTimeDigitized tag. */
+#define EXIFTAG_TEMPERATURE		37888		/* Temperature as the ambient situation at the shot in dergee Celsius */
+#define EXIFTAG_HUMIDITY		37889		/* Humidity as the ambient situation at the shot in percent */
+#define EXIFTAG_PRESSURE		37890		/* Pressure as the ambient situation at the shot hecto-Pascal (hPa) */
+#define EXIFTAG_WATERDEPTH		37891		/* WaterDepth as the ambient situation at the shot in meter (m) */
+#define EXIFTAG_ACCELERATION		37892		/* Acceleration (a scalar regardless of direction) as the ambient situation at the shot in units of mGal (10-5 m/s^2) */
+#define EXIFTAG_CAMERAELEVATIONANGLE		37893		/* Elevation/depression. angle of the orientation of the camera(imaging optical axis) as the ambient situation at the shot in degree from -180deg to +180deg. */
+#define EXIFTAG_CAMERAOWNERNAME		42032		/* owner of a camera */
+#define EXIFTAG_BODYSERIALNUMBER		42033		/* serial number of the body of the camera */
+#define EXIFTAG_LENSSPECIFICATION		42034		/* minimum focal length (in mm), maximum focal length (in mm), minimum F number in the minimum focal length, and minimum F number in the maximum focal length, */
+#define EXIFTAG_LENSMAKE		42035		/* the lens manufacturer */
+#define EXIFTAG_LENSMODEL		42036		/* the lens model name and model number */
+#define EXIFTAG_LENSSERIALNUMBER		42037		/* the serial number of the interchangeable lens */
+#define EXIFTAG_GAMMA		42240		/* value of coefficient gamma */
+#define EXIFTAG_COMPOSITEIMAGE		42080	/* composite image */
+#define EXIFTAG_SOURCEIMAGENUMBEROFCOMPOSITEIMAGE		42081	/* source image number of composite image */
+#define EXIFTAG_SOURCEEXPOSURETIMESOFCOMPOSITEIMAGE		42082	/* source exposure times of composite image */
+
+/*
+ * EXIF-GPS tags  (Version 2.31, July 2016)
+ */
+#define		GPSTAG_VERSIONID		0			/* 	Indicates the version of GPSInfoIFD.	 */
+#define		GPSTAG_LATITUDEREF		1			/* 	Indicates whether the latitude is north or south latitude.	 */
+#define		GPSTAG_LATITUDE		2			/* 	Indicates the latitude.	 */
+#define		GPSTAG_LONGITUDEREF		3			/* 	Indicates whether the longitude is east or west longitude.	 */
+#define		GPSTAG_LONGITUDE		4			/* 	Indicates the longitude.	 */
+#define		GPSTAG_ALTITUDEREF		5			/* 	Indicates the altitude used as the reference altitude.	 */
+#define		GPSTAG_ALTITUDE		6			/* 	Indicates the altitude based on the reference in GPSAltitudeRef.	 */
+#define		GPSTAG_TIMESTAMP		7			/* 	Indicates the time as UTC (Coordinated Universal Time).	 */
+#define		GPSTAG_SATELLITES		8			/* 	Indicates the GPS satellites used for measurements.	 */
+#define		GPSTAG_STATUS		9			/* 	Indicates the status of the GPS receiver when the image is recorded.	 */
+#define		GPSTAG_MEASUREMODE		10			/* 	Indicates the GPS measurement mode.	 */
+#define		GPSTAG_DOP		11			/* 	Indicates the GPS DOP (data degree of precision).	 */
+#define		GPSTAG_SPEEDREF		12			/* 	Indicates the unit used to express the GPS receiver speed of movement.	 */
+#define		GPSTAG_SPEED		13			/* 	Indicates the speed of GPS receiver movement.	 */
+#define		GPSTAG_TRACKREF		14			/* 	Indicates the reference for giving the direction of GPS receiver movement.	 */
+#define		GPSTAG_TRACK		15			/* 	Indicates the direction of GPS receiver movement.	 */
+#define		GPSTAG_IMGDIRECTIONREF		16			/* 	Indicates the reference for giving the direction of the image when it is captured.	 */
+#define		GPSTAG_IMGDIRECTION		17			/* 	Indicates the direction of the image when it was captured.	 */
+#define		GPSTAG_MAPDATUM		18			/* 	Indicates the geodetic survey data used by the GPS receiver. (e.g. WGS-84)	 */
+#define		GPSTAG_DESTLATITUDEREF		19			/* 	Indicates whether the latitude of the destination point is north or south latitude.	 */
+#define		GPSTAG_DESTLATITUDE		20			/* 	Indicates the latitude of the destination point.	 */
+#define		GPSTAG_DESTLONGITUDEREF		21			/* 	Indicates whether the longitude of the destination point is east or west longitude.	 */
+#define		GPSTAG_DESTLONGITUDE		22			/* 	Indicates the longitude of the destination point.	 */
+#define		GPSTAG_DESTBEARINGREF		23			/* 	Indicates the reference used for giving the bearing to the destination point.	 */
+#define		GPSTAG_DESTBEARING		24			/* 	Indicates the bearing to the destination point.	 */
+#define		GPSTAG_DESTDISTANCEREF		25			/* 	Indicates the unit used to express the distance to the destination point.	 */
+#define		GPSTAG_DESTDISTANCE		26			/* 	Indicates the distance to the destination point.	 */
+#define		GPSTAG_PROCESSINGMETHOD		27			/* 	A character string recording the name of the method used for location finding.	 */
+#define		GPSTAG_AREAINFORMATION		28			/* 	A character string recording the name of the GPS area.	 */
+#define		GPSTAG_DATESTAMP		29			/* 	A character string recording date and time information relative to UTC (Coordinated Universal Time).	 */
+#define		GPSTAG_DIFFERENTIAL		30			/* 	Indicates whether differential correction is applied to the GPS receiver.	 */
+#define		GPSTAG_GPSHPOSITIONINGERROR		31			/* Indicates horizontal positioning errors in meters.		 */
 
 #endif /* _TIFF_ */
 

@@ -1,5 +1,3 @@
-/* $Id: tif_close.c,v 1.10.2.1 2010-06-08 18:50:41 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1988-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -28,6 +26,7 @@
  * TIFF Library.
  */
 #include "tiffiop.h"
+#include <string.h>
 
 /************************************************************************/
 /*                            TIFFCleanup()                             */
@@ -35,7 +34,7 @@
 
 /**
  * Auxiliary function to free the TIFF structure. Given structure will be
- * completetly freed, so you should save opened file handle and pointer
+ * completely freed, so you should save opened file handle and pointer
  * to the close procedure in external variables before calling
  * _TIFFCleanup(), if you will need these ones to close the file.
  * 
@@ -45,50 +44,61 @@
 void
 TIFFCleanup(TIFF* tif)
 {
+	/*
+         * Flush buffered data and directory (if dirty).
+         */
 	if (tif->tif_mode != O_RDONLY)
-	    /*
-	     * Flush buffered data and directory (if dirty).
-	     */
-	    TIFFFlush(tif);
+		TIFFFlush(tif);
 	(*tif->tif_cleanup)(tif);
 	TIFFFreeDirectory(tif);
 
 	if (tif->tif_dirlist)
 		_TIFFfree(tif->tif_dirlist);
 
-	/* Clean up client info links */
+	/*
+         * Clean up client info links.
+         */
 	while( tif->tif_clientinfo )
 	{
-		TIFFClientInfoLink *link = tif->tif_clientinfo;
+		TIFFClientInfoLink *psLink = tif->tif_clientinfo;
 
-		tif->tif_clientinfo = link->next;
-		_TIFFfree( link->name );
-		_TIFFfree( link );
+		tif->tif_clientinfo = psLink->next;
+		_TIFFfree( psLink->name );
+		_TIFFfree( psLink );
 	}
 
 	if (tif->tif_rawdata && (tif->tif_flags&TIFF_MYBUFFER))
 		_TIFFfree(tif->tif_rawdata);
 	if (isMapped(tif))
-		TIFFUnmapFileContents(tif, tif->tif_base, tif->tif_size);
+		TIFFUnmapFileContents(tif, tif->tif_base, (toff_t)tif->tif_size);
 
-	/* Clean up custom fields */
-	if (tif->tif_nfields > 0)
-	{
-		size_t  i;
+	/*
+         * Clean up custom fields.
+         */
+	if (tif->tif_fields && tif->tif_nfields > 0) {
+		uint32 i;
 
-	    for (i = 0; i < tif->tif_nfields; i++) 
-	    {
-		TIFFFieldInfo *fld = tif->tif_fieldinfo[i];
-		if (fld->field_bit == FIELD_CUSTOM && 
-		    strncmp("Tag ", fld->field_name, 4) == 0) 
-		{
-		    _TIFFfree(fld->field_name);
-		    _TIFFfree(fld);
+		for (i = 0; i < tif->tif_nfields; i++) {
+			TIFFField *fld = tif->tif_fields[i];
+			if (fld->field_bit == FIELD_CUSTOM &&
+			    strncmp("Tag ", fld->field_name, 4) == 0) {
+				_TIFFfree(fld->field_name);
+				_TIFFfree(fld);
+			}
 		}
-	    }   
-	  
-	    _TIFFfree(tif->tif_fieldinfo);
+
+		_TIFFfree(tif->tif_fields);
 	}
+
+        if (tif->tif_nfieldscompat > 0) {
+                uint32 i;
+
+                for (i = 0; i < tif->tif_nfieldscompat; i++) {
+                        if (tif->tif_fieldscompat[i].allocated_size)
+                                _TIFFfree(tif->tif_fieldscompat[i].fields);
+                }
+                _TIFFfree(tif->tif_fieldscompat);
+        }
 
 	_TIFFfree(tif);
 }
@@ -116,6 +126,8 @@ TIFFClose(TIFF* tif)
 	TIFFCleanup(tif);
 	(void) (*closeproc)(fd);
 }
+
+/* vim: set ts=8 sts=8 sw=8 noet: */
 
 /*
  * Local Variables:

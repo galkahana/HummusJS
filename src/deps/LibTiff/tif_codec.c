@@ -1,5 +1,3 @@
-/* $Id: tif_codec.c,v 1.10.2.2 2010-06-08 18:50:41 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1988-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -31,43 +29,52 @@
  */
 #include "tiffiop.h"
 
-static	int NotConfigured(TIFF*, int);
+static int NotConfigured(TIFF*, int);
 
-#ifndef	LZW_SUPPORT
-#define	TIFFInitLZW		NotConfigured
+#ifndef LZW_SUPPORT
+#define TIFFInitLZW NotConfigured
 #endif
-#ifndef	PACKBITS_SUPPORT
-#define	TIFFInitPackBits	NotConfigured
+#ifndef PACKBITS_SUPPORT
+#define TIFFInitPackBits NotConfigured
 #endif
-#ifndef	THUNDER_SUPPORT
-#define	TIFFInitThunderScan	NotConfigured
+#ifndef THUNDER_SUPPORT
+#define TIFFInitThunderScan NotConfigured
 #endif
-#ifndef	NEXT_SUPPORT
-#define	TIFFInitNeXT		NotConfigured
+#ifndef NEXT_SUPPORT
+#define TIFFInitNeXT NotConfigured
 #endif
-#ifndef	JPEG_SUPPORT
-#define	TIFFInitJPEG		NotConfigured
+#ifndef JPEG_SUPPORT
+#define TIFFInitJPEG NotConfigured
 #endif
-#ifndef	OJPEG_SUPPORT
-#define	TIFFInitOJPEG		NotConfigured
+#ifndef OJPEG_SUPPORT
+#define TIFFInitOJPEG NotConfigured
 #endif
-#ifndef	CCITT_SUPPORT
-#define	TIFFInitCCITTRLE	NotConfigured
-#define	TIFFInitCCITTRLEW	NotConfigured
-#define	TIFFInitCCITTFax3	NotConfigured
-#define	TIFFInitCCITTFax4	NotConfigured
+#ifndef CCITT_SUPPORT
+#define TIFFInitCCITTRLE NotConfigured
+#define TIFFInitCCITTRLEW NotConfigured
+#define TIFFInitCCITTFax3 NotConfigured
+#define TIFFInitCCITTFax4 NotConfigured
 #endif
 #ifndef JBIG_SUPPORT
-#define	TIFFInitJBIG		NotConfigured
+#define TIFFInitJBIG NotConfigured
 #endif
-#ifndef	ZIP_SUPPORT
-#define	TIFFInitZIP		NotConfigured
+#ifndef ZIP_SUPPORT
+#define TIFFInitZIP NotConfigured
 #endif
-#ifndef	PIXARLOG_SUPPORT
-#define	TIFFInitPixarLog	NotConfigured
+#ifndef PIXARLOG_SUPPORT
+#define TIFFInitPixarLog NotConfigured
 #endif
 #ifndef LOGLUV_SUPPORT
-#define TIFFInitSGILog		NotConfigured
+#define TIFFInitSGILog NotConfigured
+#endif
+#ifndef LZMA_SUPPORT
+#define TIFFInitLZMA NotConfigured
+#endif
+#ifndef ZSTD_SUPPORT
+#define TIFFInitZSTD NotConfigured
+#endif
+#ifndef WEBP_SUPPORT
+#define TIFFInitWebP NotConfigured
 #endif
 
 /*
@@ -95,6 +102,9 @@ TIFFCodec _TIFFBuiltinCODECS[] = {
     { "PixarLog",	COMPRESSION_PIXARLOG,	TIFFInitPixarLog },
     { "SGILog",		COMPRESSION_SGILOG,	TIFFInitSGILog },
     { "SGILog24",	COMPRESSION_SGILOG24,	TIFFInitSGILog },
+    { "LZMA",		COMPRESSION_LZMA,	TIFFInitLZMA },
+    { "ZSTD",		COMPRESSION_ZSTD,	TIFFInitZSTD },
+    { "WEBP",		COMPRESSION_WEBP,	TIFFInitWebP },
     { NULL,             0,                      NULL }
 };
 
@@ -104,7 +114,7 @@ _notConfigured(TIFF* tif)
 	const TIFFCodec* c = TIFFFindCODEC(tif->tif_dir.td_compression);
         char compression_code[20];
         
-        sprintf( compression_code, "%d", tif->tif_dir.td_compression );
+        sprintf(compression_code, "%d",tif->tif_dir.td_compression );
 	TIFFErrorExt(tif->tif_clientdata, tif->tif_name,
                      "%s compression support is not configured", 
                      c ? c->name : compression_code );
@@ -114,13 +124,14 @@ _notConfigured(TIFF* tif)
 static int
 NotConfigured(TIFF* tif, int scheme)
 {
-    (void) scheme;
-    
-    tif->tif_decodestatus = FALSE;
-    tif->tif_setupdecode = _notConfigured;
-    tif->tif_encodestatus = FALSE;
-    tif->tif_setupencode = _notConfigured;
-    return (1);
+	(void) scheme;
+
+	tif->tif_fixuptags = _notConfigured;
+	tif->tif_decodestatus = FALSE;
+	tif->tif_setupdecode = _notConfigured;
+	tif->tif_encodestatus = FALSE;
+	tif->tif_setupencode = _notConfigured;
+	return (1);
 }
 
 /************************************************************************/
@@ -129,7 +140,7 @@ NotConfigured(TIFF* tif, int scheme)
 
 /**
  * Check whether we have working codec for the specific coding scheme.
- * 
+ *
  * @return returns 1 if the codec is configured and working. Otherwise
  * 0 will be returned.
  */
@@ -140,14 +151,14 @@ TIFFIsCODECConfigured(uint16 scheme)
 	const TIFFCodec* codec = TIFFFindCODEC(scheme);
 
 	if(codec == NULL) {
-            return 0;
-        }
-        if(codec->init == NULL) {
-            return 0;
-        }
+		return 0;
+	}
+	if(codec->init == NULL) {
+		return 0;
+	}
 	if(codec->init != NotConfigured){
-            return 1;
-        }
+		return 1;
+	}
 	return 0;
 }
 

@@ -1,6 +1,6 @@
 {
-  "name": "hummus",
-  "version": "1.0.110",
+  "name": "@kofile/hummus",
+  "version": "1.1.110",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
   "license": "Apache-2.0",

@@ -1,5 +1,3 @@
-/* $Header: /cvs/maptools/cvsroot/libtiff/libtiff/tif_flush.c,v 1.3.2.1 2010-06-08 18:50:42 bfriesen Exp $ */
-
 /*
  * Copyright (c) 1988-1997 Sam Leffler
  * Copyright (c) 1991-1997 Silicon Graphics, Inc.
@@ -32,15 +30,116 @@
 int
 TIFFFlush(TIFF* tif)
 {
+    if( tif->tif_mode == O_RDONLY )
+        return 1;
 
-	if (tif->tif_mode != O_RDONLY) {
-		if (!TIFFFlushData(tif))
-			return (0);
-		if ((tif->tif_flags & TIFF_DIRTYDIRECT) &&
-		    !TIFFWriteDirectory(tif))
-			return (0);
-	}
-	return (1);
+    if (!TIFFFlushData(tif))
+        return (0);
+                
+    /* In update (r+) mode we try to detect the case where 
+       only the strip/tile map has been altered, and we try to 
+       rewrite only that portion of the directory without 
+       making any other changes */
+                
+    if( (tif->tif_flags & TIFF_DIRTYSTRIP)
+        && !(tif->tif_flags & TIFF_DIRTYDIRECT) 
+        && tif->tif_mode == O_RDWR )
+    {
+        if( TIFFForceStrileArrayWriting(tif) )
+            return 1;
+    }
+
+    if ((tif->tif_flags & (TIFF_DIRTYDIRECT|TIFF_DIRTYSTRIP)) 
+        && !TIFFRewriteDirectory(tif))
+        return (0);
+
+    return (1);
+}
+
+/*
+ * This is an advanced writing function that must be used in a particular
+ * sequence, and together with TIFFDeferStrileArrayWriting(),
+ * to make its intended effect. Its aim is to force the writing of
+ * the [Strip/Tile][Offsets/ByteCounts] arrays at the end of the file, when
+ * they have not yet been rewritten.
+ *
+ * The typical sequence of calls is:
+ * TIFFOpen()
+ * [ TIFFCreateDirectory(tif) ]
+ * Set fields with calls to TIFFSetField(tif, ...)
+ * TIFFDeferStrileArrayWriting(tif)
+ * TIFFWriteCheck(tif, ...)
+ * TIFFWriteDirectory(tif)
+ * ... potentially create other directories and come back to the above directory
+ * TIFFForceStrileArrayWriting(tif)
+ *
+ * Returns 1 in case of success, 0 otherwise.
+ */
+int TIFFForceStrileArrayWriting(TIFF* tif)
+{
+    static const char module[] = "TIFFForceStrileArrayWriting";
+    const int isTiled = TIFFIsTiled(tif);
+
+    if (tif->tif_mode == O_RDONLY)
+    {
+        TIFFErrorExt(tif->tif_clientdata, tif->tif_name,
+                     "File opened in read-only mode");
+        return 0;
+    }
+    if( tif->tif_diroff == 0 )
+    {
+        TIFFErrorExt(tif->tif_clientdata, module,
+                     "Directory has not yet been written");
+        return 0;
+    }
+    if( (tif->tif_flags & TIFF_DIRTYDIRECT) != 0 )
+    {
+        TIFFErrorExt(tif->tif_clientdata, module,
+                     "Directory has changes other than the strile arrays. "
+                     "TIFFRewriteDirectory() should be called instead");
+        return 0;
+    }
+
+    if( !(tif->tif_flags & TIFF_DIRTYSTRIP) )
+    {
+        if( !(tif->tif_dir.td_stripoffset_entry.tdir_tag != 0 &&
+             tif->tif_dir.td_stripoffset_entry.tdir_count == 0 &&
+             tif->tif_dir.td_stripoffset_entry.tdir_type == 0 &&
+             tif->tif_dir.td_stripoffset_entry.tdir_offset.toff_long8 == 0 &&
+             tif->tif_dir.td_stripbytecount_entry.tdir_tag != 0 &&
+             tif->tif_dir.td_stripbytecount_entry.tdir_count == 0 &&
+             tif->tif_dir.td_stripbytecount_entry.tdir_type == 0 &&
+             tif->tif_dir.td_stripbytecount_entry.tdir_offset.toff_long8 == 0) )
+        {
+            TIFFErrorExt(tif->tif_clientdata, module,
+                        "Function not called together with "
+                        "TIFFDeferStrileArrayWriting()");
+            return 0;
+        }
+
+        if (tif->tif_dir.td_stripoffset_p == NULL && !TIFFSetupStrips(tif))
+            return 0;
+    }
+
+    if( _TIFFRewriteField( tif,
+                           isTiled ? TIFFTAG_TILEOFFSETS :
+                                     TIFFTAG_STRIPOFFSETS,
+                           TIFF_LONG8,
+                           tif->tif_dir.td_nstrips,
+                           tif->tif_dir.td_stripoffset_p )
+        && _TIFFRewriteField( tif,
+                              isTiled ? TIFFTAG_TILEBYTECOUNTS :
+                                        TIFFTAG_STRIPBYTECOUNTS,
+                              TIFF_LONG8,
+                              tif->tif_dir.td_nstrips,
+                              tif->tif_dir.td_stripbytecount_p ) )
+    {
+        tif->tif_flags &= ~TIFF_DIRTYSTRIP;
+        tif->tif_flags &= ~TIFF_BEENWRITING;
+        return 1;
+    }
+
+    return 0;
 }
 
 /*
@@ -56,7 +155,7 @@ int
 TIFFFlushData(TIFF* tif)
 {
 	if ((tif->tif_flags & TIFF_BEENWRITING) == 0)
-		return (0);
+		return (1);
 	if (tif->tif_flags & TIFF_POSTENCODE) {
 		tif->tif_flags &= ~TIFF_POSTENCODE;
 		if (!(*tif->tif_postencode)(tif))
@@ -65,6 +164,7 @@ TIFFFlushData(TIFF* tif)
 	return (TIFFFlushData1(tif));
 }
 
+/* vim: set ts=8 sts=8 sw=8 noet: */
 /*
  * Local Variables:
  * mode: c
