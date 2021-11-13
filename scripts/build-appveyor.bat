@@ -140,3 +140,5 @@ SET EL=%ERRORLEVEL%
 
 :DONE
 ECHO ~~~~~~~~~~~~~~~~~~~~~~ DONE %~f0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+exit %EL%
