@@ -27,8 +27,8 @@ env:
     - NODE_NVM_VERSION="11.2.0"
     - NODE_NVM_VERSION="12.0.0"
     - NODE_NVM_VERSION="14.0.0"
-    - NODE_NVM_VERSION="16.13.0"
-    - NODE_NVM_VERSION="17.1.0"
+    - NODE_NVM_VERSION="16.13.0" PYTHON_38=true
+    - NODE_NVM_VERSION="17.1.0" PYTHON_38=true
     - ELECTRON_VERSION="1.8.7" ELECTRON_MOCHA=true MOCHA_RUNTIME_VERSION=7.0.0
     - ELECTRON_VERSION="2.0.7" ELECTRON_MOCHA=true MOCHA_RUNTIME_VERSION=7.0.0
     - ELECTRON_VERSION="3.0.10" ELECTRON_MOCHA=true
@@ -58,8 +58,10 @@ matrix:
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then 
     export CXX=g++-4.8 
-    export PYTHON=$(which python3.8); 
     fi
+  - if [[ $TRAVIS_OS_NAME == "linux" && "${PYTHON_38}" == "true" ]]; then
+    export PYTHON=$(which python3.8); 
+    fi    
   - if [[ $ELECTRON_VERSION ]]; then
     export npm_config_target=$ELECTRON_VERSION;
     export npm_config_target_arch=x64;
