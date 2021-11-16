@@ -58,7 +58,7 @@ matrix:
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then 
     export CXX=g++-4.8 
-    export PYTHON=${which python3.8}; 
+    export PYTHON=$(which python3.8); 
     fi
   - if [[ $ELECTRON_VERSION ]]; then
     export npm_config_target=$ELECTRON_VERSION;
