@@ -28,6 +28,12 @@
     "PDFRStreamForBuffer.js",
     "PDFWStreamForBuffer.js"
   ],
+  "dependencies": {	
+    "node-pre-gyp": "^0.10.0"	
+  },	
+  "bundledDependencies": [	
+    "node-pre-gyp"	
+  ],  
   "devDependencies": {
     "aws-sdk": "~2.0.0-rc.15",
     "chai": "^3.4.0",
@@ -43,8 +49,5 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
-  },
-  "dependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.10"
   }
 }
