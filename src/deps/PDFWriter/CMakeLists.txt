@@ -207,6 +207,7 @@ CIDFontWriter.h
 CMYKRGBColor.h
 ContainerIterator.h
 DecryptionHelper.h
+Deletable.h
 DescendentFontWriter.h
 DictionaryContext.h
 DictOperand.h
@@ -234,6 +235,7 @@ IByteReaderWithPosition.h
 IByteWriter.h
 IByteWriterWithPosition.h
 IContentContextListener.h
+IDeletable.h
 IDescendentFontWriter.h
 IDocumentContextExtender.h
 IFontDescriptorHelper.h
@@ -640,6 +642,8 @@ UppercaseSequance.h
 )
 
 source_group("PDF Embedding\\Parsed Objects" FILES
+Deletable.h
+IDeletable.h
 PDFArray.cpp
 PDFArray.h
 PDFBoolean.cpp

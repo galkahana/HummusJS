@@ -49,6 +49,7 @@ public:
 	// Assign the stream to read from (does not take ownership of the stream, unless told so)
 	void SetReadStream(IByteReader* inSourceStream,IReadPositionProvider* inCurrentPositionProvider,bool inOwnsStream=false);
 
+	// the important bit - get next object in content stream
 	PDFObject* ParseNewObject();
 
 	// calls this when changing underlying stream position
@@ -63,6 +64,11 @@ public:
 
 	// helper method for others who need to parse encoded pdf data
 	std::string DecodeHexString(const std::string inStringToDecode);
+
+	// External reading. use to temporarily get access to the internal stream, instead of reading objects with ParseNewObject.
+	// when done mark with FinishExternalReading to commence reading
+	IByteReader* StartExternalRead();
+	void EndExternalRead();
 
 private:
 	PDFParserTokenizer mTokenizer;

@@ -707,3 +707,11 @@ void PDFObjectParser::SetParserExtender(IPDFParserExtender* inParserExtender)
 {
 	mParserExtender = inParserExtender;
 }
+
+IByteReader* PDFObjectParser::StartExternalRead() {
+	return mStream;
+}
+
+void PDFObjectParser::EndExternalRead() {
+	ResetReadState();
+}

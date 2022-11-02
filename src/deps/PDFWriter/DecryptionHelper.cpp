@@ -36,6 +36,7 @@ limitations under the License.
 #include "InputRC4XcodeStream.h"
 #include "InputAESDecodeStream.h"
 #include "Trace.h"
+#include "Deletable.h"
 #include <memory>
 
 using namespace std;
@@ -333,9 +334,9 @@ IByteReader* DecryptionHelper::CreateDefaultDecryptionFilterForStream(PDFStreamI
 	if (!IsEncrypted() || !CanDecryptDocument() || HasCryptFilterDefinition(mParser, inStream) || !mXcryptStreams)
 		return NULL;
 	
-	void* savedEcnryptionKey = inStream->GetMetadata(scEcnryptionKeyMetadataKey);
+	IDeletable* savedEcnryptionKey = inStream->GetMetadata(scEcnryptionKeyMetadataKey);
 	if (savedEcnryptionKey) {
-		return CreateDecryptionReader(inToWrapStream, *((ByteList*)savedEcnryptionKey), mXcryptStreams->IsUsingAES());
+		return CreateDecryptionReader(inToWrapStream, *(((Deletable<ByteList>*)savedEcnryptionKey)->GetPtr()), mXcryptStreams->IsUsingAES());
 	}
 	else 
 		return NULL;
@@ -346,7 +347,7 @@ IByteReader*  DecryptionHelper::CreateDecryptionFilterForStream(PDFStreamInput* 
 	if (!IsEncrypted() || !CanDecryptDocument())
 		return inToWrapStream;
 
-	void* savedEcnryptionKey = inStream->GetMetadata(scEcnryptionKeyMetadataKey);
+	IDeletable* savedEcnryptionKey = inStream->GetMetadata(scEcnryptionKeyMetadataKey);
 	if (!savedEcnryptionKey) {
 		// sign for no encryption here
 		return inToWrapStream;
@@ -354,7 +355,7 @@ IByteReader*  DecryptionHelper::CreateDecryptionFilterForStream(PDFStreamInput* 
 	XCryptionCommon* xcryption = GetFilterForName(mXcrypts, inCryptName);
 
 	if (xcryption && savedEcnryptionKey) {
-		return CreateDecryptionReader(inToWrapStream, *((ByteList*)savedEcnryptionKey), xcryption->IsUsingAES());
+		return CreateDecryptionReader(inToWrapStream, *(((Deletable<ByteList>*)savedEcnryptionKey)->GetPtr()), xcryption->IsUsingAES());
 	}
 	else
 		return inToWrapStream;
@@ -454,7 +455,7 @@ void DecryptionHelper::OnObjectEnd(PDFObject* inObject) {
 		XCryptionCommon* streamCryptFilter = GetCryptForStream((PDFStreamInput*)inObject);
 		if (streamCryptFilter) {
 			ByteList* savedKey = new ByteList(streamCryptFilter->GetCurrentObjectKey());
-			inObject->SetMetadata(scEcnryptionKeyMetadataKey, savedKey);
+			inObject->SetMetadata(scEcnryptionKeyMetadataKey,new Deletable<ByteList>(savedKey));
 		}
 	}
 

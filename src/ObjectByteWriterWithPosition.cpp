@@ -52,12 +52,20 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     
     Local<Value> args[1];
     args[0] = anArray;
-    
-	Local<Value> result = func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 1, args).ToLocalChecked();
+    MaybeLocal<Value> maybe;
+    TryCatch try_catch(Isolate::GetCurrent());
+
+    maybe = func->Call(GET_CURRENT_CONTEXT,  OBJECT_FROM_PERSISTENT(mObject), 1, args);
+    Local <Value> result;
+
+    if (!maybe.ToLocal(&result)) {
+       try_catch.ReThrow();
+       return 0;
+    }
     if(result.IsEmpty())
     {
-		THROW_EXCEPTION("wrong return value. it's empty. return the number of written characters");
-		return 0;
+        THROW_EXCEPTION("wrong return value. it's empty. return the number of written characters");
+        return 0;
     }
     else if(result->IsNumber())
     {
@@ -65,8 +73,8 @@ IOBasicTypes::LongBufferSizeType ObjectByteWriterWithPosition::Write(const IOBas
     }
     else
     {
-		THROW_EXCEPTION("wrong return value. write should return the number of written characters");
-		return 0;
+        THROW_EXCEPTION("wrong return value. write should return the number of written characters");
+        return 0;
     }
 }
 
