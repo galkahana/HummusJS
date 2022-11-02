@@ -2032,6 +2032,11 @@ EStatusCode PDFDocumentHandler::WriteStreamObject(PDFStreamInput* inStream, IObj
 	if(!readingDecrypted) {
 		streamReader = mParser->StartReadingFromStreamForPlainCopying(inStream);
 	}
+
+	if (streamReader == NULL) {
+		TRACE_LOG("PDFDocumentHandler::WriteStreamObject, unable to start reading stream object");
+		status = PDFHummus::eFailure;
+	}	
 	
 	while (it.MoveNext() && PDFHummus::eSuccess == status)
 	{

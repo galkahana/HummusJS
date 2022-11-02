@@ -1,4 +1,5 @@
 var hummus = require('../hummus');
+const chai = require('chai');
 
 describe('BasicModificationWithStreams', function() {
 	it('should complete without error', function() {
@@ -19,4 +20,11 @@ describe('BasicModificationWithStreams', function() {
 		outStream.close();
 		inStream.close();
 	});
+
+	it('null for stream should throw an error and not crash', function () {
+		var res = new hummus.PDFStreamForResponse(null)
+		chai.expect(
+			hummus.createWriter.bind(undefined, res)
+		).to.throw(/Cannot read propert.*(write)?.* of null/)
+	})	
 });

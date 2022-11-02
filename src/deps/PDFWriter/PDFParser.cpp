@@ -352,6 +352,12 @@ EStatusCode PDFParser::ParseLastXrefPosition()
 		mObjectParser.ResetReadState();
 		RefCountPtr<PDFObject> anObject(mObjectParser.ParseNewObject());
 
+		if (!anObject) {
+			status = PDFHummus::eFailure;
+			TRACE_LOG("PDFParser::ParseXrefPosition: Unable to find any object");
+			break;
+		}
+
 		if(anObject->GetType() == PDFObject::ePDFObjectInteger)
 		{
 			mLastXrefPosition = (LongFilePositionType)((PDFInteger*)anObject.GetPtr())->GetValue();
