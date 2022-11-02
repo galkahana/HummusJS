@@ -4,7 +4,7 @@ compiler:
 os:
   - linux
   - osx
-dist: xenial
+dist: bionic
 addons:
   apt:
     sources:
@@ -13,7 +13,7 @@ addons:
     packages:
       - g++-8
       - libgconf-2-4
-      - python3.9
+      - python3.8
 services:
   - docker
   - xvfb
@@ -27,8 +27,8 @@ env:
     - NODE_NVM_VERSION="11.2.0"
     - NODE_NVM_VERSION="12.0.0"
     - NODE_NVM_VERSION="14.0.0"
-    - NODE_NVM_VERSION="16.13.0" PYTHON_39=true
-    - NODE_NVM_VERSION="17.1.0" PYTHON_39=true
+    - NODE_NVM_VERSION="16.13.0" PYTHON_38=true
+    - NODE_NVM_VERSION="17.1.0" PYTHON_38=true
     - ELECTRON_VERSION="1.8.7" ELECTRON_MOCHA=true MOCHA_RUNTIME_VERSION=7.0.0
     - ELECTRON_VERSION="2.0.7" ELECTRON_MOCHA=true MOCHA_RUNTIME_VERSION=7.0.0
     - ELECTRON_VERSION="3.0.10" ELECTRON_MOCHA=true
@@ -57,7 +57,7 @@ matrix:
     - secure: OFo+Aqvq/FJLey1wXN8IrRw42aoccTIX90d9DFrpIieJ436WDpBdl3QgzPuCrJiBW9VxCdgzF1xvkFm1+VwzqvqXgAZfTJeJ2AhDjltzHtN+QzJx7SwQcsMAEbSgdLbboGJuyf1yeCs5x95792U+CXm3xy+zLkKw9XO9682WaO6uAp6mVX0wD7Z6u8qLbwMI6YXcY99rptiEtQ4TzKWHQI4m5dSHkCISmNGtBOuOZEF8v3FJ8TzEmjEJ1FNRrjAcwFcTgIwoHudmrs/GGaWBpwyq24XmBG8cavDeKaezmL80vBbGJaOR9IdVwYKNaeslNZBCxGoq3Cy1ReB2cECPw2yhFUktlHqr4SzzCt8JgMgtH8dLajQTdpznJssJesGfz4kwBu+IKGxrIqkh6/YEtYJFEUaaVBjyt7uyuXefZpoz19E63ZzqtrtHRFhdru4aEaUk6CibfljMMaLnxnvdkhQljz5SAhgh55aAUCejh1mgFIR5O3W4AD/3zrIL6HDOLEbYmFbDAsYIoPqp5g+9oiJ6sPyO75wtlFo4ciaw5K7o1y4NTh9BCB7j0P3FYAMqf2Z/wT2kU6W0MKFyo6AmOL4w7uwT/OAgYbWn1hgG2toAtatFrXnUu5CQTBwxel4uTiLkJIa1Zoy53BJxzDUVGgDvs/+sjV3lIr5J09B2kmA=
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-8; fi
-  - if [[ $TRAVIS_OS_NAME == "linux" && "${PYTHON_39}" == "true" ]]; then export PYTHON=$(which python3.9); fi    
+  - if [[ $TRAVIS_OS_NAME == "linux" && "${PYTHON_38}" == "true" ]]; then export PYTHON=$(which python3.8); fi    
   - if [[ $ELECTRON_VERSION ]]; then
     export npm_config_target=$ELECTRON_VERSION;
     export npm_config_target_arch=x64;
