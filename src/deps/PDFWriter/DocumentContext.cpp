@@ -1939,6 +1939,13 @@ EStatusCodeAndObjectIDType DocumentContext::WriteAnnotationAndLinkForURL(const s
 		linkAnnotationContext->WriteKey(scF);
 		linkAnnotationContext->WriteIntegerValue(4);
 
+		// Dest
+		bool internalLink = (encodedResult.second.size() > 0 && encodedResult.second[0] == '#');
+		if (internalLink) {
+			linkAnnotationContext->WriteKey("Dest");
+			linkAnnotationContext->WriteNameValue(encodedResult.second.c_str()+1);
+		}
+
 		// BS
 		linkAnnotationContext->WriteKey(scBS);
 		DictionaryContext* borderStyleContext = mObjectsContext->StartDictionary();
@@ -1947,23 +1954,25 @@ EStatusCodeAndObjectIDType DocumentContext::WriteAnnotationAndLinkForURL(const s
 		borderStyleContext->WriteIntegerValue(0);
 		mObjectsContext->EndDictionary(borderStyleContext);
 
-		// A
-		linkAnnotationContext->WriteKey(scA);
-		DictionaryContext* actionContext = mObjectsContext->StartDictionary();
+		if (!internalLink) {
+			// A
+			linkAnnotationContext->WriteKey(scA);
+			DictionaryContext* actionContext = mObjectsContext->StartDictionary();
 
-		// Type
-		actionContext->WriteKey(scType);
-		actionContext->WriteNameValue(scAction);
+			// Type
+			actionContext->WriteKey(scType);
+			actionContext->WriteNameValue(scAction);
 
-		// S
-		actionContext->WriteKey(scS);
-		actionContext->WriteNameValue(scURI);
+			// S
+			actionContext->WriteKey(scS);
+			actionContext->WriteNameValue(scURI);
 
-		// URI
-		actionContext->WriteKey(scURI);
-		actionContext->WriteLiteralStringValue(encodedResult.second);
-		
-		mObjectsContext->EndDictionary(actionContext);
+			// URI
+			actionContext->WriteKey(scURI);
+			actionContext->WriteLiteralStringValue(encodedResult.second);
+			
+			mObjectsContext->EndDictionary(actionContext);
+		}
 
 		mObjectsContext->EndDictionary(linkAnnotationContext);
 		mObjectsContext->EndIndirectObject();
