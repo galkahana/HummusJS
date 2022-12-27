@@ -2196,7 +2196,7 @@ bool PDFParser::IsEncryptionSupported()
 
 ObjectIDType PDFParser::GetXrefSize()
 {
-    return std::min(mXrefSize,mXrefTable.size()); // combine logical and actual...to avoid unnecessary trouble
+    return std::min<size_t>(mXrefSize,mXrefTable.size()); // combine logical and actual...to avoid unnecessary trouble
 }
 
 XrefEntryInput* PDFParser::GetXrefEntry(ObjectIDType inObjectID)

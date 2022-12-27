@@ -19,8 +19,6 @@ services:
   - xvfb
 env:
   matrix:
-    - NODE_NVM_VERSION="6.14.1"
-    - NODE_NVM_VERSION="7.10.1"
     - NODE_NVM_VERSION="8.11.1"
     - NODE_NVM_VERSION="9.11.1"
     - NODE_NVM_VERSION="10.8.0"
@@ -61,7 +59,7 @@ before_install:
   - if [[ $ELECTRON_VERSION ]]; then
     export npm_config_target=$ELECTRON_VERSION;
     export npm_config_target_arch=x64;
-    export npm_config_disturl=https://atom.io/download/electron;
+    export npm_config_disturl=https://electronjs.org/headers;
     export npm_config_runtime=electron;
     fi
   - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')

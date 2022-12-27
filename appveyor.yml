@@ -4,8 +4,7 @@ environment:
   node_pre_gyp_secretAccessKey:
     secure: RJGlxPP+hUt/pVbY4vBUWW21uGInC8pbyiQ6wz+8cS20k3cQtpnxs9HNFUI4KfBS
   matrix:
-    - nodejs_version: 6
-    - nodejs_version: 7
+
     - nodejs_version: 8
     - nodejs_version: 9
     - nodejs_version: 10
@@ -17,27 +16,27 @@ environment:
     - nodejs_version: 12
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 6.0.2
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+      TOOLSET_ARGS: --dist-url=https://electronjs.org/headers
     - nodejs_version: 12
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 5.0.9
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+      TOOLSET_ARGS: --dist-url=https://electronjs.org/headers
     - nodejs_version: 10
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 4.2.8
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron        
+      TOOLSET_ARGS: --dist-url=https://electronjs.org/headers        
     - nodejs_version: 10
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 4.1.5
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+      TOOLSET_ARGS: --dist-url=https://electronjs.org/headers
     - nodejs_version: 10
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 4.0.8
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron      
+      TOOLSET_ARGS: --dist-url=https://electronjs.org/headers      
     - nodejs_version: 10
       NODE_RUNTIME: electron
       NODE_RUNTIME_VERSION: 3.0.9
-      TOOLSET_ARGS: --dist-url=https://atom.io/download/electron
+      TOOLSET_ARGS: --dist-url=https://electronjs.org/headers
 os: Visual Studio 2015
 
 platform:
