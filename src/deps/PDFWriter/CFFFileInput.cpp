@@ -1018,7 +1018,13 @@ EStatusCode CFFFileInput::CalculateDependenciesForCharIndex(unsigned short inFon
 	if(status != PDFHummus::eFailure)
 	{
 		mCurrentDependencies = &ioDependenciesInfo;
-		return interpreter.Intepret(*GetGlyphCharString(inFontIndex,inCharStringIndex),this);
+		CharString* charString = GetGlyphCharString(inFontIndex,inCharStringIndex);
+        if(!charString)
+        {
+            TRACE_LOG("GetGlyphCharString cannot find char string");
+            return PDFHummus::eFailure;
+        }
+		return interpreter.Intepret(*charString, this);
 	}
 	else
 		return status;

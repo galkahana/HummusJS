@@ -100,7 +100,7 @@ public:
 
 	// Array writing, currently just writing begin and end brackets
 	void StartArray();
-	void EndArray(ETokenSeparator inSeparate = eTokenSepratorNone);
+	void EndArray(ETokenSeparator inSeparate = eTokenSeparatorNone);
 
 	// Indirect objects writing
 	// override that allocate a new object ID and returns it

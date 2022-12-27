@@ -1,8 +1,8 @@
 /*
-   Source File : InputBufferedStream.h
+   Source File : InputOffsetStream.h
 
 
-   Copyright 2011 Gal Kahana PDFWriter
+   Copyright 2022 Gal Kahana PDFWriter
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,35 +23,31 @@
 #include "EStatusCode.h"
 #include "IByteReaderWithPosition.h"
 
-#define DEFAULT_BUFFER_SIZE 256*1024
-
-class InputBufferedStream : public IByteReaderWithPosition
+class InputOffsetStream : public IByteReaderWithPosition
 {
 public:
 	/*
-		default constructor with default buffer size
+		default constructor
 	*/
-	InputBufferedStream(void);
+	InputOffsetStream(void);
 
 	/*
-		Destroys an owned buffer
+		Does NOT destroy input stream!
 	*/
-	virtual ~InputBufferedStream(void);
-
-	/*
-		consturctor with buffer size setup
-	*/
-	InputBufferedStream(IOBasicTypes::LongBufferSizeType inBufferSize);
+	virtual ~InputOffsetStream(void);
 
 	/*
 		Constructor with assigning. see Assign for unassign instructions
 	*/
-	InputBufferedStream(IByteReaderWithPosition* inSourceReader,IOBasicTypes::LongBufferSizeType inBufferSize = DEFAULT_BUFFER_SIZE);
+	InputOffsetStream(IByteReaderWithPosition* inSourceReader);
 
 	/*
-		Assigns a reader stream for buffered reading. from the moment of assigning the
-		buffer assumes control of the stream.
-		Assign a NULL or a different reader to release ownership.
+		Assigns a reader stream for reading with offset. 
+        Assignment does not transfer ownership! provided reader should still be deleted after this instance
+        is deleted! (this is inline say with how the parser treats input streams)
+        (null can be assigned to clear reference)
+
+        Setting a new stream 0s the offset!
 	*/
 	void Assign(IByteReaderWithPosition* inReader);
 
@@ -65,13 +61,13 @@ public:
 
 	IByteReaderWithPosition* GetSourceStream();
 
+    // Set the reading offset
+    void SetOffset(LongFilePositionType inOffset);
+
+    // Read it back to me plz
+    LongFilePositionType GetOffset();
+
 private:
-	IOBasicTypes::Byte* mBuffer;
-	IOBasicTypes::LongBufferSizeType mBufferSize;
-	IOBasicTypes::Byte* mCurrentBufferIndex;
-	IOBasicTypes::Byte* mLastAvailableIndex;
 	IByteReaderWithPosition* mSourceStream;
-
-	void Initiate(IByteReaderWithPosition* inSourceReader,IOBasicTypes::LongBufferSizeType inBufferSize);
-
+	IOBasicTypes::LongBufferSizeType mOffset;
 };

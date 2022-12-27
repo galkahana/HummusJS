@@ -52,7 +52,7 @@ public:
 	void WriteNull(ETokenSeparator inSeparate = eTokenSeparatorSpace);
 
 	void StartArray();
-	void EndArray(ETokenSeparator inSeparate = eTokenSepratorNone);
+	void EndArray(ETokenSeparator inSeparate = eTokenSeparatorNone);
     
     IByteWriter* GetWritingStream();
 

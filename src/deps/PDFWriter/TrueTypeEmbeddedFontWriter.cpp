@@ -416,6 +416,9 @@ EStatusCode TrueTypeEmbeddedFontWriter::WriteHead()
 	// and store the offset to the checksum
 
 	TableEntry* tableEntry = mTrueTypeInput.GetTableEntry("head");
+	if (!tableEntry) {
+		return PDFHummus::eFailure;
+	}
 	LongFilePositionType startTableOffset;
 	OutputStreamTraits streamCopier(&mFontFileStream);
 	LongFilePositionType endOfStream;
@@ -485,6 +488,9 @@ EStatusCode TrueTypeEmbeddedFontWriter::WriteHHea()
 	// count is lower
 
 	TableEntry* tableEntry = mTrueTypeInput.GetTableEntry("hhea");
+	if (!tableEntry) {
+		return PDFHummus::eFailure;
+	}
 	LongFilePositionType startTableOffset;
 	OutputStreamTraits streamCopier(&mFontFileStream);
 	LongFilePositionType endOfStream;
@@ -556,6 +562,9 @@ EStatusCode TrueTypeEmbeddedFontWriter::WriteMaxp()
 	// copy as is, then adjust the glyphs count
 
 	TableEntry* tableEntry = mTrueTypeInput.GetTableEntry("maxp");
+	if (!tableEntry) {
+		return PDFHummus::eFailure;
+	}
 	LongFilePositionType startTableOffset;
 	OutputStreamTraits streamCopier(&mFontFileStream);
 	LongFilePositionType endOfStream;
@@ -602,6 +611,9 @@ EStatusCode TrueTypeEmbeddedFontWriter::WriteGlyf(const UIntVector& inSubsetGlyp
 	// while at it...update the locaTable
 
 	TableEntry* tableEntry = mTrueTypeInput.GetTableEntry("glyf");
+	if (!tableEntry) {
+		return PDFHummus::eFailure;
+	}
 	LongFilePositionType startTableOffset = mFontFileStream.GetCurrentPosition();
 	UIntVector::const_iterator it = inSubsetGlyphIDs.begin();
 	OutputStreamTraits streamCopier(&mFontFileStream);
@@ -706,6 +718,9 @@ EStatusCode TrueTypeEmbeddedFontWriter::CreateTableCopy(const char* inTableName,
 	// copy as is, no adjustments required
 
 	TableEntry* tableEntry = mTrueTypeInput.GetTableEntry(inTableName);
+	if (!tableEntry) {
+		return PDFHummus::eFailure;
+	}
 	LongFilePositionType startTableOffset;
 	OutputStreamTraits streamCopier(&mFontFileStream);
 	LongFilePositionType endOfStream;

@@ -310,6 +310,8 @@ void IndirectObjectsReferenceRegistry::SetupXrefFromModifiedFile(PDFParser* inMo
     for(ObjectIDType i = 1; i < inModifiedFileParser->GetXrefSize(); ++i)
     {
         XrefEntryInput* anEntry = inModifiedFileParser->GetXrefEntry(i);
+		if(NULL == anEntry)
+			continue;
         AppendExistingItem(
             anEntry->mType != eXrefEntryDelete ? ObjectWriteInformation::Used : ObjectWriteInformation::Free,
                            anEntry->mType != eXrefEntryStreamObject ? anEntry->mRivision:0,

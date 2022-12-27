@@ -24,5 +24,5 @@ enum ETokenSeparator
 {
 	eTokenSeparatorSpace,
 	eTokenSeparatorEndLine,
-	eTokenSepratorNone
+	eTokenSeparatorNone
 };

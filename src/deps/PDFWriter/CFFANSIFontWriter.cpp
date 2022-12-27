@@ -147,7 +147,7 @@ void CFFANSIFontWriter::WriteCharSet(	DictionaryContext* inDescriptorContext,
 	for (; it != inEncodedGlyphs.end(); ++it)
 	{
 		std::string glyphName = inFontInfo->GetGlyphName(it->first);
-		primitiveWriter.WriteName(glyphName.c_str(), eTokenSepratorNone);
+		primitiveWriter.WriteName(glyphName.c_str(), eTokenSeparatorNone);
 	}
 
 

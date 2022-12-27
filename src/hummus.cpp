@@ -632,7 +632,7 @@ DEF_INIT(HummusInit) {
     // ETokenSeparator
     EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorSpace"),NEW_NUMBER(eTokenSeparatorSpace))
     EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorEndLine"),NEW_NUMBER(eTokenSeparatorEndLine))
-    EXPORTS_SET(exports,NEW_SYMBOL("eTokenSepratorNone"),NEW_NUMBER(eTokenSepratorNone))
+    EXPORTS_SET(exports,NEW_SYMBOL("eTokenSeparatorNone"),NEW_NUMBER(eTokenSeparatorNone))
     
     // EXrefEntryType
     EXPORTS_SET(exports,NEW_SYMBOL("eXrefEntryExisting"),NEW_NUMBER(eXrefEntryExisting))

@@ -378,7 +378,7 @@ void ObjectsContext::SetCompressStreams(bool inCompressStreams)
 	mCompressStreams = inCompressStreams;
 }
 
-bool ObjectsContext::IsCompressingStreams() 
+bool ObjectsContext::IsCompressingStreams()
 {
 	return mCompressStreams;
 }

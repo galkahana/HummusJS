@@ -163,6 +163,8 @@ PDFHummus::EStatusCode PDFModifiedPage::WritePage()
 		// get the page object
 		ObjectIDType pageObjectID = copyingContext->GetSourceDocumentParser()->GetPageObjectID(mPageIndex);
 		PDFObjectCastPtr<PDFDictionary> pageDictionaryObject = copyingContext->GetSourceDocumentParser()->ParsePage(mPageIndex);
+		if (!pageDictionaryObject)
+		    return eFailure;
 		MapIterator<PDFNameToPDFObjectMap>  pageDictionaryObjectIt = pageDictionaryObject->GetIterator();
 
 		// create modified page object

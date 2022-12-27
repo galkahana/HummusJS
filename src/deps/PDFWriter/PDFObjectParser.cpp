@@ -98,7 +98,7 @@ PDFObject* PDFObjectParser::ParseNewObject()
 		if(!GetNextToken(token))
 			break;
 
-		// based on the parsed token, and parhaps some more, determine the type of object
+		// based on the parsed token, and perhaps some more, determine the type of object
 		// and how to parse it.
 
 		// Boolean
@@ -275,7 +275,7 @@ PDFObject* PDFObjectParser::ParseBoolean(const std::string& inToken)
 static const char scLeftParanthesis = '(';
 bool PDFObjectParser::IsLiteralString(const std::string& inToken)
 {
-	return inToken.at(0) == scLeftParanthesis;
+	return inToken.size() > 0 && inToken.at(0) == scLeftParanthesis;
 }
 
 static const char scRightParanthesis = ')';
@@ -388,7 +388,7 @@ static const char scLeftAngle = '<';
 bool PDFObjectParser::IsHexadecimalString(const std::string& inToken)
 {
 	// first char should be left angle brackets, and the one next must not (otherwise it's a dictionary start)
-	return (inToken.at(0) == scLeftAngle) && (inToken.size() < 2 || inToken.at(1) != scLeftAngle);
+	return inToken.size() > 0 && (inToken.at(0) == scLeftAngle) && (inToken.size() < 2 || inToken.at(1) != scLeftAngle);
 }
 
 
@@ -450,7 +450,7 @@ bool PDFObjectParser::IsNull(const std::string& inToken)
 static const char scSlash = '/';
 bool PDFObjectParser::IsName(const std::string& inToken)
 {
-	return inToken.at(0) == scSlash;
+	return inToken.size() > 0 && inToken.at(0) == scSlash;
 }
 
 static const char scSharp = '#';
@@ -519,9 +519,11 @@ static const char scZero = '0';
 static const char scDot = '.';
 bool PDFObjectParser::IsNumber(const std::string& inToken)
 {
+	if(inToken.size() < 1)
+		return false;
+
 	// it's a number if the first char is either a sign or digit, or an initial decimal dot, and the rest is 
 	// digits, with the exception of a dot which can appear just once.
-
 	if(inToken.at(0) != scPlus && inToken.at(0) != scMinus && inToken.at(0) != scDot && (inToken.at(0) > scNine || inToken.at(0) < scZero))
 		return false;
 
@@ -679,7 +681,7 @@ PDFObject* PDFObjectParser::ParseDictionary()
 static const char scCommentStart = '%';
 bool PDFObjectParser::IsComment(const std::string& inToken)
 {
-	return inToken.at(0) == scCommentStart;
+	return inToken.size() > 0 && inToken.at(0) == scCommentStart;
 }
 
 BoolAndByte PDFObjectParser::GetHexValue(Byte inValue)

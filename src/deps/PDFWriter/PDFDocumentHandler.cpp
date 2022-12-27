@@ -596,7 +596,7 @@ EStatusCode PDFDocumentHandler::CopyInDirectObject(ObjectIDType inSourceObjectID
 	if(!sourceObject)
 	{
 		XrefEntryInput* xrefEntry = mParser->GetXrefEntry(inSourceObjectID);
-		if (xrefEntry->mType == eXrefEntryDelete) {
+		if ((xrefEntry != NULL) && (xrefEntry->mType == eXrefEntryDelete)) {
 			// if the object is deleted, replace with a deleted object
 			mObjectsContext->GetInDirectObjectsRegistry().DeleteObject(inTargetObjectID);
 			return PDFHummus::eSuccess;
@@ -1518,7 +1518,7 @@ std::string PDFDocumentHandler::AsEncodedName(const std::string& inName)
 	OutputStringBufferStream aStringBuilder;
 
 	primitiveWriter.SetStreamForWriting(&aStringBuilder);
-	primitiveWriter.WriteName(inName,eTokenSepratorNone);
+	primitiveWriter.WriteName(inName,eTokenSeparatorNone);
 
 	return aStringBuilder.ToString().substr(1); // return without initial forward slash
 }
@@ -1728,7 +1728,7 @@ EStatusCode PDFDocumentHandler::MergeAndReplaceResourcesTokens(	IByteWriter* inT
 		status = traits.CopyToOutputStream(streamReader,(LongBufferSizeType)(it->ResourceTokenPosition - previousContentPosition));
 		if(status != PDFHummus::eSuccess)
 			break;
-		primitivesWriter.WriteName(inMappedResourcesNames.find(it->ResourceToken)->second,eTokenSepratorNone);
+		primitivesWriter.WriteName(inMappedResourcesNames.find(it->ResourceToken)->second,eTokenSeparatorNone);
 		// note that i'm using SkipBy here. if i want to use SkipTo, i have to user the skipper stream as input stream for the rest
 		// of the reader objects here, as SkipTo relies on information on how many bytes were read
 		skipper.SkipBy(it->ResourceToken.size() + 1); // skip the resource name in the read stream [include +1 for slash]
@@ -2034,9 +2034,8 @@ EStatusCode PDFDocumentHandler::WriteStreamObject(PDFStreamInput* inStream, IObj
 	}
 
 	if (streamReader == NULL) {
-		TRACE_LOG("PDFDocumentHandler::WriteStreamObject, unable to start reading stream object");
-		status = PDFHummus::eFailure;
-	}	
+               status = PDFHummus::eFailure;
+	}
 	
 	while (it.MoveNext() && PDFHummus::eSuccess == status)
 	{
@@ -2053,7 +2052,7 @@ EStatusCode PDFDocumentHandler::WriteStreamObject(PDFStreamInput* inStream, IObj
 		return PDFHummus::eFailure;
 	}
 
-	PDFStream* newStream = readingDecrypted ? 
+	PDFStream* newStream = readingDecrypted ?
 		mObjectsContext->StartPDFStream(newStreamDictionary) :
 		mObjectsContext->StartUnfilteredPDFStream(newStreamDictionary);
 	OutputStreamTraits outputTraits(newStream->GetWriteStream());

@@ -16,7 +16,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 
-   
+
 */
 #pragma once
 /*
@@ -60,8 +60,8 @@ struct PDFCreationSettings
 	bool EmbedFonts;
 	EncryptionOptions DocumentEncryptionOptions;
 
-	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions()):DocumentEncryptionOptions(inDocumentEncryptionOptions){ 
-		CompressStreams = inCompressStreams; 
+	PDFCreationSettings(bool inCompressStreams, bool inEmbedFonts,EncryptionOptions inDocumentEncryptionOptions = EncryptionOptions::DefaultEncryptionOptions()):DocumentEncryptionOptions(inDocumentEncryptionOptions){
+		CompressStreams = inCompressStreams;
 		EmbedFonts = inEmbedFonts;
 	}
 
@@ -98,22 +98,22 @@ public:
 	// in case of internal or external error, call this function to cleanup, in order to allow reuse of the PDFWriter class
 	void Reset();
 
-    
+
     // modify PDF (use EndPDF to finish)
     PDFHummus::EStatusCode ModifyPDF(const std::string& inModifiedFile,
                                      EPDFVersion inPDFVersion,
                                      const std::string& inOptionalAlternativeOutputFile,
                                      const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration(),
-                                     const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));                                 
+                                     const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true));
     PDFHummus::EStatusCode ModifyPDFForStream(
                                     IByteReaderWithPosition* inModifiedSourceStream,
                                     IByteWriterWithPosition* inModifiedDestinationStream,
                                     bool inAppendOnly,
                                     EPDFVersion inPDFVersion,
                                     const LogConfiguration& inLogConfiguration = LogConfiguration::DefaultLogConfiguration(),
-                                    const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true)                                 
+                                    const PDFCreationSettings& inPDFCreationSettings = PDFCreationSettings(true,true)
                                     );
-    
+
 	// Ending and Restarting writing session (optional input file is for modification scenarios)
 	PDFHummus::EStatusCode Shutdown(const std::string& inStateFilePath);
 	PDFHummus::EStatusCode ContinuePDF(const std::string& inOutputFilePath,
@@ -147,10 +147,10 @@ public:
     PDFHummus::EStatusCode EndFormXObject(PDFFormXObject* inFormXObject);
 	PDFHummus::EStatusCode EndFormXObjectAndRelease(PDFFormXObject* inFormXObject);
 
-	// Image XObject creating [for TIFF nad JPG files]. 
+	// Image XObject creating [for TIFF nad JPG files].
 	// note that as oppose to other methods, create the image xobject also writes it, so there's no "WriteXXXXAndRelease" for image.
 	// So...release the object yourself [just delete it]
-	
+
 	// jpeg - two variants
 	// will return image xobject sized at 1X1
 	PDFImageXObject* CreateImageXObjectFromJPGFile(const std::string& inJPGFilePath);
@@ -168,7 +168,7 @@ public:
 	PDFFormXObject* CreateFormXObjectFromJPGStream(IByteReaderWithPosition* inJPGStream);
 	PDFFormXObject* CreateFormXObjectFromJPGFile(const std::string& inJPGFilePath,ObjectIDType inFormXObjectID);
 	PDFFormXObject* CreateFormXObjectFromJPGStream(IByteReaderWithPosition* inJPGStream,ObjectIDType inFormXObjectID);
-	
+
 	// tiff
 #ifndef PDFHUMMUS_NO_TIFF
 	PDFFormXObject* CreateFormXObjectFromTIFFFile(	const std::string& inTIFFFilePath,
@@ -191,9 +191,9 @@ public:
 	PDFFormXObject* CreateFormXObjectFromPNGStream(IByteReaderWithPosition* inPNGStream, ObjectIDType inFormXObjectID);
 #endif
 
-	// PDF 
+	// PDF
 
-	// CreateFormXObjectsFromPDF is for using input PDF pages as objects in one page or more. you can used the returned IDs to place the 
+	// CreateFormXObjectsFromPDF is for using input PDF pages as objects in one page or more. you can used the returned IDs to place the
 	// created form xobjects
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
 															 const PDFPageRange& inPageRange,
@@ -208,7 +208,7 @@ public:
 															 const double* inTransformationMatrix = NULL,
 															 const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
 															 const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
-	
+
 	// CreateFormXObjectsFromPDF is an override to allow you to determine a custom crop for the page embed
 	EStatusCodeAndObjectIDTypeList CreateFormXObjectsFromPDF(const std::string& inPDFFilePath,
 															 const PDFPageRange& inPageRange,
@@ -229,7 +229,7 @@ public:
 														const PDFPageRange& inPageRange,
 														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
 														const PDFParsingOptions& inParsingOptions = PDFParsingOptions::DefaultPDFParsingOptions());
-	
+
 	EStatusCodeAndObjectIDTypeList AppendPDFPagesFromPDF(IByteReaderWithPosition* inPDFStream,
 														const PDFPageRange& inPageRange,
 														const ObjectIDTypeList& inCopyAdditionalObjects = ObjectIDTypeList(),
@@ -252,12 +252,12 @@ public:
 
 	// Copying context, allowing for a continous flow of copying from multiple sources PDFs (create one per source) to target PDF
 	PDFDocumentCopyingContext* CreatePDFCopyingContext(
-		const std::string& inPDFFilePath, 
+		const std::string& inPDFFilePath,
 		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
 	PDFDocumentCopyingContext* CreatePDFCopyingContext(
-		IByteReaderWithPosition* inPDFStream, 
+		IByteReaderWithPosition* inPDFStream,
 		const PDFParsingOptions& inOptions = PDFParsingOptions::DefaultPDFParsingOptions());
-    
+
     // for modified file path, create a copying context for the modified file
     PDFDocumentCopyingContext* CreatePDFCopyingContextForModifiedFile();
 
@@ -282,7 +282,7 @@ public:
 	PDFHummus::DocumentContext& GetDocumentContext();
 	ObjectsContext& GetObjectsContext();
 	OutputFile& GetOutputFile();
-    
+
     // Extensibiility, for modified files workflow
     PDFParser& GetModifiedFileParser();
     InputFile& GetModifiedInputFile();
@@ -313,7 +313,7 @@ private:
 
 	// for output file workflow, this will be the valid output [stream workflow does not have a file]
 	OutputFile mOutputFile;
-    
+
     // for modified workflow, the next two will hold the input file data
     InputFile mModifiedFile;
     PDFParser mModifiedFileParser;

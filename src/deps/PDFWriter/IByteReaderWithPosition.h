@@ -51,6 +51,4 @@ public:
 		skip position (like setting from current)
 	*/
 	virtual void Skip(LongBufferSizeType inSkipSize) = 0;
-
-
 };

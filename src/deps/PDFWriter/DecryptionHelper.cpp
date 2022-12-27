@@ -409,7 +409,7 @@ XCryptionCommon* DecryptionHelper::GetCryptForStream(PDFStreamInput* inStream) {
 			for (; i < filterObjectArray->GetLength(); ++i)
 			{
 				PDFObjectCastPtr<PDFName> filterObjectItem(filterObjectArray->QueryObject(i));
-				if (filterObjectItem->GetValue() == "Crypt")
+				if (!filterObjectItem || filterObjectItem->GetValue() == "Crypt")
 					break;
 			}
 			if (i < filterObjectArray->GetLength()) {

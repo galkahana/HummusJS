@@ -68,7 +68,8 @@ EStatusCode PDFUsedFont::EncodeStringForShowing(const GlyphUnicodeMappingList& i
 
 	if(!mWrittenFont)
 		mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext,mEmbedFont);
-
+	if(!mWrittenFont)
+		return PDFHummus::eFailure;
 	mWrittenFont->AppendGlyphs(inText,outCharactersToUse,outTreatCharactersAsCID,outFontObjectToUse);
 
 	return PDFHummus::eSuccess;
@@ -108,7 +109,8 @@ EStatusCode PDFUsedFont::EncodeStringsForShowing(const GlyphUnicodeMappingListLi
 
 	if(!mWrittenFont)
 		mWrittenFont = mFaceWrapper.CreateWrittenFontObject(mObjectsContext,mEmbedFont);
-
+	if(!mWrittenFont)
+		return PDFHummus::eFailure;
 	mWrittenFont->AppendGlyphs(inText,outCharactersToUse,outTreatCharactersAsCID,outFontObjectToUse);
 
 	return PDFHummus::eSuccess;

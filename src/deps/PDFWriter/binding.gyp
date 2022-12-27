@@ -12,6 +12,16 @@
                    }
                 }]
             ],
+           'msvs_settings':
+			{
+				'VCCLCompilerTool':
+				{
+					'AdditionalOptions':
+						[
+						'/std:c++17',
+						]
+				}
+			},
             'dependencies': [
                '<(module_root_dir)/src/deps/LibAesgm/binding.gyp:libaesgm',
                '<(module_root_dir)/src/deps/FreeType/binding.gyp:freetype',
@@ -75,6 +85,7 @@
                'InputFlateDecodeStream.cpp',
                'InputLZWDecodeStream.cpp',
                'InputLimitedStream.cpp',
+               'InputOffsetStream.cpp',
                'InputPFBDecodeStream.cpp',
                'InputPredictorPNGOptimumStream.cpp',
                'InputPredictorTIFFSubStream.cpp',
@@ -241,6 +252,7 @@
                'InputFile.h',
                'InputFileStream.h',
                'InputLZWDecodeStream.h',
+               'InputOffsetStream.h',
                'InputFlateDecodeStream.h',
                'InputLimitedStream.h',
                'InputPFBDecodeStream.h',

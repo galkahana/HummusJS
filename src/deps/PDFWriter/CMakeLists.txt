@@ -82,6 +82,7 @@ InputFileStream.cpp
 InputFlateDecodeStream.cpp
 InputLZWDecodeStream.cpp
 InputLimitedStream.cpp
+InputOffsetStream.cpp
 InputRC4XcodeStream.cpp
 InputPFBDecodeStream.cpp
 InputPredictorPNGOptimumStream.cpp
@@ -256,6 +257,7 @@ InputFileStream.h
 InputFlateDecodeStream.h
 InputLZWDecodeStream.h
 InputLimitedStream.h
+InputOffsetStream.h
 InputRC4XcodeStream.h
 InputPFBDecodeStream.h
 InputPredictorPNGOptimumStream.h
@@ -561,6 +563,8 @@ InputLZWDecodeStream.cpp
 InputLZWDecodeStream.h
 InputLimitedStream.cpp
 InputLimitedStream.h
+InputOffsetStream.cpp
+InputOffsetStream.h
 InputRC4XcodeStream.cpp
 InputRC4XcodeStream.h
 InputStreamSkipperStream.cpp
