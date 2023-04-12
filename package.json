@@ -37,8 +37,7 @@
   "devDependencies": {
     "aws-sdk": "^2.1354.0",
     "chai": "^3.4.0",
-    "mocha": "^10.2.0",
-    "npm": "^9.6.4"
+    "mocha": "^10.2.0"
   },
   "binary": {
     "module_name": "hummus",
