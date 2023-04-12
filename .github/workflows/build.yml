@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-node:
+  build-node-publish:
     strategy:
       fail-fast: false
       matrix:
@@ -66,3 +66,5 @@ jobs:
         if: ${{ matrix.target_architecture != 'arm64' }}
       - run: ./node_modules/.bin/node-pre-gyp package --target_arch=${{ matrix.target_architecture }}
         if: ${{ matrix.target_architecture == 'arm64' }}
+      - run: ./node_modules/.bin/node-pre-gyp unpublish publish --target_arch=${{ matrix.target_architecture }}
+        if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[publish binary]')}}
