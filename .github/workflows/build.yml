@@ -16,10 +16,6 @@ jobs:
         architecture: [x64, ia32, arm64]
         include:
           - python_version: "3.10"
-          - python_version: "2"
-            node: 11.2.0
-          - python_version: "2"
-            node: 12.0.0        
           - architecture: ia32
             architecture_node: x86
             target_architecture: ia32
@@ -41,37 +37,31 @@ jobs:
           - os: ubuntu-20.04
             architecture: ia32
           - os: macos-11
-            node: 11.2.0
-            architecture: arm64
-          - os: macos-11
-            node: 12.0.0
-            architecture: arm64
-          - os: macos-11
             node: 13.14.0
             architecture: arm64
           - os: macos-11
             node: 14.0.0
             architecture: arm64            
     runs-on: ${{ matrix.os }}
-      steps:
-        - uses: actions/checkout@v3
-        - uses: actions/setup-node@v3
-          with:
-            node-version: ${{ matrix.node }}
-            architecture: ${{ matrix.architecture_node }}
-        - run: node --version
-        - run: npm --version
-        - run: npm config set msbuild_path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
-          if: ${{ runner.os == 'Windows' }}
-        - run: npm install --build-from-source
-          env:
-            npm_config_arch: ${{ matrix.architecture }}
-            npm_config_python: python${{ matrix.python_version }}
-            npm_config_target_arch: ${{ matrix.target_architecture }}
-            CFLAGS: ${{ matrix.extra_compile_flags }}
-            CPPFLAGS: ${{ matrix.extra_compile_flags }}
-        - run: npm test
-        - run: ./node_modules/.bin/node-pre-gyp package testpackage
-          if: ${{ matrix.target_architecture != 'arm64' }}
-        - run: ./node_modules/.bin/node-pre-gyp package --target_arch=${{ matrix.target_architecture }}
-          if: ${{ matrix.target_architecture == 'arm64' }}            
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          architecture: ${{ matrix.architecture_node }}
+      - run: node --version
+      - run: npm --version
+      - run: npm config set msbuild_path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
+        if: ${{ runner.os == 'Windows' }}
+      - run: npm install --build-from-source
+        env:
+          npm_config_arch: ${{ matrix.architecture }}
+          npm_config_python: python${{ matrix.python_version }}
+          npm_config_target_arch: ${{ matrix.target_architecture }}
+          CFLAGS: ${{ matrix.extra_compile_flags }}
+          CPPFLAGS: ${{ matrix.extra_compile_flags }}
+      - run: npm test
+      - run: ./node_modules/.bin/node-pre-gyp package testpackage
+        if: ${{ matrix.target_architecture != 'arm64' }}
+      - run: ./node_modules/.bin/node-pre-gyp package --target_arch=${{ matrix.target_architecture }}
+        if: ${{ matrix.target_architecture == 'arm64' }}            
