@@ -28,9 +28,6 @@
     "PDFRStreamForBuffer.js",
     "PDFWStreamForBuffer.js"
   ],
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
   "devDependencies": {
     "chai": "^3.4.0",
     "mocha": "^10.2.0"
