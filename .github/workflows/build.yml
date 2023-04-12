@@ -68,3 +68,6 @@ jobs:
         if: ${{ matrix.target_architecture == 'arm64' }}
       - run: ./node_modules/.bin/node-pre-gyp unpublish publish --target_arch=${{ matrix.target_architecture }}
         if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[publish binary]')}}
+        env:
+          node_pre_gyp_accessKeyId: ${{secrets.NODE_PRE_GYP_ACCESSKEYID}}
+          node_pre_gyp_secretAccessKey: ${{secrets.NODE_PRE_GYP_SECRETACCESSKEY}}
