@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-latest, windows-2019]
+        os: [ubuntu-20.04, macos-11, windows-2019]
         node: [13.14.0, 14.0.0, 15.7.0, 16.13.1, 17.6.0, 18.8.0, 19.0.0]
         architecture: [x64, ia32, arm64]
         include:
@@ -32,14 +32,14 @@ jobs:
             architecture: arm64
           - os: windows-2019
             architecture: arm64
-          - os: macos-latest
+          - os: macos-11
             architecture: ia32
           - os: ubuntu-20.04
             architecture: ia32
-          - os: macos-latest
+          - os: macos-11
             node: 13.14.0
             architecture: arm64
-          - os: macos-latest
+          - os: macos-11
             node: 14.0.0
             architecture: arm64            
     runs-on: ${{ matrix.os }}
@@ -61,4 +61,8 @@ jobs:
           CFLAGS: ${{ matrix.extra_compile_flags }}
           CPPFLAGS: ${{ matrix.extra_compile_flags }}
       - run: npm test
+        if: ${{ matrix.target_architecture != 'arm64' }}
       - run: ./node_modules/.bin/node-pre-gyp package testpackage --target_arch=${{ matrix.target_architecture }}
+        if: ${{ matrix.target_architecture != 'arm64' }}
+      - run: ./node_modules/.bin/node-pre-gyp package --target_arch=${{ matrix.target_architecture }}
+        if: ${{ matrix.target_architecture == 'arm64' }}
