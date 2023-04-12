@@ -32,7 +32,6 @@
     "node-pre-gyp"
   ],
   "devDependencies": {
-    "aws-sdk": "^2.1354.0",
     "chai": "^3.4.0",
     "mocha": "^10.2.0"
   },
@@ -47,7 +46,8 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.10"
+    "@mapbox/node-pre-gyp": "^1.0.10",
+    "aws-sdk": "^2.1356.0"
   },
   "bundleDependencies": [
     "node-pre-gyp"
