@@ -28,9 +28,6 @@
     "PDFRStreamForBuffer.js",
     "PDFWStreamForBuffer.js"
   ],
-  "dependencies": {
-    "node-pre-gyp": "^0.17.0"
-  },
   "bundledDependencies": [
     "node-pre-gyp"
   ],
@@ -48,6 +45,9 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.10"
   },
   "bundleDependencies": [
     "node-pre-gyp"
