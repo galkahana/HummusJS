@@ -1,0 +1,12 @@
+{
+  "name": "hummus-js-pdf-server-example",
+  "version": "1.0.0",
+  "description": "Example of HummusJS using express server",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
