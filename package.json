@@ -44,6 +44,7 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.10"
+    "@mapbox/node-pre-gyp": "^1.0.10",
+    "semver": "^7.5.2"
   }
 }
