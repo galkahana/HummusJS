@@ -21,7 +21,7 @@ jobs:
         with:
           fail-on-severity: high
   build-node-publish:
-    needs: dependecy-review
+    needs: dependency-review
     strategy:
       fail-fast: false
       matrix:
