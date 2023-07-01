@@ -16,12 +16,18 @@ jobs:
     steps:
       - name: 'Checkout Repository'
         uses: actions/checkout@v3
-      - name: 'Dependency Review'
+      - name: 'Dependency Review Push'
         uses: actions/dependency-review-action@v3
         with:
           fail-on-severity: high
           base-ref: ${{ github.event.before }}
-          head-ref: ${{ github.sha }}          
+          head-ref: ${{ github.sha }}  
+          if: ${{ github.event_name == 'push'}} 
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: high
+          if: ${{ github.event_name != 'push'}}                      
   build-node-publish:
     needs: dependency-review
     strategy:
