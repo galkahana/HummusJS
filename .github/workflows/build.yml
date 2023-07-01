@@ -1,13 +1,35 @@
 name: Build
 
+
 on:
   push:
     branches: [ "*" ]
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+
 jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v3
+      - name: 'Dependency Review Push'
+        uses: actions/dependency-review-action@v3
+        if: ${{ github.event_name == 'push'}} 
+        with:
+          fail-on-severity: high
+          base-ref: ${{ github.event.before }}
+          head-ref: ${{ github.sha }}  
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v3
+        if: ${{ github.event_name != 'push'}}                      
+        with:
+          fail-on-severity: high
   build-node-publish:
+    needs: dependency-review
     strategy:
       fail-fast: false
       matrix:
