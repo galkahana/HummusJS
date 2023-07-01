@@ -1,10 +1,14 @@
 name: Build
 
+
 on:
   push:
     branches: [ "*" ]
   pull_request:
     branches: [ "master" ]
+
+permissions:
+  contents: read
 
 jobs:
   dependency-review:
@@ -17,6 +21,7 @@ jobs:
         with:
           fail-on-severity: high
   build-node-publish:
+    needs: dependecy-review
     strategy:
       fail-fast: false
       matrix:
