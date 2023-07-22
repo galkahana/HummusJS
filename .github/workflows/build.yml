@@ -20,14 +20,14 @@ jobs:
         uses: actions/dependency-review-action@v3
         if: ${{ github.event_name == 'push'}} 
         with:
-          fail-on-severity: high
+          fail-on-severity: moderate
           base-ref: ${{ github.event.before }}
           head-ref: ${{ github.sha }}  
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
         if: ${{ github.event_name != 'push'}}                      
         with:
-          fail-on-severity: high
+          fail-on-severity: moderate
   build-node-publish:
     needs: dependency-review
     strategy:
