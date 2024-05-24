@@ -15,16 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 'Dependency Review Push'
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         if: ${{ github.event_name == 'push'}} 
         with:
           fail-on-severity: moderate
           base-ref: ${{ github.event.before }}
           head-ref: ${{ github.sha }}  
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         if: ${{ github.event_name != 'push'}}                      
         with:
           fail-on-severity: moderate
@@ -33,8 +33,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-11, windows-2019]
-        node: [13.14.0, 14.0.0, 15.7.0, 16.13.1, 17.6.0, 18.8.0, 19.0.0]
+        os: [ubuntu-20.04, macos-14, windows-2019]
+        node: [13.14.0, 14.0.0, 15.7.0, 16.13.1, 17.6.0, 18.8.0, 19.0.0, 20.0.0]
         architecture: [x64, ia32, arm64]
         include:
           - python_version: "3.10"
@@ -54,27 +54,25 @@ jobs:
             architecture: arm64
           - os: windows-2019
             architecture: arm64
-          - os: macos-11
+          - os: macos-14
             architecture: ia32
           - os: ubuntu-20.04
             architecture: ia32
-          - os: macos-11
+          - os: macos-14
             node: 13.14.0
             architecture: arm64
-          - os: macos-11
+          - os: macos-14
             node: 14.0.0
             architecture: arm64            
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.architecture_node }}
       - run: node --version
       - run: npm --version
-      - run: npm config set msbuild_path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
-        if: ${{ runner.os == 'Windows' }}
       - run: npm install --build-from-source
         env:
           npm_config_arch: ${{ matrix.architecture }}
