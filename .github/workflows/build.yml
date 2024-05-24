@@ -73,8 +73,6 @@ jobs:
           architecture: ${{ matrix.architecture_node }}
       - run: node --version
       - run: npm --version
-      - run: npm config set msbuild_path "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
-        if: ${{ runner.os == 'Windows' }}
       - run: npm install --build-from-source
         env:
           npm_config_arch: ${{ matrix.architecture }}
