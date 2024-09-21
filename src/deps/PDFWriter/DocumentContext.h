@@ -37,6 +37,7 @@
 #include "EncryptionOptions.h"
 #include "EncryptionHelper.h"
 #include "PNGImageHandler.h"
+#include "ExtGStateRegistry.h"
 
 #include <string>
 #include <set>
@@ -70,6 +71,7 @@ class IFormEndWritingTask;
 class PDFDocumentCopyingContext;
 class IPageEndWritingTask;
 class ITiledPatternEndWritingTask;
+class IObjectEndWritingTask;
 
 typedef std::set<IDocumentContextExtender*> IDocumentContextExtenderSet;
 typedef std::pair<PDFHummus::EStatusCode,ObjectIDType> EStatusCodeAndObjectIDType;
@@ -87,6 +89,10 @@ typedef std::map<PDFPage*,IPageEndWritingTaskList> PDFPageToIPageEndWritingTaskL
 typedef std::list<ITiledPatternEndWritingTask*> ITiledPatternEndWritingTaskList;
 typedef std::map<PDFTiledPattern*, ITiledPatternEndWritingTaskList> PDFTiledPatternToITiledPatternEndWritingTaskListMap;
 typedef std::pair<std::string,unsigned long> StringAndULongPair;
+typedef std::list<IObjectEndWritingTask*> IObjectEndWritingTaskList;
+typedef std::map<PDFFormXObject*,IObjectEndWritingTaskList> PDFFormXObjectToIObjectEndWritingTaskListMap;
+typedef std::map<PDFPage*,IObjectEndWritingTaskList> PDFPageToIObjectEndWritingTaskListMap;
+typedef std::map<PDFTiledPattern*, IObjectEndWritingTaskList> PDFTiledPatternToIObjectEndWritingTaskListMap;
 
 namespace PDFHummus
 {
@@ -327,6 +333,15 @@ namespace PDFHummus
         void RegisterPageEndWritingTask(PDFPage* inPageObject,IPageEndWritingTask* inWritingTask);
 		// Extensibility option. option of writing a single time task for when a particular pattern ends
 		void RegisterTiledPatternEndWritingTask(PDFTiledPattern* inTiledPatternObject, ITiledPatternEndWritingTask* inWritingTask);
+		
+		// A more generic option of the 3 options above that doesn't need to know about the particular object type, and treats pages, forms and tiled patterns the same
+        // Extensibility option. option of writing a single time task for when a particular form ends
+        void RegisterFormEndWritingTask(PDFFormXObject* inFormXObject,IObjectEndWritingTask* inWritingTask);
+        // Extensibility option. option of writing a single time task for when a particular page ends
+        void RegisterPageEndWritingTask(PDFPage* inPageObject,IObjectEndWritingTask* inWritingTask);
+		// Extensibility option. option of writing a single time task for when a particular pattern ends
+		void RegisterTiledPatternEndWritingTask(PDFTiledPattern* inTiledPatternObject, IObjectEndWritingTask* inWritingTask);
+
 
 
 		PDFHummus::EStatusCode WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectID);
@@ -360,6 +375,12 @@ namespace PDFHummus
 		// get annotations, for complex scenarios where writing a page can happen outside of document context
 		ObjectIDTypeSet& GetAnnotations();
 
+		// ExtGState registry (opacity with alpha implementation)
+		ExtGStateRegistry& GetExtGStateRegistry();
+
+		// make the objects context available via document context
+		ObjectsContext* GetObjectsContext();
+
 	private:
 		ObjectsContext* mObjectsContext;
 		TrailerInformation mTrailerInformation;
@@ -386,8 +407,12 @@ namespace PDFHummus
         PDFFormXObjectToIFormEndWritingTaskListMap mFormEndTasks;
         PDFPageToIPageEndWritingTaskListMap mPageEndTasks;
 		PDFTiledPatternToITiledPatternEndWritingTaskListMap mTiledPatternEndTasks;
+        PDFFormXObjectToIObjectEndWritingTaskListMap mMoreFormEndTasks;
+        PDFPageToIObjectEndWritingTaskListMap mMorePageEndTasks;
+		PDFTiledPatternToIObjectEndWritingTaskListMap mMoreTiledPatternEndTasks;
 	    StringAndULongPairToHummusImageInformationMap mImagesInformation;
 		EncryptionHelper mEncryptionHelper;
+		ExtGStateRegistry mExtGStateRegistry;
 
 		void WriteHeaderComment(EPDFVersion inPDFVersion);
 		void Write4BinaryBytes();

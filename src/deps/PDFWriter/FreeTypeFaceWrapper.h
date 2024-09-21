@@ -25,6 +25,7 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_COLOR_H
 
 #include <utility>
 #include <list>
@@ -119,6 +120,9 @@ public:
 	// hinting and scaling is always removed. inFlags are added on top of the default flags
 	FT_Error LoadGlyph(FT_UInt inGlyphIndex, FT_Int32 inFlags = 0);
 
+	// a very simple memoized version of selecting a palette
+	FT_Error SelectDefaultPalette(FT_Color** outPalette, unsigned short* outPaletteSize);
+
 private:
 
 	FT_Face mFace;
@@ -131,6 +135,10 @@ private:
 	unsigned int mCurrentGlyph;
 	bool mDoesOwn;
 	bool mUsePUACodes;
+	FT_Color* mPalette;
+	FT_Palette_Data mPaletteData;
+	FT_Error mPaletteStatus;
+	bool mPaletteSet;
 
 	BoolAndFTShort GetCapHeightInternal(); 
 	BoolAndFTShort GetxHeightInternal(); 
@@ -149,6 +157,7 @@ private:
 	std::string NotDefGlyphName();
 
 	void SelectDefaultEncoding();
+	void ResetPaletteSelectionState();	
 
 public:
 	class IOutlineEnumerator {

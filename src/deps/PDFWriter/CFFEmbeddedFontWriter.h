@@ -83,6 +83,11 @@ public:
 									ObjectIDType& outEmbeddedFontObjectID);
 
 
+	// after having written the embedded font, and the actual glyph count is determined - possibly
+	// including additional glyphs to inSubsetGlyphIDs list, where dependent glyphs are required - 
+	// you can use this method to get the count of the actually emitted subset size
+	unsigned short GetSubsetFontGlyphsCount();
+
 private:
 	OpenTypeFileInput mOpenTypeInput;
 	InputFile mOpenTypeFile;
@@ -90,7 +95,8 @@ private:
 	OutputStringBufferStream mFontFileStream;
 	bool mIsCID;
 	std::string mOptionalEmbeddedPostscript;
-
+	unsigned short mSubsetFontGlyphsCount;
+	
 	// placeholders positions
 	LongFilePositionType mCharsetPlaceHolderPosition;
 	LongFilePositionType mEncodingPlaceHolderPosition;

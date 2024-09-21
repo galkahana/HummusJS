@@ -52,6 +52,11 @@ public:
 									ObjectsContext* inObjectsContext,
 									ObjectIDType& outEmbeddedFontObjectID);
 
+	// after having written the embedded font, and the actual glyph count is determined - possibly
+	// including additional glyphs to inSubsetGlyphIDs list, where dependent glyphs are required - 
+	// you can use this method to get the count of the actually emitted subset size
+	unsigned short GetSubsetFontGlyphsCount();
+
 private:
 	OpenTypeFileInput mTrueTypeInput;
 	InputFile mTrueTypeFile;

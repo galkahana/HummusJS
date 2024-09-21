@@ -48,6 +48,12 @@ EncryptionHelper::EncryptionHelper(void)
 	mXcryptAuthentication = NULL;
 	mXcryptStreams = NULL;
 	mXcryptStrings = NULL;
+
+	mV = 0;
+	mLength = 0;
+	mRevision = 0;
+	mP = 0;
+	mEncryptMetaData = false;
 }
 
 EncryptionHelper::~EncryptionHelper(void)

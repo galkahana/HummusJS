@@ -34,6 +34,7 @@ private:
 	// AbstractContentContext implementation
 	virtual ResourcesDictionary* GetResourcesDictionary();
 	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID, const PDFParsingOptions& inParsingOptions);
+    virtual void ScheduleObjectEndWriteTask(IObjectEndWritingTask* inObjectEndWritingTask);
 
 	PDFTiledPattern* mObjectOfContext;
 };

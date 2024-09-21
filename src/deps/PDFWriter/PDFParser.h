@@ -31,6 +31,7 @@
 #include "DecryptionHelper.h"
 #include "PDFParsingOptions.h"
 #include "InputOffsetStream.h"
+#include "PDFParsingPath.h"
 
 #include <map>
 #include <set>
@@ -177,6 +178,7 @@ private:
 	DecryptionHelper mDecryptionHelper;
 	InputOffsetStream mStream;
 	AdapterIByteReaderWithPositionToIReadPositionProvider mCurrentPositionProvider;
+	PDFParsingPath mNewObjectParsingPath;
 	
 	// we'll use this items for bacwkards reading. might turns this into a proper stream object
 	IOBasicTypes::Byte mLinesBuffer[LINE_BUFFER_SIZE];
@@ -214,7 +216,7 @@ private:
 	PDFHummus::EStatusCode SetupDecryptionHelper(const std::string& inPassword);
 	PDFHummus::EStatusCode ParsePagesObjectIDs();
 	PDFHummus::EStatusCode ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID);
-	PDFHummus::EStatusCode ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID,unsigned long& ioCurrentPageIndex);
+	PDFHummus::EStatusCode ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID,unsigned long& ioCurrentPageIndex, PDFParsingPath& ioParsingPath);
 	PDFHummus::EStatusCode ParsePreviousXrefs(PDFDictionary* inTrailer);
 	PDFHummus::EStatusCode MergeXrefWithMainXref(XrefEntryInputVector& inTableToMerge,ObjectIDType inMergedTableSize);
 	PDFHummus::EStatusCode ParseFileDirectory();
@@ -245,6 +247,7 @@ private:
 	PDFObject* ParseExistingInDirectStreamObject(ObjectIDType inObjectId);
 	PDFHummus::EStatusCode ParseObjectStreamHeader(ObjectStreamHeaderEntry* inHeaderInfo,ObjectIDType inObjectsCount);
 	void MovePositionInStream(LongFilePositionType inPosition);
+	EStatusCodeAndIByteReader WrapWithPredictorStream(IByteReader* inputStream, PDFDictionary* inDecodeParams);
 	EStatusCodeAndIByteReader CreateFilterForStream(IByteReader* inStream,PDFName* inFilterName,PDFDictionary* inDecodeParams, PDFStreamInput* inPDFStream);
 
 	void NotifyIndirectObjectStart(long long inObjectID, long long inGenerationNumber);

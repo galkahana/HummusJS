@@ -85,6 +85,7 @@ void PDFParser::ResetParser()
 	mObjectStreamsCache.clear();
 	mDecryptionHelper.Reset();
 	mParsedXrefs.clear();
+	mNewObjectParsingPath.Reset();
 
 }
 
@@ -717,20 +718,38 @@ double PDFParser::GetPDFLevel()
 
 PDFObject* PDFParser::ParseNewObject(ObjectIDType inObjectId)
 {
+
 	if(inObjectId >= GetXrefSize())
 	{
 		return NULL;
 	}
-	else if(eXrefEntryExisting == mXrefTable[inObjectId].mType)
-	{
-		return ParseExistingInDirectObject(inObjectId);
-	}
-	else if(eXrefEntryStreamObject == mXrefTable[inObjectId].mType)
-	{
-		return ParseExistingInDirectStreamObject(inObjectId);
-	}
-	else
+
+	// cycle check in
+	if(mNewObjectParsingPath.EnterObject(inObjectId) != eSuccess)
 		return NULL;
+
+	PDFObject* result = NULL;
+	do {
+		if(eXrefEntryExisting == mXrefTable[inObjectId].mType)
+		{
+			result = ParseExistingInDirectObject(inObjectId);
+			break;
+		}
+		
+		if(eXrefEntryStreamObject == mXrefTable[inObjectId].mType)
+		{
+			result = ParseExistingInDirectStreamObject(inObjectId);
+			break;
+		}
+
+	} while(false);
+
+
+	// cycle check out
+	if(mNewObjectParsingPath.ExitObject(inObjectId) != eSuccess)
+		return NULL;
+
+	return result;	
 }
 
 ObjectIDType PDFParser::GetObjectsCount()
@@ -875,13 +894,19 @@ EStatusCode PDFParser::ParsePagesObjectIDs()
 EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID)
 {
 	unsigned long currentPageIndex = 0;
+	PDFParsingPath parsingPath;
 
-	return ParsePagesIDs(inPageNode,inNodeObjectID,currentPageIndex);
+	return ParsePagesIDs(inPageNode, inNodeObjectID, currentPageIndex, parsingPath);
 }
 
 static const std::string scPage = "Page";
 static const std::string scPages = "Pages";
-EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNodeObjectID,unsigned long& ioCurrentPageIndex)
+EStatusCode PDFParser::ParsePagesIDs(
+	PDFDictionary* inPageNode,
+	ObjectIDType inNodeObjectID,
+	unsigned long& ioCurrentPageIndex,
+	PDFParsingPath& ioParsingPath
+)
 {
 	// recursion.
 	// if this is a page, write it's node object ID in the current page index and +1
@@ -891,6 +916,12 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 
 	do
 	{
+		// add object to parsing path, checking for cycles
+		if(ioParsingPath.EnterObject(inNodeObjectID) != eSuccess) {
+			status = PDFHummus::eFailure;
+			break;
+		}
+
 		PDFObjectCastPtr<PDFName> objectType(inPageNode->QueryDirectObject("Type"));
 		if(!objectType)
 		{
@@ -952,7 +983,7 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 					break;
 				}
 
-				status = ParsePagesIDs(pageNodeObject.GetPtr(),((PDFIndirectObjectReference*)it.GetItem())->mObjectID,ioCurrentPageIndex);
+				status = ParsePagesIDs(pageNodeObject.GetPtr(),((PDFIndirectObjectReference*)it.GetItem())->mObjectID, ioCurrentPageIndex, ioParsingPath);
 			}
 		}
 		else
@@ -961,6 +992,14 @@ EStatusCode PDFParser::ParsePagesIDs(PDFDictionary* inPageNode,ObjectIDType inNo
 			status = PDFHummus::eFailure;
 			break;
 		}
+
+
+		// exit object
+		if(ioParsingPath.ExitObject(inNodeObjectID) != eSuccess) {
+			status = PDFHummus::eFailure;
+			break;
+		}
+
 	}while(false);
 
 	return status;
@@ -1061,6 +1100,13 @@ EStatusCode PDFParser::ParsePreviousXrefs(PDFDictionary* inTrailer)
 	}
 
 	LongFilePositionType previousPosition = previousPositionObject->GetValue();
+
+	if(previousPosition < 0)
+	{
+		// Standard: "The byte offset from the beginning of the PDF file", thus can not be negative
+		TRACE_LOG1("PDFParser::ParsePreviousXrefs, unexpected, /prev is negative: %ld.",previousPosition);
+		return PDFHummus::eFailure;
+    }
 
 	if(mParsedXrefs.find(previousPosition) != mParsedXrefs.end()) {
 		// safeguard against orcish mischief, trying to get the parser to endlessly loop between prevs
@@ -1527,16 +1573,17 @@ EStatusCode PDFParser::ParseXrefFromXrefStream(XrefEntryInputVector& inXrefTable
 		else
 		{
 			SingleValueContainerIterator<PDFObjectVector> segmentsIterator  = subsectionsIndex->GetIterator();
-			PDFObjectCastPtr<PDFInteger> segmentValue;
+			PDFInteger* segmentValue;
 			while(segmentsIterator.MoveNext() && PDFHummus::eSuccess == status)
 			{
-				segmentValue = segmentsIterator.GetItem();
-				if(!segmentValue)
+				if(segmentsIterator.GetItem()->GetType() != PDFObject::ePDFObjectInteger)
 				{
 					TRACE_LOG("PDFParser::ParseXrefFromXrefStream, found non integer value in Index array of xref stream");
 					status = PDFHummus::eFailure;
 					break;
 				}
+				segmentValue = (PDFInteger*)(segmentsIterator.GetItem());
+
 				ObjectIDType startObject = (ObjectIDType)segmentValue->GetValue();
 				if(!segmentsIterator.MoveNext())
 				{
@@ -1545,13 +1592,14 @@ EStatusCode PDFParser::ParseXrefFromXrefStream(XrefEntryInputVector& inXrefTable
 					break;
 				}
 
-				segmentValue = segmentsIterator.GetItem();
-				if(!segmentValue)
+				if(segmentsIterator.GetItem()->GetType() != PDFObject::ePDFObjectInteger)
 				{
 					TRACE_LOG("PDFParser::ParseXrefFromXrefStream, found non integer value in Index array of xref stream");
 					status = PDFHummus::eFailure;
 					break;
 				}
+				segmentValue = (PDFInteger*)(segmentsIterator.GetItem());
+
 				ObjectIDType objectsCount = (ObjectIDType)segmentValue->GetValue();
 				ObjectIDType readXrefSize = startObject +  objectsCount;
 
@@ -1710,7 +1758,7 @@ PDFObject* PDFParser::ParseExistingInDirectStreamObject(ObjectIDType inObjectId)
 		ObjectIDType objectsCount = (ObjectIDType)streamObjectsCount->GetValue();
 
 		PDFObjectCastPtr<PDFInteger> firstStreamObjectPosition(QueryDictionaryObject(streamDictionary.GetPtr(),"First"));
-		if(!streamObjectsCount)
+		if(!firstStreamObjectPosition)
 		{
 			TRACE_LOG1("PDFParser::ParseExistingInDirectStreamObject, no First key in stream dictionary %ld",objectStreamID);
 			status = PDFHummus::eFailure;
@@ -1934,37 +1982,13 @@ IByteReader* PDFParser::CreateInputStreamReader(PDFStreamInput* inStream)
 	return result;
 }
 
-EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream,PDFName* inFilterName,PDFDictionary* inDecodeParams, PDFStreamInput* inPDFStream)
-{
+
+EStatusCodeAndIByteReader PDFParser::WrapWithPredictorStream(IByteReader* inputStream, PDFDictionary* inDecodeParams) {
 	EStatusCode status = eSuccess;
 	IByteReader* result = NULL;
 
-	do
+	do 
 	{
-
-		if(inFilterName->GetValue() == "FlateDecode" || inFilterName->GetValue() == "LZWDecode")
-		{
-			if (inFilterName->GetValue() == "FlateDecode")
-			{
-				InputFlateDecodeStream* flateStream;
-				flateStream = new InputFlateDecodeStream(NULL); // assigning null, so later delete, if failure occurs won't delete the input stream
-				flateStream->Assign(inStream);
-				result = flateStream;
-			}
-			else if (inFilterName->GetValue() == "LZWDecode")
-			{
-				InputLZWDecodeStream* lzwStream;
-				int early = 1;
-				if (inDecodeParams)
-				{
-					PDFObjectCastPtr<PDFInteger> earlyObj(QueryDictionaryObject(inDecodeParams, "EarlyChange"));
-					early = earlyObj->GetValue();
-				}
-				lzwStream = new InputLZWDecodeStream(early);
-				lzwStream->Assign(inStream);
-				result = lzwStream;
-			}
-
 			// check for predictor n' such
 			if (!inDecodeParams)
 				// no predictor, stop here
@@ -1991,11 +2015,25 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 																(IOBasicTypes::LongBufferSizeType)bitsPerComponent->GetValue() :
 																8;
 
+			// validate bits per component
+			if(
+				bitsPerComponentValue != 1 &&
+				bitsPerComponentValue != 2 &&
+				bitsPerComponentValue != 4 &&
+				bitsPerComponentValue != 8 &&
+				bitsPerComponentValue != 16
+			) {
+				TRACE_LOG1("PDFParser::WrapWithPredictorStream, invalid BitsPerComponent value: %ld. allowed values: 1,2,4,8,16", bitsPerComponentValue);
+				status = PDFHummus::eFailure;
+				break;
+			}
+
+
 			switch(predictor->GetValue())
 			{
 				case 2:
 				{
-					result = new InputPredictorTIFFSubStream(result,
+					result = new InputPredictorTIFFSubStream(inputStream,
 															 colorsValue,
 															 bitsPerComponentValue,
 															 columnsValue);
@@ -2010,7 +2048,7 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 				{
 					// Gal: optimum can handle all presets, because non-optimum presets still require a function sign flag
 					// at line start...so optimum can handle them.
-					result =  new InputPredictorPNGOptimumStream(result,
+					result =  new InputPredictorPNGOptimumStream(inputStream,
 																 colorsValue,
 																 bitsPerComponentValue,
 																 columnsValue);
@@ -2023,6 +2061,62 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 					break;
 				}
 			}
+	} while(false);
+
+	return EStatusCodeAndIByteReader(status,result);
+
+}
+
+EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream,PDFName* inFilterName,PDFDictionary* inDecodeParams, PDFStreamInput* inPDFStream)
+{
+	EStatusCode status = eSuccess;
+	IByteReader* result = NULL;
+
+	// Important! in case of failure CreateFilterForStream must NOT delete inStream, as its caller
+	// is assuming ownership is NOT transferred in that case. And each clause should clean
+	// after its done in case of failure (but again - not the incoming stream)
+
+	do
+	{
+
+		if (inFilterName->GetValue() == "FlateDecode")
+		{
+			InputFlateDecodeStream* flateStream;
+			flateStream = new InputFlateDecodeStream(inStream);
+			result = flateStream;
+			EStatusCodeAndIByteReader createStatus = WrapWithPredictorStream(result, inDecodeParams);
+			if(createStatus.first == eFailure) {
+				flateStream->Assign(NULL); // assign null to remove ownership of input stream so later delete does NOT delete it
+				delete flateStream;
+				result = NULL;		
+				status = eFailure;
+			}
+			else if(createStatus.second != NULL) {
+				result = createStatus.second;				
+			}
+		}
+		else if (inFilterName->GetValue() == "LZWDecode")
+		{
+			InputLZWDecodeStream* lzwStream;
+			int early = 1;
+			if (inDecodeParams)
+			{
+				PDFObjectCastPtr<PDFInteger> earlyObj(QueryDictionaryObject(inDecodeParams, "EarlyChange"));
+				early = earlyObj->GetValue();
+			}
+			lzwStream = new InputLZWDecodeStream(early);
+			lzwStream->Assign(inStream);
+			result = lzwStream;
+			EStatusCodeAndIByteReader createStatus = WrapWithPredictorStream(result, inDecodeParams);
+			if(createStatus.first == eFailure) {
+				lzwStream->Assign(NULL); // assign null to remove ownership of input stream so later delete does NOT delete it
+				delete lzwStream;
+				result = NULL;
+				status = eFailure;
+			}
+			else if(createStatus.second != NULL) {
+				result = createStatus.second;
+			}				
 		}
 		else if (inFilterName->GetValue() == "ASCIIHexDecode")
 		{
@@ -2051,6 +2145,7 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 			{
 				TRACE_LOG1("PDFParser::CreateFilterForStream, filter is not supported by extender - %s",inFilterName->GetValue().substr(0, MAX_TRACE_SIZE - 200).c_str());
 				status = PDFHummus::eFailure;
+				result = NULL;
 				break;
 			}
 		}
@@ -2062,11 +2157,6 @@ EStatusCodeAndIByteReader PDFParser::CreateFilterForStream(IByteReader* inStream
 		}
 	}while(false);
 
-	if(status != PDFHummus::eSuccess)
-	{
-		delete result;
-		result = NULL;
-	}
 	return EStatusCodeAndIByteReader(status,result);
 
 }

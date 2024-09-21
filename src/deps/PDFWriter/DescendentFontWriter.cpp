@@ -52,7 +52,8 @@ EStatusCode DescendentFontWriter::WriteFont(	ObjectIDType inDecendentObjectID,
 												FreeTypeFaceWrapper& inFontInfo,
 												const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
 												ObjectsContext* inObjectsContext,
-												IDescendentFontWriter* inDescendentFontWriterHelper)
+												IDescendentFontWriter* inDescendentFontWriterHelper,
+												unsigned int inMaxCIDGlyph)
 {
 	EStatusCode status = PDFHummus::eSuccess;
 	FontDescriptorWriter fontDescriptorWriter;
@@ -107,7 +108,7 @@ EStatusCode DescendentFontWriter::WriteFont(	ObjectIDType inDecendentObjectID,
 		fontDescriptorWriter.WriteFontDescriptor(fontDescriptorObjectID,inFontName,&inFontInfo,inEncodedGlyphs,inObjectsContext,this);
 
 		if(mCIDSetObjectID) // set by descriptor writer callback
-			WriteCIDSet(inEncodedGlyphs);
+			WriteCIDSet(inMaxCIDGlyph);
 	}while(false);
 	return status;	
 }
@@ -264,33 +265,27 @@ void DescendentFontWriter::WriteCharSet(	DictionaryContext* inDescriptorContext,
 	inDescriptorContext->WriteNewObjectReferenceValue(mCIDSetObjectID);
 }
 
-void DescendentFontWriter::WriteCIDSet(const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs)
+void DescendentFontWriter::WriteCIDSet(unsigned int cidSetMaxGlyph)
 {
 	mObjectsContext->StartNewIndirectObject(mCIDSetObjectID);
 	PDFStream* pdfStream = mObjectsContext->StartPDFStream();	
 	IByteWriter* cidSetWritingContext = pdfStream->GetWriteStream();
 	Byte buffer;
-	UIntAndGlyphEncodingInfoVector::const_iterator it = inEncodedGlyphs.begin();
-	unsigned int upperLimit = inEncodedGlyphs.back().first;
+
+	// this should be the exact same ids as in the font itself. so should match what's in the font programs:
+	// for true type the CIDs are 0...max glyph including, where the font program fills the betweens with blanks
+	// for open type the CIDs are 0..size-1 glyphs, where the font program just maps glyphs to 0..count
 	
-	for(unsigned int i=0; i < upperLimit; i+=8)
-	{
-		buffer = (it->first == i) ? 1:0;
-		if(it->first == i)
-			++it;
-		for(unsigned int j=1;j<8;++j)
-		{
-			buffer = buffer << 1;
-			if(it != inEncodedGlyphs.end() && (it->first == i + j))
-			{
-				buffer |= 1;
-				++it;
-				if(it == inEncodedGlyphs.end())
-					break;
-			}
-		}
+	buffer = 255;
+	for(unsigned int i=0;i < (cidSetMaxGlyph/8);++i) {
 		cidSetWritingContext->Write(&buffer,1);
 	}
+	
+	if(cidSetMaxGlyph % 8 != 0) {
+		buffer = ~(255 >> (cidSetMaxGlyph % 8));
+		cidSetWritingContext->Write(&buffer,1);
+	}
+
 	mObjectsContext->EndPDFStream(pdfStream);
 	delete pdfStream;
 }

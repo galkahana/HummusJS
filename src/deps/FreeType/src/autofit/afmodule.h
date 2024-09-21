@@ -1,58 +1,55 @@
-/***************************************************************************/
-/*                                                                         */
-/*  afmodule.h                                                             */
-/*                                                                         */
-/*    Auto-fitter module implementation (specification).                   */
-/*                                                                         */
-/*  Copyright 2003, 2004, 2005 by                                          */
-/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
-/*                                                                         */
-/*  This file is part of the FreeType project, and may only be used,       */
-/*  modified, and distributed under the terms of the FreeType project      */
-/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
-/*  this file you indicate that you have read the license and              */
-/*  understand and accept it fully.                                        */
-/*                                                                         */
-/***************************************************************************/
+/****************************************************************************
+ *
+ * afmodule.h
+ *
+ *   Auto-fitter module implementation (specification).
+ *
+ * Copyright (C) 2003-2023 by
+ * David Turner, Robert Wilhelm, and Werner Lemberg.
+ *
+ * This file is part of the FreeType project, and may only be used,
+ * modified, and distributed under the terms of the FreeType project
+ * license, LICENSE.TXT.  By continuing to use, modify, or distribute
+ * this file you indicate that you have read the license and
+ * understand and accept it fully.
+ *
+ */
 
 
-#ifndef __AFMODULE_H__
-#define __AFMODULE_H__
+#ifndef AFMODULE_H_
+#define AFMODULE_H_
 
-#include <ft2build.h>
-#include FT_INTERNAL_OBJECTS_H
-#include FT_MODULE_H
-
-#include "afloader.h"
+#include <freetype/internal/ftobjs.h>
+#include <freetype/ftmodapi.h>
 
 
 FT_BEGIN_HEADER
 
 
   /*
-   *  This is the `extended' FT_Module structure which holds the
-   *  autofitter's global data.  Right before hinting a glyph, the data
-   *  specific to the glyph's face (blue zones, stem widths, etc.) are
-   *  loaded into `loader' (see function `af_loader_reset').
+   * This is the `extended' FT_Module structure that holds the
+   * autofitter's global data.
    */
 
   typedef struct  AF_ModuleRec_
   {
     FT_ModuleRec  root;
 
-    FT_UInt       fallback_script;
+    FT_UInt       fallback_style;
+    AF_Script     default_script;
+    FT_Bool       no_stem_darkening;
+    FT_Int        darken_params[8];
 
-    AF_LoaderRec  loader[1];
-
-  } AF_ModuleRec;
+  } AF_ModuleRec, *AF_Module;
 
 
-FT_DECLARE_MODULE(autofit_module_class)
+FT_DECLARE_AUTOHINTER_INTERFACE( af_autofitter_interface )
+FT_DECLARE_MODULE( autofit_module_class )
 
 
 FT_END_HEADER
 
-#endif /* __AFMODULE_H__ */
+#endif /* AFMODULE_H_ */
 
 
 /* END */

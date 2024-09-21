@@ -1,35 +1,30 @@
-/***************************************************************************/
-/*                                                                         */
-/*  afindic.c                                                              */
-/*                                                                         */
-/*    Auto-fitter hinting routines for Indic scripts (body).               */
-/*                                                                         */
-/*  Copyright 2007, 2011, 2012 by                                          */
-/*  Rahul Bhalerao <rahul.bhalerao@redhat.com>, <b.rahul.pm@gmail.com>.    */
-/*                                                                         */
-/*  This file is part of the FreeType project, and may only be used,       */
-/*  modified, and distributed under the terms of the FreeType project      */
-/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
-/*  this file you indicate that you have read the license and              */
-/*  understand and accept it fully.                                        */
-/*                                                                         */
-/***************************************************************************/
+/****************************************************************************
+ *
+ * afindic.c
+ *
+ *   Auto-fitter hinting routines for Indic writing system (body).
+ *
+ * Copyright (C) 2007-2023 by
+ * Rahul Bhalerao <rahul.bhalerao@redhat.com>, <b.rahul.pm@gmail.com>.
+ *
+ * This file is part of the FreeType project, and may only be used,
+ * modified, and distributed under the terms of the FreeType project
+ * license, LICENSE.TXT.  By continuing to use, modify, or distribute
+ * this file you indicate that you have read the license and
+ * understand and accept it fully.
+ *
+ */
 
 
 #include "aftypes.h"
 #include "aflatin.h"
+#include "afcjk.h"
 
 
 #ifdef AF_CONFIG_OPTION_INDIC
 
 #include "afindic.h"
 #include "aferrors.h"
-#include "afcjk.h"
-
-
-#ifdef AF_CONFIG_OPTION_USE_WARPER
-#include "afwarp.h"
-#endif
 
 
   static FT_Error
@@ -54,9 +49,8 @@
       af_cjk_metrics_check_digits( metrics, face );
     }
 
-    FT_Set_Charmap( face, oldmap );
-
-    return AF_Err_Ok;
+    face->charmap = oldmap;
+    return FT_Err_Ok;
   }
 
 
@@ -79,12 +73,29 @@
 
 
   static FT_Error
-  af_indic_hints_apply( AF_GlyphHints  hints,
+  af_indic_hints_apply( FT_UInt        glyph_index,
+                        AF_GlyphHints  hints,
                         FT_Outline*    outline,
                         AF_CJKMetrics  metrics )
   {
     /* use CJK routines */
-    return af_cjk_hints_apply( hints, outline, metrics );
+    return af_cjk_hints_apply( glyph_index, hints, outline, metrics );
+  }
+
+
+  /* Extract standard_width from writing system/script specific */
+  /* metrics class.                                             */
+
+  static void
+  af_indic_get_standard_widths( AF_CJKMetrics  metrics,
+                                FT_Pos*        stdHW,
+                                FT_Pos*        stdVW )
+  {
+    if ( stdHW )
+      *stdHW = metrics->axis[AF_DIMENSION_VERT].standard_width;
+
+    if ( stdVW )
+      *stdVW = metrics->axis[AF_DIMENSION_HORZ].standard_width;
   }
 
 
@@ -97,59 +108,42 @@
   /*************************************************************************/
 
 
-  static const AF_Script_UniRangeRec  af_indic_uniranges[] =
-  {
-#if 0
-    AF_UNIRANGE_REC( 0x0100UL, 0xFFFFUL ),  /* why this? */
-#endif
-    AF_UNIRANGE_REC( 0x0900UL, 0x0DFFUL),    /* Indic Range */
-    AF_UNIRANGE_REC( 0x0F00UL, 0x0FFFUL),    /* Tibetan */
-    AF_UNIRANGE_REC( 0x1900UL, 0x194FUL),    /* Limbu */
-    AF_UNIRANGE_REC( 0x1B80UL, 0x1BBFUL),    /* Sundanese */
-    AF_UNIRANGE_REC( 0x1C80UL, 0x1CDFUL),    /* Meetei Mayak */
-    AF_UNIRANGE_REC( 0xA800UL, 0xA82FUL),    /* Syloti Nagri */
-    AF_UNIRANGE_REC( 0x11800UL, 0x118DFUL),  /* Sharada */
-    AF_UNIRANGE_REC(      0UL,      0UL)
-  };
+  AF_DEFINE_WRITING_SYSTEM_CLASS(
+    af_indic_writing_system_class,
 
-
-  AF_DEFINE_SCRIPT_CLASS( af_indic_script_class,
-    AF_SCRIPT_INDIC,
-    af_indic_uniranges,
-    'o', /* XXX */
+    AF_WRITING_SYSTEM_INDIC,
 
     sizeof ( AF_CJKMetricsRec ),
 
-    (AF_Script_InitMetricsFunc) af_indic_metrics_init,
-    (AF_Script_ScaleMetricsFunc)af_indic_metrics_scale,
-    (AF_Script_DoneMetricsFunc) NULL,
+    (AF_WritingSystem_InitMetricsFunc) af_indic_metrics_init,        /* style_metrics_init    */
+    (AF_WritingSystem_ScaleMetricsFunc)af_indic_metrics_scale,       /* style_metrics_scale   */
+    (AF_WritingSystem_DoneMetricsFunc) NULL,                         /* style_metrics_done    */
+    (AF_WritingSystem_GetStdWidthsFunc)af_indic_get_standard_widths, /* style_metrics_getstdw */
 
-    (AF_Script_InitHintsFunc)   af_indic_hints_init,
-    (AF_Script_ApplyHintsFunc)  af_indic_hints_apply
+    (AF_WritingSystem_InitHintsFunc)   af_indic_hints_init,          /* style_hints_init      */
+    (AF_WritingSystem_ApplyHintsFunc)  af_indic_hints_apply          /* style_hints_apply     */
   )
+
 
 #else /* !AF_CONFIG_OPTION_INDIC */
 
-  static const AF_Script_UniRangeRec  af_indic_uniranges[] =
-  {
-    { 0, 0 }
-  };
 
+  AF_DEFINE_WRITING_SYSTEM_CLASS(
+    af_indic_writing_system_class,
 
-  AF_DEFINE_SCRIPT_CLASS( af_indic_script_class,
-    AF_SCRIPT_INDIC,
-    af_indic_uniranges,
-    0,
+    AF_WRITING_SYSTEM_INDIC,
 
     sizeof ( AF_CJKMetricsRec ),
 
-    (AF_Script_InitMetricsFunc) NULL,
-    (AF_Script_ScaleMetricsFunc)NULL,
-    (AF_Script_DoneMetricsFunc) NULL,
+    (AF_WritingSystem_InitMetricsFunc) NULL, /* style_metrics_init    */
+    (AF_WritingSystem_ScaleMetricsFunc)NULL, /* style_metrics_scale   */
+    (AF_WritingSystem_DoneMetricsFunc) NULL, /* style_metrics_done    */
+    (AF_WritingSystem_GetStdWidthsFunc)NULL, /* style_metrics_getstdw */
 
-    (AF_Script_InitHintsFunc)   NULL,
-    (AF_Script_ApplyHintsFunc)  NULL
+    (AF_WritingSystem_InitHintsFunc)   NULL, /* style_hints_init      */
+    (AF_WritingSystem_ApplyHintsFunc)  NULL  /* style_hints_apply     */
   )
+
 
 #endif /* !AF_CONFIG_OPTION_INDIC */
 

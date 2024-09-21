@@ -51,8 +51,8 @@ public:
 	virtual PDFHummus::EStatusCode Type2Return(const CharStringOperandList& inOperandList) ;
 	virtual PDFHummus::EStatusCode Type2Endchar(const CharStringOperandList& inOperandList);
 	virtual PDFHummus::EStatusCode Type2Hstemhm(const CharStringOperandList& inOperandList);
-	virtual PDFHummus::EStatusCode Type2Hintmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter);
-	virtual PDFHummus::EStatusCode Type2Cntrmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter);
+	virtual PDFHummus::EStatusCode Type2Hintmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter,LongFilePositionType inReadLimit);
+	virtual PDFHummus::EStatusCode Type2Cntrmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter,LongFilePositionType inReadLimit);
 	virtual PDFHummus::EStatusCode Type2Rmoveto(const CharStringOperandList& inOperandList);
 	virtual PDFHummus::EStatusCode Type2Hmoveto(const CharStringOperandList& inOperandList);
 	virtual PDFHummus::EStatusCode Type2Vstemhm(const CharStringOperandList& inOperandList);
@@ -96,7 +96,7 @@ private:
 	CharStringOperandList mOperandsToWrite;
 
 	PDFHummus::EStatusCode WriteRegularOperator(unsigned short inOperatorCode);
-	PDFHummus::EStatusCode WriteStemMask(Byte* inProgramCounter);
+	PDFHummus::EStatusCode WriteStemMask(Byte* inProgramCounter,LongFilePositionType inReadLimit);
 	PDFHummus::EStatusCode WriteCharStringOperand(const CharStringOperand& inOperand);
 	PDFHummus::EStatusCode WriteCharStringOperator(unsigned short inOperatorCode);
 	PDFHummus::EStatusCode WriteByte(Byte inValue);

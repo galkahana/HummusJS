@@ -71,3 +71,8 @@ void XObjectContentContext::ScheduleImageWrite(const std::string& inImagePath,un
                                                    new FormImageWritingTask(inImagePath,inImageIndex,inObjectID,inParsingOptions));
 
 }
+
+void XObjectContentContext::ScheduleObjectEndWriteTask(IObjectEndWritingTask* inObjectEndWritingTask) 
+{
+    mDocumentContext->RegisterFormEndWritingTask(mPDFFormXObjectOfContext, inObjectEndWritingTask);
+}

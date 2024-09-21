@@ -68,7 +68,7 @@ typedef std::set<Stem,StemLess> StemSet;
 typedef std::set<size_t> SizeTSet;
 typedef std::map<Stem,size_t,StemLess> StemToSizeTMap;
 
-class Type1ToType2Converter : IType1InterpreterImplementation
+class Type1ToType2Converter : public IType1InterpreterImplementation
 {
 public:
 	Type1ToType2Converter(void);

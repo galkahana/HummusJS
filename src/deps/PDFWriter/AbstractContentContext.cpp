@@ -30,6 +30,10 @@
 #include "OutputStreamTraits.h"
 #include "IContentContextListener.h"
 #include "DocumentContext.h"
+#include "SimpleGlyphsDrawingContext.h"
+#include "LayeredGlyphsDrawingContext.h"
+#include "PaintedGlyphsDrawingContext.h"
+
 #include <ctype.h>
 #include <algorithm>
 
@@ -588,6 +592,15 @@ void AbstractContentContext::SCN(double* inColorComponents, int inColorComponent
 	mPrimitiveWriter.WriteKeyword("SCN");
 }
 
+void AbstractContentContext::SCN(const std::string& inPatternName)
+{
+	RenewStreamConnection();
+	AssertProcsetAvailable(KProcsetPDF);
+
+	mPrimitiveWriter.WriteName(inPatternName);
+	mPrimitiveWriter.WriteKeyword("SCN");
+}
+
 void AbstractContentContext::sc(double* inColorComponents, int inColorComponentsLength)
 {
 	RenewStreamConnection();
@@ -615,6 +628,15 @@ void AbstractContentContext::scn(double* inColorComponents, int inColorComponent
 
 	for(int i=0;i<inColorComponentsLength;++i)
 		mPrimitiveWriter.WriteDouble(inColorComponents[i]);
+	mPrimitiveWriter.WriteName(inPatternName);
+	mPrimitiveWriter.WriteKeyword("scn");
+}
+
+void AbstractContentContext::scn(const std::string& inPatternName)
+{
+	RenewStreamConnection();
+	AssertProcsetAvailable(KProcsetPDF);
+
 	mPrimitiveWriter.WriteName(inPatternName);
 	mPrimitiveWriter.WriteKeyword("scn");
 }
@@ -957,10 +979,24 @@ void AbstractContentContext::TJHexLow(const StringOrDoubleList& inStringsAndSpac
 	mPrimitiveWriter.WriteKeyword("TJ");
 }
 
-void AbstractContentContext::Tf(PDFUsedFont* inFontReference,double inFontSize)
+void AbstractContentContext::SetCurrentFont(PDFUsedFont* inFontReference) 
 {
 	mGraphicStack.GetCurrentState().mFont = inFontReference;
+}
+
+PDFUsedFont* AbstractContentContext::GetCurrentFont() {
+	return mGraphicStack.GetCurrentState().mFont;
+}
+
+void AbstractContentContext::SetCurrentFontSize(double inFontSize) 
+{
 	mGraphicStack.GetCurrentState().mFontSize = inFontSize;
+}
+
+void AbstractContentContext::Tf(PDFUsedFont* inFontReference,double inFontSize)
+{
+	SetCurrentFont(inFontReference);
+	SetCurrentFontSize(inFontSize);
 }
 
 class ITextCommand
@@ -973,20 +1009,8 @@ public:
 
 EStatusCode AbstractContentContext::WriteTextCommandWithEncoding(const std::string& inUnicodeText,ITextCommand* inTextCommand)
 {
-	PDFUsedFont* currentFont = mGraphicStack.GetCurrentState().mFont;
-	if(!currentFont)
-	{
-		TRACE_LOG("AbstractContentContext::WriteTextCommandWithEncoding, Cannot write text, no current font is defined");
-		return PDFHummus::eFailure;
-	}
-
 	GlyphUnicodeMappingList glyphsAndUnicode;
-	EStatusCode encodingStatus = currentFont->TranslateStringToGlyphs(inUnicodeText,glyphsAndUnicode);
-
-	// encoding returns false if was unable to encode some of the glyphs. will display as missing characters
-	if(encodingStatus != PDFHummus::eSuccess)
-		TRACE_LOG("AbstractContextContext::WriteTextCommandWithEncoding, was unable to find glyphs for all characters, some will appear as missing");
-
+	EncodeWithCurrentFont(inUnicodeText, glyphsAndUnicode);
 
 	return WriteTextCommandWithDirectGlyphSelection(glyphsAndUnicode,inTextCommand);
 }
@@ -1048,7 +1072,7 @@ EStatusCode AbstractContentContext::DoubleQuote(double inWordSpacing, double inC
 
 EStatusCode AbstractContentContext::TJ(const StringOrDoubleList& inStringsAndSpacing)
 {
-	PDFUsedFont* currentFont = mGraphicStack.GetCurrentState().mFont;
+	PDFUsedFont* currentFont = GetCurrentFont();
 	if(!currentFont)
 	{
 		TRACE_LOG("AbstractContentContext::TJ, Cannot write text, no current font is defined");
@@ -1088,7 +1112,7 @@ EStatusCode AbstractContentContext::Tj(const GlyphUnicodeMappingList& inText)
 
 EStatusCode AbstractContentContext::WriteTextCommandWithDirectGlyphSelection(const GlyphUnicodeMappingList& inText,ITextCommand* inTextCommand)
 {
-	PDFUsedFont* currentFont = mGraphicStack.GetCurrentState().mFont;
+	PDFUsedFont* currentFont = GetCurrentFont();
 	if(!currentFont)
 	{
 		TRACE_LOG("AbstractContentContext::WriteTextCommandWithDirectGlyphSelection, Cannot write text, no current font is defined");
@@ -1128,8 +1152,6 @@ EStatusCode AbstractContentContext::WriteTextCommandWithDirectGlyphSelection(con
 			stringStream.Write((const Byte*)formattingBuffer, 1);
 			formattingBuffer[0] = (*it) & 0x00ff;
 			stringStream.Write((const Byte*)formattingBuffer, 1);
-			//SAFE_SPRINTF_2(formattingBuffer,5,"%02x%02x",((*it)>>8) & 0x00ff,(*it) & 0x00ff);
-			//stringStream.Write((const Byte*)formattingBuffer,4);
 		}
 		inTextCommand->WriteHexStringCommand(stringStream.ToString());
 	}
@@ -1159,7 +1181,7 @@ EStatusCode AbstractContentContext::DoubleQuote(double inWordSpacing, double inC
 
 EStatusCode AbstractContentContext::TJ(const GlyphUnicodeMappingListOrDoubleList& inStringsAndSpacing)
 {
-	PDFUsedFont* currentFont = mGraphicStack.GetCurrentState().mFont;
+	PDFUsedFont* currentFont = GetCurrentFont();
 	if(!currentFont)
 	{
 		TRACE_LOG("AbstractContentContext::TJ, Cannot write text, no current font is defined");
@@ -1222,8 +1244,10 @@ EStatusCode AbstractContentContext::TJ(const GlyphUnicodeMappingListOrDoubleList
 			{
 				for(itEncoded = itEncodedList->begin();itEncoded!= itEncodedList->end();++itEncoded)
 				{
-					SAFE_SPRINTF_2(formattingBuffer,5,"%02x%02x",((*itEncoded)>>8) & 0x00ff,(*itEncoded) & 0x00ff);
-					stringStream.Write((const Byte*)formattingBuffer,4);
+					formattingBuffer[0] = ((*itEncoded) >> 8) & 0x00ff;
+					stringStream.Write((const Byte*)formattingBuffer, 1);
+					formattingBuffer[0] = (*itEncoded) & 0x00ff;
+					stringStream.Write((const Byte*)formattingBuffer, 1);					
 				}
 				stringOrDoubleList.push_back(StringOrDouble(stringStream.ToString()));
 				stringStream.Reset();
@@ -1333,21 +1357,22 @@ void AbstractContentContext::DrawPath(const DoubleAndDoublePairList& inPathPoint
 
 void AbstractContentContext::SetupColor(const GraphicOptions& inOptions)
 {
-	SetupColor(inOptions.drawingType,inOptions.colorValue,inOptions.colorSpace);
+	SetupColor(inOptions.drawingType,inOptions.colorValue,inOptions.colorSpace, inOptions.opacity);
 }
 
 void AbstractContentContext::SetupColor(const TextOptions& inOptions)
 {
-	SetupColor(eFill,inOptions.colorValue,inOptions.colorSpace);
+	SetupColor(eFill,inOptions.colorValue,inOptions.colorSpace, inOptions.opacity);
 }
 
 
-void AbstractContentContext::SetupColor(EDrawingType inDrawingType,unsigned long inColorValue,EColorSpace inColorSpace)
+void AbstractContentContext::SetupColor(EDrawingType inDrawingType,unsigned long inColorValue,EColorSpace inColorSpace, double inOpacity)
 {
 	if(inDrawingType != eStroke &&
 		inDrawingType != eFill)
 		return;
 
+	SetOpacity(inOpacity);
 	switch(inColorSpace)
 	{
 		case eRGB:
@@ -1416,20 +1441,91 @@ void AbstractContentContext::FinishPath(const GraphicOptions& inOptions)
 	}
 }
 
+EStatusCode AbstractContentContext::EncodeWithCurrentFont(const std::string& inText,GlyphUnicodeMappingList& outGlyphsUnicodeMapping) {
+	PDFUsedFont* currentFont = GetCurrentFont();
+	if(!currentFont)
+	{
+		TRACE_LOG("AbstractContentContext::EncodeWithCurrentFont, Cannot write text, no current font is defined");
+		return PDFHummus::eFailure;
+	}
+
+	EStatusCode encodingStatus = currentFont->TranslateStringToGlyphs(inText,outGlyphsUnicodeMapping);
+
+	// encoding returns false if was unable to encode some of the glyphs. will display as missing characters
+	if(encodingStatus != PDFHummus::eSuccess)
+		TRACE_LOG("AbstractContextContext::EncodeWithCurrentFont, was unable to find glyphs for all characters, some will appear as missing");	
+
+	return encodingStatus;
+}
 
 void AbstractContentContext::WriteText(double inX,double inY,const std::string& inText,const TextOptions& inOptions)
 {
-    BT();
-    SetupColor(inOptions);
 	if(inOptions.font)
 	{
-		Tf(inOptions.font,inOptions.fontSize);
-		Tm(1,0,0,1,inX,inY);
+		SetCurrentFont(inOptions.font);
 	}
-	else
-		Tm(inOptions.fontSize,0,0,inOptions.fontSize,inX,inY);
-	Tj(inText);
-    ET();
+
+	GlyphUnicodeMappingList glyphsAndUnicode;	
+	EncodeWithCurrentFont(inText, glyphsAndUnicode);
+
+	SimpleGlyphsDrawingContext sharedDrawingContext(this, inOptions);
+	LayeredGlyphsDrawingContext layeredGlyphDrawing(this, inOptions);
+	PaintedGlyphsDrawingContext paintedGlyphDrawing(this, inOptions);
+
+	double x = inX;
+
+	/**
+	 * The following draws text using simple Bt..tj..Et sequances while
+	 * stopping for glyphs that require special drawing (colorful emojis are an example).
+	 * the code uses a shared context for simple text drawing to join such simple
+	 * glyphs togather for compacting the drawing code.
+	 */
+
+	sharedDrawingContext.StartWriting(x,inY);
+
+	GlyphUnicodeMappingList::iterator it = glyphsAndUnicode.begin();
+	for(; it!=glyphsAndUnicode.end(); ++it) {
+
+		// attempt to draw with ColrV1 method
+		paintedGlyphDrawing.SetGlyph(*it);
+		if(paintedGlyphDrawing.CanDraw()) {
+			// stop simple shared context
+			sharedDrawingContext.Flush(true);
+			x+=sharedDrawingContext.GetLatestAdvance();
+
+			// draw with specialized method
+			paintedGlyphDrawing.Draw(x,inY, true);
+			x+=paintedGlyphDrawing.GetLatestAdvance();
+
+			// continue simple shared context
+			sharedDrawingContext.StartWriting(x,inY);		
+
+			continue;	
+		}
+
+		// attempt to draw with ColrV0 method
+		layeredGlyphDrawing.SetGlyph(*it);
+		if(layeredGlyphDrawing.CanDraw()) {
+			// stop simple shared context
+			sharedDrawingContext.Flush(true);
+			x+=sharedDrawingContext.GetLatestAdvance();
+
+			// draw with specialized method
+			layeredGlyphDrawing.Draw(x,inY, true);
+			x+=layeredGlyphDrawing.GetLatestAdvance();
+
+			// continue simple shared context
+			sharedDrawingContext.StartWriting(x,inY);		
+
+			continue;	
+		}
+
+		// ok. not a special glyph. just add to shared context
+		sharedDrawingContext.AddGlyphMapping(*it);
+	}
+
+	// flush what glyphs are remaining in shared context
+	sharedDrawingContext.Flush();
 }
 
 void AbstractContentContext::DrawImage(double inX,double inY,const std::string& inImagePath,const ImageOptions& inOptions)
@@ -1487,4 +1583,18 @@ void AbstractContentContext::DrawImage(double inX,double inY,const std::string& 
     Do(GetResourcesDictionary()->AddFormXObjectMapping(result.first));
     Q();
 
+}
+
+void AbstractContentContext::SetOpacity(double inAlpha) {
+	if(inAlpha == NO_OPACITY_VALUE) // special value allowing to fallback on the current graphic state opacity value. this allows a default behavior for high level text commands
+		return;
+
+    // registering the images at pdfwriter to allow optimization on image writes
+    ObjectIDTypeAndBool result = mDocumentContext->GetExtGStateRegistry().RegisterExtGStateForOpacity(inAlpha);
+    if(result.second)
+    {
+        // if first usage, write the extgstate
+		ScheduleObjectEndWriteTask(mDocumentContext->GetExtGStateRegistry().CreateExtGStateForOpacityWritingTask(result.first, inAlpha));
+    }
+	gs(GetResourcesDictionary()->AddExtGStateMapping(result.first));
 }

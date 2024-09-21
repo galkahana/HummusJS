@@ -5,7 +5,7 @@
             'type': 'static_library',
             'dependencies': [
                 '<(module_root_dir)/src/deps/ZLib/binding.gyp:zlib'
-            ],
+            ],       
             'defines': [
                 '_CRT_SECURE_NO_DEPRECATE=1',
                 'AVOID_WIN32_FILEIO=1',
@@ -24,7 +24,15 @@
                 'TIF_PLATFORM_CONSOLE=1',
                 'FILLODER_LSB2MSB=1'
             ],
-             'include_dirs': [
+            'conditions': [
+                ['OS == "win"', {            
+                }, {
+                    "defines": [
+                        'HAVE_UNISTD_H=1'
+                    ]
+                }]
+            ],     
+            'include_dirs': [
               '<(module_root_dir)/src/deps/ZLib',
             ],
            'sources': [
@@ -44,6 +52,7 @@
                 'tif_fax3sm.c',
                 'tif_flush.c',
                 'tif_getimage.c',
+                'tif_hash_set.c',
                 'tif_jbig.c',
                 'tif_jpeg.c',
                 'tif_luv.c',
@@ -76,6 +85,7 @@
                 'tif_config.h',
                 'tif_dir.h',
                 'tif_fax3.h',
+                'tif_hash_set.h',
                 'tif_predict.h',
                 'uvcode.h'
             ]

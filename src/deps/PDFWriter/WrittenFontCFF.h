@@ -33,11 +33,11 @@ typedef std::list<UCharAndUChar> UCharAndUCharList;
 class WrittenFontCFF : public AbstractWrittenFont
 {
 public:
-	WrittenFontCFF(ObjectsContext* inObjectsContext,bool inIsCID, bool inFontWillBeEmbedded);
+	WrittenFontCFF(ObjectsContext* inObjectsContext, FreeTypeFaceWrapper* inFontInfo, bool inIsCID, bool inFontWillBeEmbedded);
 	virtual ~WrittenFontCFF(void);
 
 
-	virtual PDFHummus::EStatusCode WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo, bool inEmbedFont);
+	virtual PDFHummus::EStatusCode WriteFontDefinition(bool inEmbedFont);
 
 	virtual PDFHummus::EStatusCode WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectId);
 	virtual PDFHummus::EStatusCode ReadState(PDFParser* inStateReader,ObjectIDType inObjectID);

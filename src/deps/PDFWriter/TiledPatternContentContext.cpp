@@ -71,3 +71,8 @@ void TiledPatternContentContext::ScheduleImageWrite(const std::string& inImagePa
 													new TiledPatternImageWritingTask(inImagePath, inImageIndex, inObjectID,inParsingOptions));
 
 }
+
+void TiledPatternContentContext::ScheduleObjectEndWriteTask(IObjectEndWritingTask* inObjectEndWritingTask) 
+{
+    mDocumentContext->RegisterTiledPatternEndWritingTask(mObjectOfContext,inObjectEndWritingTask);    
+}

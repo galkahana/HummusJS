@@ -26,6 +26,12 @@
 /*
 	This small template function is only intended to be used for automatic casting of retrieved PDFObjects to their respective actual
 	objects...and not for anything else.
+
+	Important! on failure to convert PDFObjectCast automatically release the object. The point is that if the object was created
+	and now there's an attempt to conform to a type a result of null means you dont have to release automatically yourself.
+	This makes it perfect to store the result of a Query*** type of operation. But it is BAD to use as a result of a Get*** kind of operation
+	as on wrong type it will release an object it did not get reference for!. In that case better check the type independently and not use this class/smart pointer.
+	
 */ 
 
 template <class T>

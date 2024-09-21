@@ -1,40 +1,7 @@
-project(PDFWriter)
+set(PDFWRITER_LIB_VERSION ${PDFHummus_VERSION_MAJOR}.${PDFHummus_VERSION_MINOR}.0)
+set(PDFWRITER_SO_VERSION ${PDFHummus_VERSION_MAJOR})
 
-# Soname
-# MAJOR is incremented when symbols are removed or changed in an incompatible way
-# MINOR is incremented when new symbols are added
-set(PDFWRITER_MAJOR 0)
-set(PDFWRITER_MINOR 0)
-set(PDFWRITER_LIB_VERSION ${PDFWRITER_MAJOR}.${PDFWRITER_MINOR}.0)
-set(PDFWRITER_SO_VERSION ${PDFWRITER_MAJOR})
-
-
-include_directories (${LIBAESGM_INCLUDE_DIRS})
-include_directories (${ZLIB_INCLUDE_DIRS})
-
-if(NOT PDFHUMMUS_NO_DCT)
-	include_directories (${LIBJPEG_INCLUDE_DIRS})
-else(NOT PDFHUMMUS_NO_DCT)
-	add_definitions(-DPDFHUMMUS_NO_DCT=1)
-endif(NOT PDFHUMMUS_NO_DCT)
-
-if(NOT PDFHUMMUS_NO_TIFF)
-	include_directories (${LIBTIFF_INCLUDE_DIRS})
-else(NOT PDFHUMMUS_NO_TIFF)
-	add_definitions(-DPDFHUMMUS_NO_TIFF=1)
-endif(NOT PDFHUMMUS_NO_TIFF)
-
-include_directories (${FREETYPE_INCLUDE_DIRS})
-
-if(NOT PDFHUMMUS_NO_PNG)
-	include_directories (${LIBPNG_INCLUDE_DIRS})
-else(NOT PDFHUMMUS_NO_PNG)
-	add_definitions(-DPDFHUMMUS_NO_PNG=1)
-endif(NOT PDFHUMMUS_NO_PNG)
-
-
-
-add_library (PDFWriter_OBJLIB OBJECT
+add_library (PDFWriter
 #sources
 AbstractContentContext.cpp
 AbstractWrittenFont.cpp
@@ -61,6 +28,7 @@ DictionaryContext.cpp
 DocumentContext.cpp
 EncryptionHelper.cpp
 EncryptionOptions.cpp
+ExtGStateRegistry.cpp
 FontDescriptorWriter.cpp
 FreeTypeFaceWrapper.cpp
 FreeTypeOpenTypeWrapper.cpp
@@ -93,6 +61,8 @@ InputStringStream.cpp
 JPEGImageHandler.cpp
 JPEGImageInformation.cpp
 JPEGImageParser.cpp
+LayeredGlyphsDrawingContext.cpp
+LinearGradientShadingPatternWritingTask.cpp
 Log.cpp
 MD5Generator.cpp
 RC4.cpp
@@ -110,6 +80,7 @@ OutputStreamTraits.cpp
 OutputStringBufferStream.cpp
 PageContentContext.cpp
 PageTree.cpp
+PaintedGlyphsDrawingContext.cpp
 ParsedPrimitiveHelper.cpp
 PDFArray.cpp
 PDFBoolean.cpp
@@ -128,6 +99,7 @@ PDFImageXObject.cpp
 PDFIndirectObjectReference.cpp
 PDFInteger.cpp
 PDFLiteralString.cpp
+PDFMatrix.cpp
 PDFModifiedPage.cpp
 PDFName.cpp
 PDFNull.cpp
@@ -141,6 +113,7 @@ PDFPageMergingHelper.cpp
 PDFParser.cpp
 PDFParserTokenizer.cpp
 PDFParsingOptions.cpp
+PDFParsingPath.cpp
 PDFReal.cpp
 PDFRectangle.cpp
 PDFStream.cpp
@@ -153,12 +126,16 @@ PFMFileReader.cpp
 PNGImageHandler.cpp
 PrimitiveObjectsWriter.cpp
 PSBool.cpp
+RadialGradientShadingPatternWritingTask.cpp
 RefCountObject.cpp
 ResourcesDictionary.cpp
+ShadingWriter.cpp
+SimpleGlyphsDrawingContext.cpp
 SimpleStringTokenizer.cpp
 StandardEncoding.cpp
 StateReader.cpp
 StateWriter.cpp
+SweepGradientShadingPatternWritingTask.cpp
 TIFFImageHandler.cpp
 TiffUsageParameters.cpp
 Timer.cpp
@@ -221,6 +198,7 @@ EncryptionOptions.h
 EPDFVersion.h
 EStatusCode.h
 ETokenSeparator.h
+ExtGStateRegistry.h
 FontDescriptorWriter.h
 FreeTypeFaceWrapper.h
 FreeTypeOpenTypeWrapper.h
@@ -266,6 +244,7 @@ InputStreamSkipperStream.h
 InputStringBufferStream.h
 InputStringStream.h
 IOBasicTypes.h
+IObjectEndWritingTask.h
 IObjectsContextExtender.h
 IPageEndWritingTask.h
 IPDFParserExtender.h
@@ -277,6 +256,8 @@ IWrittenFont.h
 JPEGImageHandler.h
 JPEGImageInformation.h
 JPEGImageParser.h
+LayeredGlyphsDrawingContext.h
+LinearGradientShadingPatternWritingTask.h
 Log.h
 MapIterator.h
 MD5Generator.h
@@ -298,6 +279,7 @@ OutputStreamTraits.h
 OutputStringBufferStream.h
 PageContentContext.h
 PageTree.h
+PaintedGlyphsDrawingContext.h
 ParsedPrimitiveHelper.h
 PDFArray.h
 PDFBoolean.h
@@ -317,6 +299,7 @@ PDFImageXObject.h
 PDFIndirectObjectReference.h
 PDFInteger.h
 PDFLiteralString.h
+PDFMatrix.h
 PDFModifiedPage.h
 PDFName.h
 PDFNull.h
@@ -331,6 +314,7 @@ PDFPageMergingHelper.h
 PDFParser.h
 PDFParserTokenizer.h
 PDFParsingOptions.h
+PDFParsingPath.h
 PDFReal.h
 PDFRectangle.h
 PDFStream.h
@@ -344,16 +328,20 @@ PNGImageHandler.h
 PrimitiveObjectsWriter.h
 ProcsetResourcesConstants.h
 PSBool.h
+RadialGradientShadingPatternWritingTask.h
 RefCountObject.h
 RefCountPtr.h
 ResourcesDictionary.h
 SafeBufferMacrosDefs.h
+SimpleGlyphsDrawingContext.h
 SimpleStringTokenizer.h
 Singleton.h
 SingleValueContainerIterator.h
+ShadingWriter.h
 StandardEncoding.h
 StateReader.h
 StateWriter.h
+SweepGradientShadingPatternWritingTask.h
 TIFFImageHandler.h
 TiffUsageParameters.h
 Timer.h
@@ -380,18 +368,76 @@ XObjectContentContext.h
 )
 
 
-set(PDFWriter_OBJECTS $<TARGET_OBJECTS:PDFWriter_OBJLIB>)
-set(PDFWriter_OBJECTS $<TARGET_OBJECTS:PDFWriter_OBJLIB> PARENT_SCOPE)
-if(IS_XCODE)
-    add_library(PDFWriter ${PDFWriter_OBJECTS} XObjectContentContext.cpp)
-else(IS_XCODE)
-    add_library(PDFWriter ${PDFWriter_OBJECTS})
-endif(IS_XCODE)
+add_library(PDFHummus::PDFWriter ALIAS PDFWriter)
 
-target_link_libraries(PDFWriter ${LIBAESGM_LDFLAGS} ${LIBJPEG_LDFLAGS} ${ZLIB_LDFLAGS} ${LIBTIFF_LDFLAGS} ${FREETYPE_LDFLAGS} ${LIBPNG_LDFLAGS})
+# zlib
+if(USING_UNBUNDLED_ZLIB)
+    target_link_libraries(PDFWriter ZLIB::ZLIB)
+else(USING_UNBUNDLED_ZLIB)
+    target_link_libraries(PDFWriter PDFHummus::Zlib)
+endif(USING_UNBUNDLED_ZLIB)
+
+# freetype
+if(USING_UNBUNDLED_Freetype)
+    target_link_libraries(PDFWriter Freetype::Freetype)
+else(USING_UNBUNDLED_Freetype)
+    target_link_libraries(PDFWriter PDFHummus::FreeType)
+endif(USING_UNBUNDLED_Freetype)
+
+# libaesgm
+if(USING_UNBUNDLED_aesgm)
+    target_link_libraries(PDFWriter Aesgm::Aesgm)
+else(USING_UNBUNDLED_aesgm)
+    target_link_libraries(PDFWriter PDFHummus::LibAesgm)
+endif(USING_UNBUNDLED_aesgm)
+
+# libjpeg
+if(PDFHUMMUS_NO_DCT)
+    target_compile_definitions(PDFWriter PUBLIC PDFHUMMUS_NO_DCT=1)    
+else(PDFHUMMUS_NO_DCT)
+    if(USING_UNBUNDLED_JPEG)
+        target_link_libraries(PDFWriter JPEG::JPEG)
+    else(USING_UNBUNDLED_JPEG)
+        target_link_libraries(PDFWriter PDFHummus::LibJpeg)
+    endif(USING_UNBUNDLED_JPEG)
+endif(PDFHUMMUS_NO_DCT)
+
+# libtiff
+if(PDFHUMMUS_NO_TIFF)
+    target_compile_definitions(PDFWriter PUBLIC PDFHUMMUS_NO_TIFF=1)    
+else(PDFHUMMUS_NO_TIFF)
+    if(USING_UNBUNDLED_TIFF)
+        target_link_libraries(PDFWriter TIFF::TIFF)
+        target_compile_definitions(PDFWriter PUBLIC _INCLUDE_TIFF_HEADER)
+    else(USING_UNBUNDLED_TIFF)
+        target_link_libraries(PDFWriter PDFHummus::LibTiff)
+    endif(USING_UNBUNDLED_TIFF)
+endif(PDFHUMMUS_NO_TIFF)
+
+# libpng
+if(PDFHUMMUS_NO_PNG)
+    target_compile_definitions(PDFWriter PUBLIC PDFHUMMUS_NO_PNG=1)    
+else(PDFHUMMUS_NO_PNG)
+    if(USING_UNBUNDLED_PNG)
+        target_link_libraries(PDFWriter PNG::PNG)
+    else(USING_UNBUNDLED_PNG)
+        target_link_libraries(PDFWriter PDFHummus::LibPng)
+    endif(USING_UNBUNDLED_PNG)
+endif(PDFHUMMUS_NO_PNG)
+
+target_include_directories(PDFWriter
+    INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include/PDFWriter> 
+)  
+
 set_target_properties(PDFWriter PROPERTIES VERSION ${PDFWRITER_LIB_VERSION} SOVERSION ${PDFWRITER_SO_VERSION})
+if(WIN32 AND BUILD_SHARED_LIBS)
+    set_target_properties(PDFWriter PROPERTIES  WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
 
 install(TARGETS PDFWriter
+    EXPORT PDFHummusTargets
     RUNTIME DESTINATION bin COMPONENT libraries
     ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT libraries
     LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT libraries
@@ -399,25 +445,10 @@ install(TARGETS PDFWriter
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     DESTINATION include
+    COMPONENT libraries
     FILES_MATCHING
     PATTERN "*.h"
 )
-
-if(CREATE_PDFWRITER_ALL)
-    set(ALL_OBJECTS ${PDFWriter_OBJECTS} ${FreeType_OBJECTS} ${LibAesgm_OBJECTS} ${LibJpeg_OBJECTS} ${LibTiff_OBJECTS} ${Zlib_OBJECTS} ${LibPng_OBJECTS})
-
-    if(IS_XCODE)
-        add_library(PDFWriterAll ${ALL_OBJECTS} XObjectContentContext.cpp)
-    else(IS_XCODE)
-        add_library(PDFWriterAll ${ALL_OBJECTS})
-    endif(IS_XCODE)
-    
-    install(TARGETS PDFWriterAll
-        RUNTIME DESTINATION bin COMPONENT libraries
-        ARCHIVE DESTINATION lib${LIB_SUFFIX} COMPONENT libraries
-        LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT libraries
-    )
-endif(CREATE_PDFWRITER_ALL)
 
 # groups definitions
 source_group("Document Context Level" FILES
@@ -428,6 +459,8 @@ CatalogInformation.h
 DocumentContext.cpp
 DocumentContext.h
 DocumentContextExtenderAdapter.h
+ExtGStateRegistry.cpp
+ExtGStateRegistry.h
 GlyphUnicodeMapping.h
 GraphicState.cpp
 GraphicState.h
@@ -435,14 +468,21 @@ GraphicStateStack.cpp
 GraphicStateStack.h
 IDocumentContextExtender.h
 IFormEndWritingTask.h
+IObjectEndWritingTask.h
 ITiledPatternEndWritingTask.h
 InfoDictionary.cpp
 InfoDictionary.h
 IResourceWritingTask.h
+LayeredGlyphsDrawingContext.cpp
+LayeredGlyphsDrawingContext.h
+LinearGradientShadingPatternWritingTask.cpp
+LinearGradientShadingPatternWritingTask.h
 PageContentContext.cpp
 PageContentContext.h
 PageTree.cpp
 PageTree.h
+PaintedGlyphsDrawingContext.cpp
+PaintedGlyphsDrawingContext.h
 PDFFormXObject.cpp
 PDFFormXObject.h
 PDFTiledPattern.cpp
@@ -456,8 +496,14 @@ PDFModifiedPage.h
 PDFPage.cpp
 PDFPage.h
 ProcsetResourcesConstants.h
+RadialGradientShadingPatternWritingTask.cpp
+RadialGradientShadingPatternWritingTask.h
 ResourcesDictionary.cpp
 ResourcesDictionary.h
+SimpleGlyphsDrawingContext.cpp
+SimpleGlyphsDrawingContext.h
+ShadingWriter.cpp
+ShadingWriter.h
 TrailerInformation.cpp
 TrailerInformation.h
 XObjectContentContext.cpp
@@ -573,6 +619,7 @@ InputStringBufferStream.cpp
 InputStringBufferStream.h
 InputStringStream.cpp
 InputStringStream.h
+InterpretedGradientStop.h
 IOBasicTypes.h
 IReadPositionProvider.h
 OutputAESEncodeStream.cpp
@@ -633,6 +680,8 @@ ObjectsContext.h
 ObjectsContextExtenderAdapter.h
 PDFDate.cpp
 PDFDate.h
+PDFMatrix.cpp
+PDFMatrix.h
 PDFRectangle.cpp
 PDFRectangle.h
 PDFStream.cpp
@@ -673,6 +722,8 @@ PDFNull.h
 PDFObject.cpp
 PDFObject.h
 PDFObjectCast.h
+PDFParsingPath.cpp
+PDFParsingPath.h
 PDFReal.cpp
 PDFReal.h
 PDFStreamInput.cpp

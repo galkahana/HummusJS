@@ -46,13 +46,16 @@ public:
 	DescendentFontWriter(void);
 	~DescendentFontWriter(void);
 
-	// the IDescendentFontWriter input pointer will implement the font specific differences
-	virtual PDFHummus::EStatusCode WriteFont(	ObjectIDType inDecendentObjectID, 
+	PDFHummus::EStatusCode WriteFont(	ObjectIDType inDecendentObjectID, 
 									const std::string& inFontName,
 									FreeTypeFaceWrapper& inFontInfo,
 									const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
 									ObjectsContext* inObjectsContext,
-									IDescendentFontWriter* inDescendentFontWriterHelper);
+									IDescendentFontWriter* inDescendentFontWriterHelper,
+									// the next one is for writing CID set. there's an assumption
+									// that all CIDs up to the max glyph are included in the font program,
+									// so that CIDset will include all up to (and including) CID glyph
+									unsigned int inMaxCIDGlyph);
 
 	// IFontDescriptorHelper implementation [would probably evolve at some point to IDescriptorWriterHelper...
 	virtual void WriteCharSet(	DictionaryContext* inDescriptorContext,
@@ -69,9 +72,9 @@ private:
 	IDescendentFontWriter* mWriterHelper;
 
 
-	void WriteWidths(	const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
+	void WriteWidths(const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs,
 						DictionaryContext* inFontContext);
 	void WriteCIDSystemInfo(ObjectIDType inCIDSystemInfoObjectID);
 	void WriteWidthsItem(bool inAllWidthsSame,const FTPosList& inWidths,unsigned short inFirstCID, unsigned short inLastCID);
-	void WriteCIDSet(const UIntAndGlyphEncodingInfoVector& inEncodedGlyphs);
+	void WriteCIDSet(unsigned int cidSetMaxGlyph);
 };

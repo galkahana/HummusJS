@@ -283,7 +283,7 @@ EStatusCode JPEGImageParser::SkipStream(unsigned long inSkip, unsigned long& ref
 EStatusCode JPEGImageParser::ReadPhotoshopData(JPEGImageInformation& outImageInformation, bool outPhotoshopDataOK)
 {
 	// code below uses a two level status where the primary is in charge of read error
-	// and the seconary is in charge of realizing whether the data is correct. 
+	// and the secondary is in charge of realizing whether the data is correct. 
 	// error in the former should cause complete break. error in the latter is fine on the read level
 	// and simply means the data is logically corrupt and should simply be skipped
 

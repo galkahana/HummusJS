@@ -24,6 +24,7 @@
 #include "TrueTypeEmbeddedFontWriter.h"
 #include "ObjectsContext.h"
 #include "IndirectObjectsReferenceRegistry.h"
+#include "Trace.h"
 
 using namespace PDFHummus;
 
@@ -55,18 +56,35 @@ EStatusCode TrueTypeDescendentFontWriter::WriteFont(	ObjectIDType inDecendentObj
 	// reset embedded font object ID (and flag...to whether it was actually embedded or not, which may 
 	// happen due to font embedding restrictions)
 	mEmbeddedFontFileObjectID = 0;
+	if(inEncodedGlyphs.back().first == 0xFFFF) {
+		TRACE_LOG("TrueTypeDescendentFontWriter::WriteFont, glyphs list includes a glyph id of 0xFFFF which is out of bounds for true type");
+		return eFailure;	
+	}
+	unsigned int subsetFontSize = inEncodedGlyphs.back().first + 1;
 
 	if (inEmbedFont)
 	{
 		TrueTypeEmbeddedFontWriter embeddedFontWriter;
 		EStatusCode status = embeddedFontWriter.WriteEmbeddedFont(inFontInfo, GetOrderedKeys(inEncodedGlyphs), inObjectsContext, mEmbeddedFontFileObjectID);
 
-		if (PDFHummus::eFailure == status)
+		if (eFailure == status)
 			return status;
+
+		// subset font size may have changed due to the inclusion of dependent glyphs
+		subsetFontSize = embeddedFontWriter.GetSubsetFontGlyphsCount();
 	}
 
 	DescendentFontWriter descendentFontWriter;
-	return descendentFontWriter.WriteFont(inDecendentObjectID,inFontName,inFontInfo,inEncodedGlyphs,inObjectsContext,this);
+
+	return descendentFontWriter.WriteFont(
+		inDecendentObjectID,
+		inFontName,
+		inFontInfo,
+		inEncodedGlyphs,
+		inObjectsContext,
+		this,
+		subsetFontSize // the font program includes the glyphs 0...lastGlyphCode + 1 filling the intermediate missing glyphs with empties. so cidset should be the same. 0..lastGlyphCode + 1.
+	);	
 }
 
 static const std::string scCIDFontType2 = "CIDFontType2";
