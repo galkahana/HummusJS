@@ -1,36 +1,36 @@
-/***************************************************************************/
-/*                                                                         */
-/*  t42parse.c                                                             */
-/*                                                                         */
-/*    Type 42 font parser (body).                                          */
-/*                                                                         */
-/*  Copyright 2002-2012 by                                                 */
-/*  Roberto Alameda.                                                       */
-/*                                                                         */
-/*  This file is part of the FreeType project, and may only be used,       */
-/*  modified, and distributed under the terms of the FreeType project      */
-/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
-/*  this file you indicate that you have read the license and              */
-/*  understand and accept it fully.                                        */
-/*                                                                         */
-/***************************************************************************/
+/****************************************************************************
+ *
+ * t42parse.c
+ *
+ *   Type 42 font parser (body).
+ *
+ * Copyright (C) 2002-2023 by
+ * Roberto Alameda.
+ *
+ * This file is part of the FreeType project, and may only be used,
+ * modified, and distributed under the terms of the FreeType project
+ * license, LICENSE.TXT.  By continuing to use, modify, or distribute
+ * this file you indicate that you have read the license and
+ * understand and accept it fully.
+ *
+ */
 
 
 #include "t42parse.h"
 #include "t42error.h"
-#include FT_INTERNAL_DEBUG_H
-#include FT_INTERNAL_STREAM_H
-#include FT_INTERNAL_POSTSCRIPT_AUX_H
+#include <freetype/internal/ftdebug.h>
+#include <freetype/internal/ftstream.h>
+#include <freetype/internal/psaux.h>
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* The macro FT_COMPONENT is used in trace mode.  It is an implicit      */
-  /* parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log  */
-  /* messages during execution.                                            */
-  /*                                                                       */
+  /**************************************************************************
+   *
+   * The macro FT_COMPONENT is used in trace mode.  It is an implicit
+   * parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log
+   * messages during execution.
+   */
 #undef  FT_COMPONENT
-#define FT_COMPONENT  trace_t42
+#define FT_COMPONENT  t42
 
 
   static void
@@ -92,7 +92,7 @@
 #undef  T1CODE
 #define T1CODE        T1_FIELD_LOCATION_BBOX
 
-    T1_FIELD_BBOX("FontBBox", xMin, 0 )
+    T1_FIELD_BBOX( "FontBBox", xMin, 0 )
 
     T1_FIELD_CALLBACK( "FontMatrix",  t42_parse_font_matrix, 0 )
     T1_FIELD_CALLBACK( "Encoding",    t42_parse_encoding,    0 )
@@ -104,12 +104,6 @@
 
 
 #define T1_Add_Table( p, i, o, l )  (p)->funcs.add( (p), i, o, l )
-#define T1_Done_Table( p )          \
-          do                        \
-          {                         \
-            if ( (p)->funcs.done )  \
-              (p)->funcs.done( p ); \
-          } while ( 0 )
 #define T1_Release_Table( p )          \
           do                           \
           {                            \
@@ -144,30 +138,30 @@
                    FT_Memory      memory,
                    PSAux_Service  psaux )
   {
-    FT_Error  error = T42_Err_Ok;
+    FT_Error  error = FT_Err_Ok;
     FT_Long   size;
 
 
-    psaux->ps_parser_funcs->init( &parser->root, 0, 0, memory );
+    psaux->ps_parser_funcs->init( &parser->root, NULL, NULL, memory );
 
     parser->stream    = stream;
     parser->base_len  = 0;
-    parser->base_dict = 0;
+    parser->base_dict = NULL;
     parser->in_memory = 0;
 
-    /*******************************************************************/
-    /*                                                                 */
-    /* Here a short summary of what is going on:                       */
-    /*                                                                 */
-    /*   When creating a new Type 42 parser, we try to locate and load */
-    /*   the base dictionary, loading the whole font into memory.      */
-    /*                                                                 */
-    /*   When `loading' the base dictionary, we only set up pointers   */
-    /*   in the case of a memory-based stream.  Otherwise, we allocate */
-    /*   and load the base dictionary in it.                           */
-    /*                                                                 */
-    /*   parser->in_memory is set if we have a memory stream.          */
-    /*                                                                 */
+    /********************************************************************
+     *
+     * Here a short summary of what is going on:
+     *
+     *   When creating a new Type 42 parser, we try to locate and load
+     *   the base dictionary, loading the whole font into memory.
+     *
+     *   When `loading' the base dictionary, we only set up pointers
+     *   in the case of a memory-based stream.  Otherwise, we allocate
+     *   and load the base dictionary in it.
+     *
+     *   parser->in_memory is set if we have a memory stream.
+     */
 
     if ( FT_STREAM_SEEK( 0L ) ||
          FT_FRAME_ENTER( 17 ) )
@@ -176,7 +170,7 @@
     if ( ft_memcmp( stream->cursor, "%!PS-TrueTypeFont", 17 ) != 0 )
     {
       FT_TRACE2(( "  not a Type42 font\n" ));
-      error = T42_Err_Unknown_File_Format;
+      error = FT_THROW( Unknown_File_Format );
     }
 
     FT_FRAME_EXIT();
@@ -184,7 +178,7 @@
     if ( error || FT_STREAM_SEEK( 0 ) )
       goto Exit;
 
-    size = stream->size;
+    size = (FT_Long)stream->size;
 
     /* now, try to load `size' bytes of the `base' dictionary we */
     /* found previously                                          */
@@ -203,7 +197,7 @@
     else
     {
       /* read segment in memory */
-      if ( FT_ALLOC( parser->base_dict, size )       ||
+      if ( FT_QALLOC( parser->base_dict, size )      ||
            FT_STREAM_READ( parser->base_dict, size ) )
         goto Exit;
 
@@ -232,7 +226,8 @@
     if ( !parser->in_memory )
       FT_FREE( parser->base_dict );
 
-    parser->root.funcs.done( &parser->root );
+    if ( parser->root.funcs.done )
+      parser->root.funcs.done( &parser->root );
   }
 
 
@@ -252,22 +247,29 @@
     T42_Parser  parser = &loader->parser;
     FT_Matrix*  matrix = &face->type1.font_matrix;
     FT_Vector*  offset = &face->type1.font_offset;
-    FT_Face     root   = (FT_Face)&face->root;
     FT_Fixed    temp[6];
     FT_Fixed    temp_scale;
+    FT_Int      result;
 
 
-    (void)T1_ToFixedArray( parser, 6, temp, 3 );
+    result = T1_ToFixedArray( parser, 6, temp, 0 );
+
+    if ( result < 6 )
+    {
+      parser->root.error = FT_THROW( Invalid_File_Format );
+      return;
+    }
 
     temp_scale = FT_ABS( temp[3] );
 
-    /* Set Units per EM based on FontMatrix values.  We set the value to */
-    /* 1000 / temp_scale, because temp_scale was already multiplied by   */
-    /* 1000 (in t1_tofixed, from psobjs.c).                              */
+    if ( temp_scale == 0 )
+    {
+      FT_ERROR(( "t42_parse_font_matrix: invalid font matrix\n" ));
+      parser->root.error = FT_THROW( Invalid_File_Format );
+      return;
+    }
 
-    root->units_per_EM = (FT_UShort)FT_DivFix( 1000, temp_scale );
-
-    /* we need to scale the values by 1.0/temp_scale */
+    /* atypical case */
     if ( temp_scale != 0x10000L )
     {
       temp[0] = FT_DivFix( temp[0], temp_scale );
@@ -275,13 +277,20 @@
       temp[2] = FT_DivFix( temp[2], temp_scale );
       temp[4] = FT_DivFix( temp[4], temp_scale );
       temp[5] = FT_DivFix( temp[5], temp_scale );
-      temp[3] = 0x10000L;
+      temp[3] = temp[3] < 0 ? -0x10000L : 0x10000L;
     }
 
     matrix->xx = temp[0];
     matrix->yx = temp[1];
     matrix->xy = temp[2];
     matrix->yy = temp[3];
+
+    if ( !FT_Matrix_Check( matrix ) )
+    {
+      FT_ERROR(( "t42_parse_font_matrix: invalid font matrix\n" ));
+      parser->root.error = FT_THROW( Invalid_File_Format );
+      return;
+    }
 
     /* note that the offsets must be expressed in integer font units */
     offset->x = temp[4] >> 16;
@@ -305,7 +314,7 @@
     if ( cur >= limit )
     {
       FT_ERROR(( "t42_parse_encoding: out of bounds\n" ));
-      parser->root.error = T42_Err_Invalid_File_Format;
+      parser->root.error = FT_THROW( Invalid_File_Format );
       return;
     }
 
@@ -314,7 +323,7 @@
     if ( ft_isdigit( *cur ) || *cur == '[' )
     {
       T1_Encoding  encode          = &face->type1.encoding;
-      FT_UInt      count, n;
+      FT_Int       count, n;
       PS_Table     char_table      = &loader->encoding_table;
       FT_Memory    memory          = parser->root.memory;
       FT_Error     error;
@@ -329,16 +338,33 @@
         parser->root.cursor++;
       }
       else
-        count = (FT_UInt)T1_ToInt( parser );
+        count = (FT_Int)T1_ToInt( parser );
+
+      /* only composite fonts (which we don't support) */
+      /* can have larger values                        */
+      if ( count > 256 )
+      {
+        FT_ERROR(( "t42_parse_encoding: invalid encoding array size\n" ));
+        parser->root.error = FT_THROW( Invalid_File_Format );
+        return;
+      }
 
       T1_Skip_Spaces( parser );
       if ( parser->root.cursor >= limit )
         return;
 
+      /* PostScript happily allows overwriting of encoding arrays */
+      if ( encode->char_index )
+      {
+        FT_FREE( encode->char_index );
+        FT_FREE( encode->char_name );
+        T1_Release_Table( char_table );
+      }
+
       /* we use a T1_Table to store our charnames */
       loader->num_chars = encode->num_chars = count;
-      if ( FT_NEW_ARRAY( encode->char_index, count )     ||
-           FT_NEW_ARRAY( encode->char_name,  count )     ||
+      if ( FT_QNEW_ARRAY( encode->char_index, count )    ||
+           FT_QNEW_ARRAY( encode->char_name,  count )    ||
            FT_SET_ERROR( psaux->ps_table_funcs->init(
                            char_table, count, memory ) ) )
       {
@@ -348,12 +374,7 @@
 
       /* We need to `zero' out encoding_table.elements */
       for ( n = 0; n < count; n++ )
-      {
-        char*  notdef = (char *)".notdef";
-
-
-        T1_Add_Table( char_table, n, notdef, 8 );
-      }
+        (void)T1_Add_Table( char_table, n, ".notdef", 8 );
 
       /* Now we need to read records of the form                */
       /*                                                        */
@@ -413,23 +434,32 @@
           {
             charcode = (FT_Int)T1_ToInt( parser );
             T1_Skip_Spaces( parser );
+
+            /* protect against invalid charcode */
+            if ( cur == parser->root.cursor )
+            {
+              parser->root.error = FT_THROW( Unknown_File_Format );
+              return;
+            }
           }
 
           cur = parser->root.cursor;
 
-          if ( *cur == '/' && cur + 2 < limit && n < count )
+          if ( cur + 2 < limit && *cur == '/' && n < count )
           {
-            FT_PtrDist  len;
+            FT_UInt  len;
 
 
             cur++;
 
             parser->root.cursor = cur;
             T1_Skip_PS_Token( parser );
+            if ( parser->root.cursor >= limit )
+              return;
             if ( parser->root.error )
               return;
 
-            len = parser->root.cursor - cur;
+            len = (FT_UInt)( parser->root.cursor - cur );
 
             parser->root.error = T1_Add_Table( char_table, charcode,
                                                cur, len + 1 );
@@ -438,6 +468,19 @@
             char_table->elements[charcode][len] = '\0';
 
             n++;
+          }
+          else if ( only_immediates )
+          {
+            /* Since the current position is not updated for           */
+            /* immediates-only mode we would get an infinite loop if   */
+            /* we don't do anything here.                              */
+            /*                                                         */
+            /* This encoding array is not valid according to the       */
+            /* type42 specification (it might be an encoding for a CID */
+            /* type42 font, however), so we conclude that this font is */
+            /* NOT a type42 font.                                      */
+            parser->root.error = FT_THROW( Unknown_File_Format );
+            return;
           }
         }
         else
@@ -450,8 +493,8 @@
         T1_Skip_Spaces( parser );
       }
 
-      face->type1.encoding_type  = T1_ENCODING_TYPE_ARRAY;
-      parser->root.cursor        = cur;
+      face->type1.encoding_type = T1_ENCODING_TYPE_ARRAY;
+      parser->root.cursor       = cur;
     }
 
     /* Otherwise, we should have either `StandardEncoding', */
@@ -471,10 +514,7 @@
         face->type1.encoding_type = T1_ENCODING_TYPE_ISOLATIN1;
 
       else
-      {
-        FT_ERROR(( "t42_parse_encoding: invalid token\n" ));
-        parser->root.error = T42_Err_Invalid_File_Format;
-      }
+        parser->root.error = FT_ERR( Ignore );
     }
   }
 
@@ -498,14 +538,18 @@
     FT_Byte*    limit  = parser->root.limit;
     FT_Error    error;
     FT_Int      num_tables = 0;
-    FT_ULong    count, ttf_size = 0;
+    FT_Long     ttf_count;
+    FT_Long     ttf_reserved;
 
-    FT_Long     n, string_size, old_string_size, real_size;
+    FT_ULong    n, string_size, old_string_size, real_size;
     FT_Byte*    string_buf = NULL;
     FT_Bool     allocated  = 0;
 
     T42_Load_Status  status;
 
+    /** There should only be one sfnts array, but free any previous. */
+    FT_FREE( face->ttf_data );
+    face->ttf_size = 0;
 
     /* The format is                                */
     /*                                              */
@@ -526,7 +570,7 @@
     if ( parser->root.cursor >= limit || *parser->root.cursor++ != '[' )
     {
       FT_ERROR(( "t42_parse_sfnts: can't find begin of sfnts vector\n" ));
-      error = T42_Err_Invalid_File_Format;
+      error = FT_THROW( Invalid_File_Format );
       goto Fail;
     }
 
@@ -534,27 +578,51 @@
     status          = BEFORE_START;
     string_size     = 0;
     old_string_size = 0;
-    count           = 0;
+    ttf_count       = 0;
+    ttf_reserved    = 12;
+    if ( FT_QALLOC( face->ttf_data, ttf_reserved ) )
+      goto Fail;
+
+    FT_TRACE2(( "\n" ));
+    FT_TRACE2(( "t42_parse_sfnts:\n" ));
 
     while ( parser->root.cursor < limit )
     {
+      FT_ULong  size;
+
+
       cur = parser->root.cursor;
 
       if ( *cur == ']' )
       {
         parser->root.cursor++;
+        face->ttf_size = ttf_count;
         goto Exit;
       }
 
       else if ( *cur == '<' )
       {
+        if ( string_buf && !allocated )
+        {
+          FT_ERROR(( "t42_parse_sfnts: "
+                     "can't handle mixed binary and hex strings\n" ));
+          error = FT_THROW( Invalid_File_Format );
+          goto Fail;
+        }
+
         T1_Skip_PS_Token( parser );
         if ( parser->root.error )
           goto Exit;
 
         /* don't include delimiters */
-        string_size = (FT_Long)( ( parser->root.cursor - cur - 2 + 1 ) / 2 );
-        if ( FT_REALLOC( string_buf, old_string_size, string_size ) )
+        string_size = (FT_ULong)( ( parser->root.cursor - cur - 2 + 1 ) / 2 );
+        if ( !string_size )
+        {
+          FT_ERROR(( "t42_parse_sfnts: invalid data in sfnts array\n" ));
+          error = FT_THROW( Invalid_File_Format );
+          goto Fail;
+        }
+        if ( FT_QREALLOC( string_buf, old_string_size, string_size ) )
           goto Fail;
 
         allocated = 1;
@@ -562,26 +630,31 @@
         parser->root.cursor = cur;
         (void)T1_ToBytes( parser, string_buf, string_size, &real_size, 1 );
         old_string_size = string_size;
-        string_size = real_size;
+        string_size     = real_size;
       }
 
       else if ( ft_isdigit( *cur ) )
       {
+        FT_Long  tmp;
+
+
         if ( allocated )
         {
           FT_ERROR(( "t42_parse_sfnts: "
                      "can't handle mixed binary and hex strings\n" ));
-          error = T42_Err_Invalid_File_Format;
+          error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
 
-        string_size = T1_ToInt( parser );
-        if ( string_size < 0 )
+        tmp = T1_ToInt( parser );
+        if ( tmp < 0 )
         {
           FT_ERROR(( "t42_parse_sfnts: invalid string size\n" ));
-          error = T42_Err_Invalid_File_Format;
+          error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
+        else
+          string_size = (FT_ULong)tmp;
 
         T1_Skip_PS_Token( parser );             /* `RD' */
         if ( parser->root.error )
@@ -589,10 +662,10 @@
 
         string_buf = parser->root.cursor + 1;   /* one space after `RD' */
 
-        if ( limit - parser->root.cursor < string_size )
+        if ( (FT_ULong)( limit - parser->root.cursor ) <= string_size )
         {
-          FT_ERROR(( "t42_parse_sfnts: too many binary data\n" ));
-          error = T42_Err_Invalid_File_Format;
+          FT_ERROR(( "t42_parse_sfnts: too much binary data\n" ));
+          error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
         else
@@ -602,7 +675,7 @@
       if ( !string_buf )
       {
         FT_ERROR(( "t42_parse_sfnts: invalid data in sfnts array\n" ));
-        error = T42_Err_Invalid_File_Format;
+        error = FT_THROW( Invalid_File_Format );
         goto Fail;
       }
 
@@ -614,9 +687,17 @@
       if ( !string_size )
       {
         FT_ERROR(( "t42_parse_sfnts: invalid string\n" ));
-        error = T42_Err_Invalid_File_Format;
+        error = FT_THROW( Invalid_File_Format );
         goto Fail;
       }
+
+      FT_TRACE2(( "  PS string size %5lu bytes, offset 0x%08lx (%lu)\n",
+                  string_size, ttf_count, ttf_count ));
+
+      /* The whole TTF is now loaded into `string_buf'.  We are */
+      /* checking its contents while copying it to `ttf_data'.  */
+
+      size = (FT_ULong)( limit - parser->root.cursor );
 
       for ( n = 0; n < string_size; n++ )
       {
@@ -624,34 +705,53 @@
         {
         case BEFORE_START:
           /* load offset table, 12 bytes */
-          if ( count < 12 )
+          if ( ttf_count < 12 )
           {
-            face->ttf_data[count++] = string_buf[n];
+            face->ttf_data[ttf_count++] = string_buf[n];
             continue;
           }
           else
           {
-            num_tables = 16 * face->ttf_data[4] + face->ttf_data[5];
-            status     = BEFORE_TABLE_DIR;
-            ttf_size   = 12 + 16 * num_tables;
+            FT_Long ttf_reserved_prev = ttf_reserved;
 
-            if ( FT_REALLOC( face->ttf_data, 12, ttf_size ) )
+
+            num_tables   = 16 * face->ttf_data[4] + face->ttf_data[5];
+            status       = BEFORE_TABLE_DIR;
+            ttf_reserved = 12 + 16 * num_tables;
+
+            FT_TRACE2(( "  SFNT directory contains %d tables\n",
+                        num_tables ));
+
+            if ( (FT_Long)size < ttf_reserved )
+            {
+              FT_ERROR(( "t42_parse_sfnts: invalid data in sfnts array\n" ));
+              error = FT_THROW( Invalid_File_Format );
+              goto Fail;
+            }
+
+            if ( FT_QREALLOC( face->ttf_data, ttf_reserved_prev,
+                              ttf_reserved ) )
               goto Fail;
           }
-          /* fall through */
+          FALL_THROUGH;
 
         case BEFORE_TABLE_DIR:
           /* the offset table is read; read the table directory */
-          if ( count < ttf_size )
+          if ( ttf_count < ttf_reserved )
           {
-            face->ttf_data[count++] = string_buf[n];
+            face->ttf_data[ttf_count++] = string_buf[n];
             continue;
           }
           else
           {
             int       i;
             FT_ULong  len;
+            FT_Long ttf_reserved_prev = ttf_reserved;
 
+
+            FT_TRACE2(( "\n" ));
+            FT_TRACE2(( "  table    length\n" ));
+            FT_TRACE2(( "  ------------------------------\n" ));
 
             for ( i = 0; i < num_tables; i++ )
             {
@@ -659,30 +759,43 @@
 
 
               len = FT_PEEK_ULONG( p );
+              FT_TRACE2(( "   %4i  0x%08lx (%lu)\n", i, len, len ));
+
+              if ( len > size                               ||
+                   ttf_reserved > (FT_Long)( size - len ) )
+              {
+                FT_ERROR(( "t42_parse_sfnts:"
+                           " invalid data in sfnts array\n" ));
+                error = FT_THROW( Invalid_File_Format );
+                goto Fail;
+              }
 
               /* Pad to a 4-byte boundary length */
-              ttf_size += ( len + 3 ) & ~3;
+              ttf_reserved += (FT_Long)( ( len + 3 ) & ~3U );
             }
+            ttf_reserved += 1;
 
-            status         = OTHER_TABLES;
-            face->ttf_size = ttf_size;
+            status = OTHER_TABLES;
 
-            /* there are no more than 256 tables, so no size check here */
-            if ( FT_REALLOC( face->ttf_data, 12 + 16 * num_tables,
-                             ttf_size + 1 ) )
+            FT_TRACE2(( "\n" ));
+            FT_TRACE2(( "  allocating %ld bytes\n", ttf_reserved ));
+            FT_TRACE2(( "\n" ));
+
+            if ( FT_QREALLOC( face->ttf_data, ttf_reserved_prev,
+                              ttf_reserved ) )
               goto Fail;
           }
-          /* fall through */
+          FALL_THROUGH;
 
         case OTHER_TABLES:
           /* all other tables are just copied */
-          if ( count >= ttf_size )
+          if ( ttf_count >= ttf_reserved )
           {
-            FT_ERROR(( "t42_parse_sfnts: too many binary data\n" ));
-            error = T42_Err_Invalid_File_Format;
+            FT_ERROR(( "t42_parse_sfnts: too much binary data\n" ));
+            error = FT_THROW( Invalid_File_Format );
             goto Fail;
           }
-          face->ttf_data[count++] = string_buf[n];
+          face->ttf_data[ttf_count++] = string_buf[n];
         }
       }
 
@@ -690,12 +803,17 @@
     }
 
     /* if control reaches this point, the format was not valid */
-    error = T42_Err_Invalid_File_Format;
+    error = FT_THROW( Invalid_File_Format );
 
   Fail:
     parser->root.error = error;
 
   Exit:
+    if ( parser->root.error )
+    {
+      FT_FREE( face->ttf_data );
+      face->ttf_size = 0;
+    }
     if ( allocated )
       FT_FREE( string_buf );
   }
@@ -716,8 +834,8 @@
 
     FT_Byte*       cur;
     FT_Byte*       limit        = parser->root.limit;
-    FT_UInt        n;
-    FT_UInt        notdef_index = 0;
+    FT_Int         n;
+    FT_Int         notdef_index = 0;
     FT_Byte        notdef_found = 0;
 
 
@@ -726,21 +844,38 @@
     if ( parser->root.cursor >= limit )
     {
       FT_ERROR(( "t42_parse_charstrings: out of bounds\n" ));
-      error = T42_Err_Invalid_File_Format;
+      error = FT_THROW( Invalid_File_Format );
       goto Fail;
     }
 
     if ( ft_isdigit( *parser->root.cursor ) )
     {
-      loader->num_glyphs = (FT_UInt)T1_ToInt( parser );
+      loader->num_glyphs = T1_ToInt( parser );
       if ( parser->root.error )
         return;
+      if ( loader->num_glyphs < 0 )
+      {
+        FT_ERROR(( "t42_parse_encoding: invalid number of glyphs\n" ));
+        error = FT_THROW( Invalid_File_Format );
+        goto Fail;
+      }
+
+      /* we certainly need more than 4 bytes per glyph */
+      if ( loader->num_glyphs > ( limit - parser->root.cursor ) >> 2 )
+      {
+        FT_TRACE0(( "t42_parse_charstrings: adjusting number of glyphs"
+                    " (from %d to %ld)\n",
+                    loader->num_glyphs,
+                    ( limit - parser->root.cursor ) >> 2 ));
+        loader->num_glyphs = ( limit - parser->root.cursor ) >> 2;
+      }
+
     }
     else if ( *parser->root.cursor == '<' )
     {
       /* We have `<< ... >>'.  Count the number of `/' in the dictionary */
       /* to get its size.                                                */
-      FT_UInt  count = 0;
+      FT_Int  count = 0;
 
 
       T1_Skip_PS_Token( parser );
@@ -768,18 +903,27 @@
     else
     {
       FT_ERROR(( "t42_parse_charstrings: invalid token\n" ));
-      error = T42_Err_Invalid_File_Format;
+      error = FT_THROW( Invalid_File_Format );
       goto Fail;
     }
 
     if ( parser->root.cursor >= limit )
     {
       FT_ERROR(( "t42_parse_charstrings: out of bounds\n" ));
-      error = T42_Err_Invalid_File_Format;
+      error = FT_THROW( Invalid_File_Format );
       goto Fail;
     }
 
     /* initialize tables */
+
+    /* contrary to Type1, we disallow multiple CharStrings arrays */
+    if ( swap_table->init )
+    {
+      FT_ERROR(( "t42_parse_charstrings:"
+                 " only one CharStrings array allowed\n" ));
+      error = FT_THROW( Invalid_File_Format );
+      goto Fail;
+    }
 
     error = psaux->ps_table_funcs->init( code_table,
                                          loader->num_glyphs,
@@ -804,8 +948,13 @@
 
     for (;;)
     {
-      /* The format is simple:                   */
-      /*   `/glyphname' + index [+ def]          */
+      /* We support two formats.                     */
+      /*                                             */
+      /*   `/glyphname' + index [+ `def']            */
+      /*   `(glyphname)' [+ `cvn'] + index [+ `def'] */
+      /*                                             */
+      /* The latter format gets created by the       */
+      /* LilyPond typesetting program.               */
 
       T1_Skip_Spaces( parser );
 
@@ -824,23 +973,32 @@
         break;
 
       T1_Skip_PS_Token( parser );
+      if ( parser->root.cursor >= limit )
+      {
+        FT_ERROR(( "t42_parse_charstrings: out of bounds\n" ));
+        error = FT_THROW( Invalid_File_Format );
+        goto Fail;
+      }
       if ( parser->root.error )
         return;
 
-      if ( *cur == '/' )
+      if ( *cur == '/' || *cur == '(' )
       {
-        FT_PtrDist  len;
+        FT_UInt  len;
+        FT_Bool  have_literal = FT_BOOL( *cur == '(' );
 
 
-        if ( cur + 1 >= limit )
+        if ( cur + ( have_literal ? 3 : 2 ) >= limit )
         {
           FT_ERROR(( "t42_parse_charstrings: out of bounds\n" ));
-          error = T42_Err_Invalid_File_Format;
+          error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
 
         cur++;                              /* skip `/' */
-        len = parser->root.cursor - cur;
+        len = (FT_UInt)( parser->root.cursor - cur );
+        if ( have_literal )
+          len--;
 
         error = T1_Add_Table( name_table, n, cur, len + 1 );
         if ( error )
@@ -850,9 +1008,9 @@
         name_table->elements[n][len] = '\0';
 
         /* record index of /.notdef */
-        if ( *cur == '.'                                              &&
+        if ( *cur == '.'                                                &&
              ft_strcmp( ".notdef",
-                        (const char*)(name_table->elements[n]) ) == 0 )
+                        (const char*)( name_table->elements[n] ) ) == 0 )
         {
           notdef_index = n;
           notdef_found = 1;
@@ -860,17 +1018,20 @@
 
         T1_Skip_Spaces( parser );
 
+        if ( have_literal )
+          T1_Skip_PS_Token( parser );
+
         cur = parser->root.cursor;
 
         (void)T1_ToInt( parser );
         if ( parser->root.cursor >= limit )
         {
           FT_ERROR(( "t42_parse_charstrings: out of bounds\n" ));
-          error = T42_Err_Invalid_File_Format;
+          error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
 
-        len = parser->root.cursor - cur;
+        len = (FT_UInt)( parser->root.cursor - cur );
 
         error = T1_Add_Table( code_table, n, cur, len + 1 );
         if ( error )
@@ -889,13 +1050,12 @@
     if ( !notdef_found )
     {
       FT_ERROR(( "t42_parse_charstrings: no /.notdef glyph\n" ));
-      error = T42_Err_Invalid_File_Format;
+      error = FT_THROW( Invalid_File_Format );
       goto Fail;
     }
 
     /* if /.notdef does not occupy index 0, do our magic. */
-    if ( ft_strcmp( (const char*)".notdef",
-                    (const char*)name_table->elements[0] ) )
+    if ( ft_strcmp( ".notdef", (const char*)name_table->elements[0] ) )
     {
       /* Swap glyph in index 0 with /.notdef glyph.  First, add index 0  */
       /* name and code entries to swap_table.  Then place notdef_index   */
@@ -1033,7 +1193,7 @@
 
     parser->root.cursor = base;
     parser->root.limit  = base + size;
-    parser->root.error  = T42_Err_Ok;
+    parser->root.error  = FT_Err_Ok;
 
     limit = parser->root.limit;
 
@@ -1091,7 +1251,7 @@
       /* look for immediates */
       else if ( *cur == '/' && cur + 2 < limit )
       {
-        FT_PtrDist  len;
+        FT_UInt  len;
 
 
         cur++;
@@ -1101,7 +1261,7 @@
         if ( parser->root.error )
           goto Exit;
 
-        len = parser->root.cursor - cur;
+        len = (FT_UInt)( parser->root.cursor - cur );
 
         if ( len > 0 && len < 22 && parser->root.cursor < limit )
         {
@@ -1120,9 +1280,9 @@
             if ( !name )
               continue;
 
-            if ( cur[0] == name[0]                                  &&
-                 len == (FT_PtrDist)ft_strlen( (const char *)name ) &&
-                 ft_memcmp( cur, name, len ) == 0                   )
+            if ( cur[0] == name[0]                      &&
+                 len == ft_strlen( (const char *)name ) &&
+                 ft_memcmp( cur, name, len ) == 0       )
             {
               /* we found it -- run the parsing callback! */
               parser->root.error = t42_load_keyword( face,
@@ -1156,7 +1316,7 @@
   {
     FT_UNUSED( face );
 
-    FT_MEM_ZERO( loader, sizeof ( *loader ) );
+    FT_ZERO( loader );
     loader->num_glyphs = 0;
     loader->num_chars  = 0;
 

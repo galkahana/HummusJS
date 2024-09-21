@@ -81,7 +81,7 @@
 #include <string>
 #include <list>
 #include <utility>
-
+#include <stdint.h>
 
 
 
@@ -109,8 +109,8 @@ typedef std::list<std::string> StringList;
 typedef std::pair<double,double> DoubleAndDoublePair;
 
 //  tiff.h extracted defs [prefer to avoid including too much here]
-typedef	unsigned short uint16;	/* sizeof (uint16) must == 2 */
-typedef	unsigned int uint32;	/* sizeof (uint32) must == 4 */
+typedef	unsigned short uint16_t;	/* sizeof (uint16_t) must == 2 */
+typedef	unsigned int uint32_t;	/* sizeof (uint32_t) must == 4 */
 typedef	int int32;
 #ifdef _INCLUDE_TIFF_HEADER
 /*
@@ -124,9 +124,9 @@ it's not guaranteed that it will match the actual tiff headers...
 #include <tiffvers.h>
 
 #if TIFFLIB_VERSION >= 20120218 // tiff 4.0.1 or above
-typedef uint64 tsize_t_compat;
+typedef uint64_t tsize_t_compat;
 #else //  TIFFLIB_VERSION >= 20120218
-typedef uint32 tsize_t_compat;
+typedef uint32_t_t tsize_t_compat;
 #endif //  TIFFLIB_VERSION >= 20120218
 
 
@@ -138,8 +138,8 @@ typedef uint32 tsize_t_compat;
 */
 #ifndef _USE_TIFF_TSIZE_AS_FOLLOWS
 
-typedef int32 tsize_t;          /* i/o size in bytes */
-typedef uint32 tsize_t_compat;
+typedef int64_t tsize_t;          /* i/o size in bytes */ // updating per new bundled version
+typedef uint64_t tsize_t_compat;
 
 #else // ! _USE_TIFF_TSIZE_AS_FOLLOWS
 
@@ -217,8 +217,8 @@ private:
 	PDFHummus::EStatusCode ReadPhotometricPalette();
 	PDFHummus::EStatusCode ReadPhotometricPaletteCMYK();
 	void ComposePDFPage();
-	void ComposePDFPageOrient(T2P_BOX*, uint16);
-	void ComposePDFPageOrientFlip(T2P_BOX*, uint16);
+	void ComposePDFPageOrient(T2P_BOX*, uint16_t);
+	void ComposePDFPageOrientFlip(T2P_BOX*, uint16_t);
 	ObjectIDType WriteTransferFunction(int i);
 	ObjectIDType WriteTransferFunctionsExtGState(const ObjectIDTypeList& inTransferFunctions);
 	ObjectIDType WritePaletteCS();
@@ -235,21 +235,21 @@ private:
 	void SamplePlanarSeparateToContig(unsigned char* inBuffer, 
 									  unsigned char* inSamplebuffer, 
 									  tsize_t inSamplebuffersize);
-	tsize_t SampleRGBAToRGB(tdata_t inData, uint32 inSampleCount);
-	tsize_t SampleRGBAAToRGB(tdata_t inData, uint32 inSampleCount);
-	tsize_t	SampleLABSignedToUnsigned(tdata_t inBuffer, uint32 inSampleCount);
+	tsize_t SampleRGBAToRGB(tdata_t inData, uint32_t inSampleCount);
+	tsize_t SampleRGBAAToRGB(tdata_t inData, uint32_t inSampleCount);
+	tsize_t	SampleLABSignedToUnsigned(tdata_t inBuffer, uint32_t inSampleCount);
 	void TileCollapseLeft(tdata_t inBuffer, tsize_t inScanWidth, 
-							uint32 inTileWidth, uint32 inEdgeTileWidth, 
-							uint32 inTileLength);
+							uint32_t inTileWidth, uint32_t inEdgeTileWidth, 
+							uint32_t inTileLength);
 	PDFImageXObject* WriteUntiledImageXObject();
 	void WriteCommonImageDictionaryProperties(DictionaryContext* inImageContext);
 	PDFHummus::EStatusCode WriteImageData(PDFStream* inImageStream);
 	void CalculateTiffSizeNoTiles();
 	void SampleRealizePalette(unsigned char* inBuffer);
-	tsize_t SampleABGRToRGB(tdata_t inData, uint32 inSampleCount);
+	tsize_t SampleABGRToRGB(tdata_t inData, uint32_t inSampleCount);
 	PDFHummus::EStatusCode WriteImageBufferToStream(	PDFStream* inPDFStream,
-											uint32 inImageWidth,
-											uint32 inImageLength,
+											uint32_t inImageWidth,
+											uint32_t inImageLength,
 											unsigned char* inBuffer,
 											ImageSizeProc inBufferSizeFunction);
 	PDFFormXObject* WriteImagesFormXObject(const PDFImageXObjectList& inImages,ObjectIDType inFormXObjectID);

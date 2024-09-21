@@ -714,7 +714,8 @@ EStatusCode PDFWriter::ModifyPDFForStream(
     }
 
     mObjectsContext.SetOutputStream(inModifiedDestinationStream);
-
+    mObjectsContext.WriteTokenSeparator(eTokenSeparatorEndLine);
+    
     mIsModified = true;
 
     return SetupStateFromModifiedStream(inModifiedSourceStream, thisOrDefaultVersion(inPDFVersion), inPDFCreationSettings);

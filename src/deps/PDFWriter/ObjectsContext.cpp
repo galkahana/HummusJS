@@ -397,37 +397,43 @@ PDFStream* ObjectsContext::StartPDFStream(DictionaryContext* inStreamDictionary,
 	// Write the stream header
 	// Write Stream Dictionary (note that inStreamDictionary is optionally used)
 	DictionaryContext* streamDictionaryContext = (NULL == inStreamDictionary ? StartDictionary() : inStreamDictionary);
-
-	// Compression (if necessary)
-	if(mCompressStreams)
-	{
-		streamDictionaryContext->WriteKey(scFilter);
-		streamDictionaryContext->WriteNameValue(scFlateDecode);
-	}
-
 	PDFStream* result = NULL;
-    if(!inForceDirectExtentObject)
-    {
-    
-        // Length (write as an indirect object)
-        streamDictionaryContext->WriteKey(scLength);
-        ObjectIDType lengthObjectID = mReferencesRegistry.AllocateNewObjectID();
-        streamDictionaryContext->WriteNewObjectReferenceValue(lengthObjectID);
-            
 
-        EndDictionary(streamDictionaryContext);
+	do 
+	{
+		// Compression (if necessary)
+		if(mCompressStreams)
+		{
+			if(streamDictionaryContext->WriteKey(scFilter) != PDFHummus::eSuccess)
+				break;
+			streamDictionaryContext->WriteNameValue(scFlateDecode);
+		}
 
-        // Write Stream Content
-        WriteKeyword(scStream);
-        
-		result = new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,lengthObjectID,mExtender);
-    }
-    else
-		result = new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,streamDictionaryContext,mExtender);
+		if(!inForceDirectExtentObject)
+		{
+		
+			// Length (write as an indirect object)
+			if(streamDictionaryContext->WriteKey(scLength) != PDFHummus::eSuccess)
+				break;
+			ObjectIDType lengthObjectID = mReferencesRegistry.AllocateNewObjectID();
+			streamDictionaryContext->WriteNewObjectReferenceValue(lengthObjectID);
+				
 
-	// break encryption, if any, when writing a stream, cause if encryption is desired, only top level elements should be encrypted. hence - the stream itself is, but its contents do not re-encrypt
-	if (mEncryptionHelper)
-		mEncryptionHelper->PauseEncryption();
+			if(EndDictionary(streamDictionaryContext) != PDFHummus::eSuccess)
+				break;
+
+			// Write Stream Content
+			WriteKeyword(scStream);
+			
+			result = new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,lengthObjectID,mExtender);
+		}
+		else
+			result = new PDFStream(mCompressStreams,mOutputStream, mEncryptionHelper,streamDictionaryContext,mExtender);
+
+		// break encryption, if any, when writing a stream, cause if encryption is desired, only top level elements should be encrypted. hence - the stream itself is, but its contents do not re-encrypt
+		if (mEncryptionHelper)
+			mEncryptionHelper->PauseEncryption();
+	} while(false);
 
 	return result;
 }
@@ -440,23 +446,28 @@ PDFStream* ObjectsContext::StartUnfilteredPDFStream(DictionaryContext* inStreamD
 	// Write the stream header
 	// Write Stream Dictionary (note that inStreamDictionary is optionally used)
 	DictionaryContext* streamDictionaryContext = (NULL == inStreamDictionary ? StartDictionary() : inStreamDictionary);
+	PDFStream* result = NULL;
 
-	// Length (write as an indirect object)
-	streamDictionaryContext->WriteKey(scLength);
-	ObjectIDType lengthObjectID = mReferencesRegistry.AllocateNewObjectID();
-	streamDictionaryContext->WriteNewObjectReferenceValue(lengthObjectID);
-		
-	EndDictionary(streamDictionaryContext);
+	do {
+		// Length (write as an indirect object)
+		if(streamDictionaryContext->WriteKey(scLength) != PDFHummus::eSuccess)
+			break;
+		ObjectIDType lengthObjectID = mReferencesRegistry.AllocateNewObjectID();
+		streamDictionaryContext->WriteNewObjectReferenceValue(lengthObjectID);
+			
+		if(EndDictionary(streamDictionaryContext) != PDFHummus::eSuccess)
+			break;
 
-	// Write Stream Content
-	WriteKeyword(scStream);
+		// Write Stream Content
+		WriteKeyword(scStream);
 
-	// now begin the stream itself
-	PDFStream* result = new PDFStream(false,mOutputStream, mEncryptionHelper,lengthObjectID,NULL);
+		// now begin the stream itself
+		result = new PDFStream(false,mOutputStream, mEncryptionHelper,lengthObjectID,NULL);
 
-	// break encryption, if any, when writing a stream, cause if encryption is desired, only top level elements should be encrypted. hence - the stream itself is, but its contents do not re-encrypt
-	if(mEncryptionHelper)
-		mEncryptionHelper->PauseEncryption();
+		// break encryption, if any, when writing a stream, cause if encryption is desired, only top level elements should be encrypted. hence - the stream itself is, but its contents do not re-encrypt
+		if(mEncryptionHelper)
+			mEncryptionHelper->PauseEncryption();
+	} while(false);
 
 	return result;
 }

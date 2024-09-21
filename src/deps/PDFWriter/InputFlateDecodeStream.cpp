@@ -106,8 +106,8 @@ IOBasicTypes::LongBufferSizeType InputFlateDecodeStream::Read(IOBasicTypes::Byte
 
 IOBasicTypes::LongBufferSizeType InputFlateDecodeStream::DecodeBufferAndRead(const IOBasicTypes::Byte* inBuffer,IOBasicTypes::LongBufferSizeType inSize)
 {
-	if(0 == inSize)
-		return 0; // inflate kinda touchy about getting 0 lengths
+	if(0 == inSize || mEndOfCompressionEoncountered)
+		return 0; // inflate kinda touchy about getting 0 lengths, also stop if already decided to finish
 
 	int inflateResult = Z_OK;
 
@@ -168,10 +168,8 @@ IOBasicTypes::LongBufferSizeType InputFlateDecodeStream::DecodeBufferAndRead(con
 
 	// should be that at the last buffer we'll get here a nice Z_STREAM_END
 	mEndOfCompressionEoncountered = (Z_STREAM_END == inflateResult) || isError(inflateResult);
-	if(Z_OK == inflateResult || Z_STREAM_END == inflateResult)
-		return inSize - mZLibState->avail_out;
-	else
-		return 0;
+	// allows returning what's read even if finished with error. a forgiving approach for end of stream errors
+	return inSize - mZLibState->avail_out;
 }
 
 bool InputFlateDecodeStream::NotEnded()

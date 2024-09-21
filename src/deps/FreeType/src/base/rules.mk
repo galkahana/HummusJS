@@ -3,7 +3,7 @@
 #
 
 
-# Copyright 1996-2000, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 by
+# Copyright (C) 1996-2023 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -19,11 +19,14 @@
 #   BASE_OBJ_S:   The single-object base layer.
 #   BASE_OBJ_M:   A list of all objects for a multiple-objects build.
 #   BASE_EXT_OBJ: A list of base layer extensions, i.e., components found
-#                 in `freetype/src/base' which are not compiled within the
-#                 base layer proper.
+#                 in `src/base' which are not compiled within the base
+#                 layer proper.
 
 
-BASE_COMPILE := $(FT_COMPILE) $I$(subst /,$(COMPILER_SEP),$(SRC_DIR)/base)
+BASE_COMPILE := $(CC) $(ANSIFLAGS)                             \
+                      $I$(subst /,$(COMPILER_SEP),$(BASE_DIR)) \
+                      $(INCLUDE_FLAGS)                         \
+                      $(FT_CFLAGS)
 
 
 # Base layer sources
@@ -35,10 +38,16 @@ BASE_COMPILE := $(FT_COMPILE) $I$(subst /,$(COMPILER_SEP),$(SRC_DIR)/base)
 #
 BASE_SRC := $(BASE_DIR)/ftadvanc.c \
             $(BASE_DIR)/ftcalc.c   \
+            $(BASE_DIR)/ftcolor.c  \
             $(BASE_DIR)/ftdbgmem.c \
+            $(BASE_DIR)/fterrors.c \
+            $(BASE_DIR)/ftfntfmt.c \
             $(BASE_DIR)/ftgloadr.c \
+            $(BASE_DIR)/fthash.c   \
+            $(BASE_DIR)/ftlcdfil.c \
             $(BASE_DIR)/ftobjs.c   \
             $(BASE_DIR)/ftoutln.c  \
+            $(BASE_DIR)/ftpsprop.c \
             $(BASE_DIR)/ftrfork.c  \
             $(BASE_DIR)/ftsnames.c \
             $(BASE_DIR)/ftstream.c \
@@ -50,7 +59,10 @@ ifneq ($(ftmac_c),)
   BASE_SRC += $(BASE_DIR)/$(ftmac_c)
 endif
 
-BASE_H := $(BASE_DIR)/ftbase.h
+# for simplicity, we also handle `md5.c' (which gets included by `ftobjs.h')
+BASE_H := $(BASE_DIR)/ftbase.h  \
+          $(BASE_DIR)/md5.c     \
+          $(BASE_DIR)/md5.h
 
 # Base layer `extensions' sources
 #

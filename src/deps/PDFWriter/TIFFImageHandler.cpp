@@ -148,9 +148,9 @@ typedef enum{
 /* This struct defines a logical page of a TIFF. */
 struct T2P_PAGE{
 	tdir_t page_directory;
-	uint32 page_number;
+	uint32_t page_number;
 	ttile_t page_tilecount;
-	uint32 page_extra;
+	uint32_t page_extra;
 
 	T2P_PAGE()
 	{
@@ -187,12 +187,12 @@ struct T2P_TILE{
 /* This struct defines information about the tiles on a PDF page. */
 struct T2P_TILES{
 	ttile_t tiles_tilecount;
-	uint32 tiles_tilewidth;
-	uint32 tiles_tilelength;
-	uint32 tiles_tilecountx;
-	uint32 tiles_tilecounty;
-	uint32 tiles_edgetilewidth;
-	uint32 tiles_edgetilelength;
+	uint32_t tiles_tilewidth;
+	uint32_t tiles_tilelength;
+	uint32_t tiles_tilecountx;
+	uint32_t tiles_tilecounty;
+	uint32_t tiles_edgetilewidth;
+	uint32_t tiles_edgetilelength;
 	T2P_TILE* tiles_tiles;
 
 	T2P_TILES()
@@ -214,23 +214,23 @@ struct T2P{
 	T2P_PAGE* tiff_pages;
 	T2P_TILES* tiff_tiles;
 	tdir_t tiff_pagecount;
-	uint16 tiff_compression;
-	uint16 tiff_photometric;
-	uint16 tiff_fillorder;
-	uint16 tiff_bitspersample;
-	uint16 tiff_samplesperpixel;
-	uint16 tiff_planar;
-	uint32 tiff_width;
-	uint32 tiff_length;
+	uint16_t tiff_compression;
+	uint16_t tiff_photometric;
+	uint16_t tiff_fillorder;
+	uint16_t tiff_bitspersample;
+	uint16_t tiff_samplesperpixel;
+	uint16_t tiff_planar;
+	uint32_t tiff_width;
+	uint32_t tiff_length;
 	float tiff_xres;
 	float tiff_yres;
-	uint16 tiff_orientation;
+	uint16_t tiff_orientation;
 	toff_t tiff_dataoffset;
 	tsize_t tiff_datasize;
-	uint16 tiff_resunit;
-	uint16 pdf_centimeters;
-	uint16 pdf_overrideres;
-	uint16 pdf_overridepagesize;
+	uint16_t tiff_resunit;
+	uint16_t pdf_centimeters;
+	uint16_t pdf_overrideres;
+	uint16_t pdf_overridepagesize;
 	float pdf_defaultxres;
 	float pdf_defaultyres;
 	float pdf_xres;
@@ -241,23 +241,23 @@ struct T2P{
 	float pdf_imagelength;
 	T2P_BOX pdf_mediabox;
 	T2P_BOX pdf_imagebox;
-	uint32 pdf_catalog;
-	uint32 pdf_pages;
-	uint32 pdf_info;
+	uint32_t pdf_catalog;
+	uint32_t pdf_pages;
+	uint32_t pdf_info;
 	ObjectIDType pdf_palettecs;
-	uint16 pdf_fitwindow;
-	uint32 pdf_startxref;
+	uint16_t pdf_fitwindow;
+	uint32_t pdf_startxref;
 	t2p_cs_t pdf_colorspace;
-	uint16 pdf_colorspace_invert;
-	uint16 pdf_switchdecode;
-	uint16 pdf_palettesize;
+	uint16_t pdf_colorspace_invert;
+	uint16_t pdf_switchdecode;
+	uint16_t pdf_palettesize;
 	unsigned char* pdf_palette;
 	int pdf_labrange[4];
 	t2p_compress_t pdf_defaultcompression;
-	uint16 pdf_defaultcompressionquality;
+	uint16_t pdf_defaultcompressionquality;
 	t2p_compress_t pdf_compression;
-	uint16 pdf_compressionquality;
-	uint16 pdf_nopassthrough;
+	uint16_t pdf_compressionquality;
+	uint16_t pdf_nopassthrough;
 	t2p_transcode_t pdf_transcode;
 	t2p_sample_t pdf_sample;
 	tdir_t pdf_page;
@@ -268,9 +268,9 @@ struct T2P{
 	float* tiff_transferfunction[3];
 	int pdf_image_interpolate;	/* 0 (default) : do not interpolate,
 					   1 : interpolate */
-	uint16 tiff_transferfunctioncount;
+	uint16_t tiff_transferfunctioncount;
 	ObjectIDType pdf_icccs;
-	uint32 tiff_iccprofilelength;
+	uint32_t tiff_iccprofilelength;
 	tdata_t tiff_iccprofile;
 
 	TIFF* input;
@@ -566,9 +566,9 @@ EStatusCode TIFFImageHandler::ReadTopLevelTiffInformation()
 	EStatusCode status = PDFHummus::eSuccess;
 	tdir_t directorycount = TIFFNumberOfDirectories(mT2p->input);
 	tdir_t i=0;
-	uint16 pagen=0;
-	uint16 paged=0;
-	uint16 xuint16=0;
+	uint16_t pagen=0;
+	uint16_t paged=0;
+	uint16_t xuint16_t=0;
 
 	do
 	{
@@ -597,7 +597,7 @@ EStatusCode TIFFImageHandler::ReadTopLevelTiffInformation()
 		for(i=0;i<directorycount;i++)
 		{
 			bool isPage = false,isPage2 = false;
-			uint32 subfiletype = 0;
+			uint32_t subfiletype = 0;
 			
 			if(!TIFFSetDirectory(mT2p->input, i)){
 				TRACE_LOG2("Can't set directory %u of input file %s",
@@ -649,9 +649,9 @@ EStatusCode TIFFImageHandler::ReadTopLevelTiffInformation()
 		for(i=0;i<mT2p->tiff_pagecount;i++)
 		{
 			TIFFSetDirectory(mT2p->input, mT2p->tiff_pages[i].page_directory );
-			if((TIFFGetField(mT2p->input, TIFFTAG_PHOTOMETRIC, &xuint16)
-						&& (xuint16==PHOTOMETRIC_PALETTE))
-			   || TIFFGetField(mT2p->input, TIFFTAG_INDEXED, &xuint16)) 
+			if((TIFFGetField(mT2p->input, TIFFTAG_PHOTOMETRIC, &xuint16_t)
+						&& (xuint16_t==PHOTOMETRIC_PALETTE))
+			   || TIFFGetField(mT2p->input, TIFFTAG_INDEXED, &xuint16_t)) 
 			{
 				mT2p->tiff_pages[i].page_extra++;
 			}
@@ -685,11 +685,11 @@ EStatusCode TIFFImageHandler::ReadTopLevelTiffInformation()
 				mT2p->tiff_pages[i].page_extra++;
 			}
 			mT2p->tiff_tiles[i].tiles_tilecount = mT2p->tiff_pages[i].page_tilecount;
-			if( (TIFFGetField(mT2p->input, TIFFTAG_PLANARCONFIG, &xuint16) != 0)
-				&& (xuint16 == PLANARCONFIG_SEPARATE ) )
+			if( (TIFFGetField(mT2p->input, TIFFTAG_PLANARCONFIG, &xuint16_t) != 0)
+				&& (xuint16_t == PLANARCONFIG_SEPARATE ) )
 			{
-					TIFFGetField(mT2p->input, TIFFTAG_SAMPLESPERPIXEL, &xuint16);
-					mT2p->tiff_tiles[i].tiles_tilecount/= xuint16;
+					TIFFGetField(mT2p->input, TIFFTAG_SAMPLESPERPIXEL, &xuint16_t);
+					mT2p->tiff_tiles[i].tiles_tilecount/= xuint16_t;
 			}
 			if( mT2p->tiff_tiles[i].tiles_tilecount > 0)
 			{
@@ -722,8 +722,8 @@ EStatusCode TIFFImageHandler::ReadTopLevelTiffInformation()
 EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 {
 	EStatusCode status = PDFHummus::eSuccess;
-	uint16 xuint16;
-	uint16* xuint16p;
+	uint16_t xuint16_t;
+	uint16_t* xuint16_tp;
 	float* xfloatp;
 
 	mT2p->pdf_transcode = T2P_TRANSCODE_ENCODE;
@@ -813,9 +813,9 @@ EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 			mT2p->tiff_samplesperpixel=1;
 		}
 	
-		if(TIFFGetField(mT2p->input, TIFFTAG_SAMPLEFORMAT, &xuint16) != 0 )
+		if(TIFFGetField(mT2p->input, TIFFTAG_SAMPLEFORMAT, &xuint16_t) != 0 )
 		{
-			switch(xuint16)
+			switch(xuint16_t)
 			{
 				case 0:
 				case 1:
@@ -825,7 +825,7 @@ EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 					TRACE_LOG2(
 						"TIFFImageHandler::ReadTIFFPageInformation: No support for %s with sample format %u", 
 						mT2p->inputFilePath.c_str(),
-						xuint16);				
+						xuint16_t);				
 					status = PDFHummus::eFailure;
 					break;
 			}
@@ -864,9 +864,9 @@ EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 				{
 					break;
 				}
-				if(TIFFGetField(mT2p->input, TIFFTAG_INDEXED, &xuint16))
+				if(TIFFGetField(mT2p->input, TIFFTAG_INDEXED, &xuint16_t))
 				{
-					if(xuint16==1)
+					if(xuint16_t==1)
 						ReadPhotometricPalette();
 				}
 				if(mT2p->tiff_samplesperpixel > 3) 
@@ -876,15 +876,15 @@ EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 						mT2p->pdf_colorspace = T2P_CS_RGB;
 						if(TIFFGetField(mT2p->input,
 								TIFFTAG_EXTRASAMPLES,
-								&xuint16, &xuint16p)
-						   && xuint16 == 1) 
+								&xuint16_t, &xuint16_tp)
+						   && xuint16_t == 1) 
 						{
-							if(xuint16p[0] == EXTRASAMPLE_ASSOCALPHA)
+							if(xuint16_tp[0] == EXTRASAMPLE_ASSOCALPHA)
 							{
 								mT2p->pdf_sample=T2P_SAMPLE_RGBAA_TO_RGB;
 								break;
 							}
-							if(xuint16p[0] == EXTRASAMPLE_UNASSALPHA)
+							if(xuint16_tp[0] == EXTRASAMPLE_UNASSALPHA)
 							{
 								mT2p->pdf_sample=T2P_SAMPLE_RGBA_TO_RGB;
 								break;
@@ -924,14 +924,14 @@ EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 				status = ReadPhotometricPalette();
 				break;
 			case PHOTOMETRIC_SEPARATED:
-				if(TIFFGetField(mT2p->input, TIFFTAG_INDEXED, &xuint16))
+				if(TIFFGetField(mT2p->input, TIFFTAG_INDEXED, &xuint16_t))
 				{
-					if(xuint16==1)
+					if(xuint16_t==1)
 						ReadPhotometricPaletteCMYK();
 				}
-				if( TIFFGetField(mT2p->input, TIFFTAG_INKSET, &xuint16) )
+				if( TIFFGetField(mT2p->input, TIFFTAG_INKSET, &xuint16_t) )
 				{
-					if(xuint16 != INKSET_CMYK)
+					if(xuint16_t != INKSET_CMYK)
 					{
 						TRACE_LOG1(
 							"TIFFImageHandler::ReadTIFFPageInformation, No support for %s because its inkset is not CMYK",
@@ -1199,9 +1199,9 @@ EStatusCode TIFFImageHandler::ReadTIFFPageInformation() //t2p_read_tiff_data
 EStatusCode TIFFImageHandler::ReadPhotometricPalette()
 {
 	EStatusCode status = PDFHummus::eSuccess;
-	uint16* r;
-	uint16* g;
-	uint16* b;
+	uint16_t* r;
+	uint16_t* g;
+	uint16_t* b;
 
 	do
 	{
@@ -1256,10 +1256,10 @@ EStatusCode TIFFImageHandler::ReadPhotometricPalette()
 EStatusCode TIFFImageHandler::ReadPhotometricPaletteCMYK()
 {
 	EStatusCode status = PDFHummus::eSuccess;
-	uint16* r;
-	uint16* g;
-	uint16* b;
-	uint16* a;
+	uint16_t* r;
+	uint16_t* g;
+	uint16_t* b;
+	uint16_t* a;
 
 	do
 	{
@@ -1320,14 +1320,14 @@ EStatusCode TIFFImageHandler::ReadPhotometricPaletteCMYK()
 void TIFFImageHandler::ComposePDFPage()
 {
 
-	uint32 i=0;
-	uint32 i2=0;
+	uint32_t i=0;
+	uint32_t i2=0;
 	T2P_TILE* tiles=NULL;
 	T2P_BOX* boxp=NULL;
-	uint32 tilecountx=0;
-	uint32 tilecounty=0;
-	uint32 tilewidth=0;
-	uint32 tilelength=0;
+	uint32_t tilecountx=0;
+	uint32_t tilecounty=0;
+	uint32_t tilewidth=0;
+	uint32_t tilelength=0;
 	int istiled=0;
 	float f=0;
 	
@@ -1515,7 +1515,7 @@ void TIFFImageHandler::ComposePDFPage()
 	return;
 }
 
-void TIFFImageHandler::ComposePDFPageOrient(T2P_BOX* boxp, uint16 orientation)
+void TIFFImageHandler::ComposePDFPageOrient(T2P_BOX* boxp, uint16_t orientation)
 {
 
 	float m1[9];
@@ -1592,7 +1592,7 @@ void TIFFImageHandler::ComposePDFPageOrient(T2P_BOX* boxp, uint16 orientation)
 	}
 }
 
-void TIFFImageHandler::ComposePDFPageOrientFlip(T2P_BOX* boxp, uint16 orientation)
+void TIFFImageHandler::ComposePDFPageOrientFlip(T2P_BOX* boxp, uint16_t orientation)
 {
 	float m1[9];
 	float f=0.0;
@@ -2266,10 +2266,10 @@ void TIFFImageHandler::WriteImageXObjectFilter(DictionaryContext* inImageDiction
 
 void TIFFImageHandler::CalculateTiffTileSize(int inTileIndex)
 {
-	uint16 edge=0;
+	uint16_t edge=0;
 
-	edge |= (uint16)TileIsRightEdge(inTileIndex);
-	edge |= (uint16)TileIsBottomEdge(inTileIndex);
+	edge |= (uint16_t)TileIsRightEdge(inTileIndex);
+	edge |= (uint16_t)TileIsBottomEdge(inTileIndex);
 	
 	if(mT2p->pdf_transcode==T2P_TRANSCODE_RAW)
 	{
@@ -2363,21 +2363,21 @@ tsize_t GetSizeFromTIFFDataSize(T2P* inT2p)
 EStatusCode TIFFImageHandler::WriteImageTileData(PDFStream* inImageStream,int inTileIndex)
 {
 	EStatusCode status = PDFHummus::eSuccess;
-	uint16 edge=0;
+	uint16_t edge=0;
 	unsigned char* buffer=NULL;
 
 	tsize_t bufferoffset=0;
 	unsigned char* samplebuffer=NULL;
 	tsize_t samplebufferoffset=0;
 	tsize_t read=0;
-	uint16 i=0;
+	uint16_t i=0;
 	ttile_t tilecount=0;
 	tsize_t tilesize=0;
 	ttile_t septilecount=0;
 	tsize_t septilesize=0;
 
-	edge |= (uint16)TileIsRightEdge(inTileIndex);
-	edge |= (uint16)TileIsBottomEdge(inTileIndex);
+	edge |= (uint16_t)TileIsRightEdge(inTileIndex);
+	edge |= (uint16_t)TileIsBottomEdge(inTileIndex);
 
 	do
 	{
@@ -2596,11 +2596,11 @@ void TIFFImageHandler::SamplePlanarSeparateToContig(unsigned char* inBuffer,
 	}
 }
 
-tsize_t TIFFImageHandler::SampleRGBAToRGB(tdata_t inData, uint32 inSampleCount)
+tsize_t TIFFImageHandler::SampleRGBAToRGB(tdata_t inData, uint32_t inSampleCount)
 {
-	uint32 i = 0;
-	uint8 alpha = 0;
-    uint8* theData = (uint8*)inData;
+	uint32_t i = 0;
+	uint8_t alpha = 0;
+    uint8_t* theData = (uint8_t*)inData;
 	
 	for (i = 0; i < inSampleCount; i++) 
 	{
@@ -2615,19 +2615,19 @@ tsize_t TIFFImageHandler::SampleRGBAToRGB(tdata_t inData, uint32 inSampleCount)
 	return (i * 3);
 }
 
-tsize_t TIFFImageHandler::SampleRGBAAToRGB(tdata_t inData, uint32 inSampleCount)
+tsize_t TIFFImageHandler::SampleRGBAAToRGB(tdata_t inData, uint32_t inSampleCount)
 {
-	uint32 i;
+	uint32_t i;
 	
 	for(i = 0; i < inSampleCount; i++)
-		memcpy((uint8*)inData + i * 3, (uint8*)inData + i * 4, 3);
+		memcpy((uint8_t*)inData + i * 3, (uint8_t*)inData + i * 4, 3);
 
 	return(i * 3);	
 }
 
-tsize_t	TIFFImageHandler::SampleLABSignedToUnsigned(tdata_t inBuffer, uint32 inSampleCount)
+tsize_t	TIFFImageHandler::SampleLABSignedToUnsigned(tdata_t inBuffer, uint32_t inSampleCount)
 {
-	uint32 i=0;
+	uint32_t i=0;
 
 	for(i=0;i<inSampleCount;i++)
 	{
@@ -2654,13 +2654,13 @@ tsize_t	TIFFImageHandler::SampleLABSignedToUnsigned(tdata_t inBuffer, uint32 inS
 }
 
 void TIFFImageHandler::TileCollapseLeft(tdata_t inBuffer, tsize_t inScanWidth, 
-										uint32 inTileWidth, uint32 inEdgeTileWidth, 
-										uint32 inTileLength)
+										uint32_t inTileWidth, uint32_t inEdgeTileWidth, 
+										uint32_t inTileLength)
 {
 	tsize_t edgescanwidth=0;
 	
 	edgescanwidth = (inScanWidth * inEdgeTileWidth + (inTileWidth - 1))/ inTileWidth;
-	for(uint32 i=0;i<inTileLength;i++)
+	for(uint32_t i=0;i<inTileLength;i++)
 	{
 		_TIFFmemcpy( 
 			&(((char*)inBuffer)[edgescanwidth*i]), 
@@ -3046,7 +3046,7 @@ EStatusCode TIFFImageHandler::WriteImageData(PDFStream* inImageStream)
 					mT2p->input, 
 					mT2p->tiff_width, 
 					mT2p->tiff_length, 
-					(uint32*)buffer, 
+					(uint32_t*)buffer, 
 					ORIENTATION_TOPLEFT,
 					0))
 				{
@@ -3086,12 +3086,12 @@ EStatusCode TIFFImageHandler::WriteImageData(PDFStream* inImageStream)
 
 void TIFFImageHandler::SampleRealizePalette(unsigned char* inBuffer)
 {
-	uint32 sample_count=0;
-	uint16 component_count=0;
-	uint32 palette_offset=0;
-	uint32 sample_offset=0;
-	uint32 i=0;
-	uint32 j=0;
+	uint32_t sample_count=0;
+	uint16_t component_count=0;
+	uint32_t palette_offset=0;
+	uint32_t sample_offset=0;
+	uint32_t i=0;
+	uint32_t j=0;
 	sample_count=mT2p->tiff_width*mT2p->tiff_length;
 	component_count=mT2p->tiff_samplesperpixel;
 	
@@ -3104,14 +3104,14 @@ void TIFFImageHandler::SampleRealizePalette(unsigned char* inBuffer)
 	}
 }
 
-tsize_t TIFFImageHandler::SampleABGRToRGB(tdata_t inData, uint32 inSampleCount)
+tsize_t TIFFImageHandler::SampleABGRToRGB(tdata_t inData, uint32_t inSampleCount)
 {
-	uint32 i=0;
-	uint32 sample=0;
+	uint32_t i=0;
+	uint32_t sample=0;
 	
 	for(i=0;i<inSampleCount;i++)
 	{
-		sample=((uint32*)inData)[i];
+		sample=((uint32_t*)inData)[i];
 		((char*)inData)[i*3]= (char) (sample & 0xff);
 		((char*)inData)[i*3+1]= (char) ((sample>>8) & 0xff);
 		((char*)inData)[i*3+2]= (char) ((sample>>16) & 0xff);
@@ -3121,8 +3121,8 @@ tsize_t TIFFImageHandler::SampleABGRToRGB(tdata_t inData, uint32 inSampleCount)
 }
 
 EStatusCode TIFFImageHandler::WriteImageBufferToStream(PDFStream* inPDFStream,
-														uint32 inImageWidth,
-														uint32 inImageLength,
+														uint32_t inImageWidth,
+														uint32_t inImageLength,
 														unsigned char* inBuffer,
 														ImageSizeProc inBufferSizeFunction)
 {

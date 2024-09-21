@@ -43,6 +43,7 @@ FreeTypeFaceWrapper::FreeTypeFaceWrapper(FT_Face inFace,const std::string& inFon
 	mFontIndex = inFontIndex;
 	mDoesOwn = inDoOwn;
 	mGlyphIsLoaded = false;
+	ResetPaletteSelectionState();
 	SetupFormatSpecificExtender(inFontFilePath, "");
 	SelectDefaultEncoding();
 }
@@ -54,12 +55,19 @@ FreeTypeFaceWrapper::FreeTypeFaceWrapper(FT_Face inFace,const std::string& inFon
     mFontIndex = inFontIndex;
 	mDoesOwn = inDoOwn;
 	mGlyphIsLoaded = false;
+	ResetPaletteSelectionState();
 	std::string fileExtension = GetExtension(inPFMFilePath);
 	if (fileExtension == "PFM" || fileExtension == "pfm") // just don't bother if it's not PFM
 		SetupFormatSpecificExtender(inFontFilePath, inPFMFilePath);
 	else
 		SetupFormatSpecificExtender(inFontFilePath, "");
 	SelectDefaultEncoding();
+}
+
+void FreeTypeFaceWrapper::ResetPaletteSelectionState() {
+	mPaletteSet = false;
+	mPalette = NULL;
+	mPaletteStatus = FT_Err_Ok;
 }
 
 void FreeTypeFaceWrapper::SelectDefaultEncoding() {
@@ -647,11 +655,11 @@ IWrittenFont* FreeTypeFaceWrapper::CreateWrittenFontObject(ObjectsContext* inObj
 			if(FT_Get_CID_Is_Internally_CID_Keyed(mFace,&isCID) != 0)
 				isCID = false;	
 
-			result = new WrittenFontCFF(inObjectsContext,isCID != 0, inFontIsToBeEmbedded); // CFF fonts should know if font is to be embedded, as the embedding code involves re-encoding of glyphs
+			result = new WrittenFontCFF(inObjectsContext, this,isCID != 0, inFontIsToBeEmbedded); // CFF fonts should know if font is to be embedded, as the embedding code involves re-encoding of glyphs
 		}
 		else if(strcmp(fontFormat,scTrueType) == 0)
 		{
-			result = new WrittenFontTrueType(inObjectsContext);
+			result = new WrittenFontTrueType(inObjectsContext, this);
 		}
 		else
 		{
@@ -765,6 +773,21 @@ FT_Error FreeTypeFaceWrapper::LoadGlyph(FT_UInt inGlyphIndex, FT_Int32 inFlags)
 		mCurrentGlyph = inGlyphIndex;
 	}
 	return status;
+}
+
+FT_Error FreeTypeFaceWrapper::SelectDefaultPalette(FT_Color** outPalette, unsigned short* outPaletteSize) {
+	if(!mPaletteSet) {
+		bool statusDataGet = FT_Palette_Data_Get(mFace, &mPaletteData);
+		bool statusSelect = FT_Palette_Select( mFace, 0, &mPalette);
+
+		mPaletteStatus = statusDataGet && statusSelect;
+
+		mPaletteSet = true;		
+	}
+
+	*outPalette = mPalette;
+	*outPaletteSize = mPaletteData.num_palette_entries;
+	return mPaletteStatus;
 }
 
 //////////////// IOutlineEnumerator /////////////////////////////

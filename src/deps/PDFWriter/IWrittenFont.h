@@ -61,7 +61,7 @@ public:
 	/*
 		Write a font definition using the glyphs appended.
 	*/
-	virtual PDFHummus::EStatusCode WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo,bool inEmbedFont) = 0;
+	virtual PDFHummus::EStatusCode WriteFontDefinition(bool inEmbedFont) = 0;
 
 	// state read and write
 	virtual PDFHummus::EStatusCode WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectID) = 0;

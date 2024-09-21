@@ -173,6 +173,8 @@ EStatusCode CFFEmbeddedFontWriter::CreateCFFSubset(
 			break;
 		}
 
+		mSubsetFontGlyphsCount = subsetGlyphIDs.size();
+
 		mIsCID = mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.find(scROS) != 
 					mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.end();
 
@@ -975,4 +977,8 @@ EStatusCode CFFEmbeddedFontWriter::UpdateIndexesAtTopDict()
 	}
 
 	return mPrimitivesWriter.GetInternalState();
+}
+
+unsigned short CFFEmbeddedFontWriter::GetSubsetFontGlyphsCount() {
+	return mSubsetFontGlyphsCount;
 }

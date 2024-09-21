@@ -21,6 +21,7 @@
 #include "PDFParserTokenizer.h"
 #include "IByteReader.h"
 #include "OutputStringBufferStream.h"
+#include "Trace.h"
 
 using namespace PDFHummus;
 using namespace IOBasicTypes;
@@ -212,8 +213,20 @@ BoolAndString PDFParserTokenizer::GetNextToken()
 							break;
 						}
 
-						if(!IsPDFWhiteSpace(buffer))
-							tokenBuffer.Write(&buffer,1);
+						if(IsPDFWhiteSpace(buffer))
+							continue;
+
+						// verify that getting a hex char or ending char, so that we are sure there's no orcish mischief
+						if(!(buffer>='0' && buffer<='9') &&
+						   !(buffer>='A' && buffer<='F') &&
+						   !(buffer>='a' && buffer<='f') &&
+						   buffer != '>') {
+							TRACE_LOG1("PDFParserTokenizer::GetNextToken, encountered non ascii char in hex string. probably a corruption. byte value = %d", buffer);
+							result.first = false;
+							break;
+						}
+
+						tokenBuffer.Write(&buffer,1);
 					}
 				}
 				result.second = tokenBuffer.ToString();

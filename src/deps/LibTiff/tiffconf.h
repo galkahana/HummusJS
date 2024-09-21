@@ -4,43 +4,64 @@
   from this file in your programs.
 */
 
+/* clang-format off */
+/* clang-format disabled because CMake scripts are very sensitive to the
+ * formatting of this file. configure_file variables of type "" are
+ * modified by clang-format and won't be substituted.
+ */
+
 #ifndef _TIFFCONF_
 #define _TIFFCONF_
 
-/* Define to 1 if the system has the type `int16'. */
-/* #undef HAVE_INT16 */
 
-/* Define to 1 if the system has the type `int32'. */
-/* #undef HAVE_INT32 */
+#include <stddef.h>
+#include <stdint.h>
+#include <inttypes.h>
 
-/* Define to 1 if the system has the type `int8'. */
-/* #undef HAVE_INT8 */
 
-/* The size of a `int', as computed by sizeof. */
-#define SIZEOF_INT 4
+/* Signed 16-bit type */
+#define TIFF_INT16_T int16_t
 
-/* The size of a `long', as computed by sizeof. */
-#define SIZEOF_LONG 4
-
-/* Signed 64-bit type formatter */
-#define TIFF_INT64_FORMAT "%I64d"
+/* Signed 32-bit type */
+#define TIFF_INT32_T int32_t
 
 /* Signed 64-bit type */
-#define TIFF_INT64_T long long
+#define TIFF_INT64_T int64_t
 
-/* Unsigned 64-bit type formatter */
-#define TIFF_UINT64_FORMAT "%I64u"
+/* Signed 8-bit type */
+#define TIFF_INT8_T int8_t
+
+/* Unsigned 16-bit type */
+#define TIFF_UINT16_T uint16_t
+
+/* Unsigned 32-bit type */
+#define TIFF_UINT32_T uint32_t
 
 /* Unsigned 64-bit type */
-#define TIFF_UINT64_T unsigned long long
+#define TIFF_UINT64_T uint64_t
+
+/* Unsigned 8-bit type */
+#define TIFF_UINT8_T uint8_t
+
+/* Signed size type */
+#define TIFF_SSIZE_T int64_t
 
 /* Compatibility stuff. */
 
-/* Define as 0 or 1 according to the floating point format suported by the
+/* Define as 0 or 1 according to the floating point format supported by the
    machine */
 #define HAVE_IEEEFP 1
 
-/* Set the native cpu bit order (FILLORDER_LSB2MSB or FILLORDER_MSB2LSB) */
+/* The concept of HOST_FILLORDER is broken. Since libtiff 4.5.1
+ * this macro will always be hardcoded to FILLORDER_LSB2MSB on all
+ * architectures, to reflect past long behavior of doing so on x86 architecture.
+ * Note however that the default FillOrder used by libtiff is FILLORDER_MSB2LSB,
+ * as mandated per the TIFF specification.
+ * The influence of HOST_FILLORDER is only when passing the 'H' mode in
+ * TIFFOpen().
+ * You should NOT rely on this macro to decide the CPU endianness!
+ * This macro will be removed in libtiff 4.6
+ */
 #define HOST_FILLORDER FILLORDER_LSB2MSB
 
 /* Native cpu byte order: 1 if big-endian (Motorola) or 0 if little-endian
@@ -79,7 +100,7 @@
 /* #undef ZIP_SUPPORT */
 
 /* Support strip chopping (whether or not to convert single-strip uncompressed
-   images to mutiple strips of ~8Kb to reduce memory usage) */
+   images to multiple strips of ~8Kb to reduce memory usage) */
 #define STRIPCHOP_DEFAULT TIFF_STRIPCHOP
 
 /* Enable SubIFD tag (330) support */
@@ -107,10 +128,5 @@
 #define IPTC_SUPPORT
 
 #endif /* _TIFFCONF_ */
-/*
- * Local Variables:
- * mode: c
- * c-basic-offset: 8
- * fill-column: 78
- * End:
- */
+
+/* clang-format on */

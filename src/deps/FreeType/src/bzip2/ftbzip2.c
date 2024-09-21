@@ -1,52 +1,46 @@
-/***************************************************************************/
-/*                                                                         */
-/*  ftbzip2.c                                                              */
-/*                                                                         */
-/*    FreeType support for .bz2 compressed files.                          */
-/*                                                                         */
-/*  This optional component relies on libbz2.  It should mainly be used to */
-/*  parse compressed PCF fonts, as found with many X11 server              */
-/*  distributions.                                                         */
-/*                                                                         */
-/*  Copyright 2010, 2012 by                                                */
-/*  Joel Klinghed.                                                         */
-/*                                                                         */
-/*  Based on src/gzip/ftgzip.c, Copyright 2002 - 2010 by                   */
-/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
-/*                                                                         */
-/*  This file is part of the FreeType project, and may only be used,       */
-/*  modified, and distributed under the terms of the FreeType project      */
-/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
-/*  this file you indicate that you have read the license and              */
-/*  understand and accept it fully.                                        */
-/*                                                                         */
-/***************************************************************************/
+/****************************************************************************
+ *
+ * ftbzip2.c
+ *
+ *   FreeType support for .bz2 compressed files.
+ *
+ * This optional component relies on libbz2.  It should mainly be used to
+ * parse compressed PCF fonts, as found with many X11 server
+ * distributions.
+ *
+ * Copyright (C) 2010-2023 by
+ * Joel Klinghed.
+ *
+ * based on `src/gzip/ftgzip.c'
+ *
+ * This file is part of the FreeType project, and may only be used,
+ * modified, and distributed under the terms of the FreeType project
+ * license, LICENSE.TXT.  By continuing to use, modify, or distribute
+ * this file you indicate that you have read the license and
+ * understand and accept it fully.
+ *
+ */
 
 
-#include <ft2build.h>
-#include FT_INTERNAL_MEMORY_H
-#include FT_INTERNAL_STREAM_H
-#include FT_INTERNAL_DEBUG_H
-#include FT_BZIP2_H
+#include <freetype/internal/ftmemory.h>
+#include <freetype/internal/ftstream.h>
+#include <freetype/internal/ftdebug.h>
+#include <freetype/ftbzip2.h>
 #include FT_CONFIG_STANDARD_LIBRARY_H
 
 
-#include FT_MODULE_ERRORS_H
+#include <freetype/ftmoderr.h>
 
-#undef __FTERRORS_H__
+#undef FTERRORS_H_
 
 #undef  FT_ERR_PREFIX
 #define FT_ERR_PREFIX  Bzip2_Err_
 #define FT_ERR_BASE    FT_Mod_Err_Bzip2
 
-#include FT_ERRORS_H
+#include <freetype/fterrors.h>
 
 
 #ifdef FT_CONFIG_OPTION_USE_BZIP2
-
-#ifdef FT_CONFIG_OPTION_PIC
-#error "bzip2 code does not support PIC yet"
-#endif
 
 #define BZ_NO_STDIO /* Do not need FILE */
 #include <bzlib.h>
@@ -63,20 +57,21 @@
   /* it is better to use FreeType memory routines instead of raw
      'malloc/free' */
 
-  typedef void *(* alloc_func)(void*, int, int);
-  typedef void (* free_func)(void*, void*);
+  typedef void* (*alloc_func)( void*, int, int );
+  typedef void  (*free_func) ( void*, void* );
+
 
   static void*
   ft_bzip2_alloc( FT_Memory  memory,
                   int        items,
                   int        size )
   {
-    FT_ULong    sz = (FT_ULong)size * items;
+    FT_ULong    sz = (FT_ULong)size * (FT_ULong)items;
     FT_Error    error;
     FT_Pointer  p  = NULL;
 
 
-    (void)FT_ALLOC( p, sz );
+    FT_MEM_QALLOC( p, sz );
     return p;
   }
 
@@ -108,10 +103,11 @@
 
     FT_Byte    input[FT_BZIP2_BUFFER_SIZE];  /* input read buffer  */
 
-    FT_Byte    buffer[FT_BZIP2_BUFFER_SIZE]; /* output buffer      */
-    FT_ULong   pos;                          /* position in output */
+    FT_Byte    buffer[FT_BZIP2_BUFFER_SIZE]; /* output buffer          */
+    FT_ULong   pos;                          /* position in output     */
     FT_Byte*   cursor;
     FT_Byte*   limit;
+    FT_Bool    reset;                        /* reset before next read */
 
   } FT_BZip2FileRec, *FT_BZip2File;
 
@@ -120,7 +116,7 @@
   static FT_Error
   ft_bzip2_check_header( FT_Stream  stream )
   {
-    FT_Error  error = Bzip2_Err_Ok;
+    FT_Error  error = FT_Err_Ok;
     FT_Byte   head[4];
 
 
@@ -131,10 +127,10 @@
     /* head[0] && head[1] are the magic numbers;    */
     /* head[2] is the version, and head[3] the blocksize */
     if ( head[0] != 0x42  ||
-         head[1] != 0x5a  ||
+         head[1] != 0x5A  ||
          head[2] != 0x68  )  /* only support bzip2 (huffman) */
     {
-      error = Bzip2_Err_Invalid_File_Format;
+      error = FT_THROW( Invalid_File_Format );
       goto Exit;
     }
 
@@ -149,7 +145,7 @@
                       FT_Stream     source )
   {
     bz_stream*  bzstream = &zip->bzstream;
-    FT_Error    error    = Bzip2_Err_Ok;
+    FT_Error    error    = FT_Err_Ok;
 
 
     zip->stream = stream;
@@ -159,6 +155,7 @@
     zip->limit  = zip->buffer + FT_BZIP2_BUFFER_SIZE;
     zip->cursor = zip->limit;
     zip->pos    = 0;
+    zip->reset  = 0;
 
     /* check .bz2 header */
     {
@@ -181,8 +178,8 @@
     bzstream->next_in  = (char*)zip->buffer;
 
     if ( BZ2_bzDecompressInit( bzstream, 0, 0 ) != BZ_OK ||
-         bzstream->next_in == NULL                       )
-      error = Bzip2_Err_Invalid_File_Format;
+         !bzstream->next_in                              )
+      error = FT_THROW( Invalid_File_Format );
 
   Exit:
     return error;
@@ -234,6 +231,7 @@
       zip->limit  = zip->buffer + FT_BZIP2_BUFFER_SIZE;
       zip->cursor = zip->limit;
       zip->pos    = 0;
+      zip->reset  = 0;
 
       BZ2_bzDecompressInit( bzstream, 0, 0 );
     }
@@ -255,7 +253,10 @@
       size = stream->read( stream, stream->pos, zip->input,
                            FT_BZIP2_BUFFER_SIZE );
       if ( size == 0 )
-        return Bzip2_Err_Invalid_Stream_Operation;
+      {
+        zip->limit = zip->cursor;
+        return FT_THROW( Invalid_Stream_Operation );
+      }
     }
     else
     {
@@ -264,7 +265,10 @@
         size = FT_BZIP2_BUFFER_SIZE;
 
       if ( size == 0 )
-        return Bzip2_Err_Invalid_Stream_Operation;
+      {
+        zip->limit = zip->cursor;
+        return FT_THROW( Invalid_Stream_Operation );
+      }
 
       FT_MEM_COPY( zip->input, stream->base + stream->pos, size );
     }
@@ -273,7 +277,7 @@
     bzstream->next_in  = (char*)zip->input;
     bzstream->avail_in = size;
 
-    return Bzip2_Err_Ok;
+    return FT_Err_Ok;
   }
 
 
@@ -281,7 +285,7 @@
   ft_bzip2_file_fill_output( FT_BZip2File  zip )
   {
     bz_stream*  bzstream = &zip->bzstream;
-    FT_Error    error    = Bzip2_Err_Ok;
+    FT_Error    error    = FT_Err_Ok;
 
 
     zip->cursor         = zip->buffer;
@@ -302,17 +306,23 @@
 
       err = BZ2_bzDecompress( bzstream );
 
-      if ( err == BZ_STREAM_END )
+      if ( err != BZ_OK )
       {
-        zip->limit = (FT_Byte*)bzstream->next_out;
-        if ( zip->limit == zip->cursor )
-          error = Bzip2_Err_Invalid_Stream_Operation;
-        break;
-      }
-      else if ( err != BZ_OK )
-      {
-        error = Bzip2_Err_Invalid_Stream_Operation;
-        break;
+        zip->reset = 1;
+
+        if ( err == BZ_STREAM_END )
+        {
+          zip->limit = (FT_Byte*)bzstream->next_out;
+          if ( zip->limit == zip->cursor )
+            error = FT_THROW( Invalid_Stream_Operation );
+          break;
+        }
+        else
+        {
+          zip->limit = zip->cursor;
+          error      = FT_THROW( Invalid_Stream_Operation );
+          break;
+        }
       }
     }
 
@@ -325,13 +335,14 @@
   ft_bzip2_file_skip_output( FT_BZip2File  zip,
                              FT_ULong      count )
   {
-    FT_Error  error = Bzip2_Err_Ok;
-    FT_ULong  delta;
+    FT_Error  error = FT_Err_Ok;
 
 
     for (;;)
     {
-      delta = (FT_ULong)( zip->limit - zip->cursor );
+      FT_ULong  delta = (FT_ULong)( zip->limit - zip->cursor );
+
+
       if ( delta >= count )
         delta = count;
 
@@ -361,9 +372,9 @@
     FT_Error  error;
 
 
-    /* Reset inflate stream if we're seeking backwards.        */
-    /* Yes, that is not too efficient, but it saves memory :-) */
-    if ( pos < zip->pos )
+    /* Reset inflate stream if seeking backwards or bzip reported an error. */
+    /* Yes, that is not too efficient, but it saves memory :-)              */
+    if ( pos < zip->pos || zip->reset )
     {
       error = ft_bzip2_file_reset( zip );
       if ( error )
@@ -438,16 +449,16 @@
   }
 
 
-  static FT_ULong
-  ft_bzip2_stream_io( FT_Stream  stream,
-                      FT_ULong   pos,
-                      FT_Byte*   buffer,
-                      FT_ULong   count )
+  static unsigned long
+  ft_bzip2_stream_io( FT_Stream       stream,
+                      unsigned long   offset,
+                      unsigned char*  buffer,
+                      unsigned long   count )
   {
     FT_BZip2File  zip = (FT_BZip2File)stream->descriptor.pointer;
 
 
-    return ft_bzip2_file_io( zip, pos, buffer, count );
+    return ft_bzip2_file_io( zip, offset, buffer, count );
   }
 
 
@@ -456,13 +467,21 @@
                        FT_Stream  source )
   {
     FT_Error      error;
-    FT_Memory     memory = source->memory;
+    FT_Memory     memory;
     FT_BZip2File  zip = NULL;
 
 
+    if ( !stream || !source )
+    {
+      error = FT_THROW( Invalid_Stream_Handle );
+      goto Exit;
+    }
+
+    memory = source->memory;
+
     /*
-     *  check the header right now; this prevents allocating unnecessary
-     *  objects when we don't need them
+     * check the header right now; this prevents allocating unnecessary
+     * objects when we don't need them
      */
     error = ft_bzip2_check_header( source );
     if ( error )
@@ -485,7 +504,7 @@
 
     stream->size  = 0x7FFFFFFFL;  /* don't know the real size! */
     stream->pos   = 0;
-    stream->base  = 0;
+    stream->base  = NULL;
     stream->read  = ft_bzip2_stream_io;
     stream->close = ft_bzip2_stream_close;
 
@@ -502,7 +521,7 @@
     FT_UNUSED( stream );
     FT_UNUSED( source );
 
-    return Bzip2_Err_Unimplemented_Feature;
+    return FT_THROW( Unimplemented_Feature );
   }
 
 #endif /* !FT_CONFIG_OPTION_USE_BZIP2 */

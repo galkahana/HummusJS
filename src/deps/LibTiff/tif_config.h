@@ -1,19 +1,22 @@
+/* clang-format off */
+/* clang-format disabled because CMake scripts are very sensitive to the
+ * formatting of this file. configure_file variables of type "" are
+ * modified by clang-format and won't be substituted.
+ */
+
+/* libtiff/tif_config.h.cmake.in.  Not generated, but originated from autoheader.  */
+/* This file must be kept up-to-date with needed substitutions from libtiff/tif_config.h.in. */
+
+#include "tiffconf.h"
+
+/* Support C++ stream API (requires C++ compiler) */
+#define CXX_SUPPORT 1
+
 /* Define to 1 if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
-
-/* Define as 0 or 1 according to the floating point format suported by the
-   machine */
-#define HAVE_IEEEFP 1
-
-/* Define to 1 if you have the `jbg_newlen' function. */
-#define HAVE_JBG_NEWLEN 1
-
-/* Define to 1 if you have the <string.h> header file. */
-#define HAVE_STRING_H 1
-
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
 
@@ -22,46 +25,61 @@
 #define HAVE_IO_H 1
 #endif
 
-/* Define to 1 if you have the <search.h> header file. */
-#define HAVE_SEARCH_H 1
 
-/* Define to 1 if you have the `setmode' function. */
-#define HAVE_SETMODE 1
 
-/* The size of a `int', as computed by sizeof. */
-#define SIZEOF_INT 4
+/* 12bit libjpeg primary include file with path */
+#define LIBJPEG_12_PATH ""
 
-/* The size of a `long', as computed by sizeof. */
-#define SIZEOF_LONG 4
+/* Name of package */
+#define PACKAGE "LibTIFF Software"
 
-/* Signed 64-bit type */
-//#define TIFF_INT64_T signed long long
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "tiff@lists.osgeo.org"
 
-/* Unsigned 64-bit type */
-//#define TIFF_UINT64_T unsigned long long
+/* Define to the full name of this package. */
+#define PACKAGE_NAME "LibTIFF Software"
 
-/* Set the native cpu bit order */
-#define HOST_FILLORDER FILLORDER_LSB2MSB
+/* Define to the one symbol short name of this package. */
+#define PACKAGE_TARNAME "tiff"
 
-/* Define to 1 if your processor stores words with the most significant byte
-   first (like Motorola and SPARC, unlike Intel and VAX). */
-/* #undef WORDS_BIGENDIAN */
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
 
-/* Define to `__inline__' or `__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-# ifndef inline
-#  define inline __inline
+/* Size of size_t */
+#define SIZEOF_SIZE_T 8
+
+
+/** Maximum number of TIFF IFDs that libtiff can iterate through in a file. */
+#define TIFF_MAX_DIR_COUNT 1048576
+
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
 # endif
 #endif
 
-#if (defined(_WIN32) || defined(WIN32))
-#define lfind _lfind
+#if !defined(__MINGW32__)
+#  define TIFF_SIZE_FORMAT "zu"
 #endif
-/*
- * Local Variables:
- * mode: c
- * c-basic-offset: 8
- * fill-column: 78
- * End:
- */
+#if SIZEOF_SIZE_T == 8
+#  define TIFF_SSIZE_FORMAT PRId64
+#  if defined(__MINGW32__)
+#    define TIFF_SIZE_FORMAT PRIu64
+#  endif
+#elif SIZEOF_SIZE_T == 4
+#  define TIFF_SSIZE_FORMAT PRId32
+#  if defined(__MINGW32__)
+#    define TIFF_SIZE_FORMAT PRIu32
+#  endif
+#else
+#  error "Unsupported size_t size; please submit a bug report"
+#endif
+
+/* clang-format on */

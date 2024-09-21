@@ -55,6 +55,7 @@ class PDFImageXObject;
 class ITextCommand;
 class IByteReader;
 class IContentContextListener;
+class IObjectEndWritingTask;
 
 template <typename T>
 struct SomethingOrDouble
@@ -77,6 +78,8 @@ typedef std::list<GlyphUnicodeMappingListOrDouble> GlyphUnicodeMappingListOrDoub
 typedef std::set<IContentContextListener*> IContentContextListenerSet;
 typedef std::pair<double,double> DoubleAndDoublePair;
 typedef std::list<DoubleAndDoublePair> DoubleAndDoublePairList;
+
+#define NO_OPACITY_VALUE 255.0
 
 class AbstractContentContext
 {
@@ -104,18 +107,21 @@ public:
 		unsigned long colorValue;
 		double strokeWidth;
 		bool close;
+		double opacity;
 
 		GraphicOptions(EDrawingType inDrawingType = eStroke,
 						EColorSpace inColorSpace = eRGB,
 						unsigned long inColorValue = 0,
 						double inStrokeWidth = 1.0,
-						bool inClose = false)
+						bool inClose = false,
+						double inOpacity = NO_OPACITY_VALUE)
 		{
 			drawingType = inDrawingType;
 			colorSpace = inColorSpace;
 			colorValue = inColorValue;
 			strokeWidth = inStrokeWidth;
 			close = inClose;
+			opacity = inOpacity;
 		}
 
 	};
@@ -126,16 +132,19 @@ public:
 		unsigned long colorValue;
 		double fontSize;
 		PDFUsedFont* font;
+		double opacity;
 
 		TextOptions(PDFUsedFont* inFont,
 					double inFontSize = 1,
 					EColorSpace inColorSpace = eRGB,
-					unsigned long inColorValue = 0)
+					unsigned long inColorValue = 0,
+					double inOpacity = NO_OPACITY_VALUE)
 		{
 			fontSize = inFontSize;
 			colorSpace = inColorSpace;
 			colorValue = inColorValue;
 			font = inFont;
+			opacity = inOpacity;
 		}
 	};
 	
@@ -238,9 +247,11 @@ public:
 	void SC(double* inColorComponents, int inColorComponentsLength);
 	void SCN(double* inColorComponents, int inColorComponentsLength);
 	void SCN(double* inColorComponents, int inColorComponentsLength,const std::string& inPatternName);
+	void SCN(const std::string& inPatternName);
 	void sc(double* inColorComponents, int inColorComponentsLength);
 	void scn(double* inColorComponents, int inColorComponentsLength);
 	void scn(double* inColorComponents, int inColorComponentsLength,const std::string& inPatternName);
+	void scn(const std::string& inPatternName);
 	void G(double inGray);
 	void g(double inGray);
 	void RG(double inR,double inG,double inB);
@@ -282,6 +293,15 @@ public:
 	// Note that placing an actual Tf command (and including in resources dictionary) will
 	// only occur when actually placing text.
 	void Tf(PDFUsedFont* inFontReference,double inFontSize);
+
+	// Tf is just setting current font and size, if you want to do those individually use 
+	// either SetCurrentFont or SetCurrentFontSize
+	void SetCurrentFont(PDFUsedFont* inFontReference);
+	// you can also get the current font
+	PDFUsedFont* GetCurrentFont();
+	void SetCurrentFontSize(double inFontSize);
+
+	
 
 	// place text to the current set font with Tf
 	// will return error if no font was set, or that one of the glyphs
@@ -341,7 +361,29 @@ public:
     void AddContentContextListener(IContentContextListener* inExtender);
     void RemoveContentContextListener(IContentContextListener* inExtender);
 
+	// Simplified color setup
+	void SetupColor(const GraphicOptions& inOptions);
+	void SetupColor(const TextOptions& inOptions);
+	void SetupColor(EDrawingType inDrawingType,unsigned long inColorValue,EColorSpace inColorSpace, double inOpacity);
+
+	// Opacity. sets for both fill and stroke, for simplicity sake.
+	// Alpha value is 0 to 1, where 1 is opaque and 0 is fully transparent.
+	// 255.0 is a special value which skips setting an alpha value. can be used for calling always but with a default
+	// behavior that falls back on current graphic state
+	void SetOpacity(double inAlpha);
+
+	// accessors for internal objects, for extending content context capabilities outside of content context
 	PrimitiveObjectsWriter& GetPrimitiveWriter() {return mPrimitiveWriter;}
+	PDFHummus::DocumentContext* GetDocumentContext() {return mDocumentContext;}
+
+
+	// Derived classes should use this method to retrive the content resource dictionary, for updating procsets 'n such
+	virtual ResourcesDictionary* GetResourcesDictionary() = 0;
+	// Derived classes should implement this method for registering image writes
+	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID,const PDFParsingOptions& inParsingOptions) = 0;
+	// And a bit more generic version of the image write would be:
+	virtual void ScheduleObjectEndWriteTask(IObjectEndWritingTask* inObjectEndWritingTask) = 0;
+
 protected:
 
 	PDFHummus::DocumentContext* mDocumentContext;
@@ -350,12 +392,10 @@ protected:
 	void SetPDFStreamForWrite(PDFStream* inStream);
 
 private:
-	// Derived classes should use this method to retrive the content resource dictionary, for updating procsets 'n such
-	virtual ResourcesDictionary* GetResourcesDictionary() = 0;
 	// Derived classes should optionally use this method if the stream needs updating (use calls to SetPDFStreamForWrite for this purpose)
 	virtual void RenewStreamConnection() {};
-	// Derived classes should implement this method for registering image writes
-	virtual void ScheduleImageWrite(const std::string& inImagePath,unsigned long inImageIndex,ObjectIDType inObjectID,const PDFParsingOptions& inParsingOptions) = 0;
+
+
 	PrimitiveObjectsWriter mPrimitiveWriter;
 
 	// graphic stack to monitor high-level graphic usage (now - fonts)
@@ -370,8 +410,8 @@ private:
 	PDFHummus::EStatusCode WriteTextCommandWithDirectGlyphSelection(const GlyphUnicodeMappingList& inText,ITextCommand* inTextCommand);
 
 
-	void SetupColor(const GraphicOptions& inOptions);
-	void SetupColor(const TextOptions& inOptions);
-	void SetupColor(EDrawingType inDrawingType,unsigned long inColorValue,EColorSpace inColorSpace);
 	void FinishPath(const GraphicOptions& inOptions);
+
+	PDFHummus::EStatusCode EncodeWithCurrentFont(const std::string& inText,GlyphUnicodeMappingList& outGlyphsUnicodeMapping);
 };
+

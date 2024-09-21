@@ -51,7 +51,7 @@ EStatusCode CharStringType2Flattener::WriteFlattenedGlyphProgram(unsigned short 
 
 	do
 	{
-		if(status != PDFHummus::eSuccess)
+		if(status != eSuccess)
 		{
 			TRACE_LOG("CharStringType2Flattener::Trace, Exception, cannot prepare for glyph interpretation");
 			break;
@@ -91,7 +91,7 @@ EStatusCode CharStringType2Flattener::ReadCharString(LongFilePositionType inChar
 EStatusCode CharStringType2Flattener::Type2InterpretNumber(const CharStringOperand& inOperand)
 {
 	mOperandsToWrite.push_back(inOperand);
-	return PDFHummus::eSuccess;
+	return eSuccess;
 }
 
 EStatusCode CharStringType2Flattener::Type2Hstem(const CharStringOperandList& inOperandList)
@@ -104,11 +104,11 @@ EStatusCode CharStringType2Flattener::Type2Hstem(const CharStringOperandList& in
 EStatusCode CharStringType2Flattener::WriteRegularOperator(unsigned short inOperatorCode)
 {
 	CharStringOperandList::iterator it = mOperandsToWrite.begin();
-	EStatusCode status = PDFHummus::eSuccess;
+	EStatusCode status = eSuccess;
 
-	for(; it != mOperandsToWrite.end() && PDFHummus::eSuccess == status;++it)
+	for(; it != mOperandsToWrite.end() && eSuccess == status;++it)
 		status = WriteCharStringOperand(*it);
-	if(status != PDFHummus::eFailure)
+	if(status != eFailure)
 		status = WriteCharStringOperator(inOperatorCode);
 
 	mOperandsToWrite.clear();
@@ -134,11 +134,11 @@ EStatusCode CharStringType2Flattener::WriteCharStringOperand(const CharStringOpe
 			byte0 = ((value >> 8) & 0xff) + 247;
 			byte1 = value & 0xff;
 
-			if(WriteByte(byte0) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(byte0) != eSuccess)
+				return eFailure;
 
-			if(WriteByte(byte1) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(byte1) != eSuccess)
+				return eFailure;
 		}
 		else if(-1131 <= value && value <= -108)
 		{
@@ -149,11 +149,11 @@ EStatusCode CharStringType2Flattener::WriteCharStringOperand(const CharStringOpe
 			byte0 = ((value >> 8) & 0xff) + 251;
 			byte1 = value & 0xff;
 
-			if(WriteByte(byte0) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(byte0) != eSuccess)
+				return eFailure;
 
-			if(WriteByte(byte1) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(byte1) != eSuccess)
+				return eFailure;
 		}
 		else if(-32768 <= value && value<= 32767)
 		{
@@ -162,17 +162,17 @@ EStatusCode CharStringType2Flattener::WriteCharStringOperand(const CharStringOpe
 			byte1 = (value >> 8) & 0xff;
 			byte2 = value & 0xff;
 
-			if(WriteByte(28) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(28) != eSuccess)
+				return eFailure;
 
-			if(WriteByte(byte1) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(byte1) != eSuccess)
+				return eFailure;
 
-			if(WriteByte(byte2) != PDFHummus::eSuccess)
-				return PDFHummus::eFailure;
+			if(WriteByte(byte2) != eSuccess)
+				return eFailure;
 		}
 		else
-			return PDFHummus::eFailure;
+			return eFailure;
 	}
 	else
 	{
@@ -185,35 +185,35 @@ EStatusCode CharStringType2Flattener::WriteCharStringOperand(const CharStringOpe
 		if(sign)
 			integerPart = -integerPart;
 
-		if(WriteByte(Byte(0xff)) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
-		if(WriteByte(Byte((integerPart>>8) & 0xff)) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
-		if(WriteByte(Byte(integerPart & 0xff)) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
+		if(WriteByte(Byte(0xff)) != eSuccess)
+			return eFailure;
+		if(WriteByte(Byte((integerPart>>8) & 0xff)) != eSuccess)
+			return eFailure;
+		if(WriteByte(Byte(integerPart & 0xff)) != eSuccess)
+			return eFailure;
 
-		if(WriteByte(Byte((realPart>>8) & 0xff)) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
-		if(WriteByte(Byte(realPart & 0xff)) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
+		if(WriteByte(Byte((realPart>>8) & 0xff)) != eSuccess)
+			return eFailure;
+		if(WriteByte(Byte(realPart & 0xff)) != eSuccess)
+			return eFailure;
 
 	}
-	return PDFHummus::eSuccess;
+	return eSuccess;
 }
 
 EStatusCode CharStringType2Flattener::WriteCharStringOperator(unsigned short inOperatorCode)
 {
 	if((inOperatorCode & 0xff00) == 0x0c00)
 	{
-		if(WriteByte(0x0c) != PDFHummus::eSuccess)
-			return PDFHummus::eFailure;
+		if(WriteByte(0x0c) != eSuccess)
+			return eFailure;
 	}
 	return WriteByte(Byte(inOperatorCode & 0xff));
 }
 
 EStatusCode CharStringType2Flattener::WriteByte(Byte inValue)
 {
-	return (mWriter->Write(&inValue,1) == 1 ? PDFHummus::eSuccess : PDFHummus::eFailure);
+	return (mWriter->Write(&inValue,1) == 1 ? eSuccess : eFailure);
 }
 
 EStatusCode CharStringType2Flattener::Type2Vstem(const CharStringOperandList& inOperandList)
@@ -251,7 +251,7 @@ EStatusCode CharStringType2Flattener::Type2RRCurveto(const CharStringOperandList
 EStatusCode CharStringType2Flattener::Type2Return(const CharStringOperandList& inOperandList)
 {
 	// ignore returns
-	return PDFHummus::eSuccess;
+	return eSuccess;
 }
 
 EStatusCode CharStringType2Flattener::Type2Endchar(const CharStringOperandList& inOperandList)
@@ -266,29 +266,36 @@ EStatusCode CharStringType2Flattener::Type2Hstemhm(const CharStringOperandList& 
 	return WriteRegularOperator(18);
 }
 
-EStatusCode CharStringType2Flattener::Type2Hintmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter)
+EStatusCode CharStringType2Flattener::Type2Hintmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter,LongFilePositionType inReadLimit)
 {
 	mStemsCount+= (unsigned short)(inOperandList.size() / 2);
 
-	if(WriteRegularOperator(19) != PDFHummus::eSuccess)
-		return PDFHummus::eFailure;
+	if(WriteRegularOperator(19) != eSuccess)
+		return eFailure;
 
-	return WriteStemMask(inProgramCounter);
+	return WriteStemMask(inProgramCounter, inReadLimit);
 }
 
-EStatusCode CharStringType2Flattener::WriteStemMask(Byte* inProgramCounter)
+EStatusCode CharStringType2Flattener::WriteStemMask(Byte* inProgramCounter,LongFilePositionType inReadLimit)
 {
 	unsigned short maskSize = mStemsCount/8 + (mStemsCount % 8 != 0 ? 1:0);
 
-	return mWriter->Write(inProgramCounter,maskSize) != maskSize ? PDFHummus::eFailure : PDFHummus::eSuccess;
+	if(maskSize > inReadLimit) {
+		TRACE_LOG2("CharStringType2Flattener::WriteStemMask, stem mask size is %d but can only read %ld, aborting", maskSize, inReadLimit);
+		return eFailure;
+	}
+
+	return mWriter->Write(inProgramCounter,maskSize) != maskSize ? eFailure : eSuccess;
 }
 
-EStatusCode CharStringType2Flattener::Type2Cntrmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter)
+EStatusCode CharStringType2Flattener::Type2Cntrmask(const CharStringOperandList& inOperandList,Byte* inProgramCounter,LongFilePositionType inReadLimit)
 {
-	if(WriteRegularOperator(20) != PDFHummus::eSuccess)
-		return PDFHummus::eFailure;
+	mStemsCount+= (unsigned short)(inOperandList.size() / 2);
 
-	return WriteStemMask(inProgramCounter);
+	if(WriteRegularOperator(20) != eSuccess)
+		return eFailure;
+
+	return WriteStemMask(inProgramCounter, inReadLimit);
 }
 
 EStatusCode CharStringType2Flattener::Type2Rmoveto(const CharStringOperandList& inOperandList)
@@ -460,7 +467,7 @@ EStatusCode CharStringType2Flattener::Type2Roll(const CharStringOperandList& inO
 
 CharString* CharStringType2Flattener::GetLocalSubr(long inSubrIndex)
 {
-	if(WriteSubrOperator(10) != PDFHummus::eSuccess)
+	if(WriteSubrOperator(10) != eSuccess)
 		return NULL;
 
 	return mHelper->GetLocalSubr(inSubrIndex);
@@ -470,13 +477,13 @@ EStatusCode CharStringType2Flattener::WriteSubrOperator(unsigned short inOperato
 {
 	if(mOperandsToWrite.size() > 0)
 	{
-		EStatusCode status = PDFHummus::eSuccess;
+		EStatusCode status = eSuccess;
 		mOperandsToWrite.pop_back(); // pop back parameter, which is the subr index
 
 		// now continue writing all operands
 		CharStringOperandList::iterator it = mOperandsToWrite.begin();
 
-		for(; it != mOperandsToWrite.end() && PDFHummus::eSuccess == status;++it)
+		for(; it != mOperandsToWrite.end() && eSuccess == status;++it)
 			status = WriteCharStringOperand(*it);
 
 		mOperandsToWrite.clear();
@@ -489,7 +496,7 @@ EStatusCode CharStringType2Flattener::WriteSubrOperator(unsigned short inOperato
 
 CharString* CharStringType2Flattener::GetGlobalSubr(long inSubrIndex)
 {
-	if(WriteSubrOperator(29) != PDFHummus::eSuccess)
+	if(WriteSubrOperator(29) != eSuccess)
 		return NULL;
 
 	return mHelper->GetGlobalSubr(inSubrIndex);

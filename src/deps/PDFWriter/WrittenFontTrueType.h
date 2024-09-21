@@ -24,16 +24,18 @@
 class WrittenFontTrueType : public AbstractWrittenFont
 {
 public:
-	WrittenFontTrueType(ObjectsContext* inObjectsContext);
+	WrittenFontTrueType(ObjectsContext* inObjectsContext, FreeTypeFaceWrapper* inFontInfo);
 	~WrittenFontTrueType(void);
 
-	virtual PDFHummus::EStatusCode WriteFontDefinition(FreeTypeFaceWrapper& inFontInfo,bool inEmbedFont);
+	virtual PDFHummus::EStatusCode WriteFontDefinition(bool inEmbedFont);
 
 	virtual PDFHummus::EStatusCode WriteState(ObjectsContext* inStateWriter,ObjectIDType inObjectId);
 	virtual PDFHummus::EStatusCode ReadState(PDFParser* inStateReader,ObjectIDType inObjectID);
 
 
 private:
+    bool fontSupportsWinAnsiEncoding;
+
 	virtual bool AddToANSIRepresentation(	const GlyphUnicodeMappingList& inGlyphsList,
 											UShortList& outEncodedCharacters);
 
@@ -43,5 +45,9 @@ private:
 
 
 	virtual unsigned short EncodeCIDGlyph(unsigned int inGlyphId);
+
+    bool AddANSICandidates(const GlyphUnicodeMappingList& inGlyphsList, UShortList& ioCandidates);
+
+
 
 };

@@ -24,8 +24,7 @@
 #include "CharStringDefinitions.h"
 
 #include <vector>
-
-
+#include <list>
 
 typedef std::vector<CharStringOperand> CharStringOperandVector;
 
@@ -45,62 +44,63 @@ private:
 	bool mGotEndChar;
 	CharStringOperandVector mStorage;
 	bool mCheckedWidth;
+	unsigned short mSubrsNesting;
 
 
 	PDFHummus::EStatusCode ProcessCharString(Byte* inCharString,LongFilePositionType inCharStringLength);
-	bool IsOperator(Byte* inProgramCounter);
-	Byte* InterpretNumber(Byte* inProgramCounter);
-	Byte* InterpretOperator(Byte* inProgramCounter,bool& outGotEndExecutionCommand);
+	bool IsOperator(Byte inCurrentByte);
+	Byte* InterpretNumber(Byte* inProgramCounter,LongFilePositionType inReadLimit);
+	Byte* InterpretOperator(Byte* inProgramCounter,bool& outGotEndExecutionCommand,LongFilePositionType inReadLimit);
+	PDFHummus::EStatusCode AddStemsCount(unsigned short inBy);
 
-	PDFHummus::EStatusCode ClearNFromStack(unsigned short inCount);
 	void ClearStack();
 	void CheckWidth();
 
-	Byte* InterpretHStem(Byte* inProgramCounter);
-	Byte* InterpretVStem(Byte* inProgramCounter);
-	Byte* InterpretVMoveto(Byte* inProgramCounter);
-	Byte* InterpretRLineto(Byte* inProgramCounter);
-	Byte* InterpretHLineto(Byte* inProgramCounter);
-	Byte* InterpretVLineto(Byte* inProgramCounter);
-	Byte* InterpretRRCurveto(Byte* inProgramCounter);
-	Byte* InterpretCallSubr(Byte* inProgramCounter);
-	Byte* InterpretReturn(Byte* inProgramCounter);
-	Byte* InterpretEndChar(Byte* inProgramCounter);
-	Byte* InterpretHStemHM(Byte* inProgramCounter);
-	Byte* InterpretHintMask(Byte* inProgramCounter);
-	Byte* InterpretCntrMask(Byte* inProgramCounter);
-	Byte* InterpretRMoveto(Byte* inProgramCounter);
-	Byte* InterpretHMoveto(Byte* inProgramCounter);
-	Byte* InterpretVStemHM(Byte* inProgramCounter);
-	Byte* InterpretRCurveLine(Byte* inProgramCounter);
-	Byte* InterpretRLineCurve(Byte* inProgramCounter);
-	Byte* InterpretVVCurveto(Byte* inProgramCounter);
-	Byte* InterpretHHCurveto(Byte* inProgramCounter);
-	Byte* InterpretCallGSubr(Byte* inProgramCounter);
-	Byte* InterpretVHCurveto(Byte* inProgramCounter);
-	Byte* InterpretHVCurveto(Byte* inProgramCounter);
-	Byte* InterpretAnd(Byte* inProgramCounter);
-	Byte* InterpretOr(Byte* inProgramCounter);
-	Byte* InterpretNot(Byte* inProgramCounter);
-	Byte* InterpretAbs(Byte* inProgramCounter);
-	Byte* InterpretAdd(Byte* inProgramCounter);
-	Byte* InterpretSub(Byte* inProgramCounter);
-	Byte* InterpretDiv(Byte* inProgramCounter);
-	Byte* InterpretNeg(Byte* inProgramCounter);
-	Byte* InterpretEq(Byte* inProgramCounter);
-	Byte* InterpretDrop(Byte* inProgramCounter);
-	Byte* InterpretPut(Byte* inProgramCounter);
-	Byte* InterpretGet(Byte* inProgramCounter);
-	Byte* InterpretIfelse(Byte* inProgramCounter);
-	Byte* InterpretRandom(Byte* inProgramCounter);
-	Byte* InterpretMul(Byte* inProgramCounter);
-	Byte* InterpretSqrt(Byte* inProgramCounter);
-	Byte* InterpretDup(Byte* inProgramCounter);
-	Byte* InterpretExch(Byte* inProgramCounter);
-	Byte* InterpretIndex(Byte* inProgramCounter);
-	Byte* InterpretRoll(Byte* inProgramCounter);
-	Byte* InterpretHFlex(Byte* inProgramCounter);
-	Byte* InterpretFlex(Byte* inProgramCounter);
-	Byte* InterpretHFlex1(Byte* inProgramCounter);
-	Byte* InterpretFlex1(Byte* inProgramCounter);
+	Byte* InterpretHStem(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretVStem(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretVMoveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRLineto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHLineto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretVLineto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRRCurveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretCallSubr(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretReturn(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretEndChar(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHStemHM(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHintMask(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretCntrMask(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRMoveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHMoveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretVStemHM(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRCurveLine(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRLineCurve(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretVVCurveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHHCurveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretCallGSubr(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretVHCurveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHVCurveto(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretAnd(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretOr(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretNot(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretAbs(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretAdd(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretSub(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretDiv(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretNeg(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretEq(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretDrop(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretPut(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretGet(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretIfelse(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRandom(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretMul(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretSqrt(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretDup(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretExch(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretIndex(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretRoll(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHFlex(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretFlex(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretHFlex1(Byte* inProgramCounter, LongFilePositionType inReadLimit);
+	Byte* InterpretFlex1(Byte* inProgramCounter, LongFilePositionType inReadLimit);
 };

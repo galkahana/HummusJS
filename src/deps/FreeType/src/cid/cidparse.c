@@ -1,39 +1,38 @@
-/***************************************************************************/
-/*                                                                         */
-/*  cidparse.c                                                             */
-/*                                                                         */
-/*    CID-keyed Type1 parser (body).                                       */
-/*                                                                         */
-/*  Copyright 1996-2001, 2002, 2003, 2004, 2005, 2006, 2007, 2009 by       */
-/*  David Turner, Robert Wilhelm, and Werner Lemberg.                      */
-/*                                                                         */
-/*  This file is part of the FreeType project, and may only be used,       */
-/*  modified, and distributed under the terms of the FreeType project      */
-/*  license, LICENSE.TXT.  By continuing to use, modify, or distribute     */
-/*  this file you indicate that you have read the license and              */
-/*  understand and accept it fully.                                        */
-/*                                                                         */
-/***************************************************************************/
+/****************************************************************************
+ *
+ * cidparse.c
+ *
+ *   CID-keyed Type1 parser (body).
+ *
+ * Copyright (C) 1996-2023 by
+ * David Turner, Robert Wilhelm, and Werner Lemberg.
+ *
+ * This file is part of the FreeType project, and may only be used,
+ * modified, and distributed under the terms of the FreeType project
+ * license, LICENSE.TXT.  By continuing to use, modify, or distribute
+ * this file you indicate that you have read the license and
+ * understand and accept it fully.
+ *
+ */
 
 
-#include <ft2build.h>
-#include FT_INTERNAL_DEBUG_H
-#include FT_INTERNAL_OBJECTS_H
-#include FT_INTERNAL_STREAM_H
+#include <freetype/internal/ftdebug.h>
+#include <freetype/internal/ftobjs.h>
+#include <freetype/internal/ftstream.h>
 
 #include "cidparse.h"
 
 #include "ciderrs.h"
 
 
-  /*************************************************************************/
-  /*                                                                       */
-  /* The macro FT_COMPONENT is used in trace mode.  It is an implicit      */
-  /* parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log  */
-  /* messages during execution.                                            */
-  /*                                                                       */
+  /**************************************************************************
+   *
+   * The macro FT_COMPONENT is used in trace mode.  It is an implicit
+   * parameter of the FT_TRACE() and FT_ERROR() macros, used to print/log
+   * messages during execution.
+   */
 #undef  FT_COMPONENT
-#define FT_COMPONENT  trace_cidparse
+#define FT_COMPONENT  cidparse
 
 
   /*************************************************************************/
@@ -45,6 +44,12 @@
   /*************************************************************************/
   /*************************************************************************/
   /*************************************************************************/
+
+
+#define STARTDATA      "StartData"
+#define STARTDATA_LEN  ( sizeof ( STARTDATA ) - 1 )
+#define SFNTS          "/sfnts"
+#define SFNTS_LEN      ( sizeof ( SFNTS ) - 1 )
 
 
   FT_LOCAL_DEF( FT_Error )
@@ -59,7 +64,7 @@
     FT_Byte   *arg1, *arg2;
 
 
-    FT_MEM_ZERO( parser, sizeof ( *parser ) );
+    FT_ZERO( parser );
     psaux->ps_parser_funcs->init( &parser->root, 0, 0, memory );
 
     parser->stream = stream;
@@ -68,13 +73,17 @@
 
     /* first of all, check the font format in the header */
     if ( FT_FRAME_ENTER( 31 ) )
+    {
+      FT_TRACE2(( "  not a CID-keyed font\n" ));
+      error = FT_THROW( Unknown_File_Format );
       goto Exit;
+    }
 
     if ( ft_strncmp( (char *)stream->cursor,
                      "%!PS-Adobe-3.0 Resource-CIDFont", 31 ) )
     {
       FT_TRACE2(( "  not a CID-keyed font\n" ));
-      error = CID_Err_Unknown_File_Format;
+      error = FT_THROW( Unknown_File_Format );
     }
 
     FT_FRAME_EXIT();
@@ -85,51 +94,79 @@
     /* now, read the rest of the file until we find */
     /* `StartData' or `/sfnts'                      */
     {
-      FT_Byte   buffer[256 + 10];
-      FT_Long   read_len = 256 + 10; /* same as signed FT_Stream->size */
-      FT_Byte*  p        = buffer;
+      /*
+       * The algorithm is as follows (omitting the case with less than 256
+       * bytes to fill for simplicity).
+       *
+       * 1. Fill the buffer with 256 + STARTDATA_LEN bytes.
+       *
+       * 2. Search for the STARTDATA and SFNTS strings at positions
+       *    buffer[0], buffer[1], ...,
+       *    buffer[255 + STARTDATA_LEN - SFNTS_LEN].
+       *
+       * 3. Move the last STARTDATA_LEN bytes to buffer[0].
+       *
+       * 4. Fill the buffer with 256 bytes, starting at STARTDATA_LEN.
+       *
+       * 5. Repeat with step 2.
+       *
+       */
+      FT_Byte  buffer[256 + STARTDATA_LEN + 1];
+
+      /* values for the first loop */
+      FT_ULong  read_len    = 256 + STARTDATA_LEN;
+      FT_ULong  read_offset = 0;
+      FT_Byte*  p           = buffer;
 
 
       for ( offset = FT_STREAM_POS(); ; offset += 256 )
       {
-        FT_Long  stream_len; /* same as signed FT_Stream->size */
+        FT_ULong  stream_len;
 
 
         stream_len = stream->size - FT_STREAM_POS();
-        if ( stream_len == 0 )
-        {
-          FT_TRACE2(( "cid_parser_new: no `StartData' keyword found\n" ));
-          error = CID_Err_Invalid_File_Format;
-          goto Exit;
-        }
 
         read_len = FT_MIN( read_len, stream_len );
         if ( FT_STREAM_READ( p, read_len ) )
           goto Exit;
 
-        if ( read_len < 256 )
-          p[read_len]  = '\0';
+        /* ensure that we do not compare with data beyond the buffer */
+        p[read_len] = '\0';
 
-        limit = p + read_len - 10;
+        limit = p + read_len - SFNTS_LEN;
 
         for ( p = buffer; p < limit; p++ )
         {
-          if ( p[0] == 'S' && ft_strncmp( (char*)p, "StartData", 9 ) == 0 )
+          if ( p[0] == 'S'                                           &&
+               ft_strncmp( (char*)p, STARTDATA, STARTDATA_LEN ) == 0 )
           {
             /* save offset of binary data after `StartData' */
-            offset += p - buffer + 10;
+            offset += (FT_ULong)( p - buffer ) + STARTDATA_LEN + 1;
             goto Found;
           }
-          else if ( p[1] == 's' && ft_strncmp( (char*)p, "/sfnts", 6 ) == 0 )
+          else if ( p[1] == 's'                                   &&
+                    ft_strncmp( (char*)p, SFNTS, SFNTS_LEN ) == 0 )
           {
-            offset += p - buffer + 7;
+            offset += (FT_ULong)( p - buffer ) + SFNTS_LEN + 1;
             goto Found;
           }
         }
 
-        FT_MEM_MOVE( buffer, p, 10 );
-        read_len = 256;
-        p = buffer + 10;
+        if ( read_offset + read_len < STARTDATA_LEN )
+        {
+          FT_TRACE2(( "cid_parser_new: no `StartData' keyword found\n" ));
+          error = FT_THROW( Invalid_File_Format );
+          goto Exit;
+        }
+
+        FT_MEM_MOVE( buffer,
+                     buffer + read_offset + read_len - STARTDATA_LEN,
+                     STARTDATA_LEN );
+
+        /* values for the next loop */
+        read_len    = 256;
+        read_offset = STARTDATA_LEN;
+        p           = buffer + read_offset;
       }
     }
 
@@ -148,7 +185,7 @@
     parser->root.base      = parser->postscript;
     parser->root.cursor    = parser->postscript;
     parser->root.limit     = parser->root.cursor + ps_len;
-    parser->num_dict       = -1;
+    parser->num_dict       = FT_UINT_MAX;
 
     /* Finally, we check whether `StartData' or `/sfnts' was real --  */
     /* it could be in a comment or string.  We also get the arguments */
@@ -165,7 +202,7 @@
     limit = parser->root.limit;
     cur   = parser->root.cursor;
 
-    while ( cur < limit )
+    while ( cur <= limit - SFNTS_LEN )
     {
       if ( parser->root.error )
       {
@@ -173,19 +210,31 @@
         goto Exit;
       }
 
-      if ( cur[0] == 'S' && ft_strncmp( (char*)cur, "StartData", 9 ) == 0 )
+      if ( cur[0] == 'S'                                           &&
+           cur <= limit - STARTDATA_LEN                            &&
+           ft_strncmp( (char*)cur, STARTDATA, STARTDATA_LEN ) == 0 )
       {
         if ( ft_strncmp( (char*)arg1, "(Hex)", 5 ) == 0 )
-          parser->binary_length = ft_atol( (const char *)arg2 );
+        {
+          FT_Long  tmp = ft_strtol( (const char *)arg2, NULL, 10 );
 
-        limit = parser->root.limit;
-        cur   = parser->root.cursor;
+
+          if ( tmp < 0 )
+          {
+            FT_ERROR(( "cid_parser_new: invalid length of hex data\n" ));
+            error = FT_THROW( Invalid_File_Format );
+          }
+          else
+            parser->binary_length = (FT_ULong)tmp;
+        }
+
         goto Exit;
       }
-      else if ( cur[1] == 's' && ft_strncmp( (char*)cur, "/sfnts", 6 ) == 0 )
+      else if ( cur[1] == 's'                                   &&
+                ft_strncmp( (char*)cur, SFNTS, SFNTS_LEN ) == 0 )
       {
         FT_TRACE2(( "cid_parser_new: cannot handle Type 11 fonts\n" ));
-        error = CID_Err_Unknown_File_Format;
+        error = FT_THROW( Unknown_File_Format );
         goto Exit;
       }
 
@@ -205,6 +254,12 @@
   Exit:
     return error;
   }
+
+
+#undef STARTDATA
+#undef STARTDATA_LEN
+#undef SFNTS
+#undef SFNTS_LEN
 
 
   FT_LOCAL_DEF( void )
