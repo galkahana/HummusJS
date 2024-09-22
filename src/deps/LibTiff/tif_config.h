@@ -45,8 +45,10 @@
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
-/* Size of size_t */
+/* Size of size_t, allowing external override */
+#ifndef SIZEOF_SIZE_T
 #define SIZEOF_SIZE_T 8
+#endif
 
 
 /** Maximum number of TIFF IFDs that libtiff can iterate through in a file. */
