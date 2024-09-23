@@ -50,6 +50,7 @@ private:
     
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPDFLevel(const ARGS_TYPE& args);
+	static METHOD_RETURN_TYPE End(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetPagesCount(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE QueryDictionaryObject(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE QueryArrayObject(const ARGS_TYPE& args);
