@@ -30,6 +30,11 @@
                     "defines": [
                         'HAVE_UNISTD_H=1'
                     ]
+                }],
+                ['target_arch == "ia32"', {
+                    "defines": [
+                        'SIZEOF_SIZE_T=4'
+                    ]
                 }]
             ],     
             'include_dirs': [
