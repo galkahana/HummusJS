@@ -20,3 +20,8 @@ Documentation is available [here](https://github.com/galkahana/HummusJS/wiki).
 Project site is [here](http://www.pdfhummus.com).   
 
 If you are looking for a C++ Library go [here](https://github.com/galkahana/PDF-Writer).   
+
+  ### Contributors
+
+  <img src="https://markupgo.com/github/galkahana/HummusJS/contributors?count=0&circleSize=32&circleRadius=32&center=true" width="100%" /> 
+  
