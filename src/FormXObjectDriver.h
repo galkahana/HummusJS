@@ -43,7 +43,7 @@ private:
     PDFWriterDriver* mPDFWriterDriver;
     
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
-	static METHOD_RETURN_TYPE GetID(v8::Local<v8::String> property, const PROPERTY_TYPE& info);
+	static METHOD_RETURN_TYPE GetID(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE& info);
 	static METHOD_RETURN_TYPE GetContentContext(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetResourcesDictionary(const ARGS_TYPE& args);
 	static METHOD_RETURN_TYPE GetContentStream(const ARGS_TYPE& args);

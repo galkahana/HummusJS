@@ -39,20 +39,20 @@ private:
     
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
 
-	static METHOD_RETURN_TYPE GetTitle(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetTitle(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetAuthor(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-	static void SetAuthor(v8::Local<v8::String> property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetSubject(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-	static void SetSubject(v8::Local<v8::String> property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetKeywords(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-	static void SetKeywords(v8::Local<v8::String> property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetCreator(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-	static void SetCreator(v8::Local<v8::String> property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetProducer(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-	static void SetProducer(v8::Local<v8::String> property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetTrapped(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-	static void SetTrapped(v8::Local<v8::String> property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetTitle(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetTitle(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetAuthor(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+	static void SetAuthor(PROPERTY_NAME_TYPE property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetSubject(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+	static void SetSubject(PROPERTY_NAME_TYPE property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetKeywords(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+	static void SetKeywords(PROPERTY_NAME_TYPE property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetCreator(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+	static void SetCreator(PROPERTY_NAME_TYPE property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetProducer(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+	static void SetProducer(PROPERTY_NAME_TYPE property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetTrapped(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+	static void SetTrapped(PROPERTY_NAME_TYPE property, v8::Local<v8::Value> value, const PROPERTY_SETTER_TYPE &info);
 
 
     // for dates i'm giving only setters. it's too bording to provide readers. you are the ones setting it for @#$@# sake.
