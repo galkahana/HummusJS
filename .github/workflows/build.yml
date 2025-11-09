@@ -72,6 +72,9 @@ jobs:
           architecture: ${{ matrix.architecture_node }}
       - run: node --version
       - run: npm --version
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - run: npm install --build-from-source
         env:
           npm_config_arch: ${{ matrix.architecture }}
