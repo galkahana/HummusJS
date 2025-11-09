@@ -40,11 +40,8 @@ jobs:
       matrix:
         os: [ubuntu-22.04, macos-14, windows-2022]
         node: [18, 19, 20, 22, 24, 25]
-        architecture: [x64, ia32, arm64]
+        architecture: [x64, arm64]
         include:
-          - architecture: ia32
-            architecture_node: x86
-            target_architecture: ia32
           - architecture: x64
             architecture_node: x64
             target_architecture: x64
@@ -54,27 +51,10 @@ jobs:
             extra_compile_flags: -arch arm64
             EXTRA_NODE_PRE_GYP_FLAGS: --target_arch=arm64
         exclude:
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             architecture: arm64
           - os: windows-2022
             architecture: arm64
-          - os: macos-14
-            architecture: ia32
-          - os: ubuntu-20.04
-            architecture: ia32       
-          # Node.js 20+ doesn't support Windows 32-bit
-          - os: windows-2022
-            architecture: ia32
-            node: 20
-          - os: windows-2022
-            architecture: ia32
-            node: 22
-          - os: windows-2022
-            architecture: ia32
-            node: 24
-          - os: windows-2022
-            architecture: ia32
-            node: 25            
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
