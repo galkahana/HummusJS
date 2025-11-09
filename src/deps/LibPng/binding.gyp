@@ -15,6 +15,13 @@
                    'defines': [
                        'PNG_ARM_NEON_OPT=0'
                    ]
+                }],
+                ['OS == "mac"', {
+                    'xcode_settings': {
+                        'OTHER_CFLAGS': [
+                            '-UTARGET_OS_MAC'
+                        ]
+                    }
                 }]
             ],                              
             'sources': [

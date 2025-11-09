@@ -9,6 +9,13 @@
                     "defines": [
                         'HAVE_UNISTD_H=1'
                     ]
+                }],
+                ['OS == "mac"', {
+                    'xcode_settings': {
+                        'OTHER_CFLAGS': [
+                            '-UTARGET_OS_MAC'
+                        ]
+                    }
                 }]
             ],
             'sources': [
