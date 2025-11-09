@@ -62,6 +62,19 @@ jobs:
             architecture: ia32
           - os: ubuntu-20.04
             architecture: ia32       
+          # Node.js 20+ doesn't support Windows 32-bit
+          - os: windows-2022
+            architecture: ia32
+            node: 20
+          - os: windows-2022
+            architecture: ia32
+            node: 22
+          - os: windows-2022
+            architecture: ia32
+            node: 24
+          - os: windows-2022
+            architecture: ia32
+            node: 25            
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
