@@ -10,6 +10,11 @@ on:
 permissions:
   contents: read
 
+# this one's here to avoid duplicates when submitting PR to master and then fixin' stuff
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   dependency-review:
     runs-on: ubuntu-latest
