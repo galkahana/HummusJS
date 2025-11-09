@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, macos-14, windows-2019]
+        os: [ubuntu-20.04, macos-14, windows-2022]
         node: [13.14.0, 14.0.0, 15.7.0, 16.13.1, 17.6.0, 18.8.0, 19.0.0, 20.0.0]
         architecture: [x64, ia32, arm64]
         include:
