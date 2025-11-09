@@ -1,6 +1,6 @@
 {
   "name": "hummus",
-  "version": "1.0.117",
+  "version": "1.0.118",
   "description": "Create, read and modify PDF files and streams",
   "homepage": "http://pdfhummus.com/",
   "license": "Apache-2.0",
@@ -44,6 +44,6 @@
     "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
-    "@mapbox/node-pre-gyp": "^1.0.10"
+    "@mapbox/node-pre-gyp": "^2.0.0"
   }
 }
