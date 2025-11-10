@@ -91,7 +91,7 @@ METHOD_RETURN_TYPE PDFPageDriver::New(const ARGS_TYPE& args)
 	SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
-METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -108,7 +108,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetMediaBox(Local<String> property, const PROP
     SET_ACCESSOR_RETURN_VALUE(mediaBox)
 }
 
-METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -134,7 +134,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetCropBox(Local<String> property, const PROPE
     }
 }
 
-METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -160,7 +160,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetBleedBox(Local<String> property, const PROP
     }
 }
 
-METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -186,7 +186,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetTrimBox(Local<String> property, const PROPE
     }
 }
 
-METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -212,7 +212,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetArtBox(Local<String> property, const PROPER
     }
 }
 
-void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+void PDFPageDriver::SetMediaBox(PROPERTY_NAME_TYPE property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -232,7 +232,7 @@ void PDFPageDriver::SetMediaBox(Local<String> property, Local<Value> value, cons
     
 }
     
-METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFPageDriver::GetRotate(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -252,7 +252,7 @@ METHOD_RETURN_TYPE PDFPageDriver::GetRotate(Local<String> property, const PROPER
     }
 }    
 
-void PDFPageDriver::SetRotate(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+void PDFPageDriver::SetRotate(PROPERTY_NAME_TYPE property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -267,7 +267,7 @@ void PDFPageDriver::SetRotate(Local<String> property, Local<Value> value, const 
 }
 
 
-void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+void PDFPageDriver::SetCropBox(PROPERTY_NAME_TYPE property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -287,7 +287,7 @@ void PDFPageDriver::SetCropBox(Local<String> property, Local<Value> value, const
     
 }
 
-void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+void PDFPageDriver::SetBleedBox(PROPERTY_NAME_TYPE property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -307,7 +307,7 @@ void PDFPageDriver::SetBleedBox(Local<String> property, Local<Value> value, cons
     
 }
 
-void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+void PDFPageDriver::SetTrimBox(PROPERTY_NAME_TYPE property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;
@@ -327,7 +327,7 @@ void PDFPageDriver::SetTrimBox(Local<String> property, Local<Value> value, const
     
 }
 
-void PDFPageDriver::SetArtBox(Local<String> property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
+void PDFPageDriver::SetArtBox(PROPERTY_NAME_TYPE property, Local<Value> value, const PROPERTY_SETTER_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;

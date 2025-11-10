@@ -7,6 +7,7 @@
 #define NODE_2_5_0_MODULE_VERSION 44
 #define NODE_10_0_0_MODULE_VERSION 64
 #define NODE_11_0_0_MODULE_VERSION 67
+#define NODE_24_0_0_MODULE_VERSION 131
 #define NODE_CONTEXT_AWARE_VERSION NODE_10_0_0_MODULE_VERSION
 #define IS_CONTEXT_AWARE NODE_MODULE_VERSION >= NODE_CONTEXT_AWARE_VERSION
 #ifdef NODE_MODULE_INIT
@@ -29,8 +30,6 @@
 #define NEW_ARRAY(X) Array::New(isolate,X)
 #define NEW_BOOLEAN(X) Boolean::New(isolate,X)
 #define NEW_OBJECT Object::New(isolate)
-#define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f);
-#define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f,g);
 #define SET_CONSTRUCTOR_EXPORT(s,c) EXPORTS_SET(exports,NEW_STRING(s),c->GetFunction(GET_CURRENT_CONTEXT).ToLocalChecked())
 #define SET_PROTOTYPE_METHOD(t, s, f) NODE_SET_PROTOTYPE_METHOD(t,s,f)
 #define SET_PERSISTENT_OBJECT(c,ot,t) c.Reset(isolate,t)
@@ -71,6 +70,18 @@
 #define TO_UINT32Value() ToUint32()->Value()
 
 #endif
+
+// property accessor changes
+#if NODE_MODULE_VERSION >= NODE_24_0_0_MODULE_VERSION
+    #define PROPERTY_NAME_TYPE v8::Local<v8::Name>
+    #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetNativeDataProperty(NEW_STRING(s), f);
+    #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetNativeDataProperty(NEW_STRING(s), f, g);
+#else
+    #define PROPERTY_NAME_TYPE v8::Local<v8::String>
+    #define SET_ACCESSOR_METHOD(t,s,f) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f);
+    #define SET_ACCESSOR_METHODS(t,s,f,g) t->InstanceTemplate()->SetAccessor(NEW_STRING(s), f,g);
+#endif
+
 
 // Some more conversions
 #if IS_CONTEXT_AWARE
@@ -146,3 +157,4 @@
     #define DECLARE_EXTERNAL(C) 
  
 #endif
+

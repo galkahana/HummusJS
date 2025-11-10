@@ -61,7 +61,7 @@ METHOD_RETURN_TYPE ImageXObjectDriver::New(const ARGS_TYPE& args)
     SET_FUNCTION_RETURN_VALUE(args.This())
 }
 
-METHOD_RETURN_TYPE ImageXObjectDriver::GetID(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE ImageXObjectDriver::GetID(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;

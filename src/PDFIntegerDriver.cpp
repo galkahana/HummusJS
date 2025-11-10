@@ -57,7 +57,7 @@ PDFObject* PDFIntegerDriver::GetObject()
     return TheObject.GetPtr();
 }
 
-METHOD_RETURN_TYPE PDFIntegerDriver::GetValue(Local<String> property, const PROPERTY_TYPE &info)
+METHOD_RETURN_TYPE PDFIntegerDriver::GetValue(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info)
 {
     CREATE_ISOLATE_CONTEXT;
 	CREATE_ESCAPABLE_SCOPE;

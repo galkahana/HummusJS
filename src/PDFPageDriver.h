@@ -47,17 +47,17 @@ private:
         
     
 	static METHOD_RETURN_TYPE New(const ARGS_TYPE& args);
-	static METHOD_RETURN_TYPE GetMediaBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetMediaBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetBleedBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetBleedBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetCropBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetCropBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetTrimBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetTrimBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetArtBox(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetArtBox(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
-	static METHOD_RETURN_TYPE GetRotate(v8::Local<v8::String> property, const PROPERTY_TYPE &info);
-    static void SetRotate(v8::Local<v8::String> property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetMediaBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetMediaBox(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetBleedBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetBleedBox(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetCropBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetCropBox(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetTrimBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetTrimBox(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetArtBox(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetArtBox(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
+	static METHOD_RETURN_TYPE GetRotate(PROPERTY_NAME_TYPE property, const PROPERTY_TYPE &info);
+    static void SetRotate(PROPERTY_NAME_TYPE property,v8::Local<v8::Value> value,const PROPERTY_SETTER_TYPE &info);
 	static METHOD_RETURN_TYPE GetResourcesDictionary(const ARGS_TYPE& args);
 };
